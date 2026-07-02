@@ -187,9 +187,8 @@ function logout() {
     window.location.href = "login.html";
 }
 
-// =========================
-// AUTH (WITH HASHED PASSWORDS + RATE LIMITING)
-// =========================
+const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
+
 async function loginUser(event) {
     event.preventDefault();
 
@@ -197,38 +196,72 @@ async function loginUser(event) {
     const password = document.getElementById("password").value;
     const role = document.getElementById("role").value;
 
-    if (isLockedOut(email)) {
-        alert("Too many failed attempts. Please wait 5 minutes before trying again.");
+    if (!role) {
+        alert("Please choose an account type.");
         return;
     }
 
-    const users = getUsers();
-    const hashedInput = await hashPassword(password);
+    try {
 
-    const user = users.find(u =>
-        u.email === email &&
-        u.password === hashedInput &&
-        u.role === role
-    );
+        const response = await fetch(
+            WORKER_URL + "api/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
 
-    if (!user) {
-        recordFailedAttempt(email);
-        alert("Invalid login");
-        return;
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Login failed.");
+            return;
+        }
+
+        if (data.user.role !== role) {
+            alert("Incorrect account type selected.");
+            return;
+        }
+
+        clearLoginAttempts(email);
+
+        saveUser(data.user);
+
+        switch (data.user.role) {
+
+            case "admin":
+                window.location.href = "admin-dashboard.html";
+                break;
+
+            case "client":
+                window.location.href = "client-dashboard.html";
+                break;
+
+            case "worker":
+                window.location.href = "worker-dashboard.html";
+                break;
+
+            case "reviewer":
+                window.location.href = "reviewer-dashboard.html";
+                break;
+
+            default:
+                alert("Unknown account role.");
+        }
+
+    } catch (err) {
+
+        alert("Unable to connect to the server.");
+
+        console.error(err);
+
     }
-
-    if (user.status === "Pending") {
-        alert("Account not approved yet");
-        return;
-    }
-
-    clearLoginAttempts(email);
-    saveUser(user);
-
-    if (role === "admin") window.location.href = "admin-dashboard.html";
-    if (role === "client") window.location.href = "client-dashboard.html";
-    if (role === "worker") window.location.href = "worker-dashboard.html";
-    if (role === "reviewer") window.location.href = "reviewer-dashboard.html";
 }
 
 // =========================
