@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Management - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li class="active">📂 Projects</li>
+            <li>📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Project Management</h1>
+            <div class="profile">Administrator</div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Orders</h3>
+                <h2 id="totalProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Paid</h3>
+                <h2 id="activeProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Completed</h3>
+                <h2 id="completedProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Payment</h3>
+                <h2 id="pendingProjects">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Orders & Projects Pipeline</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Reviews</th>
+<th>Created</th>
+<th>Payment Proof</th>
+<th>Assigned Worker</th>
+<th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="projectsTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+/* =========================
+   DATA SOURCE
+   ========================= */
+
+const table = document.getElementById("projectsTable");
+
+function getOrders() {
+    return JSON.parse(localStorage.getItem("harmonia_orders")) || [];
+}
+
+function normalizeOrder(o) {
+    return {
+        orderId: o.orderId || "HM-UNKNOWN",
+        projectName: o.projectName || "Untitled Project",
+        category: o.category || "General",
+        reviews: o.reviews || 0,
+        status: o.status || "Awaiting Payment",
+        assignedTo: o.assignedTo || null,
+        paymentProof: o.paymentProof || null,
+        submittedAt: o.submittedAt || null,
+        createdAt: o.createdAt || new Date().toISOString(),
+        supportChat: o.supportChat || []
+    };
+}
+
+/* =========================
+   SAFE DATE FORMAT
+   ========================= */
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleString();
+}
+
+/* =========================
+   SUPPORT CHAT RENDER
+   ========================= */
+
+function renderSupportChat(order){
+
+    if(!order.supportChat || order.supportChat.length===0){
+
+        return `
+            <div style="opacity:.6;">
+                No conversation yet.
+            </div>
+        `;
+
+    }
+
+    return order.supportChat.map(msg=>`
+
+        <div style="
+            margin-bottom:12px;
+            padding:10px;
+            border-radius:8px;
+            background:${
+                msg.sender==="admin"
+                ?"rgba(91,108,255,.18)"
+                :"rgba(255,255,255,.05)"
+            };
+        ">
+
+            <strong>
+                ${
+                    msg.sender==="admin"
+                    ?"Administrator"
+                    :"Client"
+                }
+            </strong>
+
+            <div style="margin-top:6px;white-space:pre-wrap;">
+                ${escapeHTML(msg.message)}
+            </div>
+
+            <small style="opacity:.6;">
+                ${formatDate(msg.time)}
+            </small>
+
+        </div>
+
+    `).join("");
+
+}
+
+/* =========================
+   MAIN RENDER ENGINE (UPDATED ONLY ADDITIONS)
+   ========================= */
+
+function renderProjects() {
+
+    const orders = getOrders().map(normalizeOrder);
+    const users = getUsers();
+    const workers = users.filter(u => u.role === "worker" && u.status === "Active");
+
+    let total = 0;
+    let paid = 0;
+    let completed = 0;
+    let pending = 0;
+
+    table.innerHTML = "";
+
+    orders.forEach(o => {
+
+        total++;
+
+        if (o.status === "Paid") paid++;
+        if (o.status === "Completed") completed++;
+        if (o.status === "Awaiting Payment" || o.status === "Under Review") pending++;
+
+        table.innerHTML += `
+            <tr>
+
+                <td>
+                    ${escapeHTML(o.projectName || "-")}<br>
+                    <small style="opacity:.6">ID: ${o.orderId}</small>
+                </td>
+
+                <td>${escapeHTML(o.category || "-")}</td>
+
+                <td>${statusBadge(o.status)}</td>
+
+                <td>${o.reviews}</td>
+
+<td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
+
+<td>
+    ${o.paymentProof 
+        ? `<span title="${o.paymentProof}">✔ Submitted</span>`
+        : "Not Submitted"}
+</td>
+
+                <td>
+                    ${o.assignedTo
+                        ? (users.find(u => u.id == o.assignedTo)?.fullName || "Unknown")
+                        : "Not Assigned"}
+                </td>
+
+                <td>
+
+                    <button onclick="toggleDetails('${o.orderId}')">
+                        View Details
+                    </button>
+
+                    ${o.status === "Awaiting Payment" || o.status === "Under Review" ? `
+                        <button onclick="approvePayment('${o.orderId}')">
+                            Approve Payment
+                        </button>
+                    ` : ""}
+
+                    ${o.status === "Paid" ? `
+                        <select onchange="assignWorkerToOrder('${o.orderId}', this.value)">
+                            <option value="">Assign Worker</option>
+                            ${workers.map(w => `
+                                <option value="${w.id}">
+                                    ${escapeHTML(w.fullName)}
+                                </option>
+                            `).join("")}
+                        </select>
+                    ` : ""}
+
+                    ${o.status === "Assigned" ? `
+                        <button onclick="markCompleted('${o.orderId}')">
+                            Mark Completed
+                        </button>
+                    ` : ""}
+
+                </td>
+            </tr>
+
+            <!-- DETAILS ROW -->
+            <tr id="details-${o.orderId}" style="display:none;">
+                <td colspan="6" style="background:rgba(255,255,255,0.03);padding:12px;">
+
+                    <div style="display:grid;gap:6px;font-size:.9rem;">
+
+                        <div><strong>Order ID:</strong> ${o.orderId}</div>
+                        <div><strong>Status:</strong> ${o.status}</div>
+                        <div><strong>Created:</strong> ${formatDate(o.createdAt)}</div>
+                        <div>
+    <strong>Payment Proof:</strong>
+
+    ${
+        o.paymentProof
+        ? `
+            <br><br>
+
+            <a href="${o.paymentProof}"
+               target="_blank">
+
+                View Uploaded Receipt
+
+            </a>
+
+            <br><br>
+
+            <img
+                src="${o.paymentProof}"
+                style="
+                    max-width:220px;
+                    border-radius:10px;
+                    border:1px solid rgba(255,255,255,.08);
+                ">
+        `
+        : "Not submitted"
+    }
+
+</div>
+                        <div><strong>Submitted At:</strong> ${formatDate(o.submittedAt)}</div>
+
+<hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
+
+<h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
+
+<div id="chat-${o.orderId}"
+     style="background:rgba(255,255,255,.03);
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:10px;
+            padding:12px;
+            max-height:250px;
+            overflow-y:auto;
+            margin-bottom:12px;">
+
+    ${renderSupportChat(o)}
+
+</div>
+
+<textarea
+    id="reply-${o.orderId}"
+    placeholder="Reply to the client..."
+    style="width:100%;
+           height:90px;
+           border-radius:8px;
+           padding:10px;
+           background:#111827;
+           color:white;
+           border:1px solid rgba(255,255,255,.08);
+           resize:vertical;"></textarea>
+
+<div style="margin-top:10px;">
+
+    <button onclick="sendAdminReply('${o.orderId}')">
+
+        Send Reply
+
+    </button>
+
+</div>
+
+                    </div>
+
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalProjects").textContent = total;
+    document.getElementById("activeProjects").textContent = paid;
+    document.getElementById("completedProjects").textContent = completed;
+    document.getElementById("pendingProjects").textContent = pending;
+}
+
+/* =========================
+   TOGGLE DETAILS
+   ========================= */
+
+function toggleDetails(orderId) {
+    const row = document.getElementById("details-" + orderId);
+    if (!row) return;
+    row.style.display = row.style.display === "none" ? "table-row" : "none";
+}
+
+/* =========================
+   ADMIN SUPPORT REPLY
+   ========================= */
+
+function sendAdminReply(orderId) {
+
+    const textarea = document.getElementById("reply-" + orderId);
+
+    if (!textarea) {
+        alert("Reply box not found.");
+        return;
+    }
+
+    const message = textarea.value.trim();
+
+    if (!message) {
+        alert("Please enter a reply.");
+        return;
+    }
+
+    let orders = getOrders();
+
+    const order = orders.find(o => o.orderId === orderId);
+
+    if (!order) {
+        alert("Order not found.");
+        return;
+    }
+
+    if (!order.supportChat) {
+        order.supportChat = [];
+    }
+
+    order.supportChat.push({
+
+        sender: "admin",
+
+        message: message,
+
+        time: new Date().toISOString()
+
+    });
+
+    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+
+    renderProjects();
+
+    setTimeout(() => {
+
+        const detailsRow = document.getElementById("details-" + orderId);
+
+        if (detailsRow) {
+            detailsRow.style.display = "table-row";
+        }
+
+    }, 50);
+
+}
+
+/* =========================
+   ACTIONS (UNCHANGED)
+   ========================= */
+
+function approvePayment(orderId) {
+
+    let orders = getOrders();
+
+    orders = orders.map(o => {
+        if (o.orderId === orderId) {
+            return { ...o, status: "Paid" };
+        }
+        return o;
+    });
+
+    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    renderProjects();
+}
+
+function assignWorkerToOrder(orderId, workerId) {
+
+    let orders = getOrders();
+
+    orders = orders.map(o => {
+        if (o.orderId === orderId) {
+            return {
+                ...o,
+                assignedTo: workerId,
+                status: "Assigned"
+            };
+        }
+        return o;
+    });
+
+    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    renderProjects();
+}
+
+function markCompleted(orderId) {
+
+    let orders = getOrders();
+
+    orders = orders.map(o => {
+        if (o.orderId === orderId) {
+            return {
+                ...o,
+                status: "Completed"
+            };
+        }
+        return o;
+    });
+
+    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    renderProjects();
+}
+
+renderProjects();
+
+</script>
+
+</body>
+</html>

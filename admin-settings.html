@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li>📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li class="active">⚙ Settings</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Settings</h1>
+
+            <div class="profile">
+                Administrator
+            </div>
+        </header>
+
+        <section class="recent">
+
+            <h2>Platform Settings</h2>
+
+            <div class="card">
+
+                <label>Platform Name</label>
+                <input type="text" id="platformName">
+
+                <label>Default Price Per Review (USD)</label>
+                <input type="number" id="pricePerReview" min="0" step="0.01">
+
+                <label>Worker Auto-Approval</label>
+                <select id="autoApproval">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+
+                <label>Support Email</label>
+                <input type="email" id="supportEmail">
+
+                <label>Reviewer Layer</label>
+                <select id="reviewerEnabled">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+
+                <label>Reviewer Share (%)</label>
+                <input type="number" id="reviewerSharePercent" min="0" max="100">
+
+                <button class="primary" onclick="handleSaveSettings()" style="margin-top:15px;">Save Settings</button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+function loadSettings() {
+    const settings = getSettings();
+
+    document.getElementById("platformName").value = settings.platformName;
+    document.getElementById("pricePerReview").value = settings.pricePerReview;
+    document.getElementById("autoApproval").value = settings.autoApproval;
+    document.getElementById("supportEmail").value = settings.supportEmail;
+    document.getElementById("reviewerEnabled").value = String(settings.reviewerEnabled);
+    document.getElementById("reviewerSharePercent").value = settings.reviewerSharePercent;
+}
+
+function handleSaveSettings() {
+
+    const settings = {
+        platformName: document.getElementById("platformName").value.trim(),
+        pricePerReview: Number(document.getElementById("pricePerReview").value),
+        autoApproval: document.getElementById("autoApproval").value,
+        supportEmail: document.getElementById("supportEmail").value.trim(),
+        reviewerEnabled: document.getElementById("reviewerEnabled").value === "true",
+        reviewerSharePercent: Number(document.getElementById("reviewerSharePercent").value)
+    };
+
+    saveSettings(settings);
+
+    alert("Settings saved successfully!");
+}
+
+window.onload = loadSettings;
+
+</script>
+
+</body>
+</html>

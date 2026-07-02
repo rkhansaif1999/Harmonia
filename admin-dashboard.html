@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li class="active">📊 Dashboard</li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li>📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <h1>Admin Dashboard</h1>
+
+            <div class="profile">
+                Administrator
+            </div>
+
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Workers</h3>
+                <h2 id="totalWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Clients</h3>
+                <h2 id="totalClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Projects</h3>
+                <h2 id="totalProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Projects</h3>
+                <h2 id="pendingProjects">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Recent Projects</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Reviews</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="recentProjects">
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const projects = getProjects();
+const users = getUsers();
+
+document.getElementById("totalWorkers").textContent =
+    users.filter(u => u.role === "worker").length;
+
+document.getElementById("totalClients").textContent =
+    users.filter(u => u.role === "client").length;
+
+let pending = 0;
+
+document.getElementById("totalProjects").textContent = projects.length;
+
+projects.forEach(project => {
+
+    if (project.status === "Pending") {
+        pending++;
+    }
+
+});
+
+document.getElementById("pendingProjects").textContent = pending;
+
+const table = document.getElementById("recentProjects");
+
+projects.slice(-5).reverse().forEach(project => {
+
+    table.innerHTML += `
+        <tr>
+            <td>${escapeHTML(project.projectName)}</td>
+            <td>${escapeHTML(project.category)}</td>
+            <td>${project.reviews}</td>
+            <td>${statusBadge(project.status)}</td>
+        </tr>
+    `;
+
+});
+
+</script>
+
+</body>
+
+</html>

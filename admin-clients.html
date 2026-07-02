@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Management - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li class="active">🏢 Clients</li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li>📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <h1>Client Management</h1>
+
+            <div class="profile">
+                Administrator
+            </div>
+
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Clients</h3>
+                <h2 id="totalClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Active Clients</h3>
+                <h2 id="activeClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Clients</h3>
+                <h2 id="pendingClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Projects (All Clients)</h3>
+                <h2 id="totalClientProjects">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Registered Clients</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Projects</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+
+                <tbody id="clientTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+function renderClients(){
+
+    const clients = getUsers().filter(u => u.role === "client");
+    const projects = getProjects();
+
+    const table = document.getElementById("clientTable");
+    table.innerHTML = "";
+
+    let active = 0;
+    let pending = 0;
+
+    clients.forEach(client => {
+
+        if(client.status === "Active") active++;
+        if(client.status === "Pending") pending++;
+
+        const myProjects = projects.filter(p => p.clientId == client.id).length;
+
+        let actions = "";
+
+        if(client.status === "Pending"){
+            actions = `
+                <button onclick="changeStatus(${client.id},'Active')">Approve</button>
+                <button onclick="changeStatus(${client.id},'Rejected')">Reject</button>
+            `;
+        } else if(client.status === "Active"){
+            actions = `
+                <button onclick="changeStatus(${client.id},'Suspended')">Suspend</button>
+            `;
+        } else {
+            actions = `
+                <button onclick="changeStatus(${client.id},'Active')">Reactivate</button>
+            `;
+        }
+
+        const roleControl = `
+            <button onclick="promoteToAdmin(${client.id})">Make Admin</button>
+            <button onclick="moveToWorker(${client.id})">Make Worker</button>
+        `;
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(client.fullName)}</td>
+                <td>${escapeHTML(client.email)}</td>
+                <td>${escapeHTML(client.country)}</td>
+                <td>${myProjects}</td>
+                <td>${statusBadge(client.status)}</td>
+                <td>${actions}</td>
+                <td>${roleControl}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalClients").textContent = clients.length;
+    document.getElementById("activeClients").textContent = active;
+    document.getElementById("pendingClients").textContent = pending;
+    document.getElementById("totalClientProjects").textContent = projects.length;
+}
+
+function changeStatus(id,status){
+    updateUserStatus(id,status);
+    renderClients();
+}
+
+function promoteToAdmin(id){
+    if(!confirm("Promote this client to Admin? They will get full access.")) return;
+    updateUserRole(id, "admin");
+    renderClients();
+}
+
+function moveToWorker(id){
+    if(!confirm("Switch this client to a Worker account?")) return;
+    updateUserRole(id, "worker");
+    renderClients();
+}
+
+renderClients();
+
+</script>
+
+</body>
+
+</html>

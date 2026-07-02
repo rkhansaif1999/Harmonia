@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harmonia</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- existing background noise (keep) -->
+<div class="noise"></div>
+
+<!-- FLOATING ORBS (SAFE LAYER) -->
+<div class="orb-layer">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="logo">Harmonia</div>
+
+  <div class="nav-links">
+    <a href="index.html" class="current">Home</a>
+    <a href="about.html">About</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main class="container">
+
+  <section class="hero">
+    <div class="section-tag">AI Workforce Platform</div>
+
+    <h1>
+      Build & Scale
+      <span style="background:linear-gradient(135deg,#8d82ff,#4ad6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        AI Workflows
+      </span>
+    </h1>
+
+    <p>
+      Harmonia connects clients and workers for data annotation,
+      AI training, and structured digital task execution with premium workflow systems.
+    </p>
+
+    <div class="buttons">
+      <button class="primary" onclick="window.location.href='signup.html'">
+        Get Started
+      </button>
+
+      <button class="secondary" onclick="window.location.href='login.html'">
+        Login
+      </button>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:16px;">🏷️</div>
+      <h3>Data Annotation</h3>
+      <p>High-quality labeling for AI training datasets.</p>
+    </div>
+
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:16px;">🤖</div>
+      <h3>AI Evaluation</h3>
+      <p>Human feedback to improve machine learning models.</p>
+    </div>
+
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:16px;">🌍</div>
+      <h3>Global Workforce</h3>
+      <p>Connect with verified contributors worldwide.</p>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- FOOTER (NEW PREMIUM ADDITION) -->
+<footer style="
+  margin-top:80px;
+  padding:60px 20px;
+  text-align:center;
+  border-top:1px solid rgba(255,255,255,.06);
+  background:rgba(6,10,18,.4);
+  backdrop-filter:blur(20px);
+  color:#9dadc1;
+">
+
+  <div style="font-size:1.3rem;font-weight:800;color:white;margin-bottom:10px;">
+    Harmonia
+  </div>
+
+  <p style="max-width:600px;margin:auto;line-height:1.7;">
+    A premium AI workforce platform built for scalable data operations, annotation systems,
+    and global collaboration.
+  </p>
+
+  <div style="margin-top:20px;font-size:.85rem;color:#7688a0;">
+    © 2026 Harmonia. All rights reserved.
+  </div>
+
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+/* NAVBAR BLUR ON SCROLL */
+const navbar = document.getElementById("navbar");
+
+window.addEventListener("scroll", () => {
+  navbar.style.background =
+    window.scrollY > 20
+      ? "rgba(6,10,18,.85)"
+      : "rgba(6,10,18,.72)";
+});
+
+/* PARTICLES (SAFE CANVAS SETUP) */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+
+let particles = [];
+
+for(let i=0;i<70;i++){
+  particles.push({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    r: Math.random()*1.8,
+    dx: (Math.random()-0.5)*0.35,
+    dy: (Math.random()-0.5)*0.35
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(120,200,255,0.25)";
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener("resize", resize);
+</script>
+
+<!-- ORB STYLES (NO CSS FILE CHANGES) -->
+<style>
+.orb-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+
+.orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(100px);
+  opacity:.28;
+  animation:float 14s ease-in-out infinite;
+}
+
+.orb1{
+  width:520px;height:520px;
+  background:radial-gradient(circle,#7d79ff,transparent 60%);
+  top:8%; left:5%;
+}
+
+.orb2{
+  width:620px;height:620px;
+  background:radial-gradient(circle,#45d7ff,transparent 60%);
+  bottom:5%; right:8%;
+  animation-duration:18s;
+}
+
+.orb3{
+  width:420px;height:420px;
+  background:radial-gradient(circle,rgba(255,255,255,.2),transparent 60%);
+  top:45%; left:55%;
+  animation-duration:22s;
+}
+
+@keyframes float{
+  0%,100%{ transform:translate(0,0); }
+  50%{ transform:translate(40px,-60px); }
+}
+
+/* IMPORTANT FIXES (PREVENT BLACK SCREEN ISSUE) */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* keep content above effects */
+.navbar, .container, footer{
+  position:relative;
+  z-index:2;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li class="active">🏠 Dashboard</li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Welcome Back 👋</h1>
+
+            <div class="profile">
+                Worker
+            </div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Available Tasks</h3>
+                <h2 id="availableTasks">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>My Tasks</h3>
+                <h2 id="myTasks">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Earnings</h3>
+                <h2 id="pendingEarnings">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Earned</h3>
+                <h2 id="totalEarned">$0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>My Assigned Tasks</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Reviews</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="taskTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+
+function renderWorkerDashboard() {
+
+    const projects = getProjects();
+    const earnings = getEarnings();
+
+    const table = document.getElementById("taskTable");
+
+    table.innerHTML = "";
+
+    let availableTasks = 0;
+    let myTasks = 0;
+
+    projects.forEach(project => {
+
+        if (!project.assignedTo) {
+            availableTasks++;
+        }
+
+        if (project.assignedTo == user.id) {
+
+            myTasks++;
+
+            table.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(project.projectName)}</td>
+                    <td>${escapeHTML(project.category)}</td>
+                    <td>${project.reviews}</td>
+                    <td>${statusBadge(project.status)}</td>
+                    <td>
+                        ${
+                            project.status === "Completed"
+                            ? "✅ Completed"
+                            : project.status === "In Review"
+                            ? "⏳ Awaiting review"
+                            : project.status === "Needs Revision"
+                            ? `<button onclick="resubmitMyTask(${project.id})">Resubmit</button>`
+                            : `<button onclick="completeMyTask(${project.id})">Submit for Review</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+
+        }
+
+    });
+
+    document.getElementById("availableTasks").textContent = availableTasks;
+    document.getElementById("myTasks").textContent = myTasks;
+
+    const myPending = earnings
+        .filter(e => e.workerId == user.id && e.status === "Pending")
+        .reduce((sum, e) => sum + e.amount, 0);
+
+    const myTotal = earnings
+        .filter(e => e.workerId == user.id)
+        .reduce((sum, e) => sum + e.amount, 0);
+
+    document.getElementById("pendingEarnings").textContent =
+        "$" + myPending.toFixed(2);
+
+    document.getElementById("totalEarned").textContent =
+        "$" + myTotal.toFixed(2);
+
+}
+
+function completeMyTask(projectId){
+    submitForReview(projectId);
+    renderWorkerDashboard();
+}
+
+function resubmitMyTask(projectId){
+    resubmitTask(projectId);
+    renderWorkerDashboard();
+}
+
+renderWorkerDashboard();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing - Harmonia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- BASE EFFECTS (DO NOT REMOVE YOUR CSS BACKGROUND) -->
+<div class="noise"></div>
+
+<!-- FLOATING ORBS -->
+<div class="orb-layer">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="logo">Harmonia</div>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="pricing.html" class="current">Pricing</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main class="container">
+
+  <section class="page-hero">
+    <div class="section-tag">Pricing</div>
+
+    <h1>
+      Simple, Transparent
+      <span style="background:linear-gradient(135deg,#8d82ff,#4ad6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        Pricing
+      </span>
+    </h1>
+
+    <p id="basePriceText">
+      Starting at $3 per review. Pick a package below, or request a custom quantity once you sign up.
+    </p>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-grid">
+
+    <div class="price-card">
+      <h3>Starter</h3>
+      <div class="price" id="price20">$60</div>
+      <p class="desc">20 reviews — perfect for testing the waters.</p>
+      <button class="primary full" onclick="window.location.href='signup.html'">
+        Get Started
+      </button>
+    </div>
+
+    <div class="price-card featured">
+      <h3>Growth</h3>
+      <div class="price" id="price50">$150</div>
+      <p class="desc">50 reviews — our most popular package.</p>
+      <button class="primary full" onclick="window.location.href='signup.html'">
+        Get Started
+      </button>
+    </div>
+
+    <div class="price-card">
+      <h3>Scale</h3>
+      <div class="price" id="price100">$300</div>
+      <p class="desc">100 reviews — for serious volume needs.</p>
+      <button class="primary full" onclick="window.location.href='signup.html'">
+        Get Started
+      </button>
+    </div>
+
+    <div class="price-card">
+      <h3>Custom</h3>
+      <div class="price">Let’s Talk</div>
+      <p class="desc">
+        Need a different quantity? Set your own amount after signing up.
+      </p>
+      <button class="secondary full" onclick="window.location.href='contact.html'">
+        Contact Us
+      </button>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="
+    margin-top:80px;
+    padding:60px 20px;
+    text-align:center;
+    border-top:1px solid rgba(255,255,255,.06);
+    background:rgba(6,10,18,.4);
+    backdrop-filter:blur(20px);
+    color:#9dadc1;
+  ">
+    <div style="font-size:1.2rem;font-weight:800;color:white;margin-bottom:10px;">
+      Harmonia
+    </div>
+
+    <p style="max-width:600px;margin:auto;line-height:1.7;">
+      Transparent pricing for scalable AI workforce operations and data solutions.
+    </p>
+
+    <div style="margin-top:20px;font-size:.85rem;color:#7688a0;">
+      © 2026 Harmonia. All rights reserved.
+    </div>
+  </footer>
+
+</main>
+
+<!-- SCRIPT -->
+<script src="script.js"></script>
+
+<script>
+/* dynamic pricing */
+const settings = getSettings();
+const rate = settings.pricePerReview;
+
+document.getElementById("basePriceText").textContent =
+  `Starting at $${rate} per review. Pick a package below, or request a custom quantity once you sign up.`;
+
+document.getElementById("price20").textContent = "$" + (rate * 20);
+document.getElementById("price50").textContent = "$" + (rate * 50);
+document.getElementById("price100").textContent = "$" + (rate * 100);
+
+/* navbar blur */
+const navbar = document.getElementById("navbar");
+window.addEventListener("scroll", () => {
+  navbar.style.background =
+    window.scrollY > 20
+      ? "rgba(6,10,18,.85)"
+      : "rgba(6,10,18,.72)";
+});
+
+/* particles */
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+
+let particles = [];
+
+for(let i=0;i<70;i++){
+  particles.push({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    r: Math.random()*1.6,
+    dx: (Math.random()-0.5)*0.35,
+    dy: (Math.random()-0.5)*0.35
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.x += p.dx;
+    p.y += p.dy;
+
+    if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(120,200,255,0.22)";
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener("resize", resize);
+</script>
+
+<!-- ORBS (NO CSS CHANGE) -->
+<style>
+.orb-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+
+.orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(110px);
+  opacity:.25;
+  animation:float 16s ease-in-out infinite;
+}
+
+.orb1{
+  width:520px;height:520px;
+  background:radial-gradient(circle,#7d79ff,transparent 60%);
+  top:10%; left:5%;
+}
+
+.orb2{
+  width:600px;height:600px;
+  background:radial-gradient(circle,#45d7ff,transparent 60%);
+  bottom:5%; right:10%;
+  animation-duration:20s;
+}
+
+.orb3{
+  width:420px;height:420px;
+  background:radial-gradient(circle,rgba(255,255,255,.2),transparent 60%);
+  top:45%; left:55%;
+  animation-duration:24s;
+}
+
+@keyframes float{
+  0%,100%{ transform:translate(0,0); }
+  50%{ transform:translate(40px,-60px); }
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+.navbar, .container{
+  position:relative;
+  z-index:2;
+}
+</style>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<div class="login-container">
+
+    <div class="login-box">
+
+        <h1>Harmonia</h1>
+        <h2>Admin Login</h2>
+
+        <form onsubmit="adminLoginUser(event)">
+
+            <input type="email" id="email" placeholder="Admin Email" required>
+
+            <input type="password" id="password" placeholder="Password" required>
+
+            <button type="submit" class="primary full">Login</button>
+
+        </form>
+
+        <p>This portal is restricted to authorized administrators only.</p>
+
+        <a class="back" href="index.html">← Back to Home</a>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+<script>
+function adminLoginUser(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (isLockedOut(email)) {
+        alert("Too many failed attempts. Please wait 5 minutes before trying again.");
+        return;
+    }
+
+    hashPassword(password).then(hashedInput => {
+        const users = getUsers();
+
+        const user = users.find(u =>
+            u.email === email &&
+            u.password === hashedInput &&
+            u.role === "admin"
+        );
+
+        if (!user) {
+            recordFailedAttempt(email);
+            alert("Invalid admin credentials");
+            return;
+        }
+
+        clearLoginAttempts(email);
+        saveUser(user);
+        window.location.href = "admin-dashboard.html";
+    });
+}
+</script>
+
+</body>
+
+</html>

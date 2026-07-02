@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Management - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li class="active">👥 Workers</li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li>📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Worker Management</h1>
+
+            <div class="profile">
+                Administrator
+            </div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Workers</h3>
+                <h2 id="totalWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending</h3>
+                <h2 id="pendingWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Active</h3>
+                <h2 id="activeWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Suspended</h3>
+                <h2 id="suspendedWorkers">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Registered Workers</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+
+                <tbody id="workerTable"></tbody>
+
+            </table>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Reviewers (QA Team)</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reviewerTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+function renderWorkers(){
+
+    const workers = getUsers().filter(u => u.role === "worker");
+
+    const table = document.getElementById("workerTable");
+
+    table.innerHTML = "";
+
+    let pending = 0;
+    let active = 0;
+    let suspended = 0;
+
+    workers.forEach(worker => {
+
+        if(worker.status === "Pending") pending++;
+        if(worker.status === "Active") active++;
+        if(worker.status === "Suspended") suspended++;
+
+        let actions = "";
+
+        if(worker.status === "Pending"){
+            actions = `
+                <button onclick="changeStatus(${worker.id},'Active')">Approve</button>
+                <button onclick="changeStatus(${worker.id},'Rejected')">Reject</button>
+            `;
+        }
+
+        else if(worker.status === "Active"){
+            actions = `
+                <button onclick="changeStatus(${worker.id},'Suspended')">Suspend</button>
+            `;
+        }
+
+        else{
+
+            actions = `
+                <button onclick="changeStatus(${worker.id},'Active')">Reactivate</button>
+            `;
+        }
+
+        const roleControl = `
+            <button onclick="promoteToAdmin(${worker.id})">Make Admin</button>
+            <button onclick="moveToClient(${worker.id})">Make Client</button>
+            <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
+        `;
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(worker.fullName)}</td>
+                <td>${escapeHTML(worker.email)}</td>
+                <td>${escapeHTML(worker.country)}</td>
+                <td>${statusBadge(worker.status)}</td>
+                <td>${actions}</td>
+                <td>${roleControl}</td>
+            </tr>
+        `;
+
+    });
+
+    document.getElementById("totalWorkers").textContent = workers.length;
+    document.getElementById("pendingWorkers").textContent = pending;
+    document.getElementById("activeWorkers").textContent = active;
+    document.getElementById("suspendedWorkers").textContent = suspended;
+
+}
+
+function changeStatus(id,status){
+
+    updateUserStatus(id,status);
+
+    if(status==="Active"){
+        assignTasksAutomatically();
+    }
+
+    renderWorkers();
+
+}
+
+function promoteToAdmin(id){
+    if(!confirm("Promote this worker to Admin? They will get full access.")) return;
+    updateUserRole(id, "admin");
+    renderWorkers();
+}
+
+function moveToClient(id){
+    if(!confirm("Switch this worker to a Client account?")) return;
+    updateUserRole(id, "client");
+    renderWorkers();
+}
+
+function moveToReviewer(id){
+    if(!confirm("Promote this worker to Reviewer (QA role)?")) return;
+    updateUserRole(id, "reviewer");
+    renderWorkers();
+}
+
+function renderReviewers(){
+    const reviewers = getUsers().filter(u => u.role === "reviewer");
+    const table = document.getElementById("reviewerTable");
+    table.innerHTML = "";
+
+    if (reviewers.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No reviewers yet</td></tr>`;
+        return;
+    }
+
+    reviewers.forEach(r => {
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(r.fullName)}</td>
+                <td>${escapeHTML(r.email)}</td>
+                <td>${escapeHTML(r.country)}</td>
+                <td><button onclick="demoteToWorker(${r.id})">Back to Worker</button></td>
+            </tr>
+        `;
+    });
+}
+
+function demoteToWorker(id){
+    if(!confirm("Move this reviewer back to a regular Worker role?")) return;
+    updateUserRole(id, "worker");
+    renderReviewers();
+}
+
+renderWorkers();
+renderReviewers();
+
+</script>
+
+</body>
+</html>

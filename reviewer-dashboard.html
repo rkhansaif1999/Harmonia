@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviewer Dashboard - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("reviewer");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li class="active">🧾 Review Queue</li>
+            <li>💰 Earnings</li>
+            <li>👤 Profile</li>
+            <li><a href="#" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Review Queue</h1>
+            <div class="profile">Reviewer</div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Pending Review</h3>
+                <h2 id="pendingCount">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Approved (All Time)</h3>
+                <h2 id="approvedCount">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Rejected (All Time)</h3>
+                <h2 id="rejectedCount">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Earned</h3>
+                <h2 id="totalEarned">$0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Submissions Awaiting Review</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Reviews</th>
+                        <th>Worker</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="queueTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+
+function renderQueue(){
+
+    const queue = getReviewQueue();
+    const users = getUsers();
+    const earnings = getEarnings();
+    const allProjects = getProjects();
+
+    const table = document.getElementById("queueTable");
+    table.innerHTML = "";
+
+    if (queue.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">No submissions waiting right now 🎉</td></tr>`;
+    }
+
+    queue.forEach(p => {
+        const workerName = users.find(u => u.id == p.assignedTo)?.fullName || "Unknown";
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(p.projectName)}</td>
+                <td>${escapeHTML(p.category)}</td>
+                <td>${p.reviews}</td>
+                <td>${escapeHTML(workerName)}</td>
+                <td>
+                    <button onclick="approve(${p.id})">Approve</button>
+                    <button onclick="reject(${p.id})">Reject</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("pendingCount").textContent = queue.length;
+
+    document.getElementById("approvedCount").textContent =
+        allProjects.filter(p => p.status === "Completed").length;
+
+    document.getElementById("rejectedCount").textContent =
+        allProjects.filter(p => p.status === "Needs Revision").length;
+
+    const myEarnings = earnings
+        .filter(e => e.workerId == user.id && e.role === "reviewer")
+        .reduce((sum, e) => sum + e.amount, 0);
+
+    document.getElementById("totalEarned").textContent = "$" + myEarnings.toFixed(2);
+}
+
+function approve(id){
+    approveSubmission(id, user.id);
+    renderQueue();
+}
+
+function reject(id){
+    const reason = prompt("Reason for rejecting this submission?", "Needs more detail / quality issue");
+    if (reason === null) return; // cancelled
+    rejectSubmission(id, reason);
+    renderQueue();
+}
+
+renderQueue();
+
+</script>
+
+</body>
+</html>

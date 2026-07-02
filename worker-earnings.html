@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earnings - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li class="active">💰 Earnings</li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Earnings</h1>
+
+            <div class="profile">
+                Worker
+            </div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Earned (All Time)</h3>
+                <h2 id="totalEarnedAllTime">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Payout (This Week)</h3>
+                <h2 id="weeklyPending">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Next Payout Date</h3>
+                <h2 id="nextPayoutDate" style="font-size:1.3rem;">-</h2>
+            </div>
+
+        </section>
+
+        <section class="card" style="max-width:1250px;width:100%;margin-top:10px;padding:22px;box-sizing:border-box;">
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:10px;">
+                <h2 style="margin:0;">This Week</h2>
+                <span id="weekRangeLabel" style="color:#9dadc1;font-size:.9rem;"></span>
+            </div>
+
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:6px;">
+                Payouts run every <strong>Wednesday</strong>. Anything marked "Pending" that lands inside the current week (Mon–Sun) will be included in the upcoming Wednesday payout.
+            </p>
+
+        </section>
+
+        <section class="recent" style="margin-top:25px;">
+
+            <h2>Earnings History</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="earningsTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+
+/* =========================
+   DATE / WEEK HELPERS
+   ========================= */
+
+function getEarningDate(entry) {
+    const raw = entry.date || entry.createdAt || entry.timestamp || entry.time || entry.updatedAt;
+    if (!raw) return null;
+    const d = new Date(raw);
+    return isNaN(d.getTime()) ? null : d;
+}
+
+function getCurrentWeekRange() {
+    const now = new Date();
+    const day = now.getDay(); // 0 = Sun ... 6 = Sat
+    const diffToMonday = (day === 0) ? 6 : day - 1;
+
+    const monday = new Date(now);
+    monday.setHours(0, 0, 0, 0);
+    monday.setDate(now.getDate() - diffToMonday);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+
+    return { start: monday, end: sunday };
+}
+
+function getNextPayoutDate() {
+    const now = new Date();
+    const day = now.getDay(); // 0 = Sun ... 3 = Wed ... 6 = Sat
+    const diffToWednesday = (3 - day + 7) % 7; // 0 if today IS Wednesday
+    const next = new Date(now);
+    next.setDate(now.getDate() + diffToWednesday);
+    next.setHours(0, 0, 0, 0);
+    return next;
+}
+
+function formatDateLong(date) {
+    return date.toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+function formatDateShort(date) {
+    return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+/* =========================
+   RENDER
+   ========================= */
+
+function renderEarnings() {
+
+    const earnings = getEarnings();
+    const myEarnings = earnings.filter(e => e.workerId == user.id);
+
+    /* ---- Total earned since joining (all statuses, matches dashboard total) ---- */
+    const totalAllTime = myEarnings.reduce((sum, e) => sum + e.amount, 0);
+    document.getElementById("totalEarnedAllTime").textContent = "$" + totalAllTime.toFixed(2);
+
+    /* ---- Pending payout for current week ---- */
+    const { start, end } = getCurrentWeekRange();
+    document.getElementById("weekRangeLabel").textContent =
+        formatDateShort(start) + " – " + formatDateShort(end);
+
+    const myPending = myEarnings.filter(e => e.status === "Pending");
+    const datedPending = myPending.filter(e => getEarningDate(e));
+
+    let weeklyPending;
+    if (datedPending.length > 0) {
+        weeklyPending = datedPending
+            .filter(e => {
+                const d = getEarningDate(e);
+                return d >= start && d <= end;
+            })
+            .reduce((sum, e) => sum + e.amount, 0);
+    } else {
+        // No date information available on earnings records —
+        // fall back to treating all pending earnings as this week's payout.
+        weeklyPending = myPending.reduce((sum, e) => sum + e.amount, 0);
+    }
+
+    document.getElementById("weeklyPending").textContent = "$" + weeklyPending.toFixed(2);
+
+    /* ---- Next payout date (every Wednesday) ---- */
+    document.getElementById("nextPayoutDate").textContent = formatDateLong(getNextPayoutDate());
+
+    /* ---- History table ---- */
+    const table = document.getElementById("earningsTable");
+    table.innerHTML = "";
+
+    if (myEarnings.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align:center;color:#9dadc1;">
+                    No earnings yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    const sorted = [...myEarnings].sort((a, b) => {
+        const da = getEarningDate(a);
+        const db = getEarningDate(b);
+        if (!da || !db) return 0;
+        return db - da;
+    });
+
+    sorted.forEach(e => {
+        const d = getEarningDate(e);
+        const dateLabel = d ? formatDateShort(d) : "-";
+        const label = e.projectName || e.project || "-";
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(String(label))}</td>
+                <td>${dateLabel}</td>
+                <td>$${e.amount.toFixed(2)}</td>
+                <td>${statusBadge ? statusBadge(e.status) : escapeHTML(e.status)}</td>
+            </tr>
+        `;
+    });
+
+}
+
+renderEarnings();
+
+</script>
+
+</body>
+
+</html>

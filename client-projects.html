@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Projects - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("client");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
+            <li class="active">📁 Projects</li>
+            <li><a href="client-new-project.html">➕ New Project</a></li>
+            <li><a href="client-orders.html">📦 Orders</a></li>
+            <li><a href="client-billing.html">💳 Billing</a></li>
+            <li>💬 Support</li>
+            <li>⚙ Settings</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>My Projects</h1>
+
+            <div class="profile">
+                Client
+            </div>
+        </header>
+
+        <section class="recent">
+
+            <h2>My Submitted Projects</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Reviews</th>
+                        <th>Status</th>
+                        <th>Worker</th>
+                    </tr>
+                </thead>
+
+                <tbody id="projectTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+const projects = getProjects();
+const users = getUsers();
+
+const table = document.getElementById("projectTable");
+
+// FILTER ONLY THIS CLIENT'S PROJECTS
+const myProjects = projects.filter(p => p.clientId == user.id);
+
+myProjects.forEach(project => {
+
+    const workerName = project.assignedTo
+        ? (users.find(u => u.id == project.assignedTo)?.fullName || "Unknown")
+        : "Not Assigned";
+
+    table.innerHTML += `
+        <tr>
+            <td>${escapeHTML(project.projectName)}</td>
+            <td>${escapeHTML(project.category)}</td>
+            <td>${project.reviews}</td>
+            <td>${statusBadge(project.status)}</td>
+            <td>${escapeHTML(workerName)}</td>
+        </tr>
+    `;
+});
+
+</script>
+
+</body>
+
+</html>

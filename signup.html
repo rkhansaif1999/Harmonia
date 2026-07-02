@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Harmonia</title>
+
+  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+  /* ===============================
+     PREMIUM BACKGROUND SYSTEM
+  =============================== */
+
+  .orb{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    opacity:.35;
+    animation: float 16s ease-in-out infinite;
+    z-index:-2;
+  }
+
+  .orb1{
+    width:520px;height:520px;
+    background:radial-gradient(circle,#7d79ff,transparent 60%);
+    top:10%; left:5%;
+  }
+
+  .orb2{
+    width:650px;height:650px;
+    background:radial-gradient(circle,#45d7ff,transparent 60%);
+    bottom:5%; right:10%;
+    animation-duration:20s;
+  }
+
+  .orb3{
+    width:420px;height:420px;
+    background:radial-gradient(circle,rgba(255,255,255,.2),transparent 60%);
+    top:45%; left:50%;
+    animation-duration:24s;
+  }
+
+  @keyframes float{
+    0%,100%{transform:translate(0,0);}
+    50%{transform:translate(40px,-60px);}
+  }
+
+  canvas{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+  }
+
+  /* ===============================
+     AUTH BOX PREMIUM UPGRADE
+  =============================== */
+
+  .auth-box{
+    position:relative;
+    overflow:hidden;
+    border-radius:26px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(32px);
+    box-shadow:0 35px 100px rgba(0,0,0,.55);
+    padding:44px 38px;
+  }
+
+  .auth-box::before{
+    content:"";
+    position:absolute;
+    top:-120px;
+    right:-120px;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:rgba(125,121,255,.18);
+    filter:blur(70px);
+  }
+
+  .auth-box::after{
+    content:"";
+    position:absolute;
+    bottom:-120px;
+    left:-120px;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:rgba(69,215,255,.14);
+    filter:blur(80px);
+  }
+
+  .auth-box h2{
+    font-size:1.8rem;
+    font-weight:800;
+    letter-spacing:-1px;
+    background:linear-gradient(135deg,#ffffff,#a8b6ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  input, select{
+    width:100%;
+    padding:15px 16px;
+    margin:8px 0;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    color:white;
+    outline:none;
+    transition:.25s;
+  }
+
+  input:focus, select:focus{
+    transform:translateY(-2px);
+    border-color:rgba(125,121,255,.5);
+    box-shadow:0 10px 30px rgba(125,121,255,.12);
+  }
+
+  button.primary{
+    width:100%;
+    margin-top:12px;
+  }
+
+  .auth-link{
+    text-align:center;
+    margin-top:18px;
+    color:#9dadc1;
+  }
+
+  .auth-link a{
+    color:#78cbff;
+    font-weight:600;
+  }
+
+  .back{
+    display:block;
+    text-align:center;
+    margin-top:16px;
+    color:#7f8b9b;
+  }
+
+  .back:hover{
+    color:#b7c4d6;
+  }
+
+  </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<!-- ORBS -->
+<div style="position:fixed;inset:0;pointer-events:none;z-index:-2;">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<div class="auth-container">
+
+  <div class="auth-box" id="signupBox">
+
+    <form id="signupForm" onsubmit="signupUser(event)">
+
+      <div class="logo" style="margin-bottom:24px;">Harmonia</div>
+
+      <h2>Create Account</h2>
+
+      <input type="text" id="fullName" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password (min 8 characters)" minlength="8" required>
+
+      <select id="role" required>
+        <option value="">Select Account Type</option>
+        <option value="worker">Worker</option>
+        <option value="client">Client</option>
+      </select>
+
+      <select id="country" required>
+        <option value="">Select Country</option>
+      </select>
+
+      <button class="primary" type="submit">Create Account</button>
+
+      <p class="auth-link">
+        Already have an account? <a href="login.html">Login</a>
+      </p>
+
+      <a class="back" href="index.html">← Back to Home</a>
+
+    </form>
+  </div>
+
+  <!-- VERIFY -->
+  <div class="auth-box" id="verifyBox" style="display:none;">
+
+    <form onsubmit="verifyCode(event)">
+
+      <h2>Verify Your Email</h2>
+      <p style="color:#9dadc1;margin-bottom:14px;">
+        Enter the 6-digit code sent to your email.
+      </p>
+
+      <input type="text" id="verifyInput" placeholder="Enter 6-digit code" maxlength="6" required>
+
+      <button class="primary" type="submit">Verify & Continue</button>
+
+      <p class="auth-link">
+        Didn’t get code? <a href="#" onclick="resendCode(event)">Resend</a>
+      </p>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+<script>
+// country fill
+const countries = ["Afghanistan","Albania","Algeria","Argentina","Australia","Bangladesh","Brazil","Canada","China","France","Germany","India","Indonesia","Japan","Pakistan","Philippines","United States","United Kingdom"];
+const countrySelect = document.getElementById("country");
+
+countries.forEach(c=>{
+  const opt=document.createElement("option");
+  opt.value=c;
+  opt.textContent=c;
+  countrySelect.appendChild(opt);
+});
+
+// signup logic (unchanged)
+let pendingSignup=null;
+
+function generateCode(){
+  return Math.floor(100000 + Math.random()*900000).toString();
+}
+
+function signupUser(event){
+  event.preventDefault();
+
+  const fullName=document.getElementById("fullName").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  const role=document.getElementById("role").value;
+  const country=document.getElementById("country").value;
+
+  const code=generateCode();
+
+  pendingSignup={fullName,email,password,role,country,code};
+
+  alert("Your verification code: "+code);
+
+  document.getElementById("signupBox").style.display="none";
+  document.getElementById("verifyBox").style.display="block";
+}
+
+function verifyCode(event){
+  event.preventDefault();
+
+  const entered=document.getElementById("verifyInput").value.trim();
+
+  if(!pendingSignup) return;
+
+  if(entered!==pendingSignup.code){
+    alert("Wrong code");
+    return;
+  }
+
+  let users=getUsers();
+
+  users.push({
+    id:Date.now(),
+    fullName:pendingSignup.fullName,
+    email:pendingSignup.email,
+    password:pendingSignup.password,
+    role:pendingSignup.role,
+    country:pendingSignup.country,
+    verified:true
+  });
+
+  saveUsers(users);
+
+  window.location.href="login.html";
+}
+
+function resendCode(e){
+  e.preventDefault();
+  pendingSignup.code=generateCode();
+  alert("New code: "+pendingSignup.code);
+}
+
+/* particles */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+for(let i=0;i<55;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2,
+    dx:(Math.random()-0.5)*0.4,
+    dy:(Math.random()-0.5)*0.4
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    p.x+=p.dx;
+    p.y+=p.dy;
+
+    if(p.x<0||p.x>canvas.width) p.dx*=-1;
+    if(p.y<0||p.y>canvas.height) p.dy*=-1;
+
+    ctx.beginPath();
+    ctx.fillStyle="rgba(120,200,255,0.35)";
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>

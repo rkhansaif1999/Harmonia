@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .payout-card{
+            padding:22px;
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:18px;
+            background:rgba(255,255,255,.02);
+            margin-bottom:20px;
+        }
+        .payout-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+        }
+        .payout-label{
+            color:#9dadc1;
+            font-size:.85rem;
+            margin-bottom:4px;
+        }
+        .payout-value{
+            font-size:1.05rem;
+            font-weight:700;
+        }
+        .btn-primary{
+            padding:10px 18px;
+            background:#5b6cff;
+            border:none;
+            border-radius:10px;
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+        }
+        .btn-ghost{
+            padding:10px 18px;
+            background:transparent;
+            border:1px solid rgba(255,255,255,.15);
+            border-radius:10px;
+            color:#cfd8e3;
+            font-weight:600;
+            cursor:pointer;
+        }
+        .payout-input{
+            width:100%;
+            padding:12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,.08);
+            background:#111a2e;
+            color:white;
+            box-sizing:border-box;
+            margin-bottom:12px;
+        }
+        .edit-panel{
+            display:none;
+            margin-top:16px;
+            padding-top:16px;
+            border-top:1px solid rgba(255,255,255,.08);
+        }
+        .code-panel{
+            display:none;
+            margin-top:14px;
+        }
+        .note{
+            font-size:.8rem;
+            color:#8a97a8;
+            margin-top:8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li class="active">🏦 Payments</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Payments</h1>
+
+            <div class="profile">
+                Worker
+            </div>
+        </header>
+
+        <section style="max-width:780px;width:100%;">
+
+            <p style="color:#9dadc1;margin-bottom:8px;">
+                Choose <strong>one</strong> payout method to receive your earnings. For your security, adding or
+                changing your payout method requires a verification code sent to your registered email.
+            </p>
+            <p class="note" style="margin-bottom:18px;">
+                Only one method can be linked at a time. Selecting the other option below lets you switch —
+                your current method is replaced only after the new one is verified.
+            </p>
+
+            <!-- ================= METHOD SELECTOR ================= -->
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:25px;">
+
+                <div id="paypalTile" onclick="selectMethodTile('paypal')"
+                    style="cursor:pointer;padding:16px;border:2px solid rgba(255,255,255,.08);border-radius:16px;transition:.25s;text-align:center;position:relative;">
+                    <span id="paypalLinkedBadge" style="display:none;position:absolute;top:8px;right:8px;background:#3ddc97;color:#0b1220;font-size:.6rem;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:20px;">LINKED</span>
+                    <div style="font-size:2rem;">💙</div>
+                    <h3 style="margin:10px 0 6px;">PayPal</h3>
+                    <p style="margin:0;color:#9dadc1;font-size:.9rem;">Fast & Secure</p>
+                </div>
+
+                <div id="cryptoTile" onclick="selectMethodTile('crypto')"
+                    style="cursor:pointer;padding:16px;border:2px solid rgba(255,255,255,.08);border-radius:16px;transition:.25s;text-align:center;position:relative;">
+                    <span id="cryptoLinkedBadge" style="display:none;position:absolute;top:8px;right:8px;background:#3ddc97;color:#0b1220;font-size:.6rem;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:20px;">LINKED</span>
+                    <div style="font-size:2rem;">🪙</div>
+                    <h3 style="margin:10px 0 6px;">Crypto</h3>
+                    <p style="margin:0;color:#9dadc1;font-size:.9rem;">USDT (ERC-20)</p>
+                </div>
+
+            </div>
+
+            <!-- ================= PAYPAL ================= -->
+            <div class="payout-card" id="paypalCard">
+
+                <div class="payout-row">
+                    <div>
+                        <div class="payout-label">💙 PayPal</div>
+                        <div class="payout-value" id="paypalDisplay">Not linked</div>
+                        <div class="note" id="paypalUpdatedAt"></div>
+                    </div>
+                    <button class="btn-primary" onclick="startUpdate('paypal')" id="paypalUpdateBtn">Link PayPal</button>
+                </div>
+
+                <!-- Step 1: enter new value -->
+                <div class="edit-panel" id="paypalEditPanel">
+                    <label class="payout-label">New PayPal Email</label>
+                    <input type="email" id="paypalInput" class="payout-input" placeholder="you@example.com">
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-primary" onclick="sendVerificationCode('paypal')">Send Verification Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('paypal')">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: enter code -->
+                <div class="code-panel" id="paypalCodePanel">
+                    <p class="note" id="paypalCodeSentNote"></p>
+                    <label class="payout-label">6-Digit Verification Code</label>
+                    <input type="text" id="paypalCodeInput" class="payout-input" maxlength="6" placeholder="000000">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="confirmVerificationCode('paypal')">Confirm & Save</button>
+                        <button class="btn-ghost" onclick="sendVerificationCode('paypal')">Resend Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('paypal')">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= CRYPTO ================= -->
+            <div class="payout-card" id="cryptoCard">
+
+                <div class="payout-row">
+                    <div>
+                        <div class="payout-label">🪙 Crypto — USDT (ERC-20)</div>
+                        <div class="payout-value" id="cryptoDisplay">Not linked</div>
+                        <div class="note" id="cryptoUpdatedAt"></div>
+                    </div>
+                    <button class="btn-primary" onclick="startUpdate('crypto')" id="cryptoUpdateBtn">Link Wallet</button>
+                </div>
+
+                <!-- Step 1: enter new value -->
+                <div class="edit-panel" id="cryptoEditPanel">
+                    <label class="payout-label">New USDT (ERC-20) Wallet Address</label>
+                    <input type="text" id="cryptoInput" class="payout-input" placeholder="0x...">
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-primary" onclick="sendVerificationCode('crypto')">Send Verification Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('crypto')">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: enter code -->
+                <div class="code-panel" id="cryptoCodePanel">
+                    <p class="note" id="cryptoCodeSentNote"></p>
+                    <label class="payout-label">6-Digit Verification Code</label>
+                    <input type="text" id="cryptoCodeInput" class="payout-input" maxlength="6" placeholder="000000">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="confirmVerificationCode('crypto')">Confirm & Save</button>
+                        <button class="btn-ghost" onclick="sendVerificationCode('crypto')">Resend Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('crypto')">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+const STORAGE_KEY = "harmonia_payout_methods";
+const CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes, same window used elsewhere in the app
+
+/* =========================
+   STORAGE HELPERS
+   ========================= */
+
+function getAllPayoutMethods() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function getMyPayoutMethods() {
+    const all = getAllPayoutMethods();
+    return all[user.id] || {};
+}
+
+function getActiveMethod(methods) {
+    if (methods.activeMethod) return methods.activeMethod;
+    // Fallback for pre-existing data saved before the single-method rule
+    if (methods.paypalEmail) return "paypal";
+    if (methods.cryptoWallet) return "crypto";
+    return null;
+}
+
+function saveMyPayoutMethods(update) {
+    const all = getAllPayoutMethods();
+    all[user.id] = { ...(all[user.id] || {}), ...update };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+/* =========================
+   MASKING / DISPLAY HELPERS
+   ========================= */
+
+function maskEmail(email) {
+    if (!email) return "";
+    const [local, domain] = email.split("@");
+    if (!domain) return email;
+    const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***";
+    return visible + "@" + domain;
+}
+
+function maskWallet(address) {
+    if (!address) return "";
+    if (address.length <= 12) return address;
+    return address.slice(0, 6) + "..." + address.slice(-6);
+}
+
+function formatTimestamp(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return "Last updated " + d.toLocaleString(undefined, {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit"
+    });
+}
+
+/* =========================
+   RENDER CURRENT STATE
+   ========================= */
+
+function renderPayoutMethods() {
+    const methods = getMyPayoutMethods();
+    const activeMethod = getActiveMethod(methods);
+
+    const paypalDisplay = document.getElementById("paypalDisplay");
+    const paypalUpdateBtn = document.getElementById("paypalUpdateBtn");
+    if (methods.paypalEmail) {
+        paypalDisplay.textContent = maskEmail(methods.paypalEmail);
+        paypalUpdateBtn.textContent = "Update";
+    } else {
+        paypalDisplay.textContent = "Not linked";
+        paypalUpdateBtn.textContent = "Link PayPal";
+    }
+    document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(methods.paypalUpdatedAt);
+    document.getElementById("paypalLinkedBadge").style.display = activeMethod === "paypal" ? "inline-block" : "none";
+
+    const cryptoDisplay = document.getElementById("cryptoDisplay");
+    const cryptoUpdateBtn = document.getElementById("cryptoUpdateBtn");
+    if (methods.cryptoWallet) {
+        cryptoDisplay.textContent = maskWallet(methods.cryptoWallet);
+        cryptoUpdateBtn.textContent = "Update";
+    } else {
+        cryptoDisplay.textContent = "Not linked";
+        cryptoUpdateBtn.textContent = "Link Wallet";
+    }
+    document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(methods.cryptoUpdatedAt);
+    document.getElementById("cryptoLinkedBadge").style.display = activeMethod === "crypto" ? "inline-block" : "none";
+
+    // Show whichever method is active by default; if nothing linked yet, default to PayPal.
+    selectMethodTile(activeMethod || selectedTile || "paypal");
+}
+
+/* =========================
+   METHOD SELECTOR (only one card visible at a time)
+   ========================= */
+
+let selectedTile = null;
+
+function selectMethodTile(method) {
+    selectedTile = method;
+
+    document.getElementById("paypalCard").style.display = method === "paypal" ? "block" : "none";
+    document.getElementById("cryptoCard").style.display = method === "crypto" ? "block" : "none";
+
+    const paypalTile = document.getElementById("paypalTile");
+    const cryptoTile = document.getElementById("cryptoTile");
+
+    paypalTile.style.border = method === "paypal" ? "2px solid #5b6cff" : "2px solid rgba(255,255,255,.08)";
+    paypalTile.style.background = method === "paypal" ? "rgba(91,108,255,.08)" : "transparent";
+
+    cryptoTile.style.border = method === "crypto" ? "2px solid #5b6cff" : "2px solid rgba(255,255,255,.08)";
+    cryptoTile.style.background = method === "crypto" ? "rgba(91,108,255,.08)" : "transparent";
+}
+
+/* =========================
+   EDIT FLOW
+   ========================= */
+
+function startUpdate(method) {
+    document.getElementById(method + "EditPanel").style.display = "block";
+    document.getElementById(method + "CodePanel").style.display = "none";
+    document.getElementById(method + "UpdateBtn").style.display = "none";
+}
+
+function cancelUpdate(method) {
+    document.getElementById(method + "EditPanel").style.display = "none";
+    document.getElementById(method + "CodePanel").style.display = "none";
+    document.getElementById(method + "UpdateBtn").style.display = "inline-block";
+    document.getElementById(method + "Input").value = "";
+    document.getElementById(method + "CodeInput").value = "";
+    sessionStorage.removeItem("payoutCode_" + method);
+    sessionStorage.removeItem("payoutPendingValue_" + method);
+}
+
+function isValidValue(method, value) {
+    if (!value) return false;
+    if (method === "paypal") {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+    // crypto: light validation for an ERC-20 style address
+    return /^0x[a-fA-F0-9]{10,}$/.test(value) || value.length >= 20;
+}
+
+function generateCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function sendVerificationCode(method) {
+    const value = document.getElementById(method + "Input").value.trim();
+
+    if (!isValidValue(method, value)) {
+        alert(method === "paypal"
+            ? "Please enter a valid PayPal email address."
+            : "Please enter a valid USDT (ERC-20) wallet address.");
+        return;
+    }
+
+    const code = generateCode();
+    const expiresAt = Date.now() + CODE_TTL_MS;
+
+    sessionStorage.setItem("payoutCode_" + method, JSON.stringify({ code, expiresAt }));
+    sessionStorage.setItem("payoutPendingValue_" + method, value);
+
+    const email = (user && user.email) ? user.email : null;
+    const emailLabel = email ? maskEmail(email) : "your registered email";
+
+    // 🔔 DEMO MODE: there is no email backend wired up here, so the code
+    // is shown directly instead of being emailed. In production this
+    // alert would be replaced by an actual email send.
+    alert(
+        "Verification code sent to " + (email || "your registered email") + " (demo mode).\n\n" +
+        "Your code: " + code + "\n" +
+        "This code expires in 10 minutes."
+    );
+    console.log("[DEMO] Payout verification code for " + method + ":", code);
+
+    document.getElementById(method + "CodePanel").style.display = "block";
+    document.getElementById(method + "CodeSentNote").textContent =
+        "A 6-digit code was sent to " + emailLabel + ". It expires in 10 minutes.";
+}
+
+function confirmVerificationCode(method) {
+    const enteredCode = document.getElementById(method + "CodeInput").value.trim();
+    const stored = sessionStorage.getItem("payoutCode_" + method);
+
+    if (!stored) {
+        alert("No verification code was sent yet. Please click \"Send Verification Code\" first.");
+        return;
+    }
+
+    const { code, expiresAt } = JSON.parse(stored);
+
+    if (Date.now() > expiresAt) {
+        alert("This code has expired. Please request a new one.");
+        return;
+    }
+
+    if (enteredCode !== code) {
+        alert("Incorrect code. Please try again.");
+        return;
+    }
+
+    const pendingValue = sessionStorage.getItem("payoutPendingValue_" + method);
+    const now = new Date().toISOString();
+    const otherMethod = method === "paypal" ? "crypto" : "paypal";
+
+    const update = { activeMethod: method };
+    update[method === "paypal" ? "paypalEmail" : "cryptoWallet"] = pendingValue;
+    update[method === "paypal" ? "paypalUpdatedAt" : "cryptoUpdatedAt"] = now;
+    // Enforce single active payout method — clear whichever one was linked before
+    update[otherMethod === "paypal" ? "paypalEmail" : "cryptoWallet"] = null;
+    update[otherMethod === "paypal" ? "paypalUpdatedAt" : "cryptoUpdatedAt"] = null;
+
+    saveMyPayoutMethods(update);
+
+    sessionStorage.removeItem("payoutCode_" + method);
+    sessionStorage.removeItem("payoutPendingValue_" + method);
+
+    alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
+
+    cancelUpdate(method);
+    renderPayoutMethods();
+    selectMethodTile(method);
+}
+
+renderPayoutMethods();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Messages - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li>📋 Tasks</li>
+            <li class="active">✉️ Messages</li>
+            <li>💰 Payments</li>
+            <li>📈 Analytics</li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Contact Messages</h1>
+            <div class="profile">Administrator</div>
+        </header>
+
+        <section class="recent">
+
+            <h2>Inbox</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="messagesTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+function renderMessages(){
+    const messages = getContactMessages().slice().reverse();
+    const table = document.getElementById("messagesTable");
+    table.innerHTML = "";
+
+    if (messages.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" class="empty-state">No messages yet</td></tr>`;
+        return;
+    }
+
+    messages.forEach(m => {
+        table.innerHTML += `
+            <tr onclick="markRead(${m.id})" style="cursor:pointer;">
+                <td>${escapeHTML(m.name)}</td>
+                <td>${escapeHTML(m.email)}</td>
+                <td>${escapeHTML(m.type)}</td>
+                <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(m.message)}">${escapeHTML(m.message)}</td>
+                <td>${m.date}</td>
+                <td>${statusBadge(m.status)}</td>
+            </tr>
+        `;
+    });
+}
+
+function markRead(id){
+    markMessageRead(id);
+    renderMessages();
+}
+
+renderMessages();
+
+</script>
+
+</body>
+</html>

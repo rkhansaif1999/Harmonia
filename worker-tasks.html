@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li class="active">✅ My Tasks</li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>My Tasks</h1>
+
+            <div class="profile">
+                Worker
+            </div>
+        </header>
+
+        <section class="recent">
+
+            <h2>Assigned Tasks</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="taskTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+const table = document.getElementById("taskTable");
+
+function renderTasks(){
+    const projects = getProjects();
+    const myTasks = projects.filter(p => p.assignedTo == user.id);
+
+    table.innerHTML = "";
+
+    if (myTasks.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" class="empty-state">No tasks assigned yet</td>
+            </tr>
+        `;
+        return;
+    }
+
+    myTasks.forEach(task => {
+
+        let actionButtons = "";
+
+        if (task.status === "Needs Revision") {
+            actionButtons = `<button onclick="resubmit(${task.id})">Resubmit</button>`;
+        } else if (task.status === "Completed") {
+            actionButtons = "✅ Done";
+        } else if (task.status === "In Review") {
+            actionButtons = "⏳ Awaiting review";
+        } else {
+            actionButtons = `
+                <button onclick="startTask(${task.id})">Start</button>
+                <button onclick="submitTask(${task.id})">Submit</button>
+            `;
+        }
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(task.projectName)}</td>
+                <td>${escapeHTML(task.category)}</td>
+                <td>${statusBadge(task.status)}${task.status === "Needs Revision" && task.rejectionReason ? `<div style="color:#9dadc1;font-size:.8rem;margin-top:6px;">— ${escapeHTML(task.rejectionReason)}</div>` : ""}</td>
+                <td>${actionButtons}</td>
+            </tr>
+        `;
+    });
+}
+
+function startTask(id){
+    updateProjectStatus(id, "In Progress");
+    renderTasks();
+}
+
+function submitTask(id){
+    submitForReview(id);
+    renderTasks();
+}
+
+function resubmit(id){
+    resubmitTask(id);
+    renderTasks();
+}
+
+renderTasks();
+
+</script>
+
+</body>
+
+</html>

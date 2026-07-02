@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .badge {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .pending { background: rgba(255,193,7,.15); color: #ffcc66; }
+        .approved { background: rgba(46,204,113,.15); color: #7dffb2; }
+        .rejected { background: rgba(255,77,77,.15); color: #ff7a7a; }
+
+        .details-row {
+            display: none;
+            background: rgba(255,255,255,.03);
+        }
+
+        .details-box {
+            padding: 14px;
+            font-size: 0.9rem;
+            color: #cfd8e3;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+
+        .muted {
+            color: #9dadc1;
+        }
+
+        .detail-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            background: #5b6cff;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+protectPage("client");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="client-projects.html">📁 Projects</a></li>
+            <li><a href="client-new-project.html">➕ New Project</a></li>
+            <li class="active">📦 Orders</li>
+            <li><a href="client-billing.html">💳 Billing</a></li>
+            <li>💬 Support</li>
+            <li>⚙ Settings</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>My Orders</h1>
+            <div class="profile">Client</div>
+        </header>
+
+        <section class="recent">
+
+            <h2>Order History</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Reviews</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="ordersTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+let allOrders = [];
+
+try {
+    allOrders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
+} catch (e) {
+    allOrders = [];
+}
+
+/* NEWEST FIRST (premium feel) */
+allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+const table = document.getElementById("ordersTable");
+
+function getStatusClass(status) {
+
+    if (status === "Paid") return "approved";
+
+    if (status === "Assigned") return "approved";
+
+    if (status === "Completed") return "approved";
+
+    return "pending";
+
+}
+
+if (!allOrders.length) {
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="6" style="text-align:center;color:#9dadc1;padding:20px;">
+                No orders found yet.
+            </td>
+        </tr>
+    `;
+
+} else {
+
+    allOrders.forEach((order, index) => {
+
+        const rowId = "row_" + index;
+
+        table.innerHTML += `
+            <tr>
+                <td>${order.orderId}</td>
+                <td>${escapeHTML(order.projectName)}</td>
+                <td>${escapeHTML(order.category)}</td>
+                <td>
+                    <span class="badge ${getStatusClass(order.status)}">
+                        ${order.status || "Pending"}
+                    </span>
+                </td>
+                <td>${order.reviews}</td>
+                <td>
+                    <button class="detail-btn" onclick="toggleDetails('${rowId}')">
+                        Details
+                    </button>
+                </td>
+            </tr>
+
+            <tr id="${rowId}" class="details-row">
+                <td colspan="6">
+
+                    <div class="details-box">
+
+                        <strong>Order Timeline</strong>
+
+                        <div class="mini-grid">
+                            <div>Created: ${new Date(order.createdAt).toLocaleString()}</div>
+                            <div>Updated: ${order.updatedAt ? new Date(order.updatedAt).toLocaleString() : "N/A"}</div>
+                            <div>Payment Method: ${order.paymentMethod || "Not set"}</div>
+                            <div>Payment Proof: ${order.paymentProof ? "Submitted" : "Not submitted"}</div>
+                        </div>
+
+                        <div style="margin-top:10px;">
+                            <strong>Admin Status:</strong>
+                            ${order.status || "Pending"}
+                        </div>
+
+                        <div style="margin-top:6px;">
+                            <strong>Total:</strong>
+                            $${order.totalPrice || 0}
+                        </div>
+
+                        <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
+
+                        <h3 style="margin-bottom:12px;">
+                            💬 Conversation
+                        </h3>
+
+                        <div style="
+                            background:rgba(255,255,255,.03);
+                            border:1px solid rgba(255,255,255,.08);
+                            border-radius:10px;
+                            padding:12px;
+                            max-height:250px;
+                            overflow-y:auto;
+                            margin-bottom:16px;
+                        ">
+
+                            ${
+                                order.supportChat && order.supportChat.length
+                                ? order.supportChat.map(msg => `
+                                    <div style="
+                                        margin-bottom:12px;
+                                        padding:10px;
+                                        border-radius:8px;
+                                        background:${msg.sender==="admin"
+                                            ?"rgba(91,108,255,.18)"
+                                            :"rgba(255,255,255,.05)"};
+                                    ">
+
+                                        <strong>
+                                            ${msg.sender==="admin"
+                                                ?"Administrator"
+                                                :"You"}
+                                        </strong>
+
+                                        <div style="margin-top:6px;white-space:pre-wrap;">
+                                            ${escapeHTML(msg.message)}
+                                        </div>
+
+                                        <small style="opacity:.6;">
+                                            ${new Date(msg.time).toLocaleString()}
+                                        </small>
+
+                                    </div>
+                                `).join("")
+                                : `<div style="opacity:.6;">No conversation yet.</div>`
+                            }
+
+                        </div>
+
+                        <button
+                            class="detail-btn"
+                            onclick="openSupport('${order.orderId}','${escapeHTML(order.projectName)}')">
+                            💬 Contact Support
+                        </button>
+
+                    </div>
+
+                </td>
+            </tr>
+        `;
+    });
+}
+
+/* TOGGLE DETAILS */
+function toggleDetails(id) {
+    const row = document.getElementById(id);
+    if (!row) return;
+
+    row.style.display = (row.style.display === "table-row") ? "none" : "table-row";
+}
+
+/* ==========================
+   SUPPORT CHAT
+========================== */
+
+let supportOrderId = "";
+let supportProjectName = "";
+
+function openSupport(orderId, projectName) {
+
+    supportOrderId = orderId;
+    supportProjectName = projectName;
+
+    document.getElementById("supportInfo").innerHTML =
+        "<strong>Order:</strong> " + orderId +
+        "<br><strong>Project:</strong> " + projectName;
+
+    document.getElementById("supportModal").style.display = "flex";
+}
+
+function closeSupport() {
+
+    document.getElementById("supportModal").style.display = "none";
+    document.getElementById("supportText").value = "";
+
+}
+
+function sendSupport() {
+
+    const message = document.getElementById("supportText").value.trim();
+
+    if (!message) {
+        alert("Please enter a message.");
+        return;
+    }
+
+    let orders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
+
+    const order = orders.find(o => o.orderId === supportOrderId);
+
+    if (!order) {
+        alert("Order not found.");
+        return;
+    }
+
+    if (!order.supportChat) {
+        order.supportChat = [];
+    }
+
+    order.supportChat.push({
+
+        sender: "client",
+
+        message: message,
+
+        time: new Date().toISOString()
+
+    });
+
+   localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+
+alert("Your message has been sent to the support team.");
+
+closeSupport();
+
+location.reload();
+
+}
+
+</script>
+
+<!-- SUPPORT MODAL -->
+
+<div id="supportModal"
+style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;justify-content:center;align-items:center;">
+
+    <div style="background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px;width:460px;max-width:92%;">
+
+        <h2 style="margin-top:0;">Contact Support</h2>
+
+        <p id="supportInfo" style="color:#9dadc1;font-size:.9rem;"></p>
+
+        <textarea
+            id="supportText"
+            placeholder="Example: I forgot to include my Google Maps listing link..."
+            style="width:100%;height:140px;border-radius:8px;padding:12px;margin-top:10px;background:#1a2333;color:white;border:1px solid rgba(255,255,255,.08);resize:vertical;"></textarea>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
+
+            <button class="detail-btn" onclick="closeSupport()">
+                Cancel
+            </button>
+
+            <button class="detail-btn" onclick="sendSupport()">
+                Send Message
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

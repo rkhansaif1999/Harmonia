@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+<script>
+    protectPage("client");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="client-projects.html">📁 Projects</a></li>
+            <li><a href="client-new-project.html">➕ New Project</a></li>
+            <li><a href="client-orders.html">📦 Orders</a></li>
+            <li class="active">💳 Billing</li>
+            <li>💬 Support</li>
+            <li>⚙ Settings</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <h1>Billing</h1>
+
+            <div class="profile">
+                Client
+            </div>
+
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Spent</h3>
+                <h2 id="totalSpent">$0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Outstanding Balance</h3>
+                <h2 id="outstandingBalance">$0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Paid Invoices</h3>
+                <h2 id="paidCount">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Invoices</h3>
+                <h2 id="pendingCount">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Invoice History</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Invoice</th>
+                        <th>Project</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="invoiceTable"></tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+const projects = getProjects().filter(p => p.clientId == user.id);
+
+let totalSpent = 0;
+let outstanding = 0;
+let paidCount = 0;
+let pendingCount = 0;
+
+const table = document.getElementById("invoiceTable");
+
+projects.forEach((p, index) => {
+
+    const isPaid = p.status === "Completed";
+    const amount = p.totalCost || 0;
+
+    if (isPaid) {
+        totalSpent += amount;
+        paidCount++;
+    } else {
+        outstanding += amount;
+        pendingCount++;
+    }
+
+    table.innerHTML += `
+        <tr>
+            <td>#INV-${1000 + index}</td>
+            <td>${escapeHTML(p.projectName)}</td>
+            <td>$${amount}</td>
+            <td>${statusBadge(isPaid ? "Paid" : "Pending")}</td>
+        </tr>
+    `;
+});
+
+document.getElementById("totalSpent").textContent = "$" + totalSpent;
+document.getElementById("outstandingBalance").textContent = "$" + outstanding;
+document.getElementById("paidCount").textContent = paidCount;
+document.getElementById("pendingCount").textContent = pendingCount;
+
+</script>
+
+</body>
+
+</html>

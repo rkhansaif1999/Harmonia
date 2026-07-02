@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Project - Harmonia</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+<script>
+    protectPage("client");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">Harmonia</h2>
+        <ul>
+            <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="client-projects.html">📁 Projects</a></li>
+            <li class="active">➕ New Project</li>
+            <li><a href="client-orders.html">📦 Orders</a></li>
+            <li><a href="client-billing.html">💳 Billing</a></li>
+            <li>💬 Support</li>
+            <li>⚙ Settings</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Create New Project</h1>
+            <div class="profile">Client</div>
+        </header>
+
+        <section class="card" style="max-width:640px;">
+
+            <div class="section-tag">New Project</div>
+
+            <p id="priceInfo" style="margin-bottom:15px; color:#9dadc1; font-size:.92rem;"></p>
+
+            <form onsubmit="submitNewProject(event)">
+
+                <label>Project Name</label>
+                <input type="text" id="projectName" placeholder="e.g. App Store Review Batch" required>
+
+              <label>Review Platform</label>
+<select id="category" required>
+    <option value="">Select Platform</option>
+
+    <option value="Trustpilot Reviews">Trustpilot Reviews</option>
+
+    <option value="Google Business Reviews">Google Business Reviews</option>
+
+    <option value="App Store Reviews">App Store Reviews</option>
+
+    <option value="Google Play Reviews">Google Play Reviews</option>
+
+    <option value="YouTube Reviews">YouTube Reviews</option>
+
+    <option value="Facebook Reviews">Facebook Reviews</option>
+
+    <option value="Yelp Reviews">Yelp Reviews</option>
+
+    <option value="G2 Reviews">G2 Reviews</option>
+</select>
+
+                <label>Choose a Package</label>
+
+<div style="display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;">
+
+    <button type="button" class="secondary" onclick="selectPackage(20)">
+        20 Reviews
+    </button>
+
+    <button type="button" class="secondary" onclick="selectPackage(50)">
+        50 Reviews
+    </button>
+
+    <button type="button" class="secondary" onclick="selectPackage(100)">
+        100 Reviews
+    </button>
+
+</div>
+
+<label>Or Enter a Custom Quantity</label>
+
+<input
+type="number"
+id="reviews"
+min="1"
+placeholder="Enter the number of reviews you need"
+required
+oninput="updatePriceEstimate()">
+
+                <label>Description / Instructions</label>
+                <textarea id="description" rows="4" placeholder="Describe what you need..." required></textarea>
+
+                <h3 id="estimatedCost" style="margin-top:16px; font-size:1.3rem; font-weight:800; background:linear-gradient(135deg,#8d82ff,#4ad6ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8d82ff;">Estimated Cost: $0</h3>
+<div style="margin-top:20px;padding:20px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.02);">
+
+    <h3 style="margin-bottom:18px;">Order Summary</h3>
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <span>Platform</span>
+        <strong id="summaryPlatform">-</strong>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <span>Reviews</span>
+        <strong id="summaryReviews">0</strong>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+        <span>Price per Review</span>
+        <strong id="summaryPrice">$0</strong>
+    </div>
+
+    <hr style="margin:18px 0;opacity:.15;">
+
+    <div style="display:flex;justify-content:space-between;font-size:1.15rem;font-weight:700;">
+        <span>Total</span>
+        <span id="summaryTotal">$0</span>
+    </div>
+
+</div>
+                <button class="primary full" type="submit">Continue to Checkout →</button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+const user = getUser();
+const settings = getSettings();
+
+document.getElementById("priceInfo").textContent =
+    `Current price: $${settings.pricePerReview} per review`;
+    document.getElementById("category").addEventListener("change", updatePriceEstimate);
+
+function selectPackage(n){
+    document.getElementById("reviews").value = n;
+    updatePriceEstimate();
+}
+
+function updatePriceEstimate(){
+
+    const reviews = Number(document.getElementById("reviews").value || 0);
+
+    const total = reviews * settings.pricePerReview;
+
+    document.getElementById("estimatedCost").textContent =
+        `Estimated Cost: $${total}`;
+
+    document.getElementById("summaryPlatform").textContent =
+        document.getElementById("category").value || "-";
+
+    document.getElementById("summaryReviews").textContent =
+        reviews;
+
+    document.getElementById("summaryPrice").textContent =
+        "$" + settings.pricePerReview;
+
+    document.getElementById("summaryTotal").textContent =
+        "$" + total;
+
+}
+
+function submitNewProject(event){
+
+    event.preventDefault();
+
+    const project = {
+        projectName: document.getElementById("projectName").value.trim(),
+        category: document.getElementById("category").value,
+        reviews: Number(document.getElementById("reviews").value),
+        description: document.getElementById("description").value.trim(),
+        clientId: user.id,
+        clientEmail: user.email,
+        pricePerReview: settings.pricePerReview,
+        totalPrice: Number(document.getElementById("reviews").value) * settings.pricePerReview
+    };
+
+    sessionStorage.setItem("checkoutProject", JSON.stringify(project));
+
+    window.location.href = "client-checkout.html";
+
+}
+
+</script>
+
+</body>
+</html>
