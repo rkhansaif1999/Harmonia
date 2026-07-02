@@ -13,7 +13,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
     protectPage("admin");
@@ -60,11 +60,6 @@
             </div>
 
             <div class="dashboard-card">
-                <h3>Pending</h3>
-                <h2 id="pendingWorkers">0</h2>
-            </div>
-
-            <div class="dashboard-card">
                 <h3>Active</h3>
                 <h2 id="activeWorkers">0</h2>
             </div>
@@ -72,6 +67,11 @@
             <div class="dashboard-card">
                 <h3>Suspended</h3>
                 <h2 id="suspendedWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Rejected</h3>
+                <h2 id="rejectedWorkers">0</h2>
             </div>
 
         </section>
@@ -93,7 +93,9 @@
                     </tr>
                 </thead>
 
-                <tbody id="workerTable"></tbody>
+                <tbody id="workerTable">
+                    <tr><td colspan="6" style="opacity:.6;">Loading workers...</td></tr>
+                </tbody>
 
             </table>
 
@@ -114,7 +116,9 @@
                     </tr>
                 </thead>
 
-                <tbody id="reviewerTable"></tbody>
+                <tbody id="reviewerTable">
+                    <tr><td colspan="4" style="opacity:.6;">Loading reviewers...</td></tr>
+                </tbody>
 
             </table>
 
@@ -126,43 +130,99 @@
 
 <script>
 
-function renderWorkers(){
+// All worker/reviewer data now comes from the real backend (D1) via the
+// Worker API, not localStorage. Status values from the backend are
+// lowercase: "approved", "suspended", "rejected".
 
-    const workers = getUsers().filter(u => u.role === "worker");
+let allUsers = [];
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+async function fetchAllUsers() {
+    const response = await fetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load users");
+    }
+
+    return data.users || [];
+}
+
+async function updateStatus(id, status) {
+    const response = await fetch(WORKER_URL + "/api/admin/users/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update status.");
+        return false;
+    }
+
+    return true;
+}
+
+async function updateRole(id, role) {
+    const response = await fetch(WORKER_URL + "/api/admin/users/role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, role })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update role.");
+        return false;
+    }
+
+    return true;
+}
+
+async function renderWorkers(){
 
     const table = document.getElementById("workerTable");
 
+    let workers;
+    try {
+        allUsers = await fetchAllUsers();
+        workers = allUsers.filter(u => u.role === "worker");
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="6" style="color:#ff8080;">Could not load workers: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
     table.innerHTML = "";
 
-    let pending = 0;
+    if (workers.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" class="empty-state">No workers registered yet</td></tr>`;
+    }
+
     let active = 0;
     let suspended = 0;
+    let rejected = 0;
 
     workers.forEach(worker => {
 
-        if(worker.status === "Pending") pending++;
-        if(worker.status === "Active") active++;
-        if(worker.status === "Suspended") suspended++;
+        if(worker.status === "approved") active++;
+        if(worker.status === "suspended") suspended++;
+        if(worker.status === "rejected") rejected++;
 
         let actions = "";
 
-        if(worker.status === "Pending"){
+        if(worker.status === "suspended" || worker.status === "rejected"){
+            actions = `<button onclick="changeStatus(${worker.id},'approved')">Reactivate</button>`;
+        } else {
             actions = `
-                <button onclick="changeStatus(${worker.id},'Active')">Approve</button>
-                <button onclick="changeStatus(${worker.id},'Rejected')">Reject</button>
-            `;
-        }
-
-        else if(worker.status === "Active"){
-            actions = `
-                <button onclick="changeStatus(${worker.id},'Suspended')">Suspend</button>
-            `;
-        }
-
-        else{
-
-            actions = `
-                <button onclick="changeStatus(${worker.id},'Active')">Reactivate</button>
+                <button onclick="changeStatus(${worker.id},'suspended')">Suspend</button>
+                <button onclick="changeStatus(${worker.id},'rejected')">Reject</button>
             `;
         }
 
@@ -174,10 +234,10 @@ function renderWorkers(){
 
         table.innerHTML += `
             <tr>
-                <td>${escapeHTML(worker.fullName)}</td>
+                <td>${escapeHTML(worker.full_name)}</td>
                 <td>${escapeHTML(worker.email)}</td>
                 <td>${escapeHTML(worker.country)}</td>
-                <td>${statusBadge(worker.status)}</td>
+                <td>${statusBadge(capitalize(worker.status))}</td>
                 <td>${actions}</td>
                 <td>${roleControl}</td>
             </tr>
@@ -186,44 +246,38 @@ function renderWorkers(){
     });
 
     document.getElementById("totalWorkers").textContent = workers.length;
-    document.getElementById("pendingWorkers").textContent = pending;
     document.getElementById("activeWorkers").textContent = active;
     document.getElementById("suspendedWorkers").textContent = suspended;
+    document.getElementById("rejectedWorkers").textContent = rejected;
 
+    renderReviewers();
 }
 
-function changeStatus(id,status){
-
-    updateUserStatus(id,status);
-
-    if(status==="Active"){
-        assignTasksAutomatically();
-    }
-
-    renderWorkers();
-
+async function changeStatus(id, status){
+    const ok = await updateStatus(id, status);
+    if (ok) renderWorkers();
 }
 
-function promoteToAdmin(id){
+async function promoteToAdmin(id){
     if(!confirm("Promote this worker to Admin? They will get full access.")) return;
-    updateUserRole(id, "admin");
-    renderWorkers();
+    const ok = await updateRole(id, "admin");
+    if (ok) renderWorkers();
 }
 
-function moveToClient(id){
+async function moveToClient(id){
     if(!confirm("Switch this worker to a Client account?")) return;
-    updateUserRole(id, "client");
-    renderWorkers();
+    const ok = await updateRole(id, "client");
+    if (ok) renderWorkers();
 }
 
-function moveToReviewer(id){
+async function moveToReviewer(id){
     if(!confirm("Promote this worker to Reviewer (QA role)?")) return;
-    updateUserRole(id, "reviewer");
-    renderWorkers();
+    const ok = await updateRole(id, "reviewer");
+    if (ok) renderWorkers();
 }
 
 function renderReviewers(){
-    const reviewers = getUsers().filter(u => u.role === "reviewer");
+    const reviewers = allUsers.filter(u => u.role === "reviewer");
     const table = document.getElementById("reviewerTable");
     table.innerHTML = "";
 
@@ -235,7 +289,7 @@ function renderReviewers(){
     reviewers.forEach(r => {
         table.innerHTML += `
             <tr>
-                <td>${escapeHTML(r.fullName)}</td>
+                <td>${escapeHTML(r.full_name)}</td>
                 <td>${escapeHTML(r.email)}</td>
                 <td>${escapeHTML(r.country)}</td>
                 <td><button onclick="demoteToWorker(${r.id})">Back to Worker</button></td>
@@ -244,14 +298,13 @@ function renderReviewers(){
     });
 }
 
-function demoteToWorker(id){
+async function demoteToWorker(id){
     if(!confirm("Move this reviewer back to a regular Worker role?")) return;
-    updateUserRole(id, "worker");
-    renderReviewers();
+    const ok = await updateRole(id, "worker");
+    if (ok) renderWorkers();
 }
 
 renderWorkers();
-renderReviewers();
 
 </script>
 
