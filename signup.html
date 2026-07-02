@@ -283,6 +283,7 @@ const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
 const countries = ["Afghanistan","Albania","Algeria","Argentina","Australia","Bangladesh","Brazil","Canada","China","France","Germany","India","Indonesia","Japan","Pakistan","Philippines","United States","United Kingdom"];
 const countrySelect = document.getElementById("country");
 
+let pendingSignup = null;
 countries.forEach(c=>{
   const opt=document.createElement("option");
   opt.value=c;
@@ -290,12 +291,6 @@ countries.forEach(c=>{
   countrySelect.appendChild(opt);
 });
 
-// signup logic
-let pendingSignup=null;
-
-function generateCode(){
-  return Math.floor(100000 + Math.random()*900000).toString();
-}
 
 function setMsg(id, text, type){
   const el = document.getElementById(id);
@@ -303,22 +298,6 @@ function setMsg(id, text, type){
   el.className = "form-msg" + (type ? " " + type : "");
 }
 
-// Sends (or re-sends) the verification email through the Worker
-async function sendVerificationEmail(email, code){
-  const res = await fetch(WORKER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ to: email, code: code })
-  });
-
-  const data = await res.json();
-
-  if (!res.ok || data.ok === false) {
-    throw new Error(data.error || "Failed to send verification email");
-  }
-
-  return data;
-}
 
 async function signupUser(event){
   event.preventDefault();
@@ -328,8 +307,6 @@ async function signupUser(event){
   const password=document.getElementById("password").value;
   const role=document.getElementById("role").value;
   const country=document.getElementById("country").value;
-
-  const code=generateCode();
   const btn=document.getElementById("signupBtn");
 
   setMsg("signupMsg","","");
@@ -337,9 +314,32 @@ async function signupUser(event){
   btn.textContent = "Sending code...";
 
   try {
-    await sendVerificationEmail(email, code);
+    const response = await fetch(
+  WORKER_URL + "api/send-otp",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      email: email
+    })
+  }
+);
 
-    pendingSignup={fullName,email,password,role,country,code};
+const data = await response.json();
+
+if(!response.ok){
+    throw new Error(data.error || "Unable to send OTP.");
+}
+
+    pendingSignup={
+    fullName,
+    email,
+    password,
+    role,
+    country
+};
 
     document.getElementById("signupBox").style.display="none";
     document.getElementById("verifyBox").style.display="block";
@@ -351,40 +351,53 @@ async function signupUser(event){
   }
 }
 
-// FIX: this function now (1) hashes the password with the same
-// hashPassword() used by login in script.js, so stored + compared
-// values actually match, (2) sets status:"Active" so login's Pending
-// check doesn't block it, and (3) confirms success before redirecting.
 async function verifyCode(event){
   event.preventDefault();
 
-  const entered=document.getElementById("verifyInput").value.trim();
-
-  if(!pendingSignup) return;
-
-  if(entered!==pendingSignup.code){
-    setMsg("verifyMsg","Wrong code, please try again.","error");
+  if(!pendingSignup){
+    setMsg("verifyMsg","Signup session expired. Please sign up again.","error");
     return;
   }
 
-  const hashedPassword = await hashPassword(pendingSignup.password);
+  const code = document.getElementById("verifyInput").value.trim();
 
-  let users=getUsers();
+  setMsg("verifyMsg","","");
 
-  users.push({
-    id:Date.now(),
-    fullName:pendingSignup.fullName,
-    email:pendingSignup.email,
-    password:hashedPassword,
-    role:pendingSignup.role,
-    country:pendingSignup.country,
-    status:"Active",
-    verified:true
-  });
+  try{
 
-  saveUsers(users);
+    const response = await fetch(
+      WORKER_URL + "api/verify-otp",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email: pendingSignup.email,
+          code: code,
+          fullName: pendingSignup.fullName,
+          password: pendingSignup.password,
+          role: pendingSignup.role,
+          country: pendingSignup.country
+        })
+      }
+    );
 
-  showSuccessPanel();
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "Verification failed.");
+    }
+
+    pendingSignup = null;
+
+    showSuccessPanel();
+
+  }catch(err){
+
+    setMsg("verifyMsg", err.message, "error");
+
+  }
 }
 
 function goToLogin(){
@@ -412,18 +425,40 @@ function showSuccessPanel(){
 
 async function resendCode(e){
   e.preventDefault();
-  if(!pendingSignup) return;
+
+  if(!pendingSignup){
+    return;
+  }
 
   setMsg("verifyMsg","Resending...","");
 
-  const newCode = generateCode();
+  try{
 
-  try {
-    await sendVerificationEmail(pendingSignup.email, newCode);
-    pendingSignup.code = newCode;
-    setMsg("verifyMsg","New code sent to your email.","success");
-  } catch (err) {
-    setMsg("verifyMsg","Couldn't resend code: " + err.message, "error");
+    const response = await fetch(
+      WORKER_URL + "api/send-otp",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email: pendingSignup.email
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "Unable to resend code.");
+    }
+
+    setMsg("verifyMsg","A new verification code has been sent.","success");
+
+  }catch(err){
+
+    setMsg("verifyMsg",err.message,"error");
+
   }
 }
 
