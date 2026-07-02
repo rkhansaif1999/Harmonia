@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reset - Harmonia</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    margin:0;
+    background:#0c1420;
+  }
+  .reset-box{
+    max-width:420px;
+    width:90%;
+    padding:40px 34px;
+    border-radius:22px;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(28px);
+    box-shadow:0 30px 90px rgba(0,0,0,.55);
+    text-align:center;
+    color:#fff;
+  }
+  .reset-box h2{
+    font-size:1.6rem;
+    font-weight:800;
+    margin-bottom:10px;
+    background:linear-gradient(135deg,#ffffff,#a8b6ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .reset-box p{
+    color:#9dadc1;
+    line-height:1.6;
+    margin-bottom:26px;
+  }
+  button{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    font-weight:700;
+    font-size:1rem;
+    cursor:pointer;
+    background:linear-gradient(135deg,#ff8080,#ff4d4d);
+    color:#fff;
+    transition:.2s;
+  }
+  button:hover{ transform:translateY(-2px); }
+  .status{
+    margin-top:18px;
+    font-size:.9rem;
+    min-height:20px;
+  }
+  .status.done{ color:#7fe0a0; }
+  a.back{
+    display:block;
+    margin-top:22px;
+    color:#7f8b9b;
+    font-size:.85rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="reset-box">
+  <h2>Reset Site Data</h2>
+  <p>
+    This clears every account, session, project, and setting stored
+    in this browser for Harmonia — a totally fresh start. This cannot
+    be undone.
+  </p>
+
+  <button onclick="doReset()">Clear All Data</button>
+
+  <p class="status" id="status"></p>
+
+  <a class="back" href="index.html">← Back to Home</a>
+</div>
+
+<script>
+function doReset(){
+  localStorage.clear();
+  document.getElementById("status").textContent = "✓ All data cleared. The admin account will be recreated on next visit to any page.";
+  document.getElementById("status").className = "status done";
+}
+</script>
+
+</body>
+</html>
