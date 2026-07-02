@@ -319,7 +319,11 @@ async function signupUser(event){
   }
 }
 
-function verifyCode(event){
+// FIX: this function now (1) hashes the password with the same
+// hashPassword() used by login in script.js, so stored + compared
+// values actually match, (2) sets status:"Active" so login's Pending
+// check doesn't block it, and (3) confirms success before redirecting.
+async function verifyCode(event){
   event.preventDefault();
 
   const entered=document.getElementById("verifyInput").value.trim();
@@ -331,20 +335,24 @@ function verifyCode(event){
     return;
   }
 
+  const hashedPassword = await hashPassword(pendingSignup.password);
+
   let users=getUsers();
 
   users.push({
     id:Date.now(),
     fullName:pendingSignup.fullName,
     email:pendingSignup.email,
-    password:pendingSignup.password,
+    password:hashedPassword,
     role:pendingSignup.role,
     country:pendingSignup.country,
+    status:"Active",
     verified:true
   });
 
   saveUsers(users);
 
+  alert("Account created successfully! Please log in with the email and password you just used.");
   window.location.href="login.html";
 }
 
