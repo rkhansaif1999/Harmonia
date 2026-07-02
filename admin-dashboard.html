@@ -13,7 +13,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
     protectPage("admin");
@@ -107,43 +107,60 @@
 
 <script>
 
-const projects = getProjects();
-const users = getUsers();
+async function loadDashboard() {
+    try {
+        const [usersRes, ordersRes] = await Promise.all([
+            fetch(WORKER_URL + "/api/admin/users"),
+            fetch(WORKER_URL + "/api/admin/orders")
+        ]);
 
-document.getElementById("totalWorkers").textContent =
-    users.filter(u => u.role === "worker").length;
+        const usersData = await usersRes.json();
+        const ordersData = await ordersRes.json();
 
-document.getElementById("totalClients").textContent =
-    users.filter(u => u.role === "client").length;
+        if (!usersRes.ok) throw new Error(usersData.error || "Failed to load users");
+        if (!ordersRes.ok) throw new Error(ordersData.error || "Failed to load orders");
 
-let pending = 0;
+        const users = usersData.users || [];
+        const orders = ordersData.orders || [];
 
-document.getElementById("totalProjects").textContent = projects.length;
+        document.getElementById("totalWorkers").textContent =
+            users.filter(u => u.role === "worker").length;
 
-projects.forEach(project => {
+        document.getElementById("totalClients").textContent =
+            users.filter(u => u.role === "client").length;
 
-    if (project.status === "Pending") {
-        pending++;
+        document.getElementById("totalProjects").textContent = orders.length;
+
+        const pending = orders.filter(o =>
+            o.status === "Awaiting Payment" || o.status === "Under Review"
+        ).length;
+
+        document.getElementById("pendingProjects").textContent = pending;
+
+        const table = document.getElementById("recentProjects");
+        table.innerHTML = "";
+
+        if (orders.length === 0) {
+            table.innerHTML = `<tr><td colspan="4" class="empty-state">No orders yet</td></tr>`;
+        }
+
+        orders.slice(0, 5).forEach(order => {
+            table.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(order.project_name)}</td>
+                    <td>${escapeHTML(order.category)}</td>
+                    <td>${order.reviews}</td>
+                    <td>${statusBadge(order.status)}</td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Could not load dashboard data:", err);
     }
+}
 
-});
-
-document.getElementById("pendingProjects").textContent = pending;
-
-const table = document.getElementById("recentProjects");
-
-projects.slice(-5).reverse().forEach(project => {
-
-    table.innerHTML += `
-        <tr>
-            <td>${escapeHTML(project.projectName)}</td>
-            <td>${escapeHTML(project.category)}</td>
-            <td>${project.reviews}</td>
-            <td>${statusBadge(project.status)}</td>
-        </tr>
-    `;
-
-});
+loadDashboard();
 
 </script>
 
