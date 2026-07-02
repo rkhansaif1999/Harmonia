@@ -273,11 +273,16 @@
 
 </div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
 // The Cloudflare Worker that actually sends the email via Resend
-const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
+// NOTE: named OTP_WORKER_URL (not WORKER_URL) on purpose — script.js
+// already declares a global const WORKER_URL, and two top-level const
+// declarations with the same name across <script> tags throw a
+// SyntaxError that silently kills this entire block. That was the bug
+// causing the country dropdown (and signup itself) to stop working.
+const OTP_WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
 
 // country fill
 const countries = ["Afghanistan","Albania","Algeria","Argentina","Australia","Bangladesh","Brazil","Canada","China","France","Germany","India","Indonesia","Japan","Pakistan","Philippines","United States","United Kingdom"];
@@ -315,7 +320,7 @@ async function signupUser(event){
 
   try {
     const response = await fetch(
-  WORKER_URL + "api/send-otp",
+  OTP_WORKER_URL + "api/send-otp",
   {
     method: "POST",
     headers: {
@@ -366,7 +371,7 @@ async function verifyCode(event){
   try{
 
     const response = await fetch(
-      WORKER_URL + "api/verify-otp",
+      OTP_WORKER_URL + "api/verify-otp",
       {
         method:"POST",
         headers:{
@@ -435,7 +440,7 @@ async function resendCode(e){
   try{
 
     const response = await fetch(
-      WORKER_URL + "api/send-otp",
+      OTP_WORKER_URL + "api/send-otp",
       {
         method:"POST",
         headers:{
