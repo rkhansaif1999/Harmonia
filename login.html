@@ -47,6 +47,7 @@
   50%{ transform:translate(40px,-60px); }
 }
 
+/* canvas particles */
 canvas{
   position:fixed;
   inset:0;
@@ -54,7 +55,10 @@ canvas{
   pointer-events:none;
 }
 
-/* AUTH BOX */
+/* ================================
+   LOGIN LUXURY ENHANCEMENT
+================================ */
+
 .auth-box{
     position:relative;
     overflow:hidden;
@@ -65,6 +69,34 @@ canvas{
     box-shadow:0 30px 90px rgba(0,0,0,.55);
 }
 
+/* soft glow behind box */
+.auth-box::before{
+    content:"";
+    position:absolute;
+    top:-120px;
+    right:-120px;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:rgba(125,121,255,.18);
+    filter:blur(70px);
+    pointer-events:none;
+}
+
+.auth-box::after{
+    content:"";
+    position:absolute;
+    bottom:-120px;
+    left:-120px;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:rgba(69,215,255,.14);
+    filter:blur(80px);
+    pointer-events:none;
+}
+
+/* title upgrade */
 .auth-box h2{
     font-size:1.8rem;
     font-weight:800;
@@ -74,7 +106,10 @@ canvas{
     -webkit-text-fill-color:transparent;
 }
 
-/* ROLE SELECTOR */
+/* ================================
+   FIXED ROLE SELECTOR (IMPORTANT)
+================================ */
+
 .role-selector{
     display:flex;
     justify-content:space-between;
@@ -92,26 +127,75 @@ canvas{
     cursor:pointer;
     text-align:center;
     transition:.28s ease;
+    overflow:hidden;
+    min-width:0;
+}
+
+.role-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg,rgba(91,108,255,.15),transparent);
+    opacity:0;
+    transition:.25s;
+}
+
+.role-card:hover{
+    transform:translateY(-4px);
+    border-color:#7d79ff;
+    box-shadow:0 15px 35px rgba(91,108,255,.18);
+}
+
+.role-card:hover::before{
+    opacity:1;
 }
 
 .role-card.selected{
     border-color:#45d7ff;
     background:rgba(69,215,255,.12);
+    box-shadow:0 0 28px rgba(69,215,255,.25);
 }
 
-/* MOBILE */
+.role-card .icon{
+    font-size:30px;
+    display:block;
+    margin-bottom:10px;
+}
+
+.role-card .label{
+    font-weight:600;
+    color:#fff;
+}
+
+.role-card .check{
+    position:absolute;
+    top:10px;
+    right:12px;
+    opacity:0;
+    color:#7dffb2;
+    font-weight:bold;
+    transition:.25s;
+}
+
+.role-card.selected .check{
+    opacity:1;
+}
+
+/* MOBILE FIX */
 @media (max-width:600px){
     .role-selector{
         flex-direction:column;
     }
 }
 
+/* subtle input upgrade */
 input{
     transition:.25s ease;
 }
 
 input:focus{
     transform:translateY(-2px);
+    box-shadow:0 10px 30px rgba(125,121,255,.12);
 }
 
 </style>
@@ -122,15 +206,18 @@ input:focus{
 
 <div class="noise"></div>
 
+<!-- FLOATING ORBS -->
 <div style="position:fixed;inset:0;pointer-events:none;z-index:-2;">
   <div class="orb orb1"></div>
   <div class="orb orb2"></div>
   <div class="orb orb3"></div>
 </div>
 
+<!-- PARTICLES -->
 <canvas id="particles"></canvas>
 
 <div class="auth-container">
+
 <div class="auth-box">
 
 <form onsubmit="loginUser(event)">
@@ -140,44 +227,56 @@ input:focus{
 <h2>Welcome Back</h2>
 
 <input type="email" id="email" placeholder="Email" required>
+
 <input type="password" id="password" placeholder="Password" required>
 
 <div style="text-align:right;margin:-6px 0 12px;">
-<a href="forgot-password.html">Forgot password?</a>
+<a href="forgot-password.html" style="color:#78cbff;font-size:.85rem;font-weight:600;">
+Forgot password?
+</a>
 </div>
 
-<h4>Choose Account</h4>
+<h4 style="margin:10px 0 8px;">Choose Account</h4>
 
 <div class="role-selector">
 
-<div class="role-card" onclick="selectRole('admin',this)">
-<span>🛡️ Admin</span>
+<div class="role-card" tabindex="0" onclick="selectRole('admin',this)">
+<span class="check">✓</span>
+<span class="icon">🛡️</span>
+<div class="label">Admin</div>
 </div>
 
-<div class="role-card" onclick="selectRole('client',this)">
-<span>🏢 Client</span>
+<div class="role-card" tabindex="0" onclick="selectRole('client',this)">
+<span class="check">✓</span>
+<span class="icon">🏢</span>
+<div class="label">Client</div>
 </div>
 
-<div class="role-card" onclick="selectRole('worker',this)">
-<span>👤 Worker</span>
+<div class="role-card" tabindex="0" onclick="selectRole('worker',this)">
+<span class="check">✓</span>
+<span class="icon">👤</span>
+<div class="label">Worker</div>
 </div>
 
 </div>
 
-<input type="hidden" id="role">
+<input type="hidden" id="role" required>
 
-<button class="primary full" type="submit">Login</button>
+<button class="primary full" type="submit">
+Login
+</button>
 
-<p>
+<p class="auth-link">
 Don't have an account?
 <a href="signup.html">Sign up</a>
 </p>
 
-<a href="index.html">← Back to Home</a>
+<a class="back" href="index.html">← Back to Home</a>
 
 </form>
 
 </div>
+
 </div>
 
 <script src="script.js"></script>
@@ -192,19 +291,7 @@ function selectRole(role, element){
     element.classList.add("selected");
 
     document.getElementById("role").value = role;
-
-    // ✅ FIX: persist role
-    localStorage.setItem("selectedRole", role);
 }
-
-// restore role on refresh
-window.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem("selectedRole");
-
-    if(saved){
-        document.getElementById("role").value = saved;
-    }
-});
 
 /* PARTICLES */
 const canvas = document.getElementById("particles");
