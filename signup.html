@@ -124,6 +124,11 @@
     margin-top:12px;
   }
 
+  button.primary:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+  }
+
   .auth-link{
     text-align:center;
     margin-top:18px;
@@ -145,6 +150,16 @@
   .back:hover{
     color:#b7c4d6;
   }
+
+  .form-msg{
+    min-height:20px;
+    font-size:.9rem;
+    margin-top:6px;
+    text-align:center;
+  }
+
+  .form-msg.error{ color:#ff8080; }
+  .form-msg.success{ color:#7fe0a0; }
 
   </style>
 </head>
@@ -187,7 +202,9 @@
         <option value="">Select Country</option>
       </select>
 
-      <button class="primary" type="submit">Create Account</button>
+      <button class="primary" type="submit" id="signupBtn">Create Account</button>
+
+      <p class="form-msg" id="signupMsg"></p>
 
       <p class="auth-link">
         Already have an account? <a href="login.html">Login</a>
@@ -212,6 +229,8 @@
 
       <button class="primary" type="submit">Verify & Continue</button>
 
+      <p class="form-msg" id="verifyMsg"></p>
+
       <p class="auth-link">
         Didn’t get code? <a href="#" onclick="resendCode(event)">Resend</a>
       </p>
@@ -225,6 +244,9 @@
 <script src="script.js"></script>
 
 <script>
+// The Cloudflare Worker that actually sends the email via Resend
+const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
+
 // country fill
 const countries = ["Afghanistan","Albania","Algeria","Argentina","Australia","Bangladesh","Brazil","Canada","China","France","Germany","India","Indonesia","Japan","Pakistan","Philippines","United States","United Kingdom"];
 const countrySelect = document.getElementById("country");
@@ -236,14 +258,37 @@ countries.forEach(c=>{
   countrySelect.appendChild(opt);
 });
 
-// signup logic (unchanged)
+// signup logic
 let pendingSignup=null;
 
 function generateCode(){
   return Math.floor(100000 + Math.random()*900000).toString();
 }
 
-function signupUser(event){
+function setMsg(id, text, type){
+  const el = document.getElementById(id);
+  el.textContent = text || "";
+  el.className = "form-msg" + (type ? " " + type : "");
+}
+
+// Sends (or re-sends) the verification email through the Worker
+async function sendVerificationEmail(email, code){
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ to: email, code: code })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.error || "Failed to send verification email");
+  }
+
+  return data;
+}
+
+async function signupUser(event){
   event.preventDefault();
 
   const fullName=document.getElementById("fullName").value.trim();
@@ -253,13 +298,25 @@ function signupUser(event){
   const country=document.getElementById("country").value;
 
   const code=generateCode();
+  const btn=document.getElementById("signupBtn");
 
-  pendingSignup={fullName,email,password,role,country,code};
+  setMsg("signupMsg","","");
+  btn.disabled = true;
+  btn.textContent = "Sending code...";
 
-  alert("Your verification code: "+code);
+  try {
+    await sendVerificationEmail(email, code);
 
-  document.getElementById("signupBox").style.display="none";
-  document.getElementById("verifyBox").style.display="block";
+    pendingSignup={fullName,email,password,role,country,code};
+
+    document.getElementById("signupBox").style.display="none";
+    document.getElementById("verifyBox").style.display="block";
+  } catch (err) {
+    setMsg("signupMsg", "Couldn't send verification email: " + err.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Create Account";
+  }
 }
 
 function verifyCode(event){
@@ -270,7 +327,7 @@ function verifyCode(event){
   if(!pendingSignup) return;
 
   if(entered!==pendingSignup.code){
-    alert("Wrong code");
+    setMsg("verifyMsg","Wrong code, please try again.","error");
     return;
   }
 
@@ -291,10 +348,21 @@ function verifyCode(event){
   window.location.href="login.html";
 }
 
-function resendCode(e){
+async function resendCode(e){
   e.preventDefault();
-  pendingSignup.code=generateCode();
-  alert("New code: "+pendingSignup.code);
+  if(!pendingSignup) return;
+
+  setMsg("verifyMsg","Resending...","");
+
+  const newCode = generateCode();
+
+  try {
+    await sendVerificationEmail(pendingSignup.email, newCode);
+    pendingSignup.code = newCode;
+    setMsg("verifyMsg","New code sent to your email.","success");
+  } catch (err) {
+    setMsg("verifyMsg","Couldn't resend code: " + err.message, "error");
+  }
 }
 
 /* particles */
