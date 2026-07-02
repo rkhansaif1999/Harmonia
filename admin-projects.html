@@ -13,7 +13,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
     protectPage("admin");
@@ -83,14 +83,16 @@
                         <th>Category</th>
                         <th>Status</th>
                         <th>Reviews</th>
-<th>Created</th>
-<th>Payment Proof</th>
-<th>Assigned Worker</th>
-<th>Actions</th>
+                        <th>Created</th>
+                        <th>Payment Proof</th>
+                        <th>Assigned Worker</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
-                <tbody id="projectsTable"></tbody>
+                <tbody id="projectsTable">
+                    <tr><td colspan="8" style="opacity:.6;">Loading orders...</td></tr>
+                </tbody>
 
             </table>
 
@@ -103,26 +105,36 @@
 <script>
 
 /* =========================
-   DATA SOURCE
+   DATA SOURCE (now D1, via Worker API)
    ========================= */
 
 const table = document.getElementById("projectsTable");
 
-function getOrders() {
-    return JSON.parse(localStorage.getItem("harmonia_orders")) || [];
+async function fetchOrders() {
+    const response = await fetch(WORKER_URL + "/api/admin/orders");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
+
+async function fetchWorkers() {
+    const response = await fetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load workers");
+    return (data.users || []).filter(u => u.role === "worker" && u.status === "approved");
 }
 
 function normalizeOrder(o) {
     return {
-        orderId: o.orderId || "HM-UNKNOWN",
-        projectName: o.projectName || "Untitled Project",
+        orderId: o.order_id || "HM-UNKNOWN",
+        projectName: o.project_name || "Untitled Project",
         category: o.category || "General",
         reviews: o.reviews || 0,
         status: o.status || "Awaiting Payment",
-        assignedTo: o.assignedTo || null,
-        paymentProof: o.paymentProof || null,
-        submittedAt: o.submittedAt || null,
-        createdAt: o.createdAt || new Date().toISOString(),
+        assignedTo: o.assigned_to || null,
+        paymentProof: o.payment_proof || null,
+        submittedAt: o.submitted_at || null,
+        createdAt: o.created_at || new Date().toISOString(),
         supportChat: o.supportChat || []
     };
 }
@@ -143,17 +155,10 @@ function formatDate(dateStr) {
 function renderSupportChat(order){
 
     if(!order.supportChat || order.supportChat.length===0){
-
-        return `
-            <div style="opacity:.6;">
-                No conversation yet.
-            </div>
-        `;
-
+        return `<div style="opacity:.6;">No conversation yet.</div>`;
     }
 
     return order.supportChat.map(msg=>`
-
         <div style="
             margin-bottom:12px;
             padding:10px;
@@ -164,38 +169,29 @@ function renderSupportChat(order){
                 :"rgba(255,255,255,.05)"
             };
         ">
-
-            <strong>
-                ${
-                    msg.sender==="admin"
-                    ?"Administrator"
-                    :"Client"
-                }
-            </strong>
-
-            <div style="margin-top:6px;white-space:pre-wrap;">
-                ${escapeHTML(msg.message)}
-            </div>
-
-            <small style="opacity:.6;">
-                ${formatDate(msg.time)}
-            </small>
-
+            <strong>${msg.sender==="admin" ? "Administrator" : "Client"}</strong>
+            <div style="margin-top:6px;white-space:pre-wrap;">${escapeHTML(msg.message)}</div>
+            <small style="opacity:.6;">${formatDate(msg.time)}</small>
         </div>
-
     `).join("");
-
 }
 
 /* =========================
-   MAIN RENDER ENGINE (UPDATED ONLY ADDITIONS)
+   MAIN RENDER ENGINE
    ========================= */
 
-function renderProjects() {
+async function renderProjects() {
 
-    const orders = getOrders().map(normalizeOrder);
-    const users = getUsers();
-    const workers = users.filter(u => u.role === "worker" && u.status === "Active");
+    let orders, workers;
+
+    try {
+        const [rawOrders, rawWorkers] = await Promise.all([fetchOrders(), fetchWorkers()]);
+        orders = rawOrders.map(normalizeOrder);
+        workers = rawWorkers;
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="8" style="color:#ff8080;">Could not load orders: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
 
     let total = 0;
     let paid = 0;
@@ -203,6 +199,10 @@ function renderProjects() {
     let pending = 0;
 
     table.innerHTML = "";
+
+    if (orders.length === 0) {
+        table.innerHTML = `<tr><td colspan="8" class="empty-state">No orders yet</td></tr>`;
+    }
 
     orders.forEach(o => {
 
@@ -214,10 +214,9 @@ function renderProjects() {
 
         table.innerHTML += `
             <tr>
-
                 <td>
                     ${escapeHTML(o.projectName || "-")}<br>
-                    <small style="opacity:.6">ID: ${o.orderId}</small>
+                    <small style="opacity:.6">ID: ${escapeHTML(o.orderId)}</small>
                 </td>
 
                 <td>${escapeHTML(o.category || "-")}</td>
@@ -226,130 +225,92 @@ function renderProjects() {
 
                 <td>${o.reviews}</td>
 
-<td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
+                <td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
 
-<td>
-    ${o.paymentProof 
-        ? `<span title="${o.paymentProof}">✔ Submitted</span>`
-        : "Not Submitted"}
-</td>
+                <td>
+                    ${o.paymentProof
+                        ? `<span title="${escapeHTML(o.paymentProof)}">✔ Submitted</span>`
+                        : "Not Submitted"}
+                </td>
 
                 <td>
                     ${o.assignedTo
-                        ? (users.find(u => u.id == o.assignedTo)?.fullName || "Unknown")
+                        ? (workers.find(w => w.id == o.assignedTo)?.full_name || "Unknown")
                         : "Not Assigned"}
                 </td>
 
                 <td>
-
-                    <button onclick="toggleDetails('${o.orderId}')">
-                        View Details
-                    </button>
+                    <button onclick="toggleDetails('${escapeHTML(o.orderId)}')">View Details</button>
 
                     ${o.status === "Awaiting Payment" || o.status === "Under Review" ? `
-                        <button onclick="approvePayment('${o.orderId}')">
-                            Approve Payment
-                        </button>
+                        <button onclick="approvePayment('${escapeHTML(o.orderId)}')">Approve Payment</button>
                     ` : ""}
 
                     ${o.status === "Paid" ? `
-                        <select onchange="assignWorkerToOrder('${o.orderId}', this.value)">
+                        <select onchange="assignWorkerToOrder('${escapeHTML(o.orderId)}', this.value)">
                             <option value="">Assign Worker</option>
                             ${workers.map(w => `
-                                <option value="${w.id}">
-                                    ${escapeHTML(w.fullName)}
-                                </option>
+                                <option value="${w.id}">${escapeHTML(w.full_name)}</option>
                             `).join("")}
                         </select>
                     ` : ""}
 
                     ${o.status === "Assigned" ? `
-                        <button onclick="markCompleted('${o.orderId}')">
-                            Mark Completed
-                        </button>
+                        <button onclick="markCompleted('${escapeHTML(o.orderId)}')">Mark Completed</button>
                     ` : ""}
-
                 </td>
             </tr>
 
             <!-- DETAILS ROW -->
-            <tr id="details-${o.orderId}" style="display:none;">
-                <td colspan="6" style="background:rgba(255,255,255,0.03);padding:12px;">
+            <tr id="details-${escapeHTML(o.orderId)}" style="display:none;">
+                <td colspan="8" style="background:rgba(255,255,255,0.03);padding:12px;">
 
                     <div style="display:grid;gap:6px;font-size:.9rem;">
 
-                        <div><strong>Order ID:</strong> ${o.orderId}</div>
-                        <div><strong>Status:</strong> ${o.status}</div>
+                        <div><strong>Order ID:</strong> ${escapeHTML(o.orderId)}</div>
+                        <div><strong>Status:</strong> ${escapeHTML(o.status)}</div>
                         <div><strong>Created:</strong> ${formatDate(o.createdAt)}</div>
                         <div>
-    <strong>Payment Proof:</strong>
-
-    ${
-        o.paymentProof
-        ? `
-            <br><br>
-
-            <a href="${o.paymentProof}"
-               target="_blank">
-
-                View Uploaded Receipt
-
-            </a>
-
-            <br><br>
-
-            <img
-                src="${o.paymentProof}"
-                style="
-                    max-width:220px;
-                    border-radius:10px;
-                    border:1px solid rgba(255,255,255,.08);
-                ">
-        `
-        : "Not submitted"
-    }
-
-</div>
+                            <strong>Payment Proof:</strong>
+                            ${o.paymentProof ? `
+                                <br><br>
+                                <a href="${escapeHTML(o.paymentProof)}" target="_blank">View Uploaded Receipt</a>
+                                <br><br>
+                                <img src="${escapeHTML(o.paymentProof)}" style="max-width:220px;border-radius:10px;border:1px solid rgba(255,255,255,.08);">
+                            ` : "Not submitted"}
+                        </div>
                         <div><strong>Submitted At:</strong> ${formatDate(o.submittedAt)}</div>
 
-<hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
+                        <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
 
-<h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
+                        <h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
 
-<div id="chat-${o.orderId}"
-     style="background:rgba(255,255,255,.03);
-            border:1px solid rgba(255,255,255,.08);
-            border-radius:10px;
-            padding:12px;
-            max-height:250px;
-            overflow-y:auto;
-            margin-bottom:12px;">
+                        <div id="chat-${escapeHTML(o.orderId)}"
+                             style="background:rgba(255,255,255,.03);
+                                    border:1px solid rgba(255,255,255,.08);
+                                    border-radius:10px;
+                                    padding:12px;
+                                    max-height:250px;
+                                    overflow-y:auto;
+                                    margin-bottom:12px;">
+                            ${renderSupportChat(o)}
+                        </div>
 
-    ${renderSupportChat(o)}
+                        <textarea
+                            id="reply-${escapeHTML(o.orderId)}"
+                            placeholder="Reply to the client..."
+                            style="width:100%;
+                                   height:90px;
+                                   border-radius:8px;
+                                   padding:10px;
+                                   background:#111827;
+                                   color:white;
+                                   border:1px solid rgba(255,255,255,.08);
+                                   resize:vertical;"></textarea>
 
-</div>
-
-<textarea
-    id="reply-${o.orderId}"
-    placeholder="Reply to the client..."
-    style="width:100%;
-           height:90px;
-           border-radius:8px;
-           padding:10px;
-           background:#111827;
-           color:white;
-           border:1px solid rgba(255,255,255,.08);
-           resize:vertical;"></textarea>
-
-<div style="margin-top:10px;">
-
-    <button onclick="sendAdminReply('${o.orderId}')">
-
-        Send Reply
-
-    </button>
-
-</div>
+                        <div style="margin-top:10px;">
+                            <button onclick="sendAdminReply('${escapeHTML(o.orderId)}')">Send Reply</button>
+                        </div>
 
                     </div>
 
@@ -378,114 +339,85 @@ function toggleDetails(orderId) {
    ADMIN SUPPORT REPLY
    ========================= */
 
-function sendAdminReply(orderId) {
+async function sendAdminReply(orderId) {
 
     const textarea = document.getElementById("reply-" + orderId);
-
     if (!textarea) {
         alert("Reply box not found.");
         return;
     }
 
     const message = textarea.value.trim();
-
     if (!message) {
         alert("Please enter a reply.");
         return;
     }
 
-    let orders = getOrders();
+    const response = await fetch(WORKER_URL + "/api/admin/orders/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, message })
+    });
 
-    const order = orders.find(o => o.orderId === orderId);
+    const data = await response.json();
 
-    if (!order) {
-        alert("Order not found.");
+    if (!response.ok) {
+        alert(data.error || "Failed to send reply.");
         return;
     }
 
-    if (!order.supportChat) {
-        order.supportChat = [];
-    }
-
-    order.supportChat.push({
-
-        sender: "admin",
-
-        message: message,
-
-        time: new Date().toISOString()
-
-    });
-
-    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
-
-    renderProjects();
+    await renderProjects();
 
     setTimeout(() => {
-
         const detailsRow = document.getElementById("details-" + orderId);
-
-        if (detailsRow) {
-            detailsRow.style.display = "table-row";
-        }
-
+        if (detailsRow) detailsRow.style.display = "table-row";
     }, 50);
-
 }
 
 /* =========================
-   ACTIONS (UNCHANGED)
+   ACTIONS (now hit the real backend)
    ========================= */
 
-function approvePayment(orderId) {
-
-    let orders = getOrders();
-
-    orders = orders.map(o => {
-        if (o.orderId === orderId) {
-            return { ...o, status: "Paid" };
-        }
-        return o;
+async function approvePayment(orderId) {
+    const response = await fetch(WORKER_URL + "/api/admin/orders/approve-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId })
     });
-
-    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to approve payment.");
+        return;
+    }
     renderProjects();
 }
 
-function assignWorkerToOrder(orderId, workerId) {
-
-    let orders = getOrders();
-
-    orders = orders.map(o => {
-        if (o.orderId === orderId) {
-            return {
-                ...o,
-                assignedTo: workerId,
-                status: "Assigned"
-            };
-        }
-        return o;
+async function assignWorkerToOrder(orderId, workerId) {
+    if (!workerId) return;
+    const response = await fetch(WORKER_URL + "/api/admin/orders/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, workerId })
     });
-
-    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to assign worker.");
+        return;
+    }
     renderProjects();
 }
 
-function markCompleted(orderId) {
-
-    let orders = getOrders();
-
-    orders = orders.map(o => {
-        if (o.orderId === orderId) {
-            return {
-                ...o,
-                status: "Completed"
-            };
-        }
-        return o;
+async function markCompleted(orderId) {
+    const response = await fetch(WORKER_URL + "/api/admin/orders/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId })
     });
-
-    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to mark completed.");
+        return;
+    }
     renderProjects();
 }
 
