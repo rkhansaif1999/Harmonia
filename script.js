@@ -187,7 +187,7 @@ function logout() {
     window.location.href = "login.html";
 }
 
-const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev/";
+const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev";
 
 async function loginUser(event) {
     event.preventDefault();
@@ -204,7 +204,7 @@ async function loginUser(event) {
     try {
 
         const response = await fetch(
-            WORKER_URL + "api/login",
+            WORKER_URL + "/api/login",
             {
                 method: "POST",
                 headers: {
