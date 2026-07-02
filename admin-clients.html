@@ -13,7 +13,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
     protectPage("admin");
@@ -67,8 +67,8 @@
             </div>
 
             <div class="dashboard-card">
-                <h3>Pending Clients</h3>
-                <h2 id="pendingClients">0</h2>
+                <h3>Suspended Clients</h3>
+                <h2 id="suspendedClients">0</h2>
             </div>
 
             <div class="dashboard-card">
@@ -96,7 +96,9 @@
                     </tr>
                 </thead>
 
-                <tbody id="clientTable"></tbody>
+                <tbody id="clientTable">
+                    <tr><td colspan="7" style="opacity:.6;">Loading clients...</td></tr>
+                </tbody>
 
             </table>
 
@@ -108,39 +110,103 @@
 
 <script>
 
-function renderClients(){
+// Client data now comes from the real backend (D1) via the Worker API,
+// not localStorage. Status values from the backend are lowercase:
+// "approved", "suspended", "rejected".
 
-    const clients = getUsers().filter(u => u.role === "client");
-    const projects = getProjects();
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+async function fetchAllUsers() {
+    const response = await fetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load users");
+    }
+
+    return data.users || [];
+}
+
+async function updateStatus(id, status) {
+    const response = await fetch(WORKER_URL + "/api/admin/users/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update status.");
+        return false;
+    }
+
+    return true;
+}
+
+async function updateRole(id, role) {
+    const response = await fetch(WORKER_URL + "/api/admin/users/role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, role })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update role.");
+        return false;
+    }
+
+    return true;
+}
+
+async function fetchOrders() {
+    const response = await fetch(WORKER_URL + "/api/admin/orders");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
+
+async function renderClients(){
 
     const table = document.getElementById("clientTable");
+
+    let clients, orders;
+    try {
+        const [allUsers, allOrders] = await Promise.all([fetchAllUsers(), fetchOrders()]);
+        clients = allUsers.filter(u => u.role === "client");
+        orders = allOrders;
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="7" style="color:#ff8080;">Could not load clients: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
     table.innerHTML = "";
 
+    if (clients.length === 0) {
+        table.innerHTML = `<tr><td colspan="7" class="empty-state">No clients registered yet</td></tr>`;
+    }
+
     let active = 0;
-    let pending = 0;
+    let suspended = 0;
 
     clients.forEach(client => {
 
-        if(client.status === "Active") active++;
-        if(client.status === "Pending") pending++;
+        if(client.status === "approved") active++;
+        if(client.status === "suspended") suspended++;
 
-        const myProjects = projects.filter(p => p.clientId == client.id).length;
+        const myProjects = orders.filter(o => o.client_id == client.id).length;
 
         let actions = "";
 
-        if(client.status === "Pending"){
-            actions = `
-                <button onclick="changeStatus(${client.id},'Active')">Approve</button>
-                <button onclick="changeStatus(${client.id},'Rejected')">Reject</button>
-            `;
-        } else if(client.status === "Active"){
-            actions = `
-                <button onclick="changeStatus(${client.id},'Suspended')">Suspend</button>
-            `;
+        if(client.status === "suspended" || client.status === "rejected"){
+            actions = `<button onclick="changeStatus(${client.id},'approved')">Reactivate</button>`;
         } else {
-            actions = `
-                <button onclick="changeStatus(${client.id},'Active')">Reactivate</button>
-            `;
+            actions = `<button onclick="changeStatus(${client.id},'suspended')">Suspend</button>`;
         }
 
         const roleControl = `
@@ -150,11 +216,11 @@ function renderClients(){
 
         table.innerHTML += `
             <tr>
-                <td>${escapeHTML(client.fullName)}</td>
+                <td>${escapeHTML(client.full_name)}</td>
                 <td>${escapeHTML(client.email)}</td>
                 <td>${escapeHTML(client.country)}</td>
                 <td>${myProjects}</td>
-                <td>${statusBadge(client.status)}</td>
+                <td>${statusBadge(capitalize(client.status))}</td>
                 <td>${actions}</td>
                 <td>${roleControl}</td>
             </tr>
@@ -163,25 +229,25 @@ function renderClients(){
 
     document.getElementById("totalClients").textContent = clients.length;
     document.getElementById("activeClients").textContent = active;
-    document.getElementById("pendingClients").textContent = pending;
-    document.getElementById("totalClientProjects").textContent = projects.length;
+    document.getElementById("suspendedClients").textContent = suspended;
+    document.getElementById("totalClientProjects").textContent = orders.length;
 }
 
-function changeStatus(id,status){
-    updateUserStatus(id,status);
-    renderClients();
+async function changeStatus(id, status){
+    const ok = await updateStatus(id, status);
+    if (ok) renderClients();
 }
 
-function promoteToAdmin(id){
+async function promoteToAdmin(id){
     if(!confirm("Promote this client to Admin? They will get full access.")) return;
-    updateUserRole(id, "admin");
-    renderClients();
+    const ok = await updateRole(id, "admin");
+    if (ok) renderClients();
 }
 
-function moveToWorker(id){
+async function moveToWorker(id){
     if(!confirm("Switch this client to a Worker account?")) return;
-    updateUserRole(id, "worker");
-    renderClients();
+    const ok = await updateRole(id, "worker");
+    if (ok) renderClients();
 }
 
 renderClients();
