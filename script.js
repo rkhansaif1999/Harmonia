@@ -203,31 +203,37 @@ async function loginUser(event) {
 
     try {
 
-        const response = await fetch(
-            WORKER_URL + "/api/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
-            }
-        );
+        const response = await fetch(WORKER_URL + "/api/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    },
+    body: JSON.stringify({
+        email,
+        password
+    })
+});
 
-        const data = await response.json();
+let data;
 
-        if (!response.ok) {
-            alert(data.error || "Login failed.");
-            return;
-        }
+try {
+    data = await response.json();
+} catch (e) {
+    alert("Server returned invalid response");
+    console.error("Invalid JSON:", e);
+    return;
+}
 
-        if (data.user.role !== role) {
-            alert("Incorrect account type selected.");
-            return;
-        }
+if (!response.ok) {
+    alert(data?.error || "Login failed.");
+    return;
+}
+
+if (!data?.user) {
+    alert("Invalid server response (no user data)");
+    return;
+}
 
         clearLoginAttempts(email);
 
