@@ -161,6 +161,21 @@
   .form-msg.error{ color:#ff8080; }
   .form-msg.success{ color:#7fe0a0; }
 
+  .success-icon{
+    width:64px;
+    height:64px;
+    margin:6px auto 18px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    font-weight:800;
+    color:#0c1420;
+    background:linear-gradient(135deg,#7fe0a0,#45d7ff);
+    box-shadow:0 12px 30px rgba(69,215,255,.35);
+  }
+
   </style>
 </head>
 
@@ -236,6 +251,23 @@
       </p>
 
     </form>
+
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="auth-box" id="successBox" style="display:none; text-align:center;">
+
+    <div class="success-icon">✓</div>
+
+    <h2>Account Created</h2>
+
+    <p style="color:#9dadc1; margin:10px 0 26px; line-height:1.6;">
+      Your account is ready. Log in using the same email and password you just signed up with.
+    </p>
+
+    <button class="primary" type="button" onclick="goToLogin()">Continue to Login</button>
+
+    <p style="color:#7f8b9b; font-size:.82rem; margin-top:14px;" id="redirectNote"></p>
 
   </div>
 
@@ -352,8 +384,30 @@ async function verifyCode(event){
 
   saveUsers(users);
 
-  alert("Account created successfully! Please log in with the email and password you just used.");
+  showSuccessPanel();
+}
+
+function goToLogin(){
   window.location.href="login.html";
+}
+
+function showSuccessPanel(){
+  document.getElementById("verifyBox").style.display="none";
+  document.getElementById("successBox").style.display="block";
+
+  let seconds = 4;
+  const note = document.getElementById("redirectNote");
+  note.textContent = `Redirecting to login in ${seconds}...`;
+
+  const timer = setInterval(() => {
+    seconds--;
+    if (seconds <= 0) {
+      clearInterval(timer);
+      goToLogin();
+    } else {
+      note.textContent = `Redirecting to login in ${seconds}...`;
+    }
+  }, 1000);
 }
 
 async function resendCode(e){
