@@ -11,7 +11,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 <script>
     protectPage("client");
 </script>
@@ -45,7 +45,7 @@
 
             <div class="section-tag">New Project</div>
 
-            <p id="priceInfo" style="margin-bottom:15px; color:#9dadc1; font-size:.92rem;"></p>
+            <p id="priceInfo" style="margin-bottom:15px; color:#9dadc1; font-size:.92rem;">Loading current pricing...</p>
 
             <form onsubmit="submitNewProject(event)">
 
@@ -144,12 +144,34 @@ oninput="updatePriceEstimate()">
 
 <script>
 
-const user = getUser();
-const settings = getSettings();
+// Pricing now comes from the real backend (D1) via the Worker API,
+// not localStorage — so it matches whatever the admin last set on
+// admin-settings.html, instead of a stale per-browser value.
 
-document.getElementById("priceInfo").textContent =
-    `Current price: $${settings.pricePerReview} per review`;
+const user = getUser();
+let settings = null;
+
+async function fetchSettings() {
+    const response = await fetch(WORKER_URL + "/api/admin/settings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load settings");
+    return data.settings;
+}
+
+async function initPage() {
+    try {
+        settings = await fetchSettings();
+    } catch (err) {
+        document.getElementById("priceInfo").textContent =
+            "Could not load current pricing: " + err.message;
+        return;
+    }
+
+    document.getElementById("priceInfo").textContent =
+        `Current price: $${settings.pricePerReview} per review`;
+
     document.getElementById("category").addEventListener("change", updatePriceEstimate);
+}
 
 function selectPackage(n){
     document.getElementById("reviews").value = n;
@@ -157,6 +179,8 @@ function selectPackage(n){
 }
 
 function updatePriceEstimate(){
+
+    if (!settings) return;
 
     const reviews = Number(document.getElementById("reviews").value || 0);
 
@@ -183,6 +207,11 @@ function submitNewProject(event){
 
     event.preventDefault();
 
+    if (!settings) {
+        alert("Pricing hasn't finished loading yet. Please wait a moment and try again.");
+        return;
+    }
+
     const project = {
         projectName: document.getElementById("projectName").value.trim(),
         category: document.getElementById("category").value,
@@ -199,6 +228,8 @@ function submitNewProject(event){
     window.location.href = "client-checkout.html";
 
 }
+
+initPage();
 
 </script>
 
