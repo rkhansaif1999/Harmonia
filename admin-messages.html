@@ -246,7 +246,7 @@ async function sendReply(id){
     statusEl.style.color = "#888";
 
     try {
-        const res = await fetch(WORKER_URL + "/api/admin/contact-messages/reply", {
+        const res = await authFetch(WORKER_URL + "/api/admin/contact-messages/reply", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, message })
