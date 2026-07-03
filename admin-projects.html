@@ -111,7 +111,7 @@
 const table = document.getElementById("projectsTable");
 
 async function fetchOrders() {
-    const response = await fetch(WORKER_URL + "/api/admin/orders");
+    const response = await authFetch(WORKER_URL + "/api/admin/orders");
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load orders");
     return data.orders || [];
