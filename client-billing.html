@@ -73,9 +73,12 @@
 </div>
 <script>
 
-// Orders now come from the real backend (D1) via the Worker API,
-// not localStorage. Pricing still uses the local admin-configured
-// settings (getSettings()) — that piece hasn't been migrated yet.
+// Orders come from the real backend (D1) via the Worker API, not localStorage.
+// Amount per order is read from the order record itself (total_price /
+// price_per_review, captured at the time the order was placed) so invoices
+// don't shift if the admin changes the global price later. getSettings()
+// pricePerReview is only used as a last-resort fallback for old orders that
+// may not have those columns populated.
 
 const user = getUser();
 const table = document.getElementById("invoiceTable");
@@ -85,6 +88,14 @@ async function fetchMyOrders(email) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load orders");
     return data.orders || [];
+}
+
+function getOrderAmount(o, fallbackPricePerReview) {
+    if (o.total_price != null && o.total_price !== 0) return o.total_price;
+    const perReview = (o.price_per_review != null && o.price_per_review !== 0)
+        ? o.price_per_review
+        : fallbackPricePerReview;
+    return (o.reviews || 0) * perReview;
 }
 
 async function renderBilling() {
@@ -111,8 +122,11 @@ async function renderBilling() {
     }
 
     orders.forEach((o, index) => {
-        const isPaid = o.status === "Completed";
-        const amount = (o.reviews || 0) * settings.pricePerReview;
+        // "Paid" means payment has been made, regardless of fulfillment
+        // stage (Assigned / Under Review / Completed). Only orders still
+        // Awaiting Payment are unpaid/outstanding.
+        const isPaid = o.status !== "Awaiting Payment";
+        const amount = getOrderAmount(o, settings.pricePerReview);
 
         if (isPaid) {
             totalSpent += amount;
