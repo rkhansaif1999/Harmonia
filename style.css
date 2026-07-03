@@ -40,6 +40,68 @@ ul{
 }
 
 /*==================================================
+PARTICLES (ADDED — from About page)
+CSS-only floating particle effect. This replaces the
+per-page canvas + orb-layer approach. To use on a page,
+just add this markup right after <div class="noise"></div>:
+
+<div class="particles">
+  <div class="particle" style="left:6%;animation-duration:18s;animation-delay:-2s;"></div>
+  <div class="particle" style="left:14%;animation-duration:23s;animation-delay:-8s;"></div>
+  <div class="particle" style="left:24%;animation-duration:20s;animation-delay:-5s;"></div>
+  <div class="particle" style="left:35%;animation-duration:19s;animation-delay:-12s;"></div>
+  <div class="particle" style="left:47%;animation-duration:22s;animation-delay:-6s;"></div>
+  <div class="particle" style="left:58%;animation-duration:18s;animation-delay:-15s;"></div>
+  <div class="particle" style="left:69%;animation-duration:24s;animation-delay:-4s;"></div>
+  <div class="particle" style="left:81%;animation-duration:21s;animation-delay:-10s;"></div>
+  <div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
+</div>
+==================================================*/
+
+.particles{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.particle{
+    position:absolute;
+    width:26px;
+    height:26px;
+    background:radial-gradient(circle,
+        rgba(255,255,255,.95),
+        rgba(120,200,255,.45),
+        rgba(0,0,0,0) 70%);
+    border-radius:50%;
+    opacity:.55;
+    filter: blur(5px);
+    animation: floatSoft 14s ease-in-out infinite;
+}
+
+@keyframes floatSoft{
+    0%{
+        transform:translateY(110vh) translateX(0px) scale(.95);
+        opacity:0;
+    }
+    12%{
+        opacity:.6;
+    }
+    50%{
+        transform:translateY(50vh) translateX(40px) scale(1.25);
+        opacity:.55;
+    }
+    85%{
+        opacity:.4;
+    }
+    100%{
+        transform:translateY(-20vh) translateX(-30px) scale(1);
+        opacity:0;
+    }
+}
+
+/*==================================================
 AMBIENT GLOW BACKGROUND (site-wide, matches About)
 ==================================================*/
 
@@ -139,6 +201,50 @@ button:hover{
 
 button:active{
     transform:translateY(0);
+}
+
+/*==================================================
+BUTTONS (ADDED — from About page)
+Use class="btn btn-primary" / class="btn btn-secondary"
+on <a> or <button> tags going forward. Old .primary /
+.secondary classes below are left in place so existing
+pages don't break until their markup is updated.
+==================================================*/
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:17px 34px;
+    border-radius:14px;
+    font-weight:700;
+    transition:.35s ease;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:white;
+    color:#111827;
+    box-shadow:
+        0 18px 45px rgba(255,255,255,.12);
+}
+
+.btn-primary:hover{
+    transform:translateY(-6px);
+    box-shadow:
+        0 25px 60px rgba(255,255,255,.18);
+}
+
+.btn-secondary{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(24px);
+    color:white;
+}
+
+.btn-secondary:hover{
+    transform:translateY(-6px);
+    background:rgba(255,255,255,.08);
 }
 
 /*==================================================
@@ -429,7 +535,9 @@ DASHBOARD TOPBAR CHROME
 }
 
 /*==================================================
-LANDING PAGE HERO
+LANDING PAGE HERO (legacy — kept so unmodified pages
+don't break; overridden below by the About-page hero
+block wherever both apply to the same page)
 ==================================================*/
 
 .hero{
@@ -503,6 +611,121 @@ LANDING PAGE HERO
 .secondary:hover{
     background:rgba(255,255,255,.09);
     transform:translateY(-5px);
+}
+
+/*==================================================
+PREMIUM HERO (ADDED — from About page)
+This intentionally re-declares .hero, .hero h1, .hero p
+AFTER the legacy block above, so — by normal CSS cascade
+order — this version wins on every page using .hero.
+Use this markup structure going forward:
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">YOUR EYEBROW TEXT</div>
+      <h1>Heading Text <span>Gradient Part</span></h1>
+      <p>Supporting paragraph text.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-primary">Primary</a>
+        <a href="#" class="btn btn-secondary">Secondary</a>
+      </div>
+    </div>
+  </div>
+</section>
+==================================================*/
+
+.hero{
+    min-height:125vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    padding-top:100px;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    width:950px;
+    height:950px;
+    border-radius:50%;
+    background:radial-gradient(circle,
+        rgba(88,110,255,.18),
+        transparent 70%);
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
+.hero-content{
+    max-width:980px;
+    width:100%;
+    margin:0 auto;
+    position:relative;
+    z-index:5;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    transform:translateY(-50px);
+}
+
+.hero-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 22px;
+    border-radius:999px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(24px);
+    margin-bottom:34px;
+    font-size:.82rem;
+    letter-spacing:2px;
+    font-weight:700;
+    text-transform:uppercase;
+    color:#78cbff;
+}
+
+.hero h1{
+    font-size:6rem;
+    font-weight:800;
+    line-height:.92;
+    letter-spacing:-4px;
+    margin-bottom:34px;
+}
+
+.hero h1 span{
+    background:linear-gradient(
+        135deg,
+        #8d82ff,
+        #4ad6ff
+    );
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    color:#8d82ff;
+}
+
+.hero p{
+    font-size:1.25rem;
+    max-width:760px;
+    margin:auto;
+    color:#9dadc1;
+    line-height:1.9;
+    text-align:center;
+}
+
+.hero-buttons{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top:50px;
+    flex-wrap:wrap;
 }
 
 /*==================================================
@@ -1144,8 +1367,7 @@ CONTACT PAGE
 }
 
 /*==================================================
-SECTION TAG (small badge used to label sections,
-matches About page language)
+SECTION TAG (legacy — small badge, kept for fallback)
 ==================================================*/
 
 .section-tag{
@@ -1162,6 +1384,68 @@ matches About page language)
     text-transform:uppercase;
     backdrop-filter:blur(20px);
     margin-bottom:16px;
+}
+
+/*==================================================
+PREMIUM SECTION HEADINGS (ADDED — from About page)
+Re-declares .section-tag AFTER the legacy block above,
+so this version wins by cascade. Also adds .section-header
+wrapper classes for consistent section titles site-wide.
+Use this markup pattern for section intros:
+
+<div class="section-header">
+  <div class="section-tag">EYEBROW</div>
+  <h2>Heading <span>Gradient Part</span></h2>
+  <p>Supporting text.</p>
+</div>
+==================================================*/
+
+.section-header{
+    text-align:center;
+    margin-bottom:90px;
+}
+
+.section-tag{
+    display:inline-flex;
+    align-items:center;
+    padding:10px 20px;
+    border-radius:999px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    color:#73caff;
+    font-size:.82rem;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    backdrop-filter:blur(20px);
+    margin-bottom:24px;
+}
+
+.section-header h2{
+    font-size:4rem;
+    font-weight:800;
+    letter-spacing:-2px;
+    line-height:1.05;
+    margin-bottom:24px;
+}
+
+.section-header h2 span{
+    background:linear-gradient(
+        135deg,
+        #8c82ff,
+        #46d8ff
+    );
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    color:#8c82ff;
+}
+
+.section-header p{
+    max-width:760px;
+    margin:auto;
+    font-size:1.15rem;
+    color:#9aa9bb;
 }
 
 /*==================================================
@@ -1246,9 +1530,6 @@ RESPONSIVE
 
 @media (max-width:900px){
 
-    /* Old rule used to just hide every nav link except the last one,
-       leaving no way to reach them on mobile. Replaced with a real
-       hamburger-driven dropdown (see .navbar-toggle / .mobile-open). */
     .navbar-toggle{
         display:flex;
     }
@@ -1323,14 +1604,19 @@ RESPONSIVE
     .topbar h1{
         font-size:1.5rem;
     }
+
+    .hero{
+        min-height:90vh;
+    }
 }
 
 @media (max-width:700px){
-    .hero{ padding:120px 20px 70px; }
+    .hero{ padding-top:100px; }
     .hero h1{ font-size:2.4rem; letter-spacing:-1px; }
     .features{ grid-template-columns:1fr; }
     .cards{ grid-template-columns:1fr; }
     .page-hero h1{ font-size:2.2rem; }
+    .section-header h2{ font-size:2.2rem; }
     .auth-box, .login-box{ padding:34px 26px; }
 
     .topbar{
