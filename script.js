@@ -161,14 +161,26 @@ function statusBadge(status) {
 // =========================
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-function saveUser(user) {
+function saveUser(user, token) {
     const session = {
         ...user,
+        token: token || null,
         sessionExpires: Date.now() + SESSION_DURATION
     };
     localStorage.setItem(KEYS.USER, JSON.stringify(session));
 }
-
+// Wraps fetch() and automatically attaches the logged-in user's
+// session token as a Bearer header. Use this for any call to a
+// protected /api/... route instead of calling fetch() directly.
+async function authFetch(url, options = {}) {
+    const user = getUser();
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+        ...(user?.token ? { "Authorization": "Bearer " + user.token } : {})
+    };
+    return fetch(url, { ...options, headers });
+}
 function getUser() {
     const session = JSON.parse(localStorage.getItem(KEYS.USER));
 
@@ -237,7 +249,7 @@ if (!data?.user) {
 
         clearLoginAttempts(email);
 
-        saveUser(data.user);
+       saveUser(data.user, data.token);
 
         switch (data.user.role) {
 
