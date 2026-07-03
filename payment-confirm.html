@@ -109,6 +109,16 @@
         color:white;
         cursor:pointer;
     }
+    #submitError{
+        display:none;
+        margin-top:12px;
+        padding:12px;
+        border-radius:10px;
+        background:rgba(255,107,107,.1);
+        border:1px solid rgba(255,107,107,.4);
+        color:#ffb3b3;
+        font-size:.85rem;
+    }
 </style>
 </head>
 <body>
@@ -156,6 +166,8 @@
         <img id="screenshotPreview" alt="Payment screenshot preview">
     </div>
 
+    <p id="submitError"></p>
+
     <button id="confirmBtn" onclick="confirmPayment()" disabled>
         I've Paid — Confirm
     </button>
@@ -167,6 +179,11 @@
 </div>
 
 <script>
+// This page opens in its own tab (window.open from checkout) and never
+// loaded script.js, so WORKER_URL isn't already defined here - set it
+// directly, matching the same Worker used across the rest of the app.
+const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev";
+
 const orderId = sessionStorage.getItem("currentOrderId");
 const method = sessionStorage.getItem("currentPaymentMethod") || "-";
 const amount = sessionStorage.getItem("currentOrderAmount") || "-";
@@ -174,6 +191,15 @@ const amount = sessionStorage.getItem("currentOrderAmount") || "-";
 if (!orderId) {
     alert("No active order found. Please start checkout again.");
     window.close();
+}
+
+// localStorage is shared across tabs on the same origin, so the
+// session token saved at login (see login.html) is available here too.
+const authToken = localStorage.getItem("harmonia_token");
+
+if (!authToken) {
+    alert("Your session has expired. Please log in again to submit payment.");
+    window.location.href = "login.html";
 }
 
 document.getElementById("orderIdField").value = orderId || "";
@@ -230,7 +256,20 @@ function restartTimer() {
     startTimer();
 }
 
+function showSubmitError(message) {
+    const el = document.getElementById("submitError");
+    if (!message) {
+        el.style.display = "none";
+        el.textContent = "";
+        return;
+    }
+    el.textContent = message;
+    el.style.display = "block";
+}
+
 function handleScreenshot(event) {
+    showSubmitError("");
+
     const file = event.target.files[0];
     if (!file) {
         screenshotDataUrl = null;
@@ -254,7 +293,9 @@ function updateConfirmState() {
     document.getElementById("confirmBtn").disabled = !screenshotDataUrl || expired;
 }
 
-function confirmPayment() {
+async function confirmPayment() {
+    showSubmitError("");
+
     if (!screenshotDataUrl) {
         alert("Please upload a screenshot of your payment before confirming.");
         return;
@@ -265,44 +306,53 @@ function confirmPayment() {
         return;
     }
 
-    let orders = [];
-    try {
-        orders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
-    } catch (e) {
-        orders = [];
-    }
-
-    let found = false;
-    orders = orders.map(order => {
-        if (order.orderId === orderId) {
-            found = true;
-            return {
-                ...order,
-                status: "Under Review",
-                paymentMethod: method,
-                paymentProof: screenshotDataUrl,
-                submittedAt: new Date().toISOString()
-            };
-        }
-        return order;
-    });
-
-    if (!found) {
-        alert("Order could not be found. Please contact support.");
+    if (!authToken) {
+        alert("Your session has expired. Please log in again.");
+        window.location.href = "login.html";
         return;
     }
 
-    localStorage.setItem("harmonia_orders", JSON.stringify(orders));
-    sessionStorage.removeItem(DEADLINE_KEY);
+    const btn = document.getElementById("confirmBtn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
 
-    alert("Payment submitted for verification!");
+    try {
+        const response = await fetch(WORKER_URL + "/api/orders/submit-payment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + authToken
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                paymentMethod: method,
+                paymentProof: screenshotDataUrl
+            })
+        });
 
-    if (window.opener && !window.opener.closed) {
-        try {
-            window.opener.location.href = "client-orders.html";
-        } catch (e) {}
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to submit payment.");
+        }
+
+        sessionStorage.removeItem(DEADLINE_KEY);
+
+        alert("Payment submitted for verification!");
+
+        if (window.opener && !window.opener.closed) {
+            try {
+                window.opener.location.href = "client-orders.html";
+            } catch (e) {}
+        }
+        window.location.href = "client-orders.html";
+
+    } catch (err) {
+        showSubmitError(err.message);
+        btn.disabled = false;
+        btn.textContent = "I've Paid — Confirm";
+        updateConfirmState();
     }
-    window.location.href = "client-orders.html";
 }
 
 startTimer();
