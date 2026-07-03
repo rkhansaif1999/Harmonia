@@ -22,18 +22,49 @@
 <!-- PARTICLES (slightly denser than other pages = more premium feel) -->
 <canvas id="particles"></canvas>
 
-<!-- NAVBAR -->
-<nav class="navbar" id="navbar">
-  <div class="logo">Harmonia</div>
+<nav>
 
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="pricing.html">Pricing</a>
-    <a href="contact.html" class="current">Contact</a>
-    <a href="login.html">Login</a>
-  </div>
+<div class="nav-inner">
+
+<a href="index.html" class="logo">
+Harmonia
+</a>
+
+<div class="menu">
+
+<a href="index.html">Home</a>
+
+<a href="about.html">About</a>
+
+<a href="pricing.html">Pricing</a>
+
+<a href="contact.html">Contact</a>
+
+<a href="login.html">Login</a>
+
+</div>
+
+<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">
+☰
+</button>
+
+</div>
+
 </nav>
+
+<div class="mobile-menu" id="mobileMenu">
+
+<a href="index.html">Home</a>
+
+<a href="about.html">About</a>
+
+<a href="pricing.html">Pricing</a>
+
+<a href="contact.html">Contact</a>
+
+<a href="login.html">Login</a>
+
+</div>
 
 <main class="container">
 
@@ -163,15 +194,27 @@ async function handleContactSubmit(event){
     }
 }
 
-/* NAVBAR BLUR EFFECT */
-const navbar = document.getElementById("navbar");
+  /* ========================================
+MOBILE NAV TOGGLE
+======================================== */
+(function () {
+    const toggle = document.getElementById("navToggle");
+    const menu = document.getElementById("mobileMenu");
 
-window.addEventListener("scroll", () => {
-  navbar.style.background =
-    window.scrollY > 20
-      ? "rgba(6,10,18,.88)"
-      : "rgba(6,10,18,.72)";
-});
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener("click", () => {
+        menu.classList.toggle("open");
+        toggle.textContent = menu.classList.contains("open") ? "✕" : "☰";
+    });
+
+    menu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+            menu.classList.remove("open");
+            toggle.textContent = "☰";
+        });
+    });
+})();
 
 /* PARTICLES (more premium density than other pages) */
 const canvas = document.getElementById("particles");
@@ -269,7 +312,9 @@ canvas{
   pointer-events:none;
 }
 
-.navbar, .container{
+nav,
+.mobile-menu,
+.container{
   position:relative;
   z-index:2;
 }
