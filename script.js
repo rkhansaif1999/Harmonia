@@ -746,7 +746,7 @@ async function deleteMessage(id) {
 
     try {
 
-        const response = await fetch(
+       const response = await authFetch(
             WORKER_URL + "/api/admin/contact-messages/delete",
             {
                 method: "POST",
