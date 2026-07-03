@@ -22,62 +22,24 @@
 <!-- PARTICLES (slightly denser than other pages = more premium feel) -->
 <canvas id="particles"></canvas>
 
-<nav>
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="logo">Harmonia</div>
 
-<div class="nav-inner">
-
-<a href="index.html" class="logo">
-Harmonia
-</a>
-
-<div class="menu">
-
-<a href="index.html">Home</a>
-
-<a href="about.html">About</a>
-
-<a href="pricing.html">Pricing</a>
-
-<a href="contact.html" class="current">Contact</a>
-
-<a href="login.html">Login</a>
-
-</div>
-
-<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">
-☰
-</button>
-
-</div>
-
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html" class="current">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
 </nav>
 
-<div class="mobile-menu" id="mobileMenu">
-
-<a href="index.html">Home</a>
-
-<a href="about.html">About</a>
-
-<a href="pricing.html">Pricing</a>
-
-<a href="contact.html" class="current">Contact</a>
-
-<a href="login.html">Login</a>
-
-</div>
-
-<main>
+<main class="container">
 
   <!-- HERO -->
-  <section class="hero page-hero">
-
-<div class="container">
-
-<div class="hero-content">
-
-<div class="section-tag">
-Contact
-</div>
+  <section class="page-hero">
+    <div class="section-tag">Contact</div>
 
     <h1>
       Get in
@@ -87,19 +49,13 @@ Contact
     </h1>
 
     <p>
-Questions about projects, accounts, or becoming a contributor?
-We respond quickly and handle all inquiries personally.
-</p>
+      Questions about projects, accounts, or becoming a contributor?
+      We respond quickly and handle all inquiries personally.
+    </p>
+  </section>
 
-</div>
-
-</div>
-
-</section>
   <!-- CONTACT AREA -->
   <section class="contact-wrap">
-
-<div class="container">
 
     <!-- FORM CARD -->
     <div class="card" id="formCard" style="
@@ -141,23 +97,21 @@ We respond quickly and handle all inquiries personally.
     </div>
 
     <!-- SUCCESS CARD -->
-<div class="card" id="successCard" style="display:none; text-align:center;">
+    <div class="card" id="successCard" style="display:none; text-align:center;">
 
-  <div style="font-size:3rem;margin-bottom:12px;">✨</div>
+      <div style="font-size:3rem;margin-bottom:12px;">✨</div>
 
-  <h2 style="letter-spacing:-1px;">Message Sent</h2>
+      <h2 style="letter-spacing:-1px;">Message Sent</h2>
 
-  <p style="color:#9ea8bc; margin-top:10px; line-height:1.7;">
-    Thanks for reaching out — our team will get back to you soon.
-  </p>
+      <p style="color:#9ea8bc; margin-top:10px; line-height:1.7;">
+        Thanks for reaching out — our team will get back to you soon.
+      </p>
 
-  <a class="back" href="index.html">← Back to Home</a>
+      <a class="back" href="index.html">← Back to Home</a>
 
-</div>
+    </div>
 
-</div>
-
-</section>
+  </section>
 
 </main>
 
@@ -209,27 +163,15 @@ async function handleContactSubmit(event){
     }
 }
 
-  /* ========================================
-MOBILE NAV TOGGLE
-======================================== */
-(function () {
-    const toggle = document.getElementById("navToggle");
-    const menu = document.getElementById("mobileMenu");
+/* NAVBAR BLUR EFFECT */
+const navbar = document.getElementById("navbar");
 
-    if (!toggle || !menu) return;
-
-    toggle.addEventListener("click", () => {
-        menu.classList.toggle("open");
-        toggle.textContent = menu.classList.contains("open") ? "✕" : "☰";
-    });
-
-    menu.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", () => {
-            menu.classList.remove("open");
-            toggle.textContent = "☰";
-        });
-    });
-})();
+window.addEventListener("scroll", () => {
+  navbar.style.background =
+    window.scrollY > 20
+      ? "rgba(6,10,18,.88)"
+      : "rgba(6,10,18,.72)";
+});
 
 /* PARTICLES (more premium density than other pages) */
 const canvas = document.getElementById("particles");
@@ -327,9 +269,7 @@ canvas{
   pointer-events:none;
 }
 
-nav,
-.mobile-menu,
-.container{
+.navbar, .container{
   position:relative;
   z-index:2;
 }
