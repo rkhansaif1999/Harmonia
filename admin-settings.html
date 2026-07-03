@@ -70,7 +70,7 @@
 // and browsers instead of being per-browser.
 
 async function fetchSettings() {
-    const response = await fetch(WORKER_URL + "/api/admin/settings");
+    const response = await authFetch(WORKER_URL + "/api/admin/settings");
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load settings");
     return data.settings;
