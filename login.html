@@ -262,7 +262,9 @@ Forgot password?
 
 <input type="hidden" id="role" required>
 
-<button class="primary full" type="submit">
+<p class="form-msg" id="loginMsg" style="min-height:20px;font-size:.9rem;margin-top:6px;text-align:center;color:#ff8080;"></p>
+
+<button class="primary full" type="submit" id="loginBtn">
 Login
 </button>
 
@@ -291,6 +293,108 @@ function selectRole(role, element){
     element.classList.add("selected");
 
     document.getElementById("role").value = role;
+}
+
+/* ================================
+   LOGIN (migrated from localStorage to the Worker /api/login route)
+
+   The role cards above are kept purely as a UX gate (pick which
+   dashboard you're trying to reach) - the account's REAL role always
+   comes from the server's response, never from what was clicked. If
+   they don't match, we don't let the login proceed to that dashboard.
+
+   On success we store the session token (sliding 1hr expiry) alongside
+   the user object, so other pages can attach it as
+   "Authorization: Bearer <token>" on their own API calls.
+================================ */
+
+const ROLE_DASHBOARD = {
+    admin: "admin-dashboard.html",
+    client: "client-dashboard.html",
+    worker: "worker-dashboard.html",
+    reviewer: "reviewer-dashboard.html"
+};
+
+function setMsg(text){
+    const el = document.getElementById("loginMsg");
+    el.textContent = text || "";
+}
+
+async function loginUser(event){
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const selectedRole = document.getElementById("role").value;
+    const btn = document.getElementById("loginBtn");
+
+    setMsg("");
+
+    if (!selectedRole) {
+        setMsg("Please choose an account type above.");
+        return;
+    }
+
+    if (typeof isLockedOut === "function" && isLockedOut(email)) {
+        setMsg("Too many failed attempts. Please wait 5 minutes before trying again.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Logging in...";
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.user) {
+            if (typeof recordFailedAttempt === "function") recordFailedAttempt(email);
+            setMsg(data.error || "Invalid email or password.");
+            return;
+        }
+
+        if (data.user.role !== selectedRole) {
+            // Credentials were correct, but this account isn't the role
+            // they meant to log into. Clean up the session we were just
+            // issued rather than leaving it dangling unused.
+            try {
+                await fetch(WORKER_URL + "/api/logout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + data.token
+                    },
+                    body: JSON.stringify({})
+                });
+            } catch (e) { /* best-effort cleanup, ignore failures */ }
+
+            setMsg(`This account is registered as "${data.user.role}", not "${selectedRole}". Please select the correct account type.`);
+            return;
+        }
+
+        if (typeof clearLoginAttempts === "function") clearLoginAttempts(email);
+
+        // Store the session token so other pages can send it as a
+        // bearer token, and keep using saveUser() so every existing
+        // page that calls getUser() keeps working unchanged.
+        localStorage.setItem("harmonia_token", data.token);
+        localStorage.setItem("harmonia_token_expires_at", String(data.expiresAt));
+        saveUser(data.user);
+
+        const destination = ROLE_DASHBOARD[data.user.role] || "index.html";
+        window.location.href = destination;
+
+    } catch (err) {
+        setMsg("Could not reach the server. Please check your connection and try again.");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Login";
+    }
 }
 
 /* PARTICLES */
