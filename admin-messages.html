@@ -5,6 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Messages - Harmonia</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .msg-row td { vertical-align: top; }
+        .msg-row:hover { background: rgba(0,0,0,0.03); }
+        .msg-expanded td {
+            background: rgba(0,0,0,0.02);
+            padding: 16px;
+        }
+        .expanded-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .expanded-content .full-message {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin: 0 0 8px 0;
+        }
+        .expanded-content textarea {
+            font-family: inherit;
+            font-size: 14px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .expanded-content button {
+            align-self: flex-start;
+            cursor: pointer;
+        }
+        .reply-status {
+            font-size: 13px;
+            margin-left: 8px;
+        }
+    </style>
 </head>
 <body>
 <div class="noise"></div>
@@ -55,6 +94,9 @@
     </main>
 </div>
 <script>
+// Keeps track of which message rows are currently expanded
+let expandedIds = new Set();
+
 async function renderMessages(){
     const data = await getContactMessages();
     const messages = (data.messages || []).slice().reverse();
@@ -65,32 +107,109 @@ async function renderMessages(){
         return;
     }
     messages.forEach(m => {
+        const isExpanded = expandedIds.has(m.id);
+
         table.innerHTML += `
-            <tr>
-                <td onclick="markRead(${m.id})" style="cursor:pointer;">${escapeHTML(m.name)}</td>
+            <tr class="msg-row" onclick="toggleExpand(${m.id})">
+                <td>${escapeHTML(m.name)}</td>
                 <td>${escapeHTML(m.email)}</td>
                 <td>${escapeHTML(m.type)}</td>
                 <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(m.message)}">${escapeHTML(m.message)}</td>
                 <td>${m.created_at || ""}</td>
                 <td>${statusBadge(m.status)}</td>
-                <td><button type="button" onclick="deleteMsg(${m.id})">🗑 Delete</button></td>
+                <td><button type="button" onclick="event.stopPropagation(); deleteMsg(${m.id})">🗑 Delete</button></td>
             </tr>
         `;
+
+        if (isExpanded) {
+            table.innerHTML += `
+                <tr class="msg-expanded" onclick="event.stopPropagation()">
+                    <td colspan="7">
+                        <div class="expanded-content">
+                            <p><strong>Full message:</strong></p>
+                            <p class="full-message">${escapeHTML(m.message)}</p>
+                            ${m.admin_reply ? `
+                                <p><strong>Previous reply</strong> (${m.replied_at || ""}):</p>
+                                <p class="full-message">${escapeHTML(m.admin_reply)}</p>
+                            ` : ""}
+                            <p><strong>Reply to ${escapeHTML(m.name)}:</strong></p>
+                            <textarea id="reply-${m.id}" rows="4" style="width:100%;" placeholder="Type your reply here..."></textarea>
+                            <div>
+                                <button type="button" onclick="sendReply(${m.id})">📤 Send Reply</button>
+                                <span class="reply-status" id="reply-status-${m.id}"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
     });
 }
-async function markRead(id){
+
+function toggleExpand(id){
+    if (expandedIds.has(id)) {
+        expandedIds.delete(id);
+    } else {
+        expandedIds.add(id);
+        // Mark as read in the background, don't re-render again from this call
+        markRead(id, false);
+    }
+    renderMessages();
+}
+
+async function markRead(id, shouldRerender = true){
     await fetch(WORKER_URL + "/api/admin/contact-messages/read", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
     });
-    renderMessages();
+    if (shouldRerender) renderMessages();
 }
+
+async function sendReply(id){
+    const textarea = document.getElementById(`reply-${id}`);
+    const statusEl = document.getElementById(`reply-status-${id}`);
+    const message = textarea.value.trim();
+
+    if (!message) {
+        statusEl.textContent = "Please type a reply first.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    try {
+        const res = await fetch(WORKER_URL + "/api/admin/contact-messages/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, message })
+        });
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            statusEl.textContent = "Failed to send: " + (result.error || res.status);
+            statusEl.style.color = "#c0392b";
+            return;
+        }
+
+        statusEl.textContent = "Reply sent ✔";
+        statusEl.style.color = "#2e7d32";
+        setTimeout(renderMessages, 700);
+    } catch (err) {
+        statusEl.textContent = "Failed to send: " + err.message;
+        statusEl.style.color = "#c0392b";
+    }
+}
+
 async function deleteMsg(id){
     if (!confirm("Delete this message?")) return;
+    expandedIds.delete(id);
     await deleteMessage(id);
     renderMessages();
 }
+
 renderMessages();
 </script>
 </body>
