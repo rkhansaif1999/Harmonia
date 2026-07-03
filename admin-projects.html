@@ -394,7 +394,7 @@ async function approvePayment(orderId) {
 
 async function assignWorkerToOrder(orderId, workerId) {
     if (!workerId) return;
-    const response = await fetch(WORKER_URL + "/api/admin/orders/assign", {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/assign", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, workerId })
