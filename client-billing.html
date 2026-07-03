@@ -1,30 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Billing - Harmonia</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
 <div class="noise"></div>
-
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 <script>
     protectPage("client");
 </script>
-
 <div class="dashboard">
-
     <!-- Sidebar -->
     <aside class="sidebar">
-
         <h2 class="logo">Harmonia</h2>
-
         <ul>
             <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
             <li><a href="client-projects.html">📁 Projects</a></li>
@@ -35,52 +26,36 @@
             <li>⚙ Settings</li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
-
     </aside>
-
     <!-- Main -->
     <main class="main">
-
         <header class="topbar">
-
             <h1>Billing</h1>
-
             <div class="profile">
                 Client
             </div>
-
         </header>
-
         <section class="cards">
-
             <div class="dashboard-card">
                 <h3>Total Spent</h3>
                 <h2 id="totalSpent">$0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Outstanding Balance</h3>
                 <h2 id="outstandingBalance">$0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Paid Invoices</h3>
                 <h2 id="paidCount">0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Pending Invoices</h3>
                 <h2 id="pendingCount">0</h2>
             </div>
-
         </section>
-
         <section class="recent">
-
             <h2>Invoice History</h2>
-
             <table>
-
                 <thead>
                     <tr>
                         <th>Invoice</th>
@@ -89,59 +64,82 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-
-                <tbody id="invoiceTable"></tbody>
-
+                <tbody id="invoiceTable">
+                    <tr><td colspan="4" style="opacity:.6;">Loading invoices...</td></tr>
+                </tbody>
             </table>
-
         </section>
-
     </main>
-
 </div>
-
 <script>
 
+// Orders now come from the real backend (D1) via the Worker API,
+// not localStorage. Pricing still uses the local admin-configured
+// settings (getSettings()) — that piece hasn't been migrated yet.
+
 const user = getUser();
-const projects = getProjects().filter(p => p.clientId == user.id);
-
-let totalSpent = 0;
-let outstanding = 0;
-let paidCount = 0;
-let pendingCount = 0;
-
 const table = document.getElementById("invoiceTable");
 
-projects.forEach((p, index) => {
+async function fetchMyOrders(email) {
+    const response = await fetch(WORKER_URL + "/api/orders?email=" + encodeURIComponent(email));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
 
-    const isPaid = p.status === "Completed";
-    const amount = p.totalCost || 0;
+async function renderBilling() {
 
-    if (isPaid) {
-        totalSpent += amount;
-        paidCount++;
-    } else {
-        outstanding += amount;
-        pendingCount++;
+    let orders;
+    try {
+        orders = await fetchMyOrders(user.email);
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="4" style="color:#ff8080;">Could not load invoices: ${escapeHTML(err.message)}</td></tr>`;
+        return;
     }
 
-    table.innerHTML += `
-        <tr>
-            <td>#INV-${1000 + index}</td>
-            <td>${escapeHTML(p.projectName)}</td>
-            <td>$${amount}</td>
-            <td>${statusBadge(isPaid ? "Paid" : "Pending")}</td>
-        </tr>
-    `;
-});
+    const settings = getSettings();
 
-document.getElementById("totalSpent").textContent = "$" + totalSpent;
-document.getElementById("outstandingBalance").textContent = "$" + outstanding;
-document.getElementById("paidCount").textContent = paidCount;
-document.getElementById("pendingCount").textContent = pendingCount;
+    let totalSpent = 0;
+    let outstanding = 0;
+    let paidCount = 0;
+    let pendingCount = 0;
+
+    table.innerHTML = "";
+
+    if (orders.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No invoices yet</td></tr>`;
+    }
+
+    orders.forEach((o, index) => {
+        const isPaid = o.status === "Completed";
+        const amount = (o.reviews || 0) * settings.pricePerReview;
+
+        if (isPaid) {
+            totalSpent += amount;
+            paidCount++;
+        } else {
+            outstanding += amount;
+            pendingCount++;
+        }
+
+        table.innerHTML += `
+            <tr>
+                <td>#INV-${1000 + index}</td>
+                <td>${escapeHTML(o.project_name)}</td>
+                <td>$${amount}</td>
+                <td>${statusBadge(isPaid ? "Paid" : "Pending")}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalSpent").textContent = "$" + totalSpent;
+    document.getElementById("outstandingBalance").textContent = "$" + outstanding;
+    document.getElementById("paidCount").textContent = paidCount;
+    document.getElementById("pendingCount").textContent = pendingCount;
+}
+
+renderBilling();
 
 </script>
-
 </body>
-
 </html>
