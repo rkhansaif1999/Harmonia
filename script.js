@@ -714,7 +714,7 @@ async function replyToMessage(id, message) {
 
     try {
 
-        const response = await fetch(
+       const response = await authFetch(
             WORKER_URL + "/api/admin/contact-messages/reply",
             {
                 method: "POST",
