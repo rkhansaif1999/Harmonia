@@ -11,9 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /*==================================================
-    RESET + ALL CSS FROM ABOUT PAGE (including navbar & mobile menu)
-    ==================================================*/
     *{margin:0;padding:0;box-sizing:border-box;}
     html{scroll-behavior:smooth;}
     body{
@@ -29,125 +26,57 @@
     }
     img{display:block;width:100%;}
     a{text-decoration:none;color:inherit;}
-    button{font-family:inherit;}
-    .container{width:min(1280px,92%);margin:auto;position:relative;z-index:2;}
-    section{padding:140px 0;position:relative;}
 
-    /* Animated Background */
-    body::before{
-      content:""; position:fixed; top:-350px; left:-250px; width:750px; height:750px;
-      border-radius:50%; background:#605dff; filter:blur(220px); opacity:.13; z-index:-3;
-      animation:glowOne 16s ease-in-out infinite alternate;
-    }
-    body::after{
-      content:""; position:fixed; right:-280px; bottom:-320px; width:800px; height:800px;
-      border-radius:50%; background:radial-gradient(circle, rgba(120,110,255,.25), transparent 70%);
-      filter:blur(240px); opacity:.12; z-index:-3; animation:glowTwo 20s ease-in-out infinite alternate;
-    }
-    @keyframes glowOne{0%{transform:translate(0,0);} 100%{transform:translate(170px,130px);}}
-    @keyframes glowTwo{0%{transform:translate(0,0);} 100%{transform:translate(-180px,-140px);}}
-
-    /* Noise & Particles */
-    .noise{position:fixed;inset:0;pointer-events:none;opacity:.015;
-      background-image: radial-gradient(circle at 20% 20%,white 1px,transparent 1px),
-                        radial-gradient(circle at 80% 40%,white 1px,transparent 1px),
-                        radial-gradient(circle at 40% 80%,white 1px,transparent 1px),
-                        radial-gradient(circle at 60% 60%,white 1px,transparent 1px);
-      background-size:220px 220px; z-index:-2;
-    }
-    .particles{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1;}
-    .particle{position:absolute;width:26px;height:26px;
-      background:radial-gradient(circle,rgba(255,255,255,.95),rgba(120,200,255,.45),rgba(0,0,0,0) 70%);
-      border-radius:50%; opacity:.55; filter: blur(5px);
-      animation: floatSoft 14s ease-in-out infinite;
-    }
-    @keyframes floatSoft{
-      0%{transform:translateY(110vh) translateX(0px) scale(.95); opacity:0;}
-      12%{opacity:.6;}
-      50%{transform:translateY(50vh) translateX(40px) scale(1.25); opacity:.55;}
-      85%{opacity:.4;}
-      100%{transform:translateY(-20vh) translateX(-30px) scale(1); opacity:0;}
-    }
-
-    /* NAVBAR + MOBILE MENU (Critical Fix) */
-    nav{
-      position:fixed; top:0; left:0; width:100%; height:82px; display:flex; align-items:center;
-      backdrop-filter:blur(24px); background:rgba(6,10,18,.72);
-      border-bottom:1px solid rgba(255,255,255,.06); z-index:999;
-    }
-    .nav-inner{
-      display:flex; justify-content:space-between; align-items:center;
-      width:min(1280px,92%); margin:auto;
-    }
-    .logo{
-      font-size:1.85rem; font-weight:800; letter-spacing:-1px;
-      background:linear-gradient(135deg,#7d79ff,#45d7ff);
-      -webkit-background-clip:text; background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .menu{display:flex; gap:42px;}
-    .menu a{color:#b7c4d6; font-weight:500; transition:.35s;}
+    /* Navbar */
+    nav{position:fixed;top:0;left:0;width:100%;height:82px;display:flex;align-items:center;
+      backdrop-filter:blur(24px);background:rgba(6,10,18,.72);border-bottom:1px solid rgba(255,255,255,.06);z-index:999;}
+    .nav-inner{display:flex;justify-content:space-between;align-items:center;width:min(1280px,92%);margin:auto;}
+    .logo{font-size:1.85rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#7d79ff,#45d7ff);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .menu{display:flex;gap:42px;}
+    .menu a{color:#b7c4d6;font-weight:500;transition:.35s;}
     .menu a:hover{color:white;}
-
-    .nav-toggle{
-      display:none; width:44px; height:44px; border-radius:12px;
-      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
-      color:#fff; font-size:1.2rem; align-items:center; justify-content:center;
-      cursor:pointer;
-    }
-    .mobile-menu{
-      position:fixed; top:82px; left:0; width:100%; max-height:0;
-      overflow:hidden; background:rgba(6,10,18,.96); backdrop-filter:blur(24px);
-      border-bottom:1px solid rgba(255,255,255,.06); transition:max-height .4s ease;
-      z-index:998;
-    }
+    .nav-toggle{display:none;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);color:#fff;font-size:1.2rem;align-items:center;justify-content:center;cursor:pointer;}
+    .mobile-menu{position:fixed;top:82px;left:0;width:100%;max-height:0;overflow:hidden;
+      background:rgba(6,10,18,.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06);
+      transition:max-height .4s ease;z-index:998;}
     .mobile-menu.open{max-height:400px;}
-    .mobile-menu a{
-      display:block; padding:18px 24px; color:#b7c4d6; font-weight:600;
-      border-top:1px solid rgba(255,255,255,.05);
-    }
-    .mobile-menu a:hover{color:#fff; background:rgba(255,255,255,.03);}
+    .mobile-menu a{display:block;padding:18px 24px;color:#b7c4d6;font-weight:600;border-top:1px solid rgba(255,255,255,.05);}
+    .mobile-menu a:hover{color:#fff;background:rgba(255,255,255,.03);}
+    @media (max-width:900px){.nav-toggle{display:flex;}.menu{display:none;}}
 
-    @media (max-width:900px){
-      .nav-toggle{display:flex;}
-      .menu{display:none;}
-    }
+    /* Premium Form */
+    .container{width:min(1280px,92%);margin:auto;position:relative;z-index:2;}
+    .page-hero{text-align:center;padding-top:140px;}
+    .section-tag{display:inline-flex;align-items:center;padding:10px 20px;border-radius:999px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#73caff;
+      font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;backdrop-filter:blur(20px);margin-bottom:24px;}
+    .page-hero h1{font-size:4.5rem;font-weight:800;letter-spacing:-3px;line-height:1.1;margin-bottom:20px;}
+    .page-hero p{max-width:700px;margin:0 auto 60px;color:#9dadc1;font-size:1.15rem;}
 
-    /* Rest of your Contact-specific styles + About styles can go here */
-    .page-hero{text-align:center; padding-top:120px;}
-    .section-tag{
-      display:inline-flex; align-items:center; padding:10px 20px; border-radius:999px;
-      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
-      color:#73caff; font-size:.82rem; font-weight:700; letter-spacing:2px;
-      text-transform:uppercase; backdrop-filter:blur(20px); margin-bottom:24px;
-    }
-    .page-hero h1{font-size:4.5rem; font-weight:800; letter-spacing:-3px; line-height:1.1;}
-    .page-hero p{max-width:700px; margin:30px auto; color:#9dadc1; font-size:1.15rem;}
+    .card{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(28px);
+      border-radius:30px;padding:50px;max-width:680px;margin:0 auto;}
+    label{display:block;margin:22px 0 10px;color:#a8b6cc;font-weight:500;font-size:1.02rem;}
+    input, select, textarea{width:100%;padding:18px 22px;border-radius:16px;background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.15);color:white;font-size:1.05rem;transition:.3s;}
+    input:focus, select:focus, textarea:focus{outline:none;border-color:rgba(120,200,255,.6);box-shadow:0 0 0 3px rgba(120,200,255,.15);}
 
-    /* Form Styles */
-    .card{
-      background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.08);
-      backdrop-filter:blur(28px); border-radius:30px; padding:50px; max-width:680px; margin:0 auto;
-    }
-    label{display:block; margin:20px 0 8px; color:#a0b0c8; font-weight:500;}
-    input, select, textarea{
-      width:100%; padding:16px 20px; border-radius:14px; background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.1); color:white; font-size:1rem;
-    }
-    button.primary{
-      background:white; color:#111827; font-weight:700; padding:18px 40px;
-      border:none; border-radius:14px; cursor:pointer; width:100%;
-    }
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2388a4d0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 20px center;cursor:pointer;}
+    select option{background:#0f172a;color:white;padding:12px;}
 
-    /* Orb & Canvas styles (kept from your original) */
-    .orb-layer{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
-    .orb{position:absolute; border-radius:50%; filter:blur(120px); opacity:.30; animation:float 18s ease-in-out infinite;}
-    .orb1{width:560px;height:560px; background:radial-gradient(circle,#7d79ff,transparent 60%); top:5%; left:3%;}
-    .orb2{width:650px;height:650px; background:radial-gradient(circle,#45d7ff,transparent 60%); bottom:5%; right:6%; animation-duration:22s;}
-    .orb3{width:480px;height:480px; background:radial-gradient(circle,rgba(255,255,255,.22),transparent 60%); top:45%; left:58%; animation-duration:26s;}
-    @keyframes float{0%,100%{transform:translate(0,0);} 50%{transform:translate(50px,-70px);}}
-    canvas{position:fixed; inset:0; z-index:0; pointer-events:none;}
-    .navbar, .container{position:relative; z-index:2;}
+    button.primary{background:linear-gradient(135deg,#ffffff,#e0e7ff);color:#111827;font-weight:700;padding:18px 40px;
+      border:none;border-radius:16px;cursor:pointer;width:100%;margin-top:30px;font-size:1.1rem;transition:.4s;}
+    button.primary:hover{transform:translateY(-4px);box-shadow:0 25px 50px rgba(120,200,255,.3);}
+
+    /* Orbs */
+    .orb-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.30;animation:float 18s ease-in-out infinite;}
+    .orb1{width:560px;height:560px;background:radial-gradient(circle,#7d79ff,transparent 60%);top:5%;left:3%;}
+    .orb2{width:650px;height:650px;background:radial-gradient(circle,#45d7ff,transparent 60%);bottom:5%;right:6%;animation-duration:22s;}
+    .orb3{width:480px;height:480px;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 60%);top:45%;left:58%;animation-duration:26s;}
+    @keyframes float{0%,100%{transform:translate(0,0);}50%{transform:translate(50px,-70px);}}
+    canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
   </style>
 </head>
 
@@ -166,7 +95,6 @@
     <div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
   </div>
 
-  <!-- FIXED NAVIGATION (Same as About page) -->
   <nav>
     <div class="nav-inner">
       <a href="index.html" class="logo">Harmonia</a>
@@ -177,7 +105,7 @@
         <a href="contact.html">Contact</a>
         <a href="login.html">Login</a>
       </div>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+      <button class="nav-toggle" id="navToggle">☰</button>
     </div>
   </nav>
 
@@ -189,7 +117,6 @@
     <a href="login.html">Login</a>
   </div>
 
-  <!-- ORB LAYER -->
   <div class="orb-layer">
     <div class="orb orb1"></div>
     <div class="orb orb2"></div>
@@ -197,7 +124,7 @@
   </div>
   <canvas id="particles"></canvas>
 
-  <main class="container" style="position:relative; z-index:2;">
+  <main class="container">
     <section class="page-hero">
       <div class="section-tag">Contact</div>
       <h1>Get in <span style="background:linear-gradient(135deg,#8d82ff,#4ad6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Touch</span></h1>
@@ -205,12 +132,14 @@
     </section>
 
     <section class="contact-wrap">
-      <div class="card" id="formCard" style="border:1px solid rgba(120,203,255,.18); box-shadow:0 35px 90px rgba(0,0,0,.45);">
+      <div class="card" id="formCard">
         <form onsubmit="handleContactSubmit(event)">
           <label>Your Name</label>
           <input type="text" id="cName" placeholder="Full Name" required>
+
           <label>Your Email</label>
           <input type="email" id="cEmail" placeholder="Email" required>
+
           <label>I am a...</label>
           <select id="cType" required>
             <option value="">Select One</option>
@@ -219,34 +148,34 @@
             <option value="Existing Client">Existing Client</option>
             <option value="Other">Other</option>
           </select>
+
           <label>Message</label>
           <textarea id="cMessage" rows="6" placeholder="How can we help?" required></textarea>
+
           <p id="cError" style="color:#ff8080; display:none; margin-top:10px;"></p>
-          <button class="primary full" type="submit" id="cSubmitBtn" style="margin-top:16px;">Send Message</button>
+          <button class="primary" type="submit" id="cSubmitBtn">Send Message</button>
         </form>
       </div>
 
       <div class="card" id="successCard" style="display:none; text-align:center;">
         <div style="font-size:3rem;margin-bottom:12px;">✨</div>
-        <h2 style="letter-spacing:-1px;">Message Sent</h2>
+        <h2>Message Sent</h2>
         <p style="color:#9ea8bc; margin-top:10px; line-height:1.7;">Thanks for reaching out — our team will get back to you soon.</p>
-        <a class="back" href="index.html">← Back to Home</a>
+        <a href="index.html" style="color:#78cbff;margin-top:20px;display:inline-block;">← Back to Home</a>
       </div>
     </section>
   </main>
 
   <script>
-    /* MOBILE MENU TOGGLE */
+    /* Mobile Menu Toggle */
     (function(){
       const toggle = document.getElementById("navToggle");
       const menu = document.getElementById("mobileMenu");
-      if (!toggle || !menu) return;
-
+      if(!toggle || !menu) return;
       toggle.addEventListener("click", () => {
         menu.classList.toggle("open");
         toggle.textContent = menu.classList.contains("open") ? "✕" : "☰";
       });
-
       menu.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
           menu.classList.remove("open");
@@ -255,7 +184,7 @@
       });
     })();
 
-    /* Your existing Contact Form Script */
+    /* Contact Form */
     async function handleContactSubmit(event){
       event.preventDefault();
       const btn = document.getElementById("cSubmitBtn");
@@ -270,7 +199,6 @@
       btn.disabled = true;
       btn.textContent = "Sending...";
       try {
-        // Replace with your actual endpoint
         const res = await fetch(`${WORKER_URL || '/api'}/contact`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -288,13 +216,13 @@
       }
     }
 
-    /* Particles Canvas */
+    /* Particles */
     const canvas = document.getElementById("particles");
     const ctx = canvas.getContext("2d");
     function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     resize();
     let particles = [];
-    for(let i=0; i<85; i++){
+    for(let i=0;i<85;i++){
       particles.push({
         x: Math.random()*window.innerWidth,
         y: Math.random()*window.innerHeight,
