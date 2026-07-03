@@ -118,7 +118,7 @@ async function fetchOrders() {
 }
 
 async function fetchWorkers() {
-    const response = await fetch(WORKER_URL + "/api/admin/users");
+    const response = await authFetch(WORKER_URL + "/api/admin/users");
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load workers");
     return (data.users || []).filter(u => u.role === "worker" && u.status === "approved");
