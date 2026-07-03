@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Projects - Harmonia</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
 <div class="noise"></div>
-
-<script src="script.js"></script>
-
+<script src="script.js?v=2"></script>
 <script>
     protectPage("client");
 </script>
-
 <div class="dashboard">
-
     <!-- Sidebar -->
     <aside class="sidebar">
-
         <h2 class="logo">Harmonia</h2>
-
         <ul>
             <li><a href="client-dashboard.html">🏠 Dashboard</a></li>
             <li class="active">📁 Projects</li>
@@ -36,26 +26,18 @@
             <li>⚙ Settings</li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
-
     </aside>
-
     <!-- Main -->
     <main class="main">
-
         <header class="topbar">
             <h1>My Projects</h1>
-
             <div class="profile">
                 Client
             </div>
         </header>
-
         <section class="recent">
-
             <h2>My Submitted Projects</h2>
-
             <table>
-
                 <thead>
                     <tr>
                         <th>Project</th>
@@ -65,47 +47,60 @@
                         <th>Worker</th>
                     </tr>
                 </thead>
-
                 <tbody id="projectTable"></tbody>
-
             </table>
-
         </section>
-
     </main>
-
 </div>
-
 <script>
+(async function () {
+    const user = getUser();
+    const table = document.getElementById("projectTable");
 
-const user = getUser();
-const projects = getProjects();
-const users = getUsers();
+    table.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
 
-const table = document.getElementById("projectTable");
+    try {
+        const [ordersRes, usersRes] = await Promise.all([
+            fetch(`${WORKER_URL}/api/orders?email=${encodeURIComponent(user.email)}`),
+            fetch(`${WORKER_URL}/api/admin/users`)
+        ]);
 
-// FILTER ONLY THIS CLIENT'S PROJECTS
-const myProjects = projects.filter(p => p.clientId == user.id);
+        const ordersData = await ordersRes.json();
 
-myProjects.forEach(project => {
+        if (!ordersRes.ok) {
+            table.innerHTML = `<tr><td colspan="5">Failed to load projects: ${escapeHTML(ordersData.error || "Unknown error")}</td></tr>`;
+            return;
+        }
 
-    const workerName = project.assignedTo
-        ? (users.find(u => u.id == project.assignedTo)?.fullName || "Unknown")
-        : "Not Assigned";
+        const usersData = await usersRes.json();
+        const myProjects = ordersData.orders || [];
+        const allUsers = usersData.users || [];
 
-    table.innerHTML += `
-        <tr>
-            <td>${escapeHTML(project.projectName)}</td>
-            <td>${escapeHTML(project.category)}</td>
-            <td>${project.reviews}</td>
-            <td>${statusBadge(project.status)}</td>
-            <td>${escapeHTML(workerName)}</td>
-        </tr>
-    `;
-});
+        if (myProjects.length === 0) {
+            table.innerHTML = `<tr><td colspan="5">No projects submitted yet.</td></tr>`;
+            return;
+        }
 
+        table.innerHTML = "";
+        myProjects.forEach(project => {
+            const workerName = project.assigned_to
+                ? (allUsers.find(u => u.id == project.assigned_to)?.full_name || "Unknown")
+                : "Not Assigned";
+
+            table.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(project.project_name)}</td>
+                    <td>${escapeHTML(project.category)}</td>
+                    <td>${project.reviews}</td>
+                    <td>${statusBadge(project.status)}</td>
+                    <td>${escapeHTML(workerName)}</td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="5">Error loading projects: ${escapeHTML(err.message)}</td></tr>`;
+    }
+})();
 </script>
-
 </body>
-
 </html>
