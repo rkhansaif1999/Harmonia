@@ -131,7 +131,7 @@ async function fetchAllUsers() {
 }
 
 async function updateStatus(id, status) {
-    const response = await fetch(WORKER_URL + "/api/admin/users/status", {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status })
