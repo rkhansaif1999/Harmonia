@@ -47,6 +47,11 @@
             font-size: 0.8rem;
         }
 
+        .detail-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
         .mini-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -60,7 +65,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
 protectPage("client");
@@ -111,7 +116,13 @@ protectPage("client");
                     </tr>
                 </thead>
 
-                <tbody id="ordersTable"></tbody>
+                <tbody id="ordersTable">
+                    <tr>
+                        <td colspan="6" style="text-align:center;color:#9dadc1;padding:20px;">
+                            Loading orders...
+                        </td>
+                    </tr>
+                </tbody>
 
             </table>
 
@@ -123,18 +134,21 @@ protectPage("client");
 
 <script>
 
+// Orders now come from the real backend (D1) via the Worker API,
+// not localStorage ("harmonia_orders" is the old/legacy local system —
+// see project handoff notes on duplicate project-tracking systems).
+
+const user = getUser();
+const table = document.getElementById("ordersTable");
+
 let allOrders = [];
 
-try {
-    allOrders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
-} catch (e) {
-    allOrders = [];
+async function fetchMyOrders(email) {
+    const response = await fetch(WORKER_URL + "/api/orders?email=" + encodeURIComponent(email));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
 }
-
-/* NEWEST FIRST (premium feel) */
-allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-const table = document.getElementById("ordersTable");
 
 function getStatusClass(status) {
 
@@ -148,30 +162,47 @@ function getStatusClass(status) {
 
 }
 
-if (!allOrders.length) {
+function getOrderDate(order) {
+    // D1 schema has submitted_at and created_at, but no updatedAt column.
+    return order.submitted_at || order.created_at || null;
+}
 
-    table.innerHTML = `
-        <tr>
-            <td colspan="6" style="text-align:center;color:#9dadc1;padding:20px;">
-                No orders found yet.
-            </td>
-        </tr>
-    `;
+function formatDate(value) {
+    if (!value) return "N/A";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "N/A" : d.toLocaleString();
+}
 
-} else {
+function renderOrders() {
+
+    table.innerHTML = "";
+
+    if (!allOrders.length) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;color:#9dadc1;padding:20px;">
+                    No orders found yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
 
     allOrders.forEach((order, index) => {
 
         const rowId = "row_" + index;
+        const chat = order.supportChat || [];
 
         table.innerHTML += `
             <tr>
-                <td>${order.orderId}</td>
-                <td>${escapeHTML(order.projectName)}</td>
+                <td>${escapeHTML(order.order_id)}</td>
+                <td>${escapeHTML(order.project_name)}</td>
                 <td>${escapeHTML(order.category)}</td>
                 <td>
                     <span class="badge ${getStatusClass(order.status)}">
-                        ${order.status || "Pending"}
+                        ${escapeHTML(order.status || "Pending")}
                     </span>
                 </td>
                 <td>${order.reviews}</td>
@@ -190,20 +221,20 @@ if (!allOrders.length) {
                         <strong>Order Timeline</strong>
 
                         <div class="mini-grid">
-                            <div>Created: ${new Date(order.createdAt).toLocaleString()}</div>
-                            <div>Updated: ${order.updatedAt ? new Date(order.updatedAt).toLocaleString() : "N/A"}</div>
-                            <div>Payment Method: ${order.paymentMethod || "Not set"}</div>
-                            <div>Payment Proof: ${order.paymentProof ? "Submitted" : "Not submitted"}</div>
+                            <div>Created: ${formatDate(getOrderDate(order))}</div>
+                            <div>Updated: N/A</div>
+                            <div>Payment Method: Not set</div>
+                            <div>Payment Proof: ${order.payment_proof ? "Submitted" : "Not submitted"}</div>
                         </div>
 
                         <div style="margin-top:10px;">
                             <strong>Admin Status:</strong>
-                            ${order.status || "Pending"}
+                            ${escapeHTML(order.status || "Pending")}
                         </div>
 
                         <div style="margin-top:6px;">
                             <strong>Total:</strong>
-                            $${order.totalPrice || 0}
+                            $${order.total_price || 0}
                         </div>
 
                         <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
@@ -223,8 +254,8 @@ if (!allOrders.length) {
                         ">
 
                             ${
-                                order.supportChat && order.supportChat.length
-                                ? order.supportChat.map(msg => `
+                                chat.length
+                                ? chat.map(msg => `
                                     <div style="
                                         margin-bottom:12px;
                                         padding:10px;
@@ -245,7 +276,7 @@ if (!allOrders.length) {
                                         </div>
 
                                         <small style="opacity:.6;">
-                                            ${new Date(msg.time).toLocaleString()}
+                                            ${formatDate(msg.time)}
                                         </small>
 
                                     </div>
@@ -257,7 +288,7 @@ if (!allOrders.length) {
 
                         <button
                             class="detail-btn"
-                            onclick="openSupport('${order.orderId}','${escapeHTML(order.projectName)}')">
+                            onclick="openSupport('${escapeHTML(order.order_id)}','${escapeHTML(order.project_name)}')">
                             💬 Contact Support
                         </button>
 
@@ -269,6 +300,29 @@ if (!allOrders.length) {
     });
 }
 
+async function loadOrders() {
+
+    try {
+        allOrders = await fetchMyOrders(user.email);
+    } catch (err) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;color:#ff8080;padding:20px;">
+                    Could not load orders: ${escapeHTML(err.message)}
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    /* NEWEST FIRST (premium feel) */
+    allOrders.sort((a, b) => new Date(getOrderDate(b)) - new Date(getOrderDate(a)));
+
+    renderOrders();
+}
+
+loadOrders();
+
 /* TOGGLE DETAILS */
 function toggleDetails(id) {
     const row = document.getElementById(id);
@@ -279,6 +333,10 @@ function toggleDetails(id) {
 
 /* ==========================
    SUPPORT CHAT
+   Sends via POST /api/orders/reply (client-facing), which appends
+   { sender: "client", message, time } to the order's support_chat
+   column in D1. The Worker verifies the order's client_email matches
+   the email sent here before writing.
 ========================== */
 
 let supportOrderId = "";
@@ -303,7 +361,7 @@ function closeSupport() {
 
 }
 
-function sendSupport() {
+async function sendSupport() {
 
     const message = document.getElementById("supportText").value.trim();
 
@@ -312,36 +370,30 @@ function sendSupport() {
         return;
     }
 
-    let orders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
+    try {
+        const response = await fetch(WORKER_URL + "/api/orders/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                orderId: supportOrderId,
+                email: user.email,
+                message: message,
+            }),
+        });
 
-    const order = orders.find(o => o.orderId === supportOrderId);
+        const data = await response.json();
 
-    if (!order) {
-        alert("Order not found.");
-        return;
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to send message");
+        }
+
+        alert("Your message has been sent to the support team.");
+        closeSupport();
+        loadOrders();
+
+    } catch (err) {
+        alert("Could not send message: " + err.message);
     }
-
-    if (!order.supportChat) {
-        order.supportChat = [];
-    }
-
-    order.supportChat.push({
-
-        sender: "client",
-
-        message: message,
-
-        time: new Date().toISOString()
-
-    });
-
-   localStorage.setItem("harmonia_orders", JSON.stringify(orders));
-
-alert("Your message has been sent to the support team.");
-
-closeSupport();
-
-location.reload();
 
 }
 
