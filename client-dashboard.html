@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Dashboard - Harmonia</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
 <div class="noise"></div>
-
-<script src="script.js"></script>
-
+<script src="script.js?v=2"></script>
 <script>
     protectPage("client");
 </script>
-
 <div class="dashboard">
-
     <!-- Sidebar -->
     <aside class="sidebar">
-
         <h2 class="logo">Harmonia</h2>
-
         <ul>
             <li class="active">🏠 Dashboard</li>
             <li><a href="client-projects.html">📁 Projects</a></li>
@@ -36,52 +26,36 @@
             <li>⚙ Settings</li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
-
     </aside>
-
     <!-- Main -->
     <main class="main">
-
         <header class="topbar">
-
             <h1>Welcome Back 👋</h1>
-
             <div class="profile">
                 Client
             </div>
-
         </header>
-
         <section class="cards">
-
             <div class="dashboard-card">
                 <h3>Projects</h3>
                 <h2 id="totalProjects">0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Completed</h3>
                 <h2 id="completedProjects">0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Pending Projects</h3>
                 <h2 id="pendingProjects">0</h2>
             </div>
-
             <div class="dashboard-card">
                 <h3>Total Spent</h3>
                 <h2 id="totalSpent">$0.00</h2>
             </div>
-
         </section>
-
         <section class="recent">
-
             <h2>Recent Projects</h2>
-
             <table>
-
                 <thead>
                     <tr>
                         <th>Project</th>
@@ -89,63 +63,77 @@
                         <th>Status</th>
                     </tr>
                 </thead>
-
                 <tbody id="recentProjects">
-
+                    <tr><td colspan="3" style="opacity:.6;">Loading projects...</td></tr>
                 </tbody>
-
             </table>
-
         </section>
-
     </main>
-
 </div>
-
 <script>
 
+// Orders now come from the real backend (D1) via the Worker API,
+// not localStorage.
+
 const user = getUser();
-const projects = getProjects().filter(p => p.clientId == user.id);
-
-let completed = 0;
-let pending = 0;
-let totalSpent = 0;
-
-document.getElementById("totalProjects").textContent = projects.length;
-
-projects.forEach(project => {
-
-    if(project.status === "Completed"){
-        completed++;
-        totalSpent += project.totalCost || 0;
-    }
-
-    if(project.status === "Pending"){
-        pending++;
-    }
-
-});
-
-document.getElementById("completedProjects").textContent = completed;
-document.getElementById("pendingProjects").textContent = pending;
-document.getElementById("totalSpent").textContent = "$" + totalSpent.toFixed(2);
-
 const table = document.getElementById("recentProjects");
 
-projects.slice(-5).reverse().forEach(project => {
+async function fetchMyOrders(email) {
+    const response = await fetch(WORKER_URL + "/api/orders?email=" + encodeURIComponent(email));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
 
-    table.innerHTML += `
-        <tr>
-            <td>${escapeHTML(project.projectName)}</td>
-            <td>${escapeHTML(project.category)}</td>
-            <td>${statusBadge(project.status)}</td>
-        </tr>
-    `;
+async function renderDashboard() {
 
-});
+    let orders;
+    try {
+        orders = await fetchMyOrders(user.email);
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="3" style="color:#ff8080;">Could not load projects: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
+    let completed = 0;
+    let pending = 0;
+    let totalSpent = 0;
+
+    document.getElementById("totalProjects").textContent = orders.length;
+
+    orders.forEach(order => {
+        if (order.status === "Completed") {
+            completed++;
+            totalSpent += order.total_price || 0;
+        }
+        if (order.status === "Awaiting Payment" || order.status === "Under Review") {
+            pending++;
+        }
+    });
+
+    document.getElementById("completedProjects").textContent = completed;
+    document.getElementById("pendingProjects").textContent = pending;
+    document.getElementById("totalSpent").textContent = "$" + totalSpent.toFixed(2);
+
+    table.innerHTML = "";
+
+    if (orders.length === 0) {
+        table.innerHTML = `<tr><td colspan="3" class="empty-state">No projects yet</td></tr>`;
+    }
+
+    orders.slice(0, 5).forEach(order => {
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(order.project_name)}</td>
+                <td>${escapeHTML(order.category)}</td>
+                <td>${statusBadge(order.status)}</td>
+            </tr>
+        `;
+    });
+}
+
+renderDashboard();
 
 </script>
-
 </body>
-
 </html>
