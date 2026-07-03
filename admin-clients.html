@@ -148,7 +148,7 @@ async function updateStatus(id, status) {
 }
 
 async function updateRole(id, role) {
-    const response = await fetch(WORKER_URL + "/api/admin/users/role", {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/role", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, role })
