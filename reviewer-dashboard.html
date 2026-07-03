@@ -83,7 +83,9 @@
                     </tr>
                 </thead>
 
-                <tbody id="queueTable"></tbody>
+                <tbody id="queueTable">
+                    <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                </tbody>
 
             </table>
 
@@ -97,65 +99,153 @@
 
 const user = getUser();
 
-function renderQueue(){
+// Worker names aren't included on the order rows returned by
+// /api/reviewer/queue (that endpoint only knows assigned_to as an
+// id). We don't have a public "list users" endpoint the reviewer
+// can call, so for now we show a short worker reference like
+// "Worker #14" instead of a full name. If/when there's a lightweight
+// endpoint to resolve a few user ids to names, swap this out.
+function workerLabel(assignedTo) {
+    return assignedTo ? `Worker #${assignedTo}` : "Unassigned";
+}
 
-    const queue = getReviewQueue();
-    const users = getUsers();
-    const earnings = getEarnings();
-    const allProjects = getProjects();
+async function loadStats() {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/reviewer/stats");
+        const data = await response.json();
 
-    const table = document.getElementById("queueTable");
-    table.innerHTML = "";
+        if (!response.ok) {
+            console.error("Failed to load stats:", data?.error);
+            return;
+        }
 
-    if (queue.length === 0) {
-        table.innerHTML = `<tr><td colspan="5" class="empty-state">No submissions waiting right now 🎉</td></tr>`;
+        document.getElementById("approvedCount").textContent = data.approvedCount;
+        document.getElementById("rejectedCount").textContent = data.rejectedCount;
+        document.getElementById("totalEarned").textContent = "$" + Number(data.totalEarned).toFixed(2);
+    } catch (err) {
+        console.error(err);
     }
+}
 
-    queue.forEach(p => {
-        const workerName = users.find(u => u.id == p.assignedTo)?.fullName || "Unknown";
+async function loadQueue() {
+    const table = document.getElementById("queueTable");
 
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(p.projectName)}</td>
-                <td>${escapeHTML(p.category)}</td>
-                <td>${p.reviews}</td>
-                <td>${escapeHTML(workerName)}</td>
+    try {
+        const response = await authFetch(WORKER_URL + "/api/reviewer/queue");
+        const data = await response.json();
+
+        if (!response.ok) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">Couldn't load the queue. Try refreshing.</td></tr>`;
+            console.error("Failed to load queue:", data?.error);
+            return;
+        }
+
+        const queue = data.queue || [];
+        document.getElementById("pendingCount").textContent = queue.length;
+
+        table.innerHTML = "";
+
+        if (queue.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">No submissions waiting right now 🎉</td></tr>`;
+            return;
+        }
+
+        queue.forEach(order => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${escapeHTML(order.project_name)}</td>
+                <td>${escapeHTML(order.category)}</td>
+                <td>${order.reviews}</td>
+                <td>${escapeHTML(workerLabel(order.assigned_to))}</td>
                 <td>
-                    <button onclick="approve(${p.id})">Approve</button>
-                    <button onclick="reject(${p.id})">Reject</button>
+                    <button class="approve-btn" data-order-id="${escapeHTML(order.order_id)}">Approve</button>
+                    <button class="reject-btn" data-order-id="${escapeHTML(order.order_id)}">Reject</button>
                 </td>
-            </tr>
-        `;
-    });
+            `;
+            table.appendChild(row);
+        });
 
-    document.getElementById("pendingCount").textContent = queue.length;
+        // Delegate clicks rather than inline onclick, since order_id
+        // is a UUID string (not a bare number like the old localStorage id).
+        table.querySelectorAll(".approve-btn").forEach(btn => {
+            btn.addEventListener("click", () => approve(btn.dataset.orderId, btn));
+        });
+        table.querySelectorAll(".reject-btn").forEach(btn => {
+            btn.addEventListener("click", () => reject(btn.dataset.orderId, btn));
+        });
 
-    document.getElementById("approvedCount").textContent =
-        allProjects.filter(p => p.status === "Completed").length;
-
-    document.getElementById("rejectedCount").textContent =
-        allProjects.filter(p => p.status === "Needs Revision").length;
-
-    const myEarnings = earnings
-        .filter(e => e.workerId == user.id && e.role === "reviewer")
-        .reduce((sum, e) => sum + e.amount, 0);
-
-    document.getElementById("totalEarned").textContent = "$" + myEarnings.toFixed(2);
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">Couldn't load the queue. Try refreshing.</td></tr>`;
+        console.error(err);
+    }
 }
 
-function approve(id){
-    approveSubmission(id, user.id);
-    renderQueue();
+async function refreshAll() {
+    await Promise.all([loadQueue(), loadStats()]);
 }
 
-function reject(id){
+async function approve(orderId, btn) {
+    btn.disabled = true;
+    btn.textContent = "Approving...";
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/reviewer/approve", {
+            method: "POST",
+            body: JSON.stringify({ orderId })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data?.error || "Failed to approve this submission.");
+            btn.disabled = false;
+            btn.textContent = "Approve";
+            return;
+        }
+
+        await refreshAll();
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = "Approve";
+    }
+}
+
+async function reject(orderId, btn) {
     const reason = prompt("Reason for rejecting this submission?", "Needs more detail / quality issue");
     if (reason === null) return; // cancelled
-    rejectSubmission(id, reason);
-    renderQueue();
+    if (!reason.trim()) {
+        alert("Please provide a reason for rejecting this submission.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Rejecting...";
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/reviewer/reject", {
+            method: "POST",
+            body: JSON.stringify({ orderId, reason: reason.trim() })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data?.error || "Failed to reject this submission.");
+            btn.disabled = false;
+            btn.textContent = "Reject";
+            return;
+        }
+
+        await refreshAll();
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+        btn.disabled = false;
+        btn.textContent = "Reject";
+    }
 }
 
-renderQueue();
+refreshAll();
 
 </script>
 
