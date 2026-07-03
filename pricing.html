@@ -128,16 +128,39 @@
 <script src="script.js"></script>
 
 <script>
-/* dynamic pricing */
-const settings = getSettings();
-const rate = settings.pricePerReview;
+/* dynamic pricing - now from the real backend (D1) via the Worker's
+   public GET /api/settings route, instead of the local getSettings()
+   helper. This page has no login, so it can't call the admin-only
+   /api/admin/settings - /api/settings exposes just the safe subset
+   (platformName, pricePerReview) needed here. */
 
-document.getElementById("basePriceText").textContent =
-  `Starting at $${rate} per review. Pick a package below, or request a custom quantity once you sign up.`;
+async function loadPricing() {
+    try {
+        const response = await fetch(WORKER_URL + "/api/settings");
+        const data = await response.json();
 
-document.getElementById("price20").textContent = "$" + (rate * 20);
-document.getElementById("price50").textContent = "$" + (rate * 50);
-document.getElementById("price100").textContent = "$" + (rate * 100);
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to load pricing");
+        }
+
+        const rate = data.settings.pricePerReview;
+
+        document.getElementById("basePriceText").textContent =
+            `Starting at $${rate} per review. Pick a package below, or request a custom quantity once you sign up.`;
+
+        document.getElementById("price20").textContent = "$" + (rate * 20);
+        document.getElementById("price50").textContent = "$" + (rate * 50);
+        document.getElementById("price100").textContent = "$" + (rate * 100);
+
+    } catch (err) {
+        // Keep the static fallback prices already in the HTML if the
+        // fetch fails, just log it - this page shouldn't hard-fail for
+        // a logged-out marketing page.
+        console.error("Could not load live pricing:", err);
+    }
+}
+
+loadPricing();
 
 /* navbar blur */
 const navbar = document.getElementById("navbar");
