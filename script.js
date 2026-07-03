@@ -642,37 +642,124 @@ function payOutProject(projectId, reviewerId = null) {
 }
 
 // =========================
-// CONTACT / SUPPORT MESSAGES
+// CONTACT / SUPPORT MESSAGES (Cloudflare Worker)
 // =========================
-function getContactMessages() {
-    return JSON.parse(localStorage.getItem("harmonia_messages")) || [];
+
+async function getContactMessages() {
+
+    const user = getUser();
+
+    if (!user) return [];
+
+    try {
+
+        const response = await fetch(
+            WORKER_URL + "/api/admin/contact-messages",
+            {
+                headers: {
+                    Authorization: "Bearer " + user.token
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to fetch messages.");
+        }
+
+        return await response.json();
+
+    } catch (err) {
+
+        console.error(err);
+
+        return [];
+
+    }
+
 }
 
-function submitContactMessage(msg) {
-    let messages = getContactMessages();
+async function submitContactMessage(msg) {
 
-    messages.push({
-        id: Date.now(),
-        name: msg.name,
-        email: msg.email,
-        type: msg.type,
-        message: msg.message,
-        date: new Date().toLocaleString(),
-        status: "New"
-    });
+    const response = await fetch(
+        WORKER_URL + "/api/contact",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(msg)
+        }
+    );
 
-    localStorage.setItem("harmonia_messages", JSON.stringify(messages));
+    return await response.json();
+
 }
 
-function markMessageRead(id) {
-    let messages = getContactMessages();
+async function markMessageRead(id) {
 
-    messages = messages.map(m => {
-        if (m.id == id) m.status = "Read";
-        return m;
-    });
+    const user = getUser();
 
-    localStorage.setItem("harmonia_messages", JSON.stringify(messages));
+    if (!user) return;
+
+    await fetch(
+        WORKER_URL + "/api/admin/contact-messages/read",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + user.token
+            },
+            body: JSON.stringify({
+                id
+            })
+        }
+    );
+
+}
+
+async function replyToMessage(id, reply) {
+
+    const user = getUser();
+
+    if (!user) return;
+
+    return fetch(
+        WORKER_URL + "/api/admin/contact-messages/reply",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + user.token
+            },
+            body: JSON.stringify({
+                id,
+                reply
+            })
+        }
+    );
+
+}
+
+async function deleteMessage(id) {
+
+    const user = getUser();
+
+    if (!user) return;
+
+    return fetch(
+        WORKER_URL + "/api/admin/contact-messages/delete",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + user.token
+            },
+            body: JSON.stringify({
+                id
+            })
+        }
+    );
+
 }
 
 // =========================
