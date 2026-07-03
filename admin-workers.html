@@ -142,7 +142,7 @@ function capitalize(s) {
 }
 
 async function fetchAllUsers() {
-    const response = await fetch(WORKER_URL + "/api/admin/users");
+    const response = await authFetch(WORKER_URL + "/api/admin/users");
     const data = await response.json();
 
     if (!response.ok) {
