@@ -353,7 +353,7 @@ async function sendAdminReply(orderId) {
         return;
     }
 
-    const response = await fetch(WORKER_URL + "/api/admin/orders/reply", {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, message })
