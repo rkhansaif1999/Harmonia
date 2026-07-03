@@ -223,7 +223,7 @@ function toggleExpand(id){
 }
 
 async function markRead(id, shouldRerender = true){
-    await fetch(WORKER_URL + "/api/admin/contact-messages/read", {
+    await authFetch(WORKER_URL + "/api/admin/contact-messages/read", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id })
