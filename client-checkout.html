@@ -17,7 +17,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
 protectPage("client");
@@ -606,55 +606,41 @@ const orderId =
 Date.now().toString().slice(-8);
 
 /* =========================
-   SAVE ORDER TO LOCAL STORAGE
+   CREATE ORDER IN D1 (via Worker API)
+   Uses the real logged-in session (getUser()) rather than the old
+   sessionStorage "userId"/"userName" values, since that's the
+   actual authenticated client and gives us a real D1 user id/email.
    ========================= */
 
-const savedOrder = {
-    orderId: orderId,
+const currentUser = getUser();
 
-    /* CLIENT INFO (important) */
-    clientId: sessionStorage.getItem("userId") || "unknown",
-    clientName: sessionStorage.getItem("userName") || "Client",
+async function createOrderOnServer() {
+    const response = await fetch(WORKER_URL + "/api/orders/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            orderId: orderId,
+            projectName: project.projectName,
+            category: project.category,
+            reviews: project.reviews,
+            pricePerReview: project.pricePerReview,
+            totalPrice: project.totalPrice,
+            clientId: currentUser ? currentUser.id : null,
+            clientEmail: currentUser ? currentUser.email : null
+        })
+    });
 
-    /* PROJECT INFO */
-    projectName: project.projectName,
-    category: project.category,
-    reviews: project.reviews,
-    pricePerReview: project.pricePerReview,
-    totalPrice: project.totalPrice,
+    const data = await response.json();
 
-    /* PAYMENT FLOW */
-    status: "Awaiting Payment",
-    paymentProof: null,
-
-    /* TIMELINE */
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-
-    /* HISTORY TRACKING */
-    history: [
-        {
-            status: "Awaiting Payment",
-            time: new Date().toISOString()
-        }
-    ]
-};
-
-let allOrders = [];
-
-try {
-    allOrders = JSON.parse(localStorage.getItem("harmonia_orders")) || [];
-} catch (e) {
-    allOrders = [];
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to create order");
+    }
 }
 
-// ✅ prevent duplicate order creation
-const existingOrder = allOrders.find(o => o.orderId === orderId);
-
-if (!existingOrder) {
-    allOrders.push(savedOrder);
-    localStorage.setItem("harmonia_orders", JSON.stringify(allOrders));
-}
+createOrderOnServer().catch(err => {
+    alert("Could not create your order: " + err.message + "\nPlease go back and try again.");
+    console.error(err);
+});
 
 // ✅ Make order info available to the payment-confirmation tab
 sessionStorage.setItem("currentOrderId", orderId);
