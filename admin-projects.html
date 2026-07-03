@@ -408,7 +408,7 @@ async function assignWorkerToOrder(orderId, workerId) {
 }
 
 async function markCompleted(orderId) {
-    const response = await fetch(WORKER_URL + "/api/admin/orders/complete", {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/complete", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId })
