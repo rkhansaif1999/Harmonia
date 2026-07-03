@@ -94,7 +94,9 @@
                     </tr>
                 </thead>
 
-                <tbody id="earningsTable"></tbody>
+                <tbody id="earningsTable">
+                    <tr><td colspan="4" style="text-align:center;color:#9dadc1;">Loading...</td></tr>
+                </tbody>
 
             </table>
 
@@ -106,16 +108,13 @@
 
 <script>
 
-const user = getUser();
-
 /* =========================
    DATE / WEEK HELPERS
    ========================= */
 
 function getEarningDate(entry) {
-    const raw = entry.date || entry.createdAt || entry.timestamp || entry.time || entry.updatedAt;
-    if (!raw) return null;
-    const d = new Date(raw);
+    if (!entry.createdAt) return null;
+    const d = new Date(entry.createdAt);
     return isNaN(d.getTime()) ? null : d;
 }
 
@@ -162,17 +161,38 @@ function formatDateShort(date) {
     });
 }
 
+function capitalize(str) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 /* =========================
-   RENDER
+   LOAD + RENDER
    ========================= */
 
-function renderEarnings() {
+async function loadEarnings() {
+    const table = document.getElementById("earningsTable");
 
-    const earnings = getEarnings();
-    const myEarnings = earnings.filter(e => e.workerId == user.id);
+    let earnings;
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/earnings");
+        const data = await response.json();
 
-    /* ---- Total earned since joining (all statuses, matches dashboard total) ---- */
-    const totalAllTime = myEarnings.reduce((sum, e) => sum + e.amount, 0);
+        if (!response.ok) {
+            table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
+            console.error("Failed to load earnings:", data?.error);
+            return;
+        }
+
+        earnings = data.earnings || [];
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
+        console.error(err);
+        return;
+    }
+
+    /* ---- Total earned since joining (all statuses) ---- */
+    const totalAllTime = earnings.reduce((sum, e) => sum + Number(e.amount), 0);
     document.getElementById("totalEarnedAllTime").textContent = "$" + totalAllTime.toFixed(2);
 
     /* ---- Pending payout for current week ---- */
@@ -180,8 +200,8 @@ function renderEarnings() {
     document.getElementById("weekRangeLabel").textContent =
         formatDateShort(start) + " – " + formatDateShort(end);
 
-    const myPending = myEarnings.filter(e => e.status === "Pending");
-    const datedPending = myPending.filter(e => getEarningDate(e));
+    const pending = earnings.filter(e => e.status === "pending");
+    const datedPending = pending.filter(e => getEarningDate(e));
 
     let weeklyPending;
     if (datedPending.length > 0) {
@@ -190,11 +210,11 @@ function renderEarnings() {
                 const d = getEarningDate(e);
                 return d >= start && d <= end;
             })
-            .reduce((sum, e) => sum + e.amount, 0);
+            .reduce((sum, e) => sum + Number(e.amount), 0);
     } else {
-        // No date information available on earnings records —
-        // fall back to treating all pending earnings as this week's payout.
-        weeklyPending = myPending.reduce((sum, e) => sum + e.amount, 0);
+        // No usable dates on any pending record — fall back to treating
+        // all pending earnings as this week's payout.
+        weeklyPending = pending.reduce((sum, e) => sum + Number(e.amount), 0);
     }
 
     document.getElementById("weeklyPending").textContent = "$" + weeklyPending.toFixed(2);
@@ -203,10 +223,9 @@ function renderEarnings() {
     document.getElementById("nextPayoutDate").textContent = formatDateLong(getNextPayoutDate());
 
     /* ---- History table ---- */
-    const table = document.getElementById("earningsTable");
     table.innerHTML = "";
 
-    if (myEarnings.length === 0) {
+    if (earnings.length === 0) {
         table.innerHTML = `
             <tr>
                 <td colspan="4" style="text-align:center;color:#9dadc1;">
@@ -217,7 +236,7 @@ function renderEarnings() {
         return;
     }
 
-    const sorted = [...myEarnings].sort((a, b) => {
+    const sorted = [...earnings].sort((a, b) => {
         const da = getEarningDate(a);
         const db = getEarningDate(b);
         if (!da || !db) return 0;
@@ -227,21 +246,22 @@ function renderEarnings() {
     sorted.forEach(e => {
         const d = getEarningDate(e);
         const dateLabel = d ? formatDateShort(d) : "-";
-        const label = e.projectName || e.project || "-";
+        const label = e.projectName || "-";
+        const displayStatus = capitalize(e.status);
 
         table.innerHTML += `
             <tr>
                 <td>${escapeHTML(String(label))}</td>
                 <td>${dateLabel}</td>
-                <td>$${e.amount.toFixed(2)}</td>
-                <td>${statusBadge ? statusBadge(e.status) : escapeHTML(e.status)}</td>
+                <td>$${Number(e.amount).toFixed(2)}</td>
+                <td>${statusBadge ? statusBadge(displayStatus) : escapeHTML(displayStatus)}</td>
             </tr>
         `;
     });
 
 }
 
-renderEarnings();
+loadEarnings();
 
 </script>
 
