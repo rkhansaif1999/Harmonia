@@ -83,7 +83,9 @@
         <label>Message</label>
         <textarea id="cMessage" rows="6" placeholder="How can we help?" required></textarea>
 
-        <button class="primary full" type="submit" style="
+        <p id="cError" style="color:#ff8080; display:none; margin-top:10px;"></p>
+
+        <button class="primary full" type="submit" id="cSubmitBtn" style="
           margin-top:16px;
           box-shadow:0 20px 50px rgba(120,200,255,.18);
         ">
@@ -114,21 +116,51 @@
 </main>
 
 <!-- SCRIPT -->
-<script src="script.js"></script>
+<script src="script.js?v=2"></script>
 
 <script>
-function handleContactSubmit(event){
+async function handleContactSubmit(event){
     event.preventDefault();
 
-    submitContactMessage({
+    const btn = document.getElementById("cSubmitBtn");
+    const errorEl = document.getElementById("cError");
+    errorEl.style.display = "none";
+
+    const payload = {
         name: document.getElementById("cName").value.trim(),
         email: document.getElementById("cEmail").value.trim(),
         type: document.getElementById("cType").value,
         message: document.getElementById("cMessage").value.trim()
-    });
+    };
 
-    document.getElementById("formCard").style.display = "none";
-    document.getElementById("successCard").style.display = "block";
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    try {
+        const res = await fetch(`${WORKER_URL}/api/contact`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            errorEl.textContent = data.error || "Something went wrong. Please try again.";
+            errorEl.style.display = "block";
+            btn.disabled = false;
+            btn.textContent = "Send Message";
+            return;
+        }
+
+        document.getElementById("formCard").style.display = "none";
+        document.getElementById("successCard").style.display = "block";
+    } catch (err) {
+        errorEl.textContent = "Network error - please check your connection and try again.";
+        errorEl.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Send Message";
+    }
 }
 
 /* NAVBAR BLUR EFFECT */
