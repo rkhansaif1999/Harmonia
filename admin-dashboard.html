@@ -109,9 +109,9 @@
 
 async function loadDashboard() {
     try {
-        const [usersRes, ordersRes] = await Promise.all([
-            fetch(WORKER_URL + "/api/admin/users"),
-            fetch(WORKER_URL + "/api/admin/orders")
+       const [usersRes, ordersRes] = await Promise.all([
+            authFetch(WORKER_URL + "/api/admin/users"),
+            authFetch(WORKER_URL + "/api/admin/orders")
         ]);
 
         const usersData = await usersRes.json();
