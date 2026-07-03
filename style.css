@@ -13,9 +13,7 @@ RESET
 
 html{
     scroll-behavior:smooth;
-}
-html{
-    scrollbar-gutter: stable;
+    overflow-y:scroll;
 }
 
 body{
