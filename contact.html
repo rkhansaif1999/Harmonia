@@ -12,15 +12,18 @@
 <!-- BASE EFFECT (KEEP YOUR CSS SAFE) -->
 <div class="noise"></div>
 
-<!-- STRONG PREMIUM ORB LAYER -->
-<div class="orb-layer">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
+<!-- PARTICLES (matches About page — CSS-only, no canvas needed) -->
+<div class="particles">
+  <div class="particle" style="left:6%;animation-duration:18s;animation-delay:-2s;"></div>
+  <div class="particle" style="left:14%;animation-duration:23s;animation-delay:-8s;"></div>
+  <div class="particle" style="left:24%;animation-duration:20s;animation-delay:-5s;"></div>
+  <div class="particle" style="left:35%;animation-duration:19s;animation-delay:-12s;"></div>
+  <div class="particle" style="left:47%;animation-duration:22s;animation-delay:-6s;"></div>
+  <div class="particle" style="left:58%;animation-duration:18s;animation-delay:-15s;"></div>
+  <div class="particle" style="left:69%;animation-duration:24s;animation-delay:-4s;"></div>
+  <div class="particle" style="left:81%;animation-duration:21s;animation-delay:-10s;"></div>
+  <div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
 </div>
-
-<!-- PARTICLES (slightly denser than other pages = more premium feel) -->
-<canvas id="particles"></canvas>
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
@@ -85,9 +88,8 @@
 
         <p id="cError" style="color:#ff8080; display:none; margin-top:10px;"></p>
 
-        <button class="primary full" type="submit" id="cSubmitBtn" style="
+        <button class="btn btn-primary full" type="submit" id="cSubmitBtn" style="
           margin-top:16px;
-          box-shadow:0 20px 50px rgba(120,200,255,.18);
         ">
           Send Message
         </button>
@@ -172,109 +174,10 @@ window.addEventListener("scroll", () => {
       ? "rgba(6,10,18,.88)"
       : "rgba(6,10,18,.72)";
 });
-
-/* PARTICLES (more premium density than other pages) */
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
-
-function resize(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-
-let particles = [];
-
-for(let i=0;i<85;i++){   // slightly more than other pages
-  particles.push({
-    x: Math.random()*window.innerWidth,
-    y: Math.random()*window.innerHeight,
-    r: Math.random()*1.7,
-    dx: (Math.random()-0.5)*0.38,
-    dy: (Math.random()-0.5)*0.38
-  });
-}
-
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  particles.forEach(p=>{
-    p.x += p.dx;
-    p.y += p.dy;
-
-    if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
-    if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
-
-    ctx.beginPath();
-    ctx.fillStyle = "rgba(120,200,255,0.28)";
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-  });
-
-  requestAnimationFrame(animate);
-}
-animate();
-
-window.addEventListener("resize", resize);
 </script>
 
-<!-- ORBS (STRONGER PREMIUM FEEL ONLY FOR THIS PAGE) -->
+<!-- INPUT GLOW ENHANCEMENT (kept — this is form styling, unrelated to the orb/particle system) -->
 <style>
-.orb-layer{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-}
-
-.orb{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(120px);
-  opacity:.30;
-  animation:float 18s ease-in-out infinite;
-}
-
-.orb1{
-  width:560px;height:560px;
-  background:radial-gradient(circle,#7d79ff,transparent 60%);
-  top:5%; left:3%;
-}
-
-.orb2{
-  width:650px;height:650px;
-  background:radial-gradient(circle,#45d7ff,transparent 60%);
-  bottom:5%; right:6%;
-  animation-duration:22s;
-}
-
-.orb3{
-  width:480px;height:480px;
-  background:radial-gradient(circle,rgba(255,255,255,.22),transparent 60%);
-  top:45%; left:58%;
-  animation-duration:26s;
-}
-
-@keyframes float{
-  0%,100%{ transform:translate(0,0); }
-  50%{ transform:translate(50px,-70px); }
-}
-
-/* IMPORTANT LAYER FIX */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-}
-
-.navbar, .container{
-  position:relative;
-  z-index:2;
-}
-
-/* INPUT GLOW ENHANCEMENT (NO CSS FILE CHANGE) */
 input:focus, textarea:focus, select:focus{
   box-shadow:0 0 0 2px rgba(120,200,255,.18);
 }
