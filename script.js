@@ -647,19 +647,10 @@ function payOutProject(projectId, reviewerId = null) {
 
 async function getContactMessages() {
 
-    const user = getUser();
-
-    if (!user) return [];
-
     try {
 
         const response = await fetch(
-            WORKER_URL + "/api/admin/contact-messages",
-            {
-                headers: {
-                    Authorization: "Bearer " + user.token
-                }
-            }
+            WORKER_URL + "/api/admin/contact-messages"
         );
 
         if (!response.ok) {
@@ -672,7 +663,7 @@ async function getContactMessages() {
 
         console.error(err);
 
-        return [];
+        return { messages: [] };
 
     }
 
@@ -680,85 +671,93 @@ async function getContactMessages() {
 
 async function submitContactMessage(msg) {
 
-    const response = await fetch(
-        WORKER_URL + "/api/contact",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(msg)
-        }
-    );
+    try {
 
-    return await response.json();
+        const response = await fetch(
+            WORKER_URL + "/api/contact",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(msg)
+            }
+        );
 
-}
+        return await response.json();
 
-async function markMessageRead(id) {
+    } catch (err) {
 
-    const user = getUser();
+        console.error(err);
 
-    if (!user) return;
+        return {
+            error: "Unable to submit contact message."
+        };
 
-    await fetch(
-        WORKER_URL + "/api/admin/contact-messages/read",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + user.token
-            },
-            body: JSON.stringify({
-                id
-            })
-        }
-    );
+    }
 
 }
 
-async function replyToMessage(id, reply) {
+async function replyToMessage(id, message) {
 
-    const user = getUser();
+    try {
 
-    if (!user) return;
+        const response = await fetch(
+            WORKER_URL + "/api/admin/contact-messages/reply",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id,
+                    message
+                })
+            }
+        );
 
-    return fetch(
-        WORKER_URL + "/api/admin/contact-messages/reply",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + user.token
-            },
-            body: JSON.stringify({
-                id,
-                reply
-            })
-        }
-    );
+        return await response.json();
+
+    } catch (err) {
+
+        console.error(err);
+
+        return {
+            error: "Unable to send reply."
+        };
+
+    }
 
 }
 
 async function deleteMessage(id) {
 
-    const user = getUser();
+    try {
 
-    if (!user) return;
+        const response = await fetch(
+            WORKER_URL + "/api/admin/contact-messages/delete",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    id
+                })
+            }
+        );
 
-    return fetch(
-        WORKER_URL + "/api/admin/contact-messages/delete",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + user.token
-            },
-            body: JSON.stringify({
-                id
-            })
-        }
-    );
+        return await response.json();
+
+    } catch (err) {
+
+        console.error(err);
+
+        return {
+            error: "Unable to delete message."
+        };
+
+    }
 
 }
 
