@@ -60,33 +60,20 @@
     table.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
 
     try {
-        const [ordersRes, usersRes] = await Promise.all([
-            fetch(`${WORKER_URL}/api/orders?email=${encodeURIComponent(user.email)}`),
-            fetch(`${WORKER_URL}/api/admin/users`)
-        ]);
-
+        const ordersRes = await authFetch(`${WORKER_URL}/api/orders?email=${encodeURIComponent(user.email)}`);
         const ordersData = await ordersRes.json();
-
         if (!ordersRes.ok) {
             table.innerHTML = `<tr><td colspan="5">Failed to load projects: ${escapeHTML(ordersData.error || "Unknown error")}</td></tr>`;
             return;
         }
-
-        const usersData = await usersRes.json();
         const myProjects = ordersData.orders || [];
-        const allUsers = usersData.users || [];
-
         if (myProjects.length === 0) {
             table.innerHTML = `<tr><td colspan="5">No projects submitted yet.</td></tr>`;
             return;
         }
-
         table.innerHTML = "";
         myProjects.forEach(project => {
-            const workerName = project.assigned_to
-                ? (allUsers.find(u => u.id == project.assigned_to)?.full_name || "Unknown")
-                : "Not Assigned";
-
+            const workerName = project.assigned_to ? "Assigned" : "Not Assigned";
             table.innerHTML += `
                 <tr>
                     <td>${escapeHTML(project.project_name)}</td>
