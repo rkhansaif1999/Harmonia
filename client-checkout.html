@@ -638,21 +638,21 @@ async function initCheckout() {
 
     // Use the REAL order id/price the server assigned - not the
     // client's locally-guessed values - for everything from here on.
-    orderId = data.orderId;
+   orderId = data.orderId;
     const pricePerReview = data.pricePerReview;
     confirmedTotalPrice = data.totalPrice;
 
     sessionStorage.setItem("currentOrderId", orderId);
-    sessionStorage.setItem("currentOrderAmount", "$" + totalPrice);
+    sessionStorage.setItem("currentOrderAmount", "$" + confirmedTotalPrice);
 
     document.getElementById("projectName").textContent = project.projectName;
     document.getElementById("platform").textContent = project.category;
     document.getElementById("reviews").textContent = project.reviews;
     document.getElementById("pricePerReview").textContent = "$" + pricePerReview;
-    document.getElementById("totalPrice").textContent = "$" + totalPrice;
+    document.getElementById("totalPrice").textContent = "$" + confirmedTotalPrice;
     document.getElementById("orderId").textContent = orderId;
-    document.getElementById("cryptoAmount").textContent = "$" + totalPrice;
-    document.getElementById("bankAmount").textContent = "$" + totalPrice;
+    document.getElementById("cryptoAmount").textContent = "$" + confirmedTotalPrice;
+    document.getElementById("bankAmount").textContent = "$" + confirmedTotalPrice;
     document.getElementById("bankOrderId").textContent = orderId;
 }
 
