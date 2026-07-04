@@ -40,7 +40,7 @@
 
 <script src="script.js"></script>
 <script>
-function adminLoginUser(event) {
+async function adminLoginUser(event) {
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
@@ -51,25 +51,42 @@ function adminLoginUser(event) {
         return;
     }
 
-    hashPassword(password).then(hashedInput => {
-        const users = getUsers();
+    try {
+        const response = await fetch(WORKER_URL + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
 
-        const user = users.find(u =>
-            u.email === email &&
-            u.password === hashedInput &&
-            u.role === "admin"
-        );
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            alert("Server returned an invalid response");
+            return;
+        }
 
-        if (!user) {
+        if (!response.ok) {
             recordFailedAttempt(email);
-            alert("Invalid admin credentials");
+            alert(data?.error || "Login failed.");
+            return;
+        }
+
+        if (!data?.user || data.user.role !== "admin") {
+            // Correct password, but not an admin account - don't let them in here.
+            recordFailedAttempt(email);
+            alert("This account is not an administrator.");
             return;
         }
 
         clearLoginAttempts(email);
-        saveUser(user);
+        saveUser(data.user, data.token);
         window.location.href = "admin-dashboard.html";
-    });
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
 }
 </script>
 
