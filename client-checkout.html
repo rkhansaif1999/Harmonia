@@ -603,6 +603,7 @@ if (!project || !sessionStorage.getItem("checkoutProject")) {
 
 const currentUser = getUser();
 let orderId = null; // will be set to the REAL server-generated order_id once created
+let confirmedTotalPrice = null; // will be set to the REAL server-computed total once created
 
 async function createOrderOnServer() {
     const response = await authFetch(WORKER_URL + "/api/orders/create", {
