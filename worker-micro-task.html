@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Task - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .ad-slot {
+            width: 100%;
+            min-height: 90px;
+            border: 1px dashed rgba(255,255,255,.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9dadc1;
+            font-size: .85rem;
+            margin: 18px 0;
+        }
+        .code-display {
+            font-family: monospace;
+            font-size: 2.4rem;
+            letter-spacing: .3em;
+            text-align: center;
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .code-input {
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: .3em;
+            text-align: center;
+            text-transform: uppercase;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+        }
+        .feedback-box {
+            text-align: center;
+            font-weight: 600;
+            margin: 14px 0;
+            min-height: 24px;
+        }
+        .feedback-correct { color: #4ade80; }
+        .feedback-incorrect { color: #f87171; }
+        .session-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            color: #9dadc1;
+            font-size: .9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li class="active">✅ My Tasks</li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Micro Task</h1>
+            <div class="profile">Worker</div>
+        </header>
+
+        <p><a href="worker-tasks.html">&larr; Back to My Tasks</a></p>
+
+        <div id="loadingState" class="card" style="max-width:700px;margin:0 auto;">
+            Loading...
+        </div>
+
+        <div id="taskContent" style="display:none;max-width:700px;margin:0 auto;">
+
+            <section class="card">
+                <h2 id="projectTitle" style="margin-top:0;">Project</h2>
+
+                <div id="adSlotTop" class="ad-slot">AD SLOT — TOP (placeholder)</div>
+
+                <div class="code-display" id="codeDisplay">------</div>
+
+                <input type="text" id="codeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
+
+                <div style="text-align:center;margin-top:16px;">
+                    <button class="primary" id="submitBtn" onclick="submitCode()">Submit</button>
+                </div>
+
+                <div class="feedback-box" id="feedbackBox"></div>
+
+                <div id="adSlotMiddle" class="ad-slot">AD SLOT — MIDDLE (placeholder)</div>
+
+                <div class="session-stats">
+                    <span>Submissions: <strong id="statSubmissions">0</strong></span>
+                    <span>Correct: <strong id="statCorrect">0</strong></span>
+                    <span>Earned this session: <strong id="statEarned">$0.00</strong></span>
+                </div>
+
+                <div id="adSlotBottom" class="ad-slot">AD SLOT — BOTTOM (placeholder)</div>
+            </section>
+
+        </div>
+
+        <div id="notApprovedState" class="card" style="max-width:700px;margin:0 auto;display:none;">
+            You're not approved for this project. <a href="worker-tasks.html">Go back to My Tasks</a>.
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+const taskId = urlParams.get("taskId");
+
+let currentChallengeId = null;
+let payoutAmount = 0;
+
+let sessionSubmissions = 0;
+let sessionCorrect = 0;
+let sessionEarned = 0;
+
+async function logVisit() {
+    try {
+        await authFetch(WORKER_URL + "/api/worker/micro-tasks/visit", { method: "POST" });
+    } catch (err) {
+        console.error("Failed to log visit:", err);
+    }
+}
+
+async function init() {
+    if (!taskId) {
+        document.getElementById("loadingState").textContent = "No project specified.";
+        return;
+    }
+
+    logVisit();
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+
+        if (!response.ok) {
+            document.getElementById("loadingState").textContent = data?.error || "Could not load project.";
+            return;
+        }
+
+        const task = (data.tasks || []).find(t => String(t.id) === String(taskId));
+
+        if (!task || task.applicationStatus !== "approved") {
+            document.getElementById("loadingState").style.display = "none";
+            document.getElementById("notApprovedState").style.display = "block";
+            return;
+        }
+
+        payoutAmount = Number(task.payoutAmount);
+        document.getElementById("projectTitle").textContent =
+            `Project #${task.id} — $${payoutAmount.toFixed(2)} per correct code`;
+
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("taskContent").style.display = "block";
+
+        await getNextChallenge();
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("loadingState").textContent = "Unable to connect to the server.";
+    }
+}
+
+async function getNextChallenge() {
+    const codeDisplay = document.getElementById("codeDisplay");
+    const input = document.getElementById("codeInput");
+    const submitBtn = document.getElementById("submitBtn");
+
+    codeDisplay.textContent = "------";
+    input.value = "";
+    input.disabled = true;
+    submitBtn.disabled = true;
+
+    try {
+        const response = await authFetch(WORKER_URL + `/api/worker/micro-tasks/challenge?taskId=${encodeURIComponent(taskId)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            document.getElementById("feedbackBox").textContent = data?.error || "Could not load a new code.";
+            document.getElementById("feedbackBox").className = "feedback-box feedback-incorrect";
+            return;
+        }
+
+        currentChallengeId = data.challengeId;
+        codeDisplay.textContent = data.displayCode;
+        input.disabled = false;
+        submitBtn.disabled = false;
+        input.focus();
+
+    } catch (err) {
+        console.error(err);
+        document.getElementById("feedbackBox").textContent = "Unable to connect to the server.";
+        document.getElementById("feedbackBox").className = "feedback-box feedback-incorrect";
+    }
+}
+
+async function submitCode() {
+    const input = document.getElementById("codeInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbackBox = document.getElementById("feedbackBox");
+
+    const submittedValue = input.value.trim();
+
+    if (!submittedValue) {
+        feedbackBox.textContent = "Please type the code shown above.";
+        feedbackBox.className = "feedback-box feedback-incorrect";
+        return;
+    }
+
+    if (!currentChallengeId) {
+        feedbackBox.textContent = "No active code. Please wait for a new one to load.";
+        feedbackBox.className = "feedback-box feedback-incorrect";
+        return;
+    }
+
+    input.disabled = true;
+    submitBtn.disabled = true;
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks/submit", {
+            method: "POST",
+            body: JSON.stringify({ challengeId: currentChallengeId, submittedValue })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            feedbackBox.textContent = data?.error || "Something went wrong. Please try again.";
+            feedbackBox.className = "feedback-box feedback-incorrect";
+            input.disabled = false;
+            submitBtn.disabled = false;
+            return;
+        }
+
+        sessionSubmissions++;
+        if (data.correct) {
+            sessionCorrect++;
+            sessionEarned += Number(data.earned || 0);
+            feedbackBox.textContent = `✅ Correct! You earned $${Number(data.earned).toFixed(2)}`;
+            feedbackBox.className = "feedback-box feedback-correct";
+        } else {
+            feedbackBox.textContent = "❌ Incorrect. Try the next code.";
+            feedbackBox.className = "feedback-box feedback-incorrect";
+        }
+
+        document.getElementById("statSubmissions").textContent = sessionSubmissions;
+        document.getElementById("statCorrect").textContent = sessionCorrect;
+        document.getElementById("statEarned").textContent = "$" + sessionEarned.toFixed(2);
+
+        setTimeout(getNextChallenge, 1200);
+
+    } catch (err) {
+        console.error(err);
+        feedbackBox.textContent = "Unable to connect to the server.";
+        feedbackBox.className = "feedback-box feedback-incorrect";
+        input.disabled = false;
+        submitBtn.disabled = false;
+    }
+}
+
+document.getElementById("codeInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        submitCode();
+    }
+});
+
+init();
+
+</script>
+
+</body>
+</html>
