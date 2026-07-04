@@ -66,7 +66,7 @@
             table.innerHTML = `<tr><td colspan="5">Failed to load projects: ${escapeHTML(ordersData.error || "Unknown error")}</td></tr>`;
             return;
         }
-        const myProjects = ordersData.orders || [];
+        const myProjects = (ordersData.orders || []).filter(o => o.status !== "Awaiting Payment");
         if (myProjects.length === 0) {
             table.innerHTML = `<tr><td colspan="5">No projects submitted yet.</td></tr>`;
             return;
