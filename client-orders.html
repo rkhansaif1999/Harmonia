@@ -144,7 +144,7 @@ const table = document.getElementById("ordersTable");
 let allOrders = [];
 
 async function fetchMyOrders(email) {
-    const response = await fetch(WORKER_URL + "/api/orders?email=" + encodeURIComponent(email));
+    const response = await authFetch(WORKER_URL + "/api/orders?email=" + encodeURIComponent(email));
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load orders");
     return data.orders || [];
