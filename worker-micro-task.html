@@ -8,18 +8,6 @@
 
     <link rel="stylesheet" href="style.css">
     <style>
-        .ad-slot {
-            width: 100%;
-            min-height: 90px;
-            border: 1px dashed rgba(255,255,255,.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9dadc1;
-            font-size: .85rem;
-            margin: 18px 0;
-        }
         .code-display {
             font-family: monospace;
             font-size: 2.4rem;
@@ -107,8 +95,6 @@
             <section class="card">
                 <h2 id="projectTitle" style="margin-top:0;">Project</h2>
 
-                <div id="adSlotTop" class="ad-slot">AD SLOT — TOP (placeholder)</div>
-
                 <div class="code-display" id="codeDisplay">------</div>
 
                 <input type="text" id="codeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
@@ -119,15 +105,12 @@
 
                 <div class="feedback-box" id="feedbackBox"></div>
 
-                <div id="adSlotMiddle" class="ad-slot">AD SLOT — MIDDLE (placeholder)</div>
-
                 <div class="session-stats">
                     <span>Submissions: <strong id="statSubmissions">0</strong></span>
                     <span>Correct: <strong id="statCorrect">0</strong></span>
                     <span>Earned this session: <strong id="statEarned">$0.00</strong></span>
                 </div>
 
-                <div id="adSlotBottom" class="ad-slot">AD SLOT — BOTTOM (placeholder)</div>
             </section>
 
         </div>
@@ -307,6 +290,9 @@ document.getElementById("codeInput").addEventListener("keydown", function(e) {
 init();
 
 </script>
+
+<!-- Monetag In-Page Push ad (zone 11239054). Runs once per page load. -->
+<script>(function(s){s.dataset.zone='11239054',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 </body>
 </html>
