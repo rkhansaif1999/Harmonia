@@ -384,7 +384,7 @@ async function loginUser(event){
         // page that calls getUser() keeps working unchanged.
         localStorage.setItem("harmonia_token", data.token);
         localStorage.setItem("harmonia_token_expires_at", String(data.expiresAt));
-        saveUser(data.user);
+        saveUser(data.user, data.token);
 
         const destination = ROLE_DASHBOARD[data.user.role] || "index.html";
         window.location.href = destination;
