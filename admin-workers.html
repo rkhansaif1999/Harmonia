@@ -329,6 +329,33 @@ function payoutMethodCell(payout) {
     return `${label}<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(detail)}</span>`;
 }
 
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+    });
+}
+
+// Same as payoutMethodCell but shows the FULL, unmasked value (with a
+// Copy button) - used only inside the expanded Details panel, where the
+// admin actually needs the complete address/email to send payment.
+function fullPayoutMethodCell(payout) {
+    if (!payout || !payout.methodType || !payout.methodVerified) {
+        return `<span style="opacity:.6;">Not linked</span>`;
+    }
+    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto";
+    const fullValue = payout.methodType === "paypal"
+        ? (payout.methodDetails && payout.methodDetails.email) || ""
+        : (payout.methodDetails && payout.methodDetails.wallet) || "";
+    const safeValue = escapeHTML(fullValue).replace(/'/g, "\\'");
+    return `
+        ${label}<br>
+        <span style="opacity:.85;font-size:.85rem;word-break:break-all;">${escapeHTML(fullValue)}</span>
+        <button style="margin-left:8px;" onclick="copyToClipboard('${safeValue}', this)">Copy</button>
+    `;
+}
+
 function renderWorkers(){
 
     const table = document.getElementById("workerTable");
@@ -401,7 +428,7 @@ function renderWorkers(){
                         <div class="details-grid">
                             <div>
                                 <div class="label">Payout Method</div>
-                                <div>${payoutMethodCell(payout)}</div>
+                                <div>${fullPayoutMethodCell(payout)}</div>
                             </div>
                             <div>
                                 <div class="label">Pending</div>
