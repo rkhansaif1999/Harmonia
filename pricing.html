@@ -5,6 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pricing - Harmonia</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+.footer{
+padding:100px 0 40px;
+border-top:1px solid rgba(255,255,255,.06);
+position:relative;
+overflow:hidden;
+}
+.footer::before{
+content:"";
+position:absolute;
+left:50%;
+top:-300px;
+transform:translateX(-50%);
+width:700px;
+height:700px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(77,170,255,.08), transparent 70%);
+filter:blur(100px);
+pointer-events:none;
+}
+.footer-grid{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr;
+gap:60px;
+margin-bottom:70px;
+}
+.footer-brand h2{
+font-size:2.4rem;
+font-weight:800;
+letter-spacing:-1px;
+background:linear-gradient(135deg,#8c82ff,#46d8ff);
+-webkit-background-clip:text;
+background-clip:text;
+-webkit-text-fill-color:transparent;
+color:#8c82ff;
+margin-bottom:24px;
+}
+.footer-brand p{
+color:#9dadc1;
+line-height:2;
+max-width:420px;
+}
+.footer-links h4{
+margin-bottom:24px;
+font-size:1.1rem;
+}
+.footer-links{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+.footer-links a{
+color:#98a6b9;
+transition:.3s;
+}
+.footer-links a:hover{
+color:#62d4ff;
+padding-left:8px;
+}
+.footer-bottom{
+padding-top:35px;
+border-top:1px solid rgba(255,255,255,.06);
+text-align:center;
+color:#7f8b9b;
+}
+@media (max-width:1200px){
+.footer-grid{
+grid-template-columns:1fr 1fr;
+gap:50px;
+}
+}
+@media (max-width:900px){
+.footer-grid{
+grid-template-columns:1fr;
+}
+}
+</style>
 </head>
 
 <body>
