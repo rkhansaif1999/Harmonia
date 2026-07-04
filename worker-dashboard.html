@@ -50,7 +50,7 @@
         <section class="cards">
 
             <div class="dashboard-card">
-                <h3>Available Tasks</h3>
+                <h3>Active Tasks</h3>
                 <h2 id="availableTasks">0</h2>
             </div>
 
@@ -121,80 +121,97 @@
 <script>
 
 const user = getUser();
+const taskTable = document.getElementById("taskTable");
 
-function renderWorkerDashboard() {
+// Loads this worker's real assigned tasks (from D1, via the Worker API)
+// and their real earnings, and fills in the cards + table with them.
+async function renderWorkerDashboard() {
 
-    const projects = getProjects();
-    const earnings = getEarnings();
+    let tasks = [];
+    let earnings = [];
 
-    const table = document.getElementById("taskTable");
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/tasks");
+        const data = await response.json();
+        if (response.ok) tasks = data.tasks || [];
+    } catch (err) {
+        console.error("Failed to load tasks:", err);
+    }
 
-    table.innerHTML = "";
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/earnings");
+        const data = await response.json();
+        if (response.ok) earnings = data.earnings || [];
+    } catch (err) {
+        console.error("Failed to load earnings:", err);
+    }
 
-    let availableTasks = 0;
-    let myTasks = 0;
+    taskTable.innerHTML = "";
 
-    projects.forEach(project => {
+    if (tasks.length === 0) {
+        taskTable.innerHTML = `<tr><td colspan="5" class="empty-state">No tasks assigned to you yet</td></tr>`;
+    }
 
-        if (!project.assignedTo) {
-            availableTasks++;
-        }
+    let activeTasks = 0;
 
-        if (project.assignedTo == user.id) {
+    tasks.forEach(task => {
 
-            myTasks++;
+        if (task.status !== "Completed") activeTasks++;
 
-            table.innerHTML += `
-                <tr>
-                    <td>${escapeHTML(project.projectName)}</td>
-                    <td>${escapeHTML(project.category)}</td>
-                    <td>${project.reviews}</td>
-                    <td>${statusBadge(project.status)}</td>
-                    <td>
-                        ${
-                            project.status === "Completed"
-                            ? "✅ Completed"
-                            : project.status === "In Review"
-                            ? "⏳ Awaiting review"
-                            : project.status === "Needs Revision"
-                            ? `<button onclick="resubmitMyTask(${project.id})">Resubmit</button>`
-                            : `<button onclick="completeMyTask(${project.id})">Submit for Review</button>`
-                        }
-                    </td>
-                </tr>
-            `;
-
-        }
-
+        taskTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(task.project_name)}</td>
+                <td>${escapeHTML(task.category)}</td>
+                <td>${task.reviews}</td>
+                <td>${statusBadge(task.status)}</td>
+                <td>
+                    ${
+                        task.status === "Completed"
+                        ? "✅ Completed"
+                        : task.status === "In Review"
+                        ? "⏳ Awaiting review"
+                        : task.status === "Needs Revision"
+                        ? `<button onclick="submitMyTask('${task.order_id}')">Resubmit</button>`
+                        : `<button onclick="submitMyTask('${task.order_id}')">Submit for Review</button>`
+                    }
+                </td>
+            </tr>
+        `;
     });
 
-    document.getElementById("availableTasks").textContent = availableTasks;
-    document.getElementById("myTasks").textContent = myTasks;
+    document.getElementById("availableTasks").textContent = activeTasks;
+    document.getElementById("myTasks").textContent = tasks.length;
 
     const myPending = earnings
-        .filter(e => e.workerId == user.id && e.status === "Pending")
-        .reduce((sum, e) => sum + e.amount, 0);
+        .filter(e => e.status === "pending")
+        .reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
     const myTotal = earnings
-        .filter(e => e.workerId == user.id)
-        .reduce((sum, e) => sum + e.amount, 0);
+        .reduce((sum, e) => sum + Number(e.amount || 0), 0);
 
-    document.getElementById("pendingEarnings").textContent =
-        "$" + myPending.toFixed(2);
-
-    document.getElementById("totalEarned").textContent =
-        "$" + myTotal.toFixed(2);
-
+    document.getElementById("pendingEarnings").textContent = "$" + myPending.toFixed(2);
+    document.getElementById("totalEarned").textContent = "$" + myTotal.toFixed(2);
 }
 
-function completeMyTask(projectId){
-    submitForReview(projectId);
-    renderWorkerDashboard();
-}
+async function submitMyTask(orderId) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/tasks/submit", {
+            method: "POST",
+            body: JSON.stringify({ orderId })
+        });
+        const data = await response.json();
 
-function resubmitMyTask(projectId){
-    resubmitTask(projectId);
-    renderWorkerDashboard();
+        if (!response.ok) {
+            alert(data?.error || "Could not submit task.");
+            return;
+        }
+
+        await renderWorkerDashboard();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
 }
 
 renderWorkerDashboard();
