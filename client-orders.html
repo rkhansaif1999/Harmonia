@@ -212,6 +212,15 @@ function renderOrders() {
 
         const rowId = "row_" + index;
         const chat = order.supportChat || [];
+        const expired = isPaymentExpired(order);
+        const awaitingPayment = order.status === "Awaiting Payment";
+
+        let extraActionBtn = "";
+        if (awaitingPayment && !expired) {
+            extraActionBtn = `<button class="detail-btn" onclick="resumePayment('${escapeHTML(order.order_id)}','${order.total_price}','${escapeHTML(order.created_at)}')">Resume Payment</button>`;
+        } else if (expired) {
+            extraActionBtn = `<button class="detail-btn" onclick="deleteOrder('${escapeHTML(order.order_id)}')">Delete</button>`;
+        }
 
         table.innerHTML += `
             <tr>
@@ -219,8 +228,8 @@ function renderOrders() {
                 <td>${escapeHTML(order.project_name)}</td>
                 <td>${escapeHTML(order.category)}</td>
                 <td>
-                    <span class="badge ${getStatusClass(order.status)}">
-                        ${escapeHTML(order.status || "Pending")}
+                    <span class="badge ${getStatusClass(displayStatus(order))}">
+                        ${escapeHTML(displayStatus(order))}
                     </span>
                 </td>
                 <td>${order.reviews}</td>
@@ -228,6 +237,7 @@ function renderOrders() {
                     <button class="detail-btn" onclick="toggleDetails('${rowId}')">
                         Details
                     </button>
+                    ${extraActionBtn}
                 </td>
             </tr>
 
