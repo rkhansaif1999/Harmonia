@@ -200,7 +200,86 @@ function resubmitMyTask(projectId){
 renderWorkerDashboard();
 
 </script>
+<script>
 
+async function loadMicroTasks() {
+    const table = document.getElementById("microTaskTable");
+    if (!table) return;
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+
+        if (!response.ok) {
+            table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`;
+            return;
+        }
+
+        renderMicroTasks(data.tasks || []);
+
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
+    }
+}
+
+function microTaskStatusLabel(status) {
+    if (status === "approved") return "✅ Approved";
+    if (status === "pending") return "⏳ Pending Approval";
+    if (status === "rejected") return "❌ Rejected";
+    return "Not Applied";
+}
+
+function renderMicroTasks(tasks) {
+    const table = document.getElementById("microTaskTable");
+    table.innerHTML = "";
+
+    if (tasks.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No micro-tasks available right now</td></tr>`;
+        return;
+    }
+
+    tasks.forEach(task => {
+        const action = task.applicationStatus === "not_applied"
+            ? `<button onclick="applyMicroTask(${task.id})">Apply</button>`
+            : "-";
+
+        table.innerHTML += `
+            <tr>
+                <td>#${task.id}</td>
+                <td>$${Number(task.payoutAmount).toFixed(2)}</td>
+                <td>${microTaskStatusLabel(task.applicationStatus)}</td>
+                <td>${action}</td>
+            </tr>
+        `;
+    });
+}
+
+async function applyMicroTask(microTaskId) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks/apply", {
+            method: "POST",
+            body: JSON.stringify({ microTaskId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data?.error || "Could not submit application.");
+            return;
+        }
+
+        await loadMicroTasks();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+loadMicroTasks();
+
+</script>
 </body>
 
 </html>
