@@ -40,6 +40,18 @@
 
 <script src="script.js"></script>
 <script>
+// If already logged in as admin with a still-valid session, skip
+// straight to the dashboard instead of asking to log in again.
+(function restoreExistingSession() {
+    const existing = getUser();
+    if (!existing || !existing.token || existing.role !== "admin") return;
+
+    verifySessionWithServer().then(valid => {
+        if (valid) window.location.href = "admin-dashboard.html";
+    });
+})();
+</script>
+<script>
 async function adminLoginUser(event) {
     event.preventDefault();
 
