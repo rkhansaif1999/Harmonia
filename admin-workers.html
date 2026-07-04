@@ -160,12 +160,38 @@
 // All worker/reviewer data now comes from the real backend (D1) via the
 // Worker API, not localStorage. Status values from the backend are
 // lowercase: "approved", "suspended", "rejected".
+//
+// Payout method + earnings data comes from a second endpoint
+// (/api/admin/payouts) and is merged in by userId when rendering,
+// so a worker's linked payout method and pending/paid totals show
+// right in this same table instead of a separate page.
 
 let allUsers = [];
+let allPayouts = [];
+let currentPayoutFilter = "all";
 
 function capitalize(s) {
     if (!s) return "";
     return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function maskEmail(email) {
+    if (!email) return "";
+    const [local, domain] = email.split("@");
+    if (!domain) return email;
+    const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***";
+    return visible + "@" + domain;
+}
+
+function maskWallet(address) {
+    if (!address) return "";
+    if (address.length <= 12) return address;
+    return address.slice(0, 6) + "..." + address.slice(-6);
+}
+
+function formatMoney(amount) {
+    const n = Number(amount) || 0;
+    return "$" + n.toFixed(2);
 }
 
 async function fetchAllUsers() {
@@ -177,6 +203,17 @@ async function fetchAllUsers() {
     }
 
     return data.users || [];
+}
+
+async function fetchAllPayouts() {
+    const response = await authFetch(WORKER_URL + "/api/admin/payouts");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load payout data");
+    }
+
+    return data.payouts || [];
 }
 
 async function updateStatus(id, status) {
@@ -213,34 +250,79 @@ async function updateRole(id, role) {
     return true;
 }
 
-async function renderWorkers(){
+async function markPaid(userId, name) {
+    if (!confirm(`Mark all pending earnings for ${name} as paid?\n\nOnly do this AFTER you've actually sent the money via their linked payout method — this just logs it, it doesn't send anything.`)) return;
 
-    const table = document.getElementById("workerTable");
+    const response = await authFetch(WORKER_URL + "/api/admin/payouts/mark-paid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+    });
 
-    let workers;
-    try {
-        allUsers = await fetchAllUsers();
-        workers = allUsers.filter(u => u.role === "worker");
-    } catch (err) {
-        table.innerHTML = `<tr><td colspan="6" style="color:#ff8080;">Could not load workers: ${escapeHTML(err.message)}</td></tr>`;
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to mark as paid.");
         return;
     }
 
-    table.innerHTML = "";
+    await loadAndRenderAll();
+}
 
-    if (workers.length === 0) {
-        table.innerHTML = `<tr><td colspan="6" class="empty-state">No workers registered yet</td></tr>`;
+function setPayoutFilter(filter) {
+    currentPayoutFilter = filter;
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === filter);
+    });
+    renderWorkers();
+}
+
+function payoutMethodCell(payout) {
+    if (!payout || !payout.methodType || !payout.methodVerified) {
+        return `<span style="opacity:.6;">Not linked</span>`;
     }
+    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto";
+    const detail = payout.methodType === "paypal"
+        ? maskEmail(payout.methodDetails && payout.methodDetails.email)
+        : maskWallet(payout.methodDetails && payout.methodDetails.wallet);
+    return `${label}<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(detail)}</span>`;
+}
+
+function renderWorkers(){
+
+    const table = document.getElementById("workerTable");
+    const workers = allUsers.filter(u => u.role === "worker");
+
+    const payoutsByUserId = {};
+    allPayouts.forEach(p => { payoutsByUserId[p.userId] = p; });
 
     let active = 0;
     let suspended = 0;
     let rejected = 0;
 
     workers.forEach(worker => {
+        if (worker.status === "approved") active++;
+        if (worker.status === "suspended") suspended++;
+        if (worker.status === "rejected") rejected++;
+    });
 
-        if(worker.status === "approved") active++;
-        if(worker.status === "suspended") suspended++;
-        if(worker.status === "rejected") rejected++;
+    const visibleWorkers = workers.filter(worker => {
+        const payout = payoutsByUserId[worker.id];
+        if (currentPayoutFilter === "unpaid") return payout && payout.pendingAmount > 0;
+        if (currentPayoutFilter === "paidThisWeek") return payout && payout.paidThisWeek > 0;
+        if (currentPayoutFilter === "noMethod") return !payout || !payout.methodVerified;
+        return true;
+    });
+
+    table.innerHTML = "";
+
+    if (visibleWorkers.length === 0) {
+        table.innerHTML = `<tr><td colspan="10" class="empty-state">No workers match this filter</td></tr>`;
+    }
+
+    visibleWorkers.forEach(worker => {
+
+        const payout = payoutsByUserId[worker.id];
 
         let actions = "";
 
@@ -259,12 +341,24 @@ async function renderWorkers(){
             <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
         `;
 
+        const pendingAmount = payout ? payout.pendingAmount : 0;
+        const paidAmount = payout ? payout.paidAmount : 0;
+        const safeName = escapeHTML(worker.full_name).replace(/'/g, "\\'");
+
+        const payoutAction = pendingAmount > 0
+            ? `<button onclick="markPaid(${worker.id}, '${safeName}')">Mark Paid</button>`
+            : `<span style="opacity:.5;">—</span>`;
+
         table.innerHTML += `
             <tr>
                 <td>${escapeHTML(worker.full_name)}</td>
                 <td>${escapeHTML(worker.email)}</td>
                 <td>${escapeHTML(worker.country)}</td>
                 <td>${statusBadge(capitalize(worker.status))}</td>
+                <td>${payoutMethodCell(payout)}</td>
+                <td>${formatMoney(pendingAmount)}</td>
+                <td>${formatMoney(paidAmount)}</td>
+                <td>${payoutAction}</td>
                 <td>${actions}</td>
                 <td>${roleControl}</td>
             </tr>
@@ -280,27 +374,38 @@ async function renderWorkers(){
     renderReviewers();
 }
 
+async function loadAndRenderAll() {
+    const table = document.getElementById("workerTable");
+    try {
+        [allUsers, allPayouts] = await Promise.all([fetchAllUsers(), fetchAllPayouts()]);
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="10" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+    renderWorkers();
+}
+
 async function changeStatus(id, status){
     const ok = await updateStatus(id, status);
-    if (ok) renderWorkers();
+    if (ok) loadAndRenderAll();
 }
 
 async function promoteToAdmin(id){
     if(!confirm("Promote this worker to Admin? They will get full access.")) return;
     const ok = await updateRole(id, "admin");
-    if (ok) renderWorkers();
+    if (ok) loadAndRenderAll();
 }
 
 async function moveToClient(id){
     if(!confirm("Switch this worker to a Client account?")) return;
     const ok = await updateRole(id, "client");
-    if (ok) renderWorkers();
+    if (ok) loadAndRenderAll();
 }
 
 async function moveToReviewer(id){
     if(!confirm("Promote this worker to Reviewer (QA role)?")) return;
     const ok = await updateRole(id, "reviewer");
-    if (ok) renderWorkers();
+    if (ok) loadAndRenderAll();
 }
 
 function renderReviewers(){
@@ -328,10 +433,10 @@ function renderReviewers(){
 async function demoteToWorker(id){
     if(!confirm("Move this reviewer back to a regular Worker role?")) return;
     const ok = await updateRole(id, "worker");
-    if (ok) renderWorkers();
+    if (ok) loadAndRenderAll();
 }
 
-renderWorkers();
+loadAndRenderAll();
 
 </script>
 
