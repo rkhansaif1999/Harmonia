@@ -284,6 +284,27 @@ Don't have an account?
 <script src="script.js"></script>
 
 <script>
+// If you already have a valid session (still within your 1-hour login
+// window), skip the form entirely and go straight to your dashboard,
+// instead of making you log in again.
+(function restoreExistingSession() {
+    const existing = getUser();
+    if (!existing || !existing.token) return;
+
+    verifySessionWithServer().then(valid => {
+        if (!valid) return; // truly expired/logged out - let them see the form
+
+        switch (existing.role) {
+            case "admin": window.location.href = "admin-dashboard.html"; break;
+            case "client": window.location.href = "client-dashboard.html"; break;
+            case "worker": window.location.href = "worker-dashboard.html"; break;
+            case "reviewer": window.location.href = "reviewer-dashboard.html"; break;
+        }
+    });
+})();
+</script>
+
+<script>
 function selectRole(role, element){
 
     document.querySelectorAll(".role-card").forEach(card=>{
