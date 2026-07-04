@@ -103,18 +103,20 @@ function statusBadge(status) {
 }
 
 // =========================
-// SESSION (with 24-hour expiry)
+// SESSION
+// The server is the ONLY source of truth for whether you're still
+// logged in. It already enforces a real 1-hour "sliding" session:
+// every action you take resets the clock to another hour from now,
+// and it only truly expires after an hour of no activity - not a
+// fixed timer that starts at login. This just keeps the browser
+// asking the server, instead of guessing with its own local clock.
 // =========================
-const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 function saveUser(user, token) {
-    const session = {
-        ...user,
-        token: token || null,
-        sessionExpires: Date.now() + SESSION_DURATION
-    };
+    const session = { ...user, token: token || null };
     localStorage.setItem(KEYS.USER, JSON.stringify(session));
 }
+
 // Wraps fetch() and automatically attaches the logged-in user's
 // session token as a Bearer header. Use this for any call to a
 // protected /api/... route instead of calling fetch() directly.
@@ -127,22 +129,44 @@ async function authFetch(url, options = {}) {
     };
     return fetch(url, { ...options, headers });
 }
+
 function getUser() {
-    const session = JSON.parse(localStorage.getItem(KEYS.USER));
-
-    if (!session) return null;
-
-    if (session.sessionExpires && Date.now() > session.sessionExpires) {
-        localStorage.removeItem(KEYS.USER);
+    try {
+        return JSON.parse(localStorage.getItem(KEYS.USER));
+    } catch {
         return null;
     }
-
-    return session;
 }
 
 function logout() {
     localStorage.removeItem(KEYS.USER);
     window.location.href = "login.html";
+}
+
+// Asks the server whether this session token is still valid. This is
+// what actually decides "are you still logged in" - not a local timer.
+// If the server confirms it's valid, it also refreshes the locally
+// cached copy (in case an admin changed this account's role/status).
+async function verifySessionWithServer() {
+    const user = getUser();
+    if (!user?.token) return false;
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/session/verify", {
+            headers: { "Authorization": "Bearer " + user.token }
+        });
+        if (!response.ok) return false;
+
+        const data = await response.json();
+        saveUser(data.user, user.token);
+        return true;
+
+    } catch (err) {
+        console.error("Session check failed (network issue):", err);
+        // Don't force a logout just because of a temporary network
+        // hiccup - only a real "invalid/expired" answer logs you out.
+        return true;
+    }
 }
 
 const WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev";
@@ -248,7 +272,7 @@ if (!data?.user) {
 function protectPage(role) {
     const user = getUser();
 
-    if (!user) {
+    if (!user || !user.token) {
         window.location.href = "login.html";
         return;
     }
@@ -256,7 +280,20 @@ function protectPage(role) {
     if (role && user.role !== role) {
         alert("Access denied");
         logout();
+        return;
     }
+
+    // Double-check with the server that this session is still real
+    // (not expired from an hour of inactivity, and not logged out from
+    // another device). Runs in the background so the page still loads
+    // instantly; if the server says it's invalid, it sends you back
+    // to login right away.
+    verifySessionWithServer().then(valid => {
+        if (!valid) {
+            alert("Your session has expired. Please log in again.");
+            logout();
+        }
+    });
 }
 
 // =========================
