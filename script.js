@@ -2,12 +2,14 @@
 // HARMONIA CORE SYSTEM (FIXED + COMPLETE)
 // =========================
 
+// The ONLY thing this site keeps in the browser's storage is the
+// logged-in user's own session (their info + session token), so the
+// page can stay logged in on refresh. That is normal and safe — every
+// website does this. Everything else (users, orders, earnings,
+// settings) now lives only in your real database (D1) and is always
+// fetched fresh from the Worker API, never guessed from local data.
 const KEYS = {
-    USERS: "harmonia_users",
-    USER: "harmonia_user",
-    PROJECTS: "harmonia_projects",
-    SETTINGS: "harmonia_settings",
-    EARNINGS: "harmonia_earnings"
+    USER: "harmonia_user"
 };
 
 // =========================
@@ -23,21 +25,6 @@ function escapeHTML(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-}
-
-// =========================
-// SECURITY: PASSWORD HASHING (SHA-256 via Web Crypto API)
-// Note: this is client-side hashing for the current local-storage prototype.
-// Once the real backend is connected, passwords will be hashed server-side
-// with a proper algorithm (bcrypt/argon2) — this is an interim safeguard
-// so plaintext passwords are never sitting in the browser's storage.
-// =========================
-async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 // =========================
@@ -86,10 +73,15 @@ function clearLoginAttempts(email) {
 }
 
 // =========================
-// SETTINGS (ADMIN CONTROL PRICING)
+// SETTINGS FALLBACK
+// The real settings always come from the Worker API
+// (GET /api/settings or /api/admin/settings). This function is only
+// used as a last-resort default value on the rare old record that
+// might be missing a price — it is a fixed constant, not something
+// read from or written to local storage.
 // =========================
 function getSettings() {
-    return JSON.parse(localStorage.getItem(KEYS.SETTINGS)) || {
+    return {
         platformName: "Harmonia",
         pricePerReview: 3,
         autoApproval: "enabled",
@@ -98,52 +90,6 @@ function getSettings() {
         reviewerSharePercent: 20
     };
 }
-
-function saveSettings(data) {
-    localStorage.setItem(KEYS.SETTINGS, JSON.stringify(data));
-}
-
-// =========================
-// USERS SYSTEM
-// =========================
-function getUsers() {
-    return JSON.parse(localStorage.getItem(KEYS.USERS)) || [];
-}
-
-function saveUsers(users) {
-    localStorage.setItem(KEYS.USERS, JSON.stringify(users));
-}
-
-// =========================
-// SEED DEFAULT ADMIN ACCOUNT (dev/testing only)
-// Runs once per browser: if no admin with this email exists yet,
-// create it so the site owner can log in immediately without
-// going through the console. Safe to remove once a real backend
-// and proper admin invite flow is in place.
-// =========================
-(async function seedDefaultAdmin() {
-    const ADMIN_EMAIL = "rkhansaif1999@gmail.com";
-    const ADMIN_PASSWORD = "Abc123.,?121";
-
-    const users = getUsers();
-
-    if (users.find(u => u.email === ADMIN_EMAIL)) return;
-
-    const hashed = await hashPassword(ADMIN_PASSWORD);
-
-    users.push({
-        id: Date.now(),
-        fullName: "Admin",
-        email: ADMIN_EMAIL,
-        password: hashed,
-        role: "admin",
-        country: "N/A",
-        status: "Active",
-        verified: true
-    });
-
-    saveUsers(users);
-})();
 
 // =========================
 // UI HELPER: STATUS BADGE
@@ -290,110 +236,11 @@ if (!data?.user) {
 // and so it can never accidentally run on a page that doesn't override it.
 // =========================
 
-// =========================
-// FORGOT / RESET PASSWORD (mock, local-storage based)
-// Same pattern as signup verification: a 6-digit code is generated and
-// shown via alert() until a real backend + email service is connected.
-// =========================
-const PASSWORD_RESET_KEY = "harmonia_password_reset";
-const RESET_CODE_TTL = 10 * 60 * 1000; // 10 minutes
-
-function generateSixDigitCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-function requestPasswordReset(event) {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value.trim();
-    const users = getUsers();
-    const user = users.find(u => u.email === email);
-
-    // Always show the same confirmation whether or not the email exists,
-    // so this form can't be used to check which emails are registered.
-    if (user) {
-        const code = generateSixDigitCode();
-
-        localStorage.setItem(PASSWORD_RESET_KEY, JSON.stringify({
-            email,
-            code,
-            expires: Date.now() + RESET_CODE_TTL
-        }));
-
-        alert(
-            "Your reset code is: " + code +
-            "\n(This will be emailed to you automatically once the backend is connected.)"
-        );
-    } else {
-        alert("If that email is registered, a reset code has been sent.");
-    }
-
-    window.location.href = "reset-password.html";
-}
-
-function resendResetCode(event) {
-    event.preventDefault();
-
-    const pending = JSON.parse(localStorage.getItem(PASSWORD_RESET_KEY));
-
-    if (!pending) {
-        alert("Your reset session expired. Please start over.");
-        window.location.href = "forgot-password.html";
-        return;
-    }
-
-    pending.code = generateSixDigitCode();
-    pending.expires = Date.now() + RESET_CODE_TTL;
-
-    localStorage.setItem(PASSWORD_RESET_KEY, JSON.stringify(pending));
-    alert("New reset code: " + pending.code);
-}
-
-async function resetPassword(event) {
-    event.preventDefault();
-
-    const code = document.getElementById("resetCode").value.trim();
-    const password = document.getElementById("newPassword").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-
-    const pending = JSON.parse(localStorage.getItem(PASSWORD_RESET_KEY));
-
-    if (!pending || Date.now() > pending.expires) {
-        alert("This reset code has expired. Please request a new one.");
-        localStorage.removeItem(PASSWORD_RESET_KEY);
-        window.location.href = "forgot-password.html";
-        return;
-    }
-
-    if (code !== pending.code) {
-        alert("Incorrect code. Please try again.");
-        return;
-    }
-
-    if (password.length < 8) {
-        alert("Password must be at least 8 characters long.");
-        return;
-    }
-
-    if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-    }
-
-    const hashed = await hashPassword(password);
-    let users = getUsers();
-
-    users = users.map(u => {
-        if (u.email === pending.email) u.password = hashed;
-        return u;
-    });
-
-    saveUsers(users);
-    localStorage.removeItem(PASSWORD_RESET_KEY);
-
-    alert("Password updated successfully. Please log in.");
-    window.location.href = "login.html";
-}
+// NOTE: forgot-password.html and reset-password.html each define their
+// own real requestPasswordReset()/resetPassword()/resendResetCode()
+// functions that call the real Worker API (/api/forgot-password,
+// /api/reset-password, /api/reset-password/resend-code). The old
+// mock, local-storage versions that used to live here have been removed.
 
 // =========================
 // PAGE PROTECTION
@@ -410,247 +257,6 @@ function protectPage(role) {
         alert("Access denied");
         logout();
     }
-}
-
-// =========================
-// PROJECTS
-// =========================
-function getProjects() {
-    return JSON.parse(localStorage.getItem(KEYS.PROJECTS)) || [];
-}
-
-function saveProjects(p) {
-    localStorage.setItem(KEYS.PROJECTS, JSON.stringify(p));
-}
-
-// =========================
-// CREATE PROJECT (CLIENT)
-// =========================
-function createProject(project) {
-    let projects = getProjects();
-
-    const settings = getSettings();
-
-    const reviews = Number(project.reviews || 0);
-
-    projects.push({
-        id: Date.now(),
-        projectName: project.projectName,
-        category: project.category,
-        reviews,
-        description: project.description,
-        status: "Pending",
-        clientId: project.clientId,
-        clientEmail: project.clientEmail,
-        assignedTo: null,
-        pricePerReview: settings.pricePerReview,
-        totalCost: reviews * settings.pricePerReview
-    });
-
-    saveProjects(projects);
-
-    assignTasksAutomatically();
-}
-
-// =========================
-// ADMIN APPROVE WORKERS
-// =========================
-function updateUserStatus(id, status) {
-    let users = getUsers();
-
-    users = users.map(u => {
-        if (u.id == id) u.status = status;
-        return u;
-    });
-
-    saveUsers(users);
-}
-
-// =========================
-// ADMIN CHANGE ROLE (PROMOTE / DEMOTE)
-// =========================
-function updateUserRole(id, newRole) {
-    let users = getUsers();
-
-    users = users.map(u => {
-        if (u.id == id) {
-            u.role = newRole;
-            // make sure they're active once promoted/demoted
-            u.status = "Active";
-        }
-        return u;
-    });
-
-    saveUsers(users);
-}
-
-// =========================
-// UPDATE PROJECT / TASK STATUS (general, no payout)
-// =========================
-function updateProjectStatus(id, status) {
-    let projects = getProjects();
-
-    projects = projects.map(p => {
-        if (p.id == id) p.status = status;
-        return p;
-    });
-
-    saveProjects(projects);
-}
-
-// =========================
-// AUTO ASSIGN WORKERS
-// =========================
-function assignTasksAutomatically() {
-    let projects = getProjects();
-    let users = getUsers();
-
-    const workers = users.filter(u =>
-        u.role === "worker" && u.status === "Active"
-    );
-
-    if (workers.length === 0) return;
-
-    let i = 0;
-
-    projects = projects.map(p => {
-        if (!p.assignedTo && p.status === "Pending") {
-            p.assignedTo = workers[i].id;
-            p.status = "Assigned";
-
-            i++;
-            if (i >= workers.length) i = 0;
-        }
-        return p;
-    });
-
-    saveProjects(projects);
-}
-
-// =========================
-// WORKER SUBMITS COMPLETED WORK FOR REVIEW
-// =========================
-function submitForReview(id) {
-    const settings = getSettings();
-    let projects = getProjects();
-
-    projects = projects.map(p => {
-        if (p.id == id) {
-            // If reviewers are disabled platform-wide, skip straight to payout
-            p.status = settings.reviewerEnabled ? "In Review" : "Completed";
-        }
-        return p;
-    });
-
-    saveProjects(projects);
-
-    if (!settings.reviewerEnabled) {
-        payOutProject(id);
-    }
-}
-
-// Backwards-compatible alias used by older pages
-function completeProject(id) {
-    submitForReview(id);
-}
-
-// =========================
-// REVIEWER: GET QUEUE
-// =========================
-function getReviewQueue() {
-    return getProjects().filter(p => p.status === "In Review");
-}
-
-// =========================
-// REVIEWER: APPROVE (pays out worker + reviewer)
-// =========================
-function approveSubmission(id, reviewerId) {
-    let projects = getProjects();
-
-    projects = projects.map(p => {
-        if (p.id == id) p.status = "Completed";
-        return p;
-    });
-
-    saveProjects(projects);
-    payOutProject(id, reviewerId);
-}
-
-// =========================
-// REVIEWER: REJECT (sends back to worker)
-// =========================
-function rejectSubmission(id, reason) {
-    let projects = getProjects();
-
-    projects = projects.map(p => {
-        if (p.id == id) {
-            p.status = "Needs Revision";
-            p.rejectionReason = reason || "No reason given";
-        }
-        return p;
-    });
-
-    saveProjects(projects);
-}
-
-// =========================
-// WORKER: RESUBMIT AFTER REJECTION
-// =========================
-function resubmitTask(id) {
-    submitForReview(id);
-}
-
-// =========================
-// PAYOUT LOGIC (called once, on approval / completion)
-// =========================
-function payOutProject(projectId, reviewerId = null) {
-    const projects = getProjects();
-    const settings = getSettings();
-    const project = projects.find(p => p.id == projectId);
-
-    if (!project) return;
-
-    let earnings = getEarnings();
-
-    // prevent double-payout if this somehow runs twice
-    if (earnings.find(e => e.projectId == projectId)) return;
-
-    const total = project.reviews * settings.pricePerReview;
-
-    if (settings.reviewerEnabled && reviewerId) {
-        const reviewerCut = total * (settings.reviewerSharePercent / 100);
-        const workerCut = total - reviewerCut;
-
-        earnings.push({
-            id: Date.now(),
-            workerId: project.assignedTo,
-            projectId: project.id,
-            amount: workerCut,
-            role: "worker",
-            status: "Pending"
-        });
-
-        earnings.push({
-            id: Date.now() + 1,
-            workerId: reviewerId,
-            projectId: project.id,
-            amount: reviewerCut,
-            role: "reviewer",
-            status: "Pending"
-        });
-
-    } else {
-        earnings.push({
-            id: Date.now(),
-            workerId: project.assignedTo,
-            projectId: project.id,
-            amount: total,
-            role: "worker",
-            status: "Pending"
-        });
-    }
-
-    localStorage.setItem(KEYS.EARNINGS, JSON.stringify(earnings));
 }
 
 // =========================
@@ -774,47 +380,6 @@ async function deleteMessage(id) {
 }
 
 // =========================
-// EARNINGS
-// =========================
-function getEarnings() {
-    return JSON.parse(localStorage.getItem(KEYS.EARNINGS)) || [];
-}
-
-// =========================
-// DASHBOARD STATS
-// =========================
-function getDashboardStats(role, userId = null) {
-
-    const users = getUsers();
-    const projects = getProjects();
-    const earnings = JSON.parse(localStorage.getItem(KEYS.EARNINGS)) || [];
-
-    if (role === "admin") {
-        return {
-            workers: users.filter(u => u.role === "worker").length,
-            clients: users.filter(u => u.role === "client").length,
-            totalProjects: projects.length,
-            pendingProjects: projects.filter(p => p.status === "Pending").length
-        };
-    }
-
-    if (role === "worker") {
-        return {
-            myTasks: projects.filter(p => p.assignedTo == userId).length,
-            completed: projects.filter(p => p.assignedTo == userId && p.status === "Completed").length,
-            earnings: earnings.filter(e => e.workerId == userId)
-                .reduce((a, b) => a + b.amount, 0)
-        };
-    }
-
-    if (role === "client") {
-        return {
-            myProjects: projects.filter(p => p.clientId == userId).length
-        };
-    }
-}
-
-// =========================
 // GLOBAL NAV — public marketing navbar (mobile menu + active link)
 // Applies automatically to any page with .navbar/.nav-links
 // (index, pricing, contact). Fixes the old rule that just hid every
@@ -859,52 +424,15 @@ function setupPublicNav() {
 // portal page, without needing to hand-edit each dashboard file.
 // =========================
 function buildNotifications(user) {
-    const notifications = [];
-    if (!user) return notifications;
-
-    const projects = getProjects();
-    const earnings = getEarnings();
-
-    if (user.role === "worker") {
-        const myTasks = projects.filter(p => p.assignedTo == user.id);
-        const needsRevision = myTasks.filter(p => p.status === "Needs Revision");
-        const pendingPay = earnings.filter(e => e.workerId == user.id && e.status === "Pending");
-
-        needsRevision.forEach(p =>
-            notifications.push({ icon: "⚠️", text: `"${p.projectName}" needs revision` })
-        );
-        if (pendingPay.length) {
-            notifications.push({ icon: "💰", text: `${pendingPay.length} payout(s) pending` });
-        }
-    }
-
-    if (user.role === "client") {
-        const myProjects = projects.filter(p => p.clientId == user.id);
-        const inReview = myProjects.filter(p => p.status === "In Review");
-        if (inReview.length) {
-            notifications.push({ icon: "🔍", text: `${inReview.length} project(s) in review` });
-        }
-    }
-
-    if (user.role === "reviewer") {
-        const queue = getReviewQueue();
-        if (queue.length) {
-            notifications.push({ icon: "📝", text: `${queue.length} submission(s) awaiting review` });
-        }
-    }
-
-    if (user.role === "admin") {
-        const pendingWorkers = getUsers().filter(u => u.role === "worker" && u.status === "Pending");
-        const pendingProjects = projects.filter(p => p.status === "Pending");
-        if (pendingWorkers.length) {
-            notifications.push({ icon: "🧑‍💻", text: `${pendingWorkers.length} worker(s) awaiting approval` });
-        }
-        if (pendingProjects.length) {
-            notifications.push({ icon: "📁", text: `${pendingProjects.length} project(s) awaiting assignment` });
-        }
-    }
-
-    return notifications;
+    // NOTE: this used to read from a fake local-storage "database" of
+    // projects/users/earnings that no longer exists. The real data now
+    // lives only in D1, behind the Worker API. Returning an empty list
+    // here just turns the bell into "no notifications" for now, rather
+    // than showing stale/fake counts. Wiring this up to the real
+    // per-role API endpoints (e.g. /api/worker/tasks, /api/reviewer/queue)
+    // is a nice future improvement, not a security issue.
+    if (!user) return [];
+    return [];
 }
 
 function enhanceTopbar() {
