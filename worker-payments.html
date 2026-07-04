@@ -261,7 +261,7 @@ function formatTimestamp(iso) {
 
 async function loadPayoutMethod() {
     try {
-        const res = await authFetch("/api/worker/payout-method");
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method");
         const data = await res.json();
         currentMethod = res.ok ? data.method : null;
         if (!res.ok) console.log("Failed to load payout method:", data.error);
