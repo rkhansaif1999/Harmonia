@@ -327,7 +327,46 @@ function renderOrders() {
         `;
     });
 }
+function resumePayment(orderId, totalPrice, createdAt) {
+    // Preserve the ORIGINAL 10-minute window from when the order was
+    // created, rather than granting a fresh 10 minutes just for
+    // resuming - otherwise someone could keep "resuming" forever.
+    const created = new Date(createdAt).getTime();
+    const deadline = isNaN(created) ? Date.now() + 10 * 60 * 1000 : created + 10 * 60 * 1000;
 
+    sessionStorage.setItem("currentOrderId", orderId);
+    sessionStorage.setItem("currentOrderAmount", "$" + totalPrice);
+    // Payment method wasn't necessarily chosen before the tab was
+    // closed, so default to crypto (same default client-checkout.html
+    // itself starts on).
+    sessionStorage.setItem("currentPaymentMethod", "crypto");
+    sessionStorage.setItem("paymentDeadline_" + orderId, deadline.toString());
+
+    window.open("payment-confirm.html", "_blank");
+}
+
+async function deleteOrder(orderId) {
+    if (!confirm("Delete this cancelled order? This can't be undone.")) return;
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/orders/cancel", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to delete order");
+        }
+
+        loadOrders();
+
+    } catch (err) {
+        alert("Could not delete order: " + err.message);
+    }
+}
 async function loadOrders() {
 
     try {
