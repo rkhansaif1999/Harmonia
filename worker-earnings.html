@@ -175,16 +175,27 @@ async function loadEarnings() {
 
     let earnings;
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/earnings");
-        const data = await response.json();
+        const [reviewResponse, microResponse] = await Promise.all([
+            authFetch(WORKER_URL + "/api/worker/earnings"),
+            authFetch(WORKER_URL + "/api/worker/micro-task-earnings")
+        ]);
 
-        if (!response.ok) {
+        const reviewData = await reviewResponse.json();
+        const microData = await microResponse.json();
+
+        if (!reviewResponse.ok) {
             table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
-            console.error("Failed to load earnings:", data?.error);
+            console.error("Failed to load review earnings:", reviewData?.error);
             return;
         }
 
-        earnings = data.earnings || [];
+        if (!microResponse.ok) {
+            table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
+            console.error("Failed to load micro-task earnings:", microData?.error);
+            return;
+        }
+
+        earnings = [...(reviewData.earnings || []), ...(microData.earnings || [])];
     } catch (err) {
         table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
         console.error(err);
