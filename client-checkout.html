@@ -639,7 +639,7 @@ async function initCheckout() {
     // client's locally-guessed values - for everything from here on.
     orderId = data.orderId;
     const pricePerReview = data.pricePerReview;
-    const totalPrice = data.totalPrice;
+    confirmedTotalPrice = data.totalPrice;
 
     sessionStorage.setItem("currentOrderId", orderId);
     sessionStorage.setItem("currentOrderAmount", "$" + totalPrice);
