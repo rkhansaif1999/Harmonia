@@ -361,7 +361,7 @@ async function sendVerificationCode(method) {
     }
 
     try {
-        const res = await authFetch("/api/worker/payout-method/send-code", {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/send-code", {
             method: "POST",
             body: JSON.stringify({ methodType: method, details: buildDetails(method, value) }),
         });
