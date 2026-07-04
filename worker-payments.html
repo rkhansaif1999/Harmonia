@@ -390,7 +390,7 @@ async function confirmVerificationCode(method) {
     }
 
     try {
-        const res = await authFetch("/api/worker/payout-method/verify-code", {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/verify-code", {
             method: "POST",
             body: JSON.stringify({ methodType: method, code: enteredCode }),
         });
