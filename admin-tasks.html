@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro-Task Projects - Harmonia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js?v=2"></script>
+
+<script>
+    protectPage("admin");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo">Harmonia</h2>
+
+        <ul>
+            <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
+            <li><a href="admin-workers.html">👥 Workers</a></li>
+            <li><a href="admin-clients.html">🏢 Clients</a></li>
+            <li><a href="admin-projects.html">📂 Projects</a></li>
+            <li class="active">📋 Tasks</li>
+            <li><a href="admin-messages.html">✉️ Messages</a></li>
+            <li>💰 Payments</li>
+            <li><a href="admin-analytics.html">📈 Analytics</a></li>
+            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <header class="topbar">
+            <h1>Micro-Task Projects</h1>
+            <div class="profile">Administrator</div>
+        </header>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Projects</h3>
+                <h2 id="totalProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Applications</h3>
+                <h2 id="totalApplications">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Workers Currently Approved</h3>
+                <h2 id="totalApproved">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Applications</h3>
+                <h2 id="totalPending">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Create New Project</h2>
+
+            <div class="card" style="max-width:420px;">
+                <label>Payout Amount per Correct Code (USD)</label>
+                <input type="number" id="newPayoutAmount" min="0.01" step="0.01" placeholder="e.g. 0.05">
+                <button class="primary" onclick="handleCreateTask()" style="margin-top:15px;">Create Project</button>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Existing Projects</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project ID</th>
+                        <th>Payout</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Approved (Working)</th>
+                        <th>Rejected</th>
+                        <th>Pending</th>
+                        <th>Submissions</th>
+                        <th>Correct</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody id="projectsTable">
+                    <tr><td colspan="10" class="empty-state">Loading projects...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Pending Applications</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Email</th>
+                        <th>Project ID</th>
+                        <th>Payout</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTable">
+                    <tr><td colspan="6" class="empty-state">Loading applications...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+
+/* =========================
+   DATA FETCH
+   ========================= */
+
+async function fetchProjects() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load projects");
+    return data.tasks || [];
+}
+
+async function fetchApplications() {
+    const response = await authFetch(WORKER_URL + "/api/admin/task-applications");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load applications");
+    return data.applications || [];
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleString();
+}
+
+/* =========================
+   RENDER
+   ========================= */
+
+async function renderAll() {
+    const projectsTable = document.getElementById("projectsTable");
+    const applicationsTable = document.getElementById("applicationsTable");
+
+    let projects, applications;
+
+    try {
+        [projects, applications] = await Promise.all([fetchProjects(), fetchApplications()]);
+    } catch (err) {
+        projectsTable.innerHTML = `<tr><td colspan="10" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        applicationsTable.innerHTML = "";
+        return;
+    }
+
+    /* ---- Cards ---- */
+    const totalApplied = projects.reduce((sum, p) => sum + Number(p.total_applied || 0), 0);
+    const totalApproved = projects.reduce((sum, p) => sum + Number(p.total_approved || 0), 0);
+    const totalPending = projects.reduce((sum, p) => sum + Number(p.total_pending || 0), 0);
+
+    document.getElementById("totalProjects").textContent = projects.length;
+    document.getElementById("totalApplications").textContent = totalApplied;
+    document.getElementById("totalApproved").textContent = totalApproved;
+    document.getElementById("totalPending").textContent = totalPending;
+
+    /* ---- Projects table ---- */
+    projectsTable.innerHTML = "";
+
+    if (projects.length === 0) {
+        projectsTable.innerHTML = `<tr><td colspan="10" class="empty-state">No projects created yet</td></tr>`;
+    }
+
+    projects.forEach(p => {
+        projectsTable.innerHTML += `
+            <tr>
+                <td>#${p.id}</td>
+                <td>$${Number(p.payout_amount).toFixed(2)}</td>
+                <td>${statusBadge(capitalize(p.status))}</td>
+                <td>${p.total_applied || 0}</td>
+                <td>${p.total_approved || 0}</td>
+                <td>${p.total_rejected || 0}</td>
+                <td>${p.total_pending || 0}</td>
+                <td>${p.total_submissions || 0}</td>
+                <td>${p.total_correct || 0}</td>
+                <td>${formatDate(p.created_at)}</td>
+            </tr>
+        `;
+    });
+
+    /* ---- Pending applications table ---- */
+    const pending = applications.filter(a => a.status === "pending");
+
+    applicationsTable.innerHTML = "";
+
+    if (pending.length === 0) {
+        applicationsTable.innerHTML = `<tr><td colspan="6" class="empty-state">No pending applications</td></tr>`;
+    }
+
+    pending.forEach(a => {
+        applicationsTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(a.full_name)}</td>
+                <td>${escapeHTML(a.email)}</td>
+                <td>#${a.micro_task_id}</td>
+                <td>$${Number(a.payout_amount).toFixed(2)}</td>
+                <td>${formatDate(a.created_at)}</td>
+                <td>
+                    <button onclick="decideApplication(${a.id}, 'approved')">Approve</button>
+                    <button onclick="decideApplication(${a.id}, 'rejected')">Reject</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* =========================
+   ACTIONS
+   ========================= */
+
+async function handleCreateTask() {
+    const input = document.getElementById("newPayoutAmount");
+    const amount = Number(input.value);
+
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid payout amount.");
+        return;
+    }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payoutAmount: amount })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to create project.");
+            return;
+        }
+
+        input.value = "";
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+async function decideApplication(applicationId, decision) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/task-applications/decide", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ applicationId, decision })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update application.");
+            return;
+        }
+
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+renderAll();
+
+</script>
+
+</body>
+</html>
