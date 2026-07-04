@@ -228,43 +228,11 @@
 <script>
 
 const user = getUser();
-const STORAGE_KEY = "harmonia_payout_methods";
-const CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes, same window used elsewhere in the app
 
-/* =========================
-   STORAGE HELPERS
-   ========================= */
+let currentMethod = null; // null or { methodType, details, verified, updatedAt }
+let selectedTile = null;
 
-function getAllPayoutMethods() {
-    try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    } catch (e) {
-        return {};
-    }
-}
-
-function getMyPayoutMethods() {
-    const all = getAllPayoutMethods();
-    return all[user.id] || {};
-}
-
-function getActiveMethod(methods) {
-    if (methods.activeMethod) return methods.activeMethod;
-    // Fallback for pre-existing data saved before the single-method rule
-    if (methods.paypalEmail) return "paypal";
-    if (methods.cryptoWallet) return "crypto";
-    return null;
-}
-
-function saveMyPayoutMethods(update) {
-    const all = getAllPayoutMethods();
-    all[user.id] = { ...(all[user.id] || {}), ...update };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-}
-
-/* =========================
-   MASKING / DISPLAY HELPERS
-   ========================= */
+/* ========================= DISPLAY HELPERS ========================= */
 
 function maskEmail(email) {
     if (!email) return "";
@@ -289,47 +257,54 @@ function formatTimestamp(iso) {
     });
 }
 
-/* =========================
-   RENDER CURRENT STATE
-   ========================= */
+/* ========================= LOAD CURRENT METHOD ========================= */
+
+async function loadPayoutMethod() {
+    try {
+        const res = await authFetch("/api/worker/payout-method");
+        const data = await res.json();
+        currentMethod = res.ok ? data.method : null;
+        if (!res.ok) console.log("Failed to load payout method:", data.error);
+    } catch (err) {
+        console.log("Failed to load payout method:", err);
+        currentMethod = null;
+    }
+    renderPayoutMethods();
+}
 
 function renderPayoutMethods() {
-    const methods = getMyPayoutMethods();
-    const activeMethod = getActiveMethod(methods);
+    const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
 
     const paypalDisplay = document.getElementById("paypalDisplay");
     const paypalUpdateBtn = document.getElementById("paypalUpdateBtn");
-    if (methods.paypalEmail) {
-        paypalDisplay.textContent = maskEmail(methods.paypalEmail);
+    if (linkedMethod === "paypal") {
+        paypalDisplay.textContent = maskEmail(currentMethod.details.email);
         paypalUpdateBtn.textContent = "Update";
+        document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt);
     } else {
         paypalDisplay.textContent = "Not linked";
         paypalUpdateBtn.textContent = "Link PayPal";
+        document.getElementById("paypalUpdatedAt").textContent = "";
     }
-    document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(methods.paypalUpdatedAt);
-    document.getElementById("paypalLinkedBadge").style.display = activeMethod === "paypal" ? "inline-block" : "none";
+    document.getElementById("paypalLinkedBadge").style.display = linkedMethod === "paypal" ? "inline-block" : "none";
 
     const cryptoDisplay = document.getElementById("cryptoDisplay");
     const cryptoUpdateBtn = document.getElementById("cryptoUpdateBtn");
-    if (methods.cryptoWallet) {
-        cryptoDisplay.textContent = maskWallet(methods.cryptoWallet);
+    if (linkedMethod === "crypto") {
+        cryptoDisplay.textContent = maskWallet(currentMethod.details.wallet);
         cryptoUpdateBtn.textContent = "Update";
+        document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt);
     } else {
         cryptoDisplay.textContent = "Not linked";
         cryptoUpdateBtn.textContent = "Link Wallet";
+        document.getElementById("cryptoUpdatedAt").textContent = "";
     }
-    document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(methods.cryptoUpdatedAt);
-    document.getElementById("cryptoLinkedBadge").style.display = activeMethod === "crypto" ? "inline-block" : "none";
+    document.getElementById("cryptoLinkedBadge").style.display = linkedMethod === "crypto" ? "inline-block" : "none";
 
-    // Show whichever method is active by default; if nothing linked yet, default to PayPal.
-    selectMethodTile(activeMethod || selectedTile || "paypal");
+    selectMethodTile(linkedMethod || selectedTile || "paypal");
 }
 
-/* =========================
-   METHOD SELECTOR (only one card visible at a time)
-   ========================= */
-
-let selectedTile = null;
+/* ========================= METHOD SELECTOR ========================= */
 
 function selectMethodTile(method) {
     selectedTile = method;
@@ -347,9 +322,7 @@ function selectMethodTile(method) {
     cryptoTile.style.background = method === "crypto" ? "rgba(91,108,255,.08)" : "transparent";
 }
 
-/* =========================
-   EDIT FLOW
-   ========================= */
+/* ========================= EDIT FLOW ========================= */
 
 function startUpdate(method) {
     document.getElementById(method + "EditPanel").style.display = "block";
@@ -363,8 +336,6 @@ function cancelUpdate(method) {
     document.getElementById(method + "UpdateBtn").style.display = "inline-block";
     document.getElementById(method + "Input").value = "";
     document.getElementById(method + "CodeInput").value = "";
-    sessionStorage.removeItem("payoutCode_" + method);
-    sessionStorage.removeItem("payoutPendingValue_" + method);
 }
 
 function isValidValue(method, value) {
@@ -372,15 +343,14 @@ function isValidValue(method, value) {
     if (method === "paypal") {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
-    // crypto: light validation for an ERC-20 style address
     return /^0x[a-fA-F0-9]{10,}$/.test(value) || value.length >= 20;
 }
 
-function generateCode() {
-    return String(Math.floor(100000 + Math.random() * 900000));
+function buildDetails(method, value) {
+    return method === "paypal" ? { email: value } : { wallet: value };
 }
 
-function sendVerificationCode(method) {
+async function sendVerificationCode(method) {
     const value = document.getElementById(method + "Input").value.trim();
 
     if (!isValidValue(method, value)) {
@@ -390,76 +360,59 @@ function sendVerificationCode(method) {
         return;
     }
 
-    const code = generateCode();
-    const expiresAt = Date.now() + CODE_TTL_MS;
+    try {
+        const res = await authFetch("/api/worker/payout-method/send-code", {
+            method: "POST",
+            body: JSON.stringify({ methodType: method, details: buildDetails(method, value) }),
+        });
+        const data = await res.json();
 
-    sessionStorage.setItem("payoutCode_" + method, JSON.stringify({ code, expiresAt }));
-    sessionStorage.setItem("payoutPendingValue_" + method, value);
+        if (!res.ok) {
+            alert(data.error || "Failed to send verification code.");
+            return;
+        }
 
-    const email = (user && user.email) ? user.email : null;
-    const emailLabel = email ? maskEmail(email) : "your registered email";
-
-    // 🔔 DEMO MODE: there is no email backend wired up here, so the code
-    // is shown directly instead of being emailed. In production this
-    // alert would be replaced by an actual email send.
-    alert(
-        "Verification code sent to " + (email || "your registered email") + " (demo mode).\n\n" +
-        "Your code: " + code + "\n" +
-        "This code expires in 10 minutes."
-    );
-    console.log("[DEMO] Payout verification code for " + method + ":", code);
-
-    document.getElementById(method + "CodePanel").style.display = "block";
-    document.getElementById(method + "CodeSentNote").textContent =
-        "A 6-digit code was sent to " + emailLabel + ". It expires in 10 minutes.";
+        document.getElementById(method + "CodePanel").style.display = "block";
+        document.getElementById(method + "CodeSentNote").textContent =
+            "A 6-digit code was sent to " + maskEmail(data.email) + ". It expires in 10 minutes.";
+    } catch (err) {
+        console.log("sendVerificationCode failed:", err);
+        alert("Failed to send verification code. Please try again.");
+    }
 }
 
-function confirmVerificationCode(method) {
+async function confirmVerificationCode(method) {
     const enteredCode = document.getElementById(method + "CodeInput").value.trim();
-    const stored = sessionStorage.getItem("payoutCode_" + method);
 
-    if (!stored) {
-        alert("No verification code was sent yet. Please click \"Send Verification Code\" first.");
+    if (!enteredCode) {
+        alert("Please enter the 6-digit code.");
         return;
     }
 
-    const { code, expiresAt } = JSON.parse(stored);
+    try {
+        const res = await authFetch("/api/worker/payout-method/verify-code", {
+            method: "POST",
+            body: JSON.stringify({ methodType: method, code: enteredCode }),
+        });
+        const data = await res.json();
 
-    if (Date.now() > expiresAt) {
-        alert("This code has expired. Please request a new one.");
-        return;
+        if (!res.ok) {
+            alert(data.error || "Verification failed.");
+            return;
+        }
+
+        alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
+
+        cancelUpdate(method);
+        await loadPayoutMethod();
+        selectMethodTile(method);
+    } catch (err) {
+        console.log("confirmVerificationCode failed:", err);
+        alert("Verification failed. Please try again.");
     }
-
-    if (enteredCode !== code) {
-        alert("Incorrect code. Please try again.");
-        return;
-    }
-
-    const pendingValue = sessionStorage.getItem("payoutPendingValue_" + method);
-    const now = new Date().toISOString();
-    const otherMethod = method === "paypal" ? "crypto" : "paypal";
-
-    const update = { activeMethod: method };
-    update[method === "paypal" ? "paypalEmail" : "cryptoWallet"] = pendingValue;
-    update[method === "paypal" ? "paypalUpdatedAt" : "cryptoUpdatedAt"] = now;
-    // Enforce single active payout method — clear whichever one was linked before
-    update[otherMethod === "paypal" ? "paypalEmail" : "cryptoWallet"] = null;
-    update[otherMethod === "paypal" ? "paypalUpdatedAt" : "cryptoUpdatedAt"] = null;
-
-    saveMyPayoutMethods(update);
-
-    sessionStorage.removeItem("payoutCode_" + method);
-    sessionStorage.removeItem("payoutPendingValue_" + method);
-
-    alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
-
-    cancelUpdate(method);
-    renderPayoutMethods();
-    selectMethodTile(method);
 }
 
-renderPayoutMethods();
-
+loadPayoutMethod();
 </script>
 
 </body>
