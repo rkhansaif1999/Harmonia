@@ -152,7 +152,7 @@ const user = getUser();
 let settings = null;
 
 async function fetchSettings() {
-    const response = await fetch(WORKER_URL + "/api/admin/settings");
+    const response = await fetch(WORKER_URL + "/api/settings");
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load settings");
     return data.settings;
