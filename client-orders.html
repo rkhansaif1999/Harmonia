@@ -158,8 +158,26 @@ function getStatusClass(status) {
 
     if (status === "Completed") return "approved";
 
+    if (status === "Cancelled") return "rejected";
+
     return "pending";
 
+}
+
+// An "Awaiting Payment" order older than 10 minutes is treated as
+// expired/cancelled in the UI, even though the row itself still says
+// "Awaiting Payment" in the database until the user actually deletes it.
+const PAYMENT_WINDOW_MS = 10 * 60 * 1000;
+
+function isPaymentExpired(order) {
+    if (order.status !== "Awaiting Payment") return false;
+    const created = new Date(order.created_at).getTime();
+    if (isNaN(created)) return false;
+    return (Date.now() - created) > PAYMENT_WINDOW_MS;
+}
+
+function displayStatus(order) {
+    return isPaymentExpired(order) ? "Cancelled" : (order.status || "Pending");
 }
 
 function getOrderDate(order) {
