@@ -48,6 +48,27 @@
                 </tbody>
             </table>
         </section>
+        <section class="recent" style="margin-top:25px;">
+
+            <h2>Micro Tasks</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Projects you're approved for. Click Start Working to begin earning.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project ID</th>
+                        <th>Payout per Correct Code</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="approvedMicroTaskTable">
+                    <tr><td colspan="3" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
     </main>
 </div>
 <script>
@@ -167,6 +188,48 @@ function resubmit(orderId) {
 }
 
 fetchTasks();
+</script>
+    <script>
+
+async function loadApprovedMicroTasks() {
+    const table = document.getElementById("approvedMicroTaskTable");
+    if (!table) return;
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+
+        if (!response.ok) {
+            table.innerHTML = `<tr><td colspan="3" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`;
+            return;
+        }
+
+        const approved = (data.tasks || []).filter(t => t.applicationStatus === "approved");
+        table.innerHTML = "";
+
+        if (approved.length === 0) {
+            table.innerHTML = `<tr><td colspan="3" class="empty-state">You're not approved for any micro-task project yet. Apply from your Dashboard.</td></tr>`;
+            return;
+        }
+
+        approved.forEach(task => {
+            table.innerHTML += `
+                <tr>
+                    <td>#${task.id}</td>
+                    <td>$${Number(task.payoutAmount).toFixed(2)}</td>
+                    <td><a href="worker-micro-task.html?taskId=${task.id}"><button>Start Working</button></a></td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="3" class="empty-state">Unable to connect to the server.</td></tr>`;
+    }
+}
+
+loadApprovedMicroTasks();
+
 </script>
 </body>
 </html>
