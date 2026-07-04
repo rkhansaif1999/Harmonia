@@ -758,7 +758,7 @@ function openPaymentConfirmation(method) {
 
     sessionStorage.setItem("currentPaymentMethod", method);
     sessionStorage.setItem("currentOrderId", orderId);
-    sessionStorage.setItem("currentOrderAmount", "$" + project.totalPrice);
+    sessionStorage.setItem("currentOrderAmount", "$" + confirmedTotalPrice);
 
     // Give this order a 10 minute payment window starting now
     const deadline = Date.now() + 10 * 60 * 1000;
