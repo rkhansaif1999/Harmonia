@@ -7,6 +7,23 @@
     <title>Worker Management - Harmonia</title>
 
     <link rel="stylesheet" href="style.css">
+    <style>
+    .filter-btn{
+        padding:8px 16px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,.15);
+        background:transparent;
+        color:#cfd8e3;
+        font-weight:600;
+        cursor:pointer;
+        font-size:.85rem;
+    }
+    .filter-btn.active{
+        background:#5b6cff;
+        border-color:#5b6cff;
+        color:white;
+    }
+</style>
 </head>
 
 <body>
@@ -79,6 +96,12 @@
         <section class="recent">
 
             <h2>Registered Workers</h2>
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <button class="filter-btn active" data-filter="all" onclick="setPayoutFilter('all')">All</button>
+    <button class="filter-btn" data-filter="unpaid" onclick="setPayoutFilter('unpaid')">Unpaid</button>
+    <button class="filter-btn" data-filter="paidThisWeek" onclick="setPayoutFilter('paidThisWeek')">Paid This Week</button>
+    <button class="filter-btn" data-filter="noMethod" onclick="setPayoutFilter('noMethod')">No Payout Method</button>
+</div>
 
             <table>
 
