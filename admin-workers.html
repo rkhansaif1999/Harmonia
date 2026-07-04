@@ -23,6 +23,45 @@
         border-color:#5b6cff;
         color:white;
     }
+    .details-btn{
+        padding:8px 16px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,.15);
+        background:rgba(91,108,255,.15);
+        color:#cfd8e3;
+        font-weight:600;
+        cursor:pointer;
+        font-size:.85rem;
+    }
+    .details-btn.open{
+        background:#5b6cff;
+        border-color:#5b6cff;
+        color:#fff;
+    }
+    .details-panel td{
+        background:rgba(255,255,255,.03);
+        padding:18px 22px;
+    }
+    .details-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:16px;
+        margin-bottom:14px;
+    }
+    .details-grid .label{
+        font-size:.72rem;
+        opacity:.55;
+        text-transform:uppercase;
+        letter-spacing:.05em;
+        margin-bottom:4px;
+    }
+    .details-actions{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        padding-top:12px;
+        border-top:1px solid rgba(255,255,255,.08);
+    }
 </style>
 </head>
 
@@ -111,17 +150,12 @@
         <th>Email</th>
         <th>Country</th>
         <th>Status</th>
-        <th>Payout Method</th>
-        <th>Pending</th>
-        <th>Paid</th>
-        <th>Payout</th>
-        <th>Actions</th>
-        <th>Role</th>
+        <th>Details</th>
     </tr>
 </thead>
 
                 <tbody id="workerTable">
-                    <tr><td colspan="10" style="opacity:.6;">Loading workers...</td></tr>
+                    <tr><td colspan="5" style="opacity:.6;">Loading workers...</td></tr>
                 </tbody>
 
             </table>
@@ -169,6 +203,7 @@
 let allUsers = [];
 let allPayouts = [];
 let currentPayoutFilter = "all";
+let expandedRows = new Set();
 
 function capitalize(s) {
     if (!s) return "";
@@ -192,6 +227,12 @@ function maskWallet(address) {
 function formatMoney(amount) {
     const n = Number(amount) || 0;
     return "$" + n.toFixed(2);
+}
+
+function toggleDetails(id) {
+    if (expandedRows.has(id)) expandedRows.delete(id);
+    else expandedRows.add(id);
+    renderWorkers();
 }
 
 async function fetchAllUsers() {
@@ -317,29 +358,23 @@ function renderWorkers(){
     table.innerHTML = "";
 
     if (visibleWorkers.length === 0) {
-        table.innerHTML = `<tr><td colspan="10" class="empty-state">No workers match this filter</td></tr>`;
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">No workers match this filter</td></tr>`;
     }
 
     visibleWorkers.forEach(worker => {
 
         const payout = payoutsByUserId[worker.id];
+        const isOpen = expandedRows.has(worker.id);
 
-        let actions = "";
-
+        let statusActions = "";
         if(worker.status === "suspended" || worker.status === "rejected"){
-            actions = `<button onclick="changeStatus(${worker.id},'approved')">Reactivate</button>`;
+            statusActions = `<button onclick="changeStatus(${worker.id},'approved')">Reactivate</button>`;
         } else {
-            actions = `
+            statusActions = `
                 <button onclick="changeStatus(${worker.id},'suspended')">Suspend</button>
                 <button onclick="changeStatus(${worker.id},'rejected')">Reject</button>
             `;
         }
-
-        const roleControl = `
-            <button onclick="promoteToAdmin(${worker.id})">Make Admin</button>
-            <button onclick="moveToClient(${worker.id})">Make Client</button>
-            <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
-        `;
 
         const pendingAmount = payout ? payout.pendingAmount : 0;
         const paidAmount = payout ? payout.paidAmount : 0;
@@ -347,7 +382,7 @@ function renderWorkers(){
 
         const payoutAction = pendingAmount > 0
             ? `<button onclick="markPaid(${worker.id}, '${safeName}')">Mark Paid</button>`
-            : `<span style="opacity:.5;">—</span>`;
+            : `<span style="opacity:.5;">No pending balance</span>`;
 
         table.innerHTML += `
             <tr>
@@ -355,14 +390,40 @@ function renderWorkers(){
                 <td>${escapeHTML(worker.email)}</td>
                 <td>${escapeHTML(worker.country)}</td>
                 <td>${statusBadge(capitalize(worker.status))}</td>
-                <td>${payoutMethodCell(payout)}</td>
-                <td>${formatMoney(pendingAmount)}</td>
-                <td>${formatMoney(paidAmount)}</td>
-                <td>${payoutAction}</td>
-                <td>${actions}</td>
-                <td>${roleControl}</td>
+                <td><button class="details-btn${isOpen ? ' open' : ''}" onclick="toggleDetails(${worker.id})">${isOpen ? 'Hide' : 'Details'}</button></td>
             </tr>
         `;
+
+        if (isOpen) {
+            table.innerHTML += `
+                <tr class="details-panel">
+                    <td colspan="5">
+                        <div class="details-grid">
+                            <div>
+                                <div class="label">Payout Method</div>
+                                <div>${payoutMethodCell(payout)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Pending</div>
+                                <div>${formatMoney(pendingAmount)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Paid</div>
+                                <div>${formatMoney(paidAmount)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Payout Action</div>
+                                <div>${payoutAction}</div>
+                            </div>
+                        </div>
+                        <div class="details-actions">
+                            ${statusActions}
+                            <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
 
     });
 
@@ -379,7 +440,7 @@ async function loadAndRenderAll() {
     try {
         [allUsers, allPayouts] = await Promise.all([fetchAllUsers(), fetchAllPayouts()]);
     } catch (err) {
-        table.innerHTML = `<tr><td colspan="10" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        table.innerHTML = `<tr><td colspan="5" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
         return;
     }
     renderWorkers();
@@ -387,18 +448,6 @@ async function loadAndRenderAll() {
 
 async function changeStatus(id, status){
     const ok = await updateStatus(id, status);
-    if (ok) loadAndRenderAll();
-}
-
-async function promoteToAdmin(id){
-    if(!confirm("Promote this worker to Admin? They will get full access.")) return;
-    const ok = await updateRole(id, "admin");
-    if (ok) loadAndRenderAll();
-}
-
-async function moveToClient(id){
-    if(!confirm("Switch this worker to a Client account?")) return;
-    const ok = await updateRole(id, "client");
     if (ok) loadAndRenderAll();
 }
 
