@@ -371,7 +371,7 @@ async function sendSupport() {
     }
 
     try {
-        const response = await fetch(WORKER_URL + "/api/orders/reply", {
+        const response = await authFetch(WORKER_URL + "/api/orders/reply", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
