@@ -601,32 +601,17 @@ if (!project || !sessionStorage.getItem("checkoutProject")) {
    ORDER ID
    ========================= */
 
-const orderId =
-"HM-" +
-Date.now().toString().slice(-8);
-
-/* =========================
-   CREATE ORDER IN D1 (via Worker API)
-   Uses the real logged-in session (getUser()) rather than the old
-   sessionStorage "userId"/"userName" values, since that's the
-   actual authenticated client and gives us a real D1 user id/email.
-   ========================= */
-
 const currentUser = getUser();
+let orderId = null; // will be set to the REAL server-generated order_id once created
 
 async function createOrderOnServer() {
     const response = await authFetch(WORKER_URL + "/api/orders/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            orderId: orderId,
             projectName: project.projectName,
             category: project.category,
-            reviews: project.reviews,
-            pricePerReview: project.pricePerReview,
-            totalPrice: project.totalPrice,
-            clientId: currentUser ? currentUser.id : null,
-            clientEmail: currentUser ? currentUser.email : null
+            reviews: project.reviews
         })
     });
 
@@ -635,43 +620,42 @@ async function createOrderOnServer() {
     if (!response.ok) {
         throw new Error(data.error || "Failed to create order");
     }
+
+    return data; // { orderId, pricePerReview, totalPrice }
 }
 
-createOrderOnServer().catch(err => {
-    alert("Could not create your order: " + err.message + "\nPlease go back and try again.");
-    console.error(err);
-});
+async function initCheckout() {
+    let data;
+    try {
+        data = await createOrderOnServer();
+    } catch (err) {
+        alert("Could not create your order: " + err.message + "\nPlease go back and try again.");
+        console.error(err);
+        window.location.href = "client-new-project.html";
+        return;
+    }
 
-// ✅ Make order info available to the payment-confirmation tab
-sessionStorage.setItem("currentOrderId", orderId);
-sessionStorage.setItem("currentOrderAmount", "$" + project.totalPrice);
+    // Use the REAL order id/price the server assigned - not the
+    // client's locally-guessed values - for everything from here on.
+    orderId = data.orderId;
+    const pricePerReview = data.pricePerReview;
+    const totalPrice = data.totalPrice;
 
-/* =========================
-   UI POPULATION (UNCHANGED LOGIC, CLEANED)
-   ========================= */
+    sessionStorage.setItem("currentOrderId", orderId);
+    sessionStorage.setItem("currentOrderAmount", "$" + totalPrice);
 
-document.getElementById("projectName").textContent = project.projectName;
+    document.getElementById("projectName").textContent = project.projectName;
+    document.getElementById("platform").textContent = project.category;
+    document.getElementById("reviews").textContent = project.reviews;
+    document.getElementById("pricePerReview").textContent = "$" + pricePerReview;
+    document.getElementById("totalPrice").textContent = "$" + totalPrice;
+    document.getElementById("orderId").textContent = orderId;
+    document.getElementById("cryptoAmount").textContent = "$" + totalPrice;
+    document.getElementById("bankAmount").textContent = "$" + totalPrice;
+    document.getElementById("bankOrderId").textContent = orderId;
+}
 
-document.getElementById("platform").textContent = project.category;
-
-document.getElementById("reviews").textContent = project.reviews;
-
-document.getElementById("pricePerReview").textContent =
-    "$" + project.pricePerReview;
-
-document.getElementById("totalPrice").textContent =
-    "$" + project.totalPrice;
-
-document.getElementById("orderId").textContent = orderId;
-
-document.getElementById("cryptoAmount").textContent =
-"$"+project.totalPrice;
-
-document.getElementById("bankAmount").textContent =
-"$"+project.totalPrice;
-
-document.getElementById("bankOrderId").textContent =
-orderId;
+initCheckout();
 
 function setWalletAddress() {
     const walletEl = document.getElementById("walletAddress");
