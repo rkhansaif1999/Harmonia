@@ -756,6 +756,11 @@ function updateDelivery(type) {
 
 function openPaymentConfirmation(method) {
 
+    if (!orderId || confirmedTotalPrice == null) {
+        alert("Your order is still being created. Please wait a moment and try again.");
+        return;
+    }
+
     sessionStorage.setItem("currentPaymentMethod", method);
     sessionStorage.setItem("currentOrderId", orderId);
     sessionStorage.setItem("currentOrderAmount", "$" + confirmedTotalPrice);
