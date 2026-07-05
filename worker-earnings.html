@@ -148,105 +148,27 @@ function capitalize(str) {
    ========================= */
 
 async function loadEarnings() {
-    const table = document.getElementById("earningsTable");
-
-    let earnings;
     try {
-        const [reviewResponse, microResponse] = await Promise.all([
-            authFetch(WORKER_URL + "/api/worker/earnings"),
-            authFetch(WORKER_URL + "/api/worker/micro-task-earnings")
-        ]);
+        const response = await authFetch(WORKER_URL + "/api/worker/earnings-summary");
+        const data = await response.json();
 
-        const reviewData = await reviewResponse.json();
-        const microData = await microResponse.json();
-
-        if (!reviewResponse.ok) {
-            table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
-            console.error("Failed to load review earnings:", reviewData?.error);
+        if (!response.ok) {
+            console.error("Failed to load earnings summary:", data?.error);
             return;
         }
 
-        if (!microResponse.ok) {
-            table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
-            console.error("Failed to load micro-task earnings:", microData?.error);
-            return;
-        }
+        document.getElementById("totalEarnedAllTime").textContent = "$" + Number(data.totalAllTime).toFixed(2);
+        document.getElementById("weeklyPending").textContent = "$" + Number(data.weeklyPending).toFixed(2);
 
-        earnings = [...(reviewData.earnings || []), ...(microData.earnings || [])];
+        const { start, end } = getCurrentWeekRange();
+        document.getElementById("weekRangeLabel").textContent =
+            formatDateShort(start) + " – " + formatDateShort(end);
+
+        document.getElementById("nextPayoutDate").textContent = formatDateLong(getNextPayoutDate());
+
     } catch (err) {
-        table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#9dadc1;">Couldn't load earnings. Try refreshing.</td></tr>`;
         console.error(err);
-        return;
     }
-
-    /* ---- Total earned since joining (all statuses) ---- */
-    const totalAllTime = earnings.reduce((sum, e) => sum + Number(e.amount), 0);
-    document.getElementById("totalEarnedAllTime").textContent = "$" + totalAllTime.toFixed(2);
-
-    /* ---- Pending payout for current week ---- */
-    const { start, end } = getCurrentWeekRange();
-    document.getElementById("weekRangeLabel").textContent =
-        formatDateShort(start) + " – " + formatDateShort(end);
-
-    const pending = earnings.filter(e => e.status === "pending");
-    const datedPending = pending.filter(e => getEarningDate(e));
-
-    let weeklyPending;
-    if (datedPending.length > 0) {
-        weeklyPending = datedPending
-            .filter(e => {
-                const d = getEarningDate(e);
-                return d >= start && d <= end;
-            })
-            .reduce((sum, e) => sum + Number(e.amount), 0);
-    } else {
-        // No usable dates on any pending record — fall back to treating
-        // all pending earnings as this week's payout.
-        weeklyPending = pending.reduce((sum, e) => sum + Number(e.amount), 0);
-    }
-
-    document.getElementById("weeklyPending").textContent = "$" + weeklyPending.toFixed(2);
-
-    /* ---- Next payout date (every Wednesday) ---- */
-    document.getElementById("nextPayoutDate").textContent = formatDateLong(getNextPayoutDate());
-
-    /* ---- History table ---- */
-    table.innerHTML = "";
-
-    if (earnings.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="4" style="text-align:center;color:#9dadc1;">
-                    No earnings yet.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    const sorted = [...earnings].sort((a, b) => {
-        const da = getEarningDate(a);
-        const db = getEarningDate(b);
-        if (!da || !db) return 0;
-        return db - da;
-    });
-
-    sorted.slice(0, 20).forEach(e => {
-        const d = getEarningDate(e);
-        const dateLabel = d ? formatDateShort(d) : "-";
-        const label = e.projectName || "-";
-        const displayStatus = capitalize(e.status);
-
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(String(label))}</td>
-                <td>${dateLabel}</td>
-                <td>$${Number(e.amount).toFixed(2)}</td>
-                <td>${statusBadge ? statusBadge(displayStatus) : escapeHTML(displayStatus)}</td>
-            </tr>
-        `;
-    });
-
 }
 
 loadEarnings();
