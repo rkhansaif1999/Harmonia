@@ -254,7 +254,7 @@ async function loadEarnings() {
         return db - da;
     });
 
-    sorted.forEach(e => {
+    sorted.slice(0, 20).forEach(e => {
         const d = getEarningDate(e);
         const dateLabel = d ? formatDateShort(d) : "-";
         const label = e.projectName || "-";
