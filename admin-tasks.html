@@ -33,7 +33,7 @@
             <li><a href="admin-projects.html">📂 Projects</a></li>
             <li class="active">📋 Tasks</li>
             <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li>💰 Payments</li>
+            <li><a href="admin-workers.html">💰 Payments</a></li>
             <li><a href="admin-analytics.html">📈 Analytics</a></li>
             <li><a href="admin-settings.html">⚙ Settings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
@@ -102,10 +102,11 @@
                         <th>Submissions</th>
                         <th>Correct</th>
                         <th>Created</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="projectsTable">
-                    <tr><td colspan="10" class="empty-state">Loading projects...</td></tr>
+                    <tr><td colspan="11" class="empty-state">Loading projects...</td></tr>
                 </tbody>
             </table>
 
@@ -175,7 +176,7 @@ async function renderAll() {
     try {
         [projects, applications] = await Promise.all([fetchProjects(), fetchApplications()]);
     } catch (err) {
-        projectsTable.innerHTML = `<tr><td colspan="10" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        projectsTable.innerHTML = `<tr><td colspan="11" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
         applicationsTable.innerHTML = "";
         return;
     }
@@ -194,14 +195,14 @@ async function renderAll() {
     projectsTable.innerHTML = "";
 
     if (projects.length === 0) {
-        projectsTable.innerHTML = `<tr><td colspan="10" class="empty-state">No projects created yet</td></tr>`;
+        projectsTable.innerHTML = `<tr><td colspan="11" class="empty-state">No projects created yet</td></tr>`;
     }
 
     projects.forEach(p => {
         projectsTable.innerHTML += `
             <tr>
                 <td>#${p.id}</td>
-                <td>$${Number(p.payout_amount).toFixed(2)}</td>
+                <td id="payout-${p.id}">$${Number(p.payout_amount).toFixed(2)}</td>
                 <td>${statusBadge(capitalize(p.status))}</td>
                 <td>${p.total_applied || 0}</td>
                 <td>${p.total_approved || 0}</td>
@@ -210,6 +211,7 @@ async function renderAll() {
                 <td>${p.total_submissions || 0}</td>
                 <td>${p.total_correct || 0}</td>
                 <td>${formatDate(p.created_at)}</td>
+                <td><button onclick="handleEditRate(${p.id}, ${Number(p.payout_amount)})">Edit Rate</button></td>
             </tr>
         `;
     });
@@ -272,6 +274,40 @@ async function handleCreateTask() {
         }
 
         input.value = "";
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+async function handleEditRate(projectId, currentAmount) {
+    const input = prompt(
+        `New payout amount per correct code for Project #${projectId} (USD):`,
+        currentAmount.toFixed(2)
+    );
+    if (input === null) return; // cancelled
+
+    const amount = Number(input);
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid payout amount.");
+        return;
+    }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/update-rate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: projectId, payoutAmount: amount })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update pay rate.");
+            return;
+        }
+
         await renderAll();
 
     } catch (err) {
