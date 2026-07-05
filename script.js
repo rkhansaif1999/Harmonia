@@ -531,9 +531,21 @@ function enhanceTopbar() {
     const profileWrap = document.createElement("div");
     profileWrap.className = "profile-wrap";
 
+    // Settings destination depends on role - only admin has a real
+    // settings page today. Other roles will get one later; until then
+    // just don't render a dead link for them.
+    const SETTINGS_URL_BY_ROLE = {
+        admin: "admin-settings.html",
+    };
+
     if (user) {
         const initials = (user.fullName || user.role || "U")
             .trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+
+        const settingsUrl = SETTINGS_URL_BY_ROLE[user.role];
+        const settingsLink = settingsUrl
+            ? `<a href="${settingsUrl}">⚙ Settings</a>`
+            : "";
 
         profileWrap.innerHTML = `
             <button class="profile-btn" type="button">
@@ -541,9 +553,8 @@ function enhanceTopbar() {
                 <span class="profile-name">${escapeHTML(user.fullName || "Account")}<small>${escapeHTML(user.role)}</small></span>
             </button>
             <div class="profile-menu">
-                <a href="#">👤 My Profile</a>
-                <a href="#">⚙ Settings</a>
-                <hr>
+                ${settingsLink}
+                ${settingsLink ? "<hr>" : ""}
                 <button type="button" class="menu-item" onclick="logout()">🚪 Logout</button>
             </div>
         `;
