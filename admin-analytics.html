@@ -8,11 +8,80 @@
 
     <link rel="stylesheet" href="style.css">
     <style>
-        .project-header td {
-            background: rgba(91,108,255,.12);
-            font-weight: 700;
-            padding: 10px 14px;
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 6px;
         }
+        .project-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: border-color .15s ease, background .15s ease, transform .15s ease;
+            text-align: left;
+        }
+        .project-card:hover {
+            border-color: #5b6cff;
+            background: rgba(91,108,255,.1);
+            transform: translateY(-2px);
+        }
+        .project-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+        .project-card .rate {
+            color: #9dadc1;
+            font-size: .85rem;
+            margin-bottom: 12px;
+        }
+        .project-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            color: #cfd8e3;
+            margin-top: 4px;
+        }
+        .project-card .stat-row span:last-child {
+            font-weight: 700;
+            color: #fff;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: #9dadc1;
+            cursor: pointer;
+            font-size: .9rem;
+            font-weight: 600;
+        }
+        .back-link:hover { color: #fff; }
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: transparent;
+            color: #cfd8e3;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: .85rem;
+        }
+        .filter-btn.active {
+            background: #5b6cff;
+            border-color: #5b6cff;
+            color: white;
+        }
+        .hold-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: .72rem;
+            font-weight: 700;
+            background: rgba(255,140,60,.18);
+            color: #ffb066;
+        }
+        #projectDetail { display: none; }
     </style>
 </head>
 
@@ -40,7 +109,7 @@
             <li><a href="admin-projects.html">📂 Projects</a></li>
             <li><a href="admin-tasks.html">📋 Tasks</a></li>
             <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li>💰 Payments</li>
+            <li><a href="admin-workers.html">💰 Payments</a></li>
             <li class="active">📈 Analytics</li>
             <li><a href="admin-settings.html">⚙ Settings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
@@ -80,12 +149,36 @@
 
         </section>
 
-        <section class="recent" style="margin-top:25px;">
+        <!-- PROJECT LIST VIEW -->
+        <section class="recent" id="projectListView" style="margin-top:25px;">
 
-            <h2>Earnings by Worker, per Project</h2>
+            <h2>Projects</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Only workers with an approved application appear here. Grouped by project.
+                Pick a project to see which workers are earning on it.
             </p>
+
+            <div class="project-grid" id="projectGrid">
+                <p class="empty-state">Loading projects...</p>
+            </div>
+
+        </section>
+
+        <!-- PROJECT DETAIL VIEW -->
+        <section class="recent" id="projectDetail" style="margin-top:25px;">
+
+            <span class="back-link" onclick="showProjectList()">&larr; Back to all projects</span>
+
+            <h2 id="detailTitle">Project</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;" id="detailSubtitle">
+                Only workers with an approved application appear here.
+            </p>
+
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                <button class="filter-btn active" data-filter="all" onclick="setWorkerFilter('all')">All</button>
+                <button class="filter-btn" data-filter="zero" onclick="setWorkerFilter('zero')">Sitting on $0</button>
+                <button class="filter-btn" data-filter="pending" onclick="setWorkerFilter('pending')">Has Pending Payout</button>
+                <button class="filter-btn" data-filter="held" onclick="setWorkerFilter('held')">On Hold</button>
+            </div>
 
             <table>
                 <thead>
@@ -95,13 +188,14 @@
                         <th>Submissions</th>
                         <th>Correct</th>
                         <th>Accuracy</th>
-                        <th>Pending Earned</th>
-                        <th>Paid Earned</th>
-                        <th>Total Earned</th>
+                        <th>Pending</th>
+                        <th>Paid</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="breakdownTable">
-                    <tr><td colspan="8" class="empty-state">Loading breakdown...</td></tr>
+                <tbody id="workerDetailTable">
                 </tbody>
             </table>
 
@@ -124,6 +218,13 @@ async function fetchStats() {
     return data;
 }
 
+async function fetchProjects() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load projects");
+    return data.tasks || [];
+}
+
 async function fetchBreakdown() {
     const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/earnings-breakdown");
     const data = await response.json();
@@ -131,13 +232,31 @@ async function fetchBreakdown() {
     return data.breakdown || [];
 }
 
+async function setTaskHold(userId, hold) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/task-hold", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId, hold })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to update hold status");
+    return data;
+}
+
 /* =========================
-   RENDER
+   STATE
    ========================= */
 
-async function renderAll() {
-    const breakdownTable = document.getElementById("breakdownTable");
+let allProjects = [];
+let allBreakdown = [];
+let currentProjectId = null;
+let currentWorkerFilter = "all";
 
+/* =========================
+   RENDER: cards at top
+   ========================= */
+
+async function renderTopStats() {
     try {
         const stats = await fetchStats();
         document.getElementById("totalVisits").textContent = stats.totalVisits || 0;
@@ -147,42 +266,111 @@ async function renderAll() {
     } catch (err) {
         console.error("Could not load stats:", err);
     }
+}
 
-    let breakdown;
-    try {
-        breakdown = await fetchBreakdown();
-    } catch (err) {
-        breakdownTable.innerHTML = `<tr><td colspan="8" style="color:#ff8080;">Could not load breakdown: ${escapeHTML(err.message)}</td></tr>`;
+/* =========================
+   RENDER: project cards
+   ========================= */
+
+function renderProjectGrid() {
+    const grid = document.getElementById("projectGrid");
+    grid.innerHTML = "";
+
+    if (allProjects.length === 0) {
+        grid.innerHTML = `<p class="empty-state">No projects created yet</p>`;
         return;
     }
 
-    breakdownTable.innerHTML = "";
+    allProjects.forEach(p => {
+        const workerCount = allBreakdown.filter(r => r.micro_task_id === p.id).length;
+        const card = document.createElement("div");
+        card.className = "project-card";
+        card.onclick = () => showProjectDetail(p.id);
+        card.innerHTML = `
+            <h3>Project #${p.id}</h3>
+            <div class="rate">$${Number(p.payout_amount).toFixed(2)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
+            <div class="stat-row"><span>Workers earning</span><span>${workerCount}</span></div>
+            <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
+            <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
+            <div class="stat-row"><span>Approved workers</span><span>${p.total_approved || 0}</span></div>
+        `;
+        grid.appendChild(card);
+    });
+}
 
-    if (breakdown.length === 0) {
-        breakdownTable.innerHTML = `<tr><td colspan="8" class="empty-state">No approved workers yet</td></tr>`;
+/* =========================
+   RENDER: project detail (per-project worker table)
+   ========================= */
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function showProjectList() {
+    currentProjectId = null;
+    document.getElementById("projectListView").style.display = "";
+    document.getElementById("projectDetail").style.display = "none";
+}
+
+function showProjectDetail(projectId) {
+    currentProjectId = projectId;
+    currentWorkerFilter = "all";
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === "all");
+    });
+
+    const project = allProjects.find(p => p.id === projectId);
+    document.getElementById("detailTitle").textContent = `Project #${projectId}`;
+    document.getElementById("detailSubtitle").textContent = project
+        ? `$${Number(project.payout_amount).toFixed(2)} per correct code · only approved workers shown`
+        : "Only workers with an approved application appear here.";
+
+    document.getElementById("projectListView").style.display = "none";
+    document.getElementById("projectDetail").style.display = "";
+
+    renderWorkerDetailTable();
+}
+
+function setWorkerFilter(filter) {
+    currentWorkerFilter = filter;
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === filter);
+    });
+    renderWorkerDetailTable();
+}
+
+function renderWorkerDetailTable() {
+    const table = document.getElementById("workerDetailTable");
+    table.innerHTML = "";
+
+    let rows = allBreakdown.filter(r => r.micro_task_id === currentProjectId);
+
+    rows = rows.filter(row => {
+        const pendingEarned = Number(row.pending_earned || 0);
+        const paidEarned = Number(row.paid_earned || 0);
+        const totalEarned = pendingEarned + paidEarned;
+        if (currentWorkerFilter === "zero") return totalEarned === 0;
+        if (currentWorkerFilter === "pending") return pendingEarned > 0;
+        if (currentWorkerFilter === "held") return !!row.task_hold;
+        return true;
+    });
+
+    if (rows.length === 0) {
+        table.innerHTML = `<tr><td colspan="10" class="empty-state">No workers match this filter</td></tr>`;
         return;
     }
 
-    let currentProjectId = null;
-
-    breakdown.forEach(row => {
-        if (row.micro_task_id !== currentProjectId) {
-            currentProjectId = row.micro_task_id;
-            breakdownTable.innerHTML += `
-                <tr class="project-header">
-                    <td colspan="8">Project #${row.micro_task_id} — $${Number(row.payout_amount).toFixed(2)} per correct code</td>
-                </tr>
-            `;
-        }
-
+    rows.forEach(row => {
         const submissions = Number(row.submissions || 0);
         const correct = Number(row.correct || 0);
         const accuracy = submissions > 0 ? Math.round((correct / submissions) * 100) + "%" : "-";
         const pendingEarned = Number(row.pending_earned || 0);
         const paidEarned = Number(row.paid_earned || 0);
         const totalEarned = pendingEarned + paidEarned;
+        const isHeld = !!row.task_hold;
 
-        breakdownTable.innerHTML += `
+        table.innerHTML += `
             <tr>
                 <td>${escapeHTML(row.full_name)}</td>
                 <td>${escapeHTML(row.email)}</td>
@@ -192,9 +380,43 @@ async function renderAll() {
                 <td>$${pendingEarned.toFixed(2)}</td>
                 <td>$${paidEarned.toFixed(2)}</td>
                 <td>$${totalEarned.toFixed(2)}</td>
+                <td>${isHeld ? '<span class="hold-badge">On Hold</span>' : '<span style="opacity:.6;">Active</span>'}</td>
+                <td><button onclick="toggleHold(${row.user_id}, ${isHeld ? "false" : "true"})">${isHeld ? "Remove Hold" : "Hold from New Tasks"}</button></td>
             </tr>
         `;
     });
+}
+
+async function toggleHold(userId, hold) {
+    const verb = hold ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)" : "remove this worker's hold";
+    if (!confirm(`Are you sure you want to ${verb}?`)) return;
+
+    try {
+        await setTaskHold(userId, hold);
+        allBreakdown = allBreakdown.map(r => r.user_id === userId ? { ...r, task_hold: hold ? 1 : 0 } : r);
+        renderWorkerDetailTable();
+    } catch (err) {
+        alert(err.message || "Failed to update hold status.");
+    }
+}
+
+/* =========================
+   INIT
+   ========================= */
+
+async function renderAll() {
+    renderTopStats();
+
+    const grid = document.getElementById("projectGrid");
+
+    try {
+        [allProjects, allBreakdown] = await Promise.all([fetchProjects(), fetchBreakdown()]);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</p>`;
+        return;
+    }
+
+    renderProjectGrid();
 }
 
 renderAll();
@@ -202,4 +424,5 @@ renderAll();
 </script>
 
 </body>
+
 </html>
