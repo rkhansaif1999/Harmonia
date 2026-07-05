@@ -31,10 +31,10 @@
             <li><a href="admin-workers.html">👥 Workers</a></li>
             <li class="active">🏢 Clients</li>
             <li><a href="admin-projects.html">📂 Projects</a></li>
-            <li>📋 Tasks</li>
+            <li><a href="admin-tasks.html">📋 Tasks</a></li>
             <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li>💰 Payments</li>
-            <li>📈 Analytics</li>
+            <li><a href="admin-workers.html">💰 Payments</a></li>
+            <li><a href="admin-analytics.html">📈 Analytics</a></li>
             <li><a href="admin-settings.html">⚙ Settings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
@@ -92,12 +92,11 @@
                         <th>Projects</th>
                         <th>Status</th>
                         <th>Actions</th>
-                        <th>Role</th>
                     </tr>
                 </thead>
 
                 <tbody id="clientTable">
-                    <tr><td colspan="7" style="opacity:.6;">Loading clients...</td></tr>
+                    <tr><td colspan="6" style="opacity:.6;">Loading clients...</td></tr>
                 </tbody>
 
             </table>
@@ -147,23 +146,6 @@ async function updateStatus(id, status) {
     return true;
 }
 
-async function updateRole(id, role) {
-    const response = await authFetch(WORKER_URL + "/api/admin/users/role", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, role })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        alert(data.error || "Failed to update role.");
-        return false;
-    }
-
-    return true;
-}
-
 async function fetchOrders() {
     const response = await authFetch(WORKER_URL + "/api/admin/orders");
     const data = await response.json();
@@ -181,14 +163,14 @@ async function renderClients(){
         clients = allUsers.filter(u => u.role === "client");
         orders = allOrders;
     } catch (err) {
-        table.innerHTML = `<tr><td colspan="7" style="color:#ff8080;">Could not load clients: ${escapeHTML(err.message)}</td></tr>`;
+        table.innerHTML = `<tr><td colspan="6" style="color:#ff8080;">Could not load clients: ${escapeHTML(err.message)}</td></tr>`;
         return;
     }
 
     table.innerHTML = "";
 
     if (clients.length === 0) {
-        table.innerHTML = `<tr><td colspan="7" class="empty-state">No clients registered yet</td></tr>`;
+        table.innerHTML = `<tr><td colspan="6" class="empty-state">No clients registered yet</td></tr>`;
     }
 
     let active = 0;
@@ -209,11 +191,6 @@ async function renderClients(){
             actions = `<button onclick="changeStatus(${client.id},'suspended')">Suspend</button>`;
         }
 
-        const roleControl = `
-            <button onclick="promoteToAdmin(${client.id})">Make Admin</button>
-            <button onclick="moveToWorker(${client.id})">Make Worker</button>
-        `;
-
         table.innerHTML += `
             <tr>
                 <td>${escapeHTML(client.full_name)}</td>
@@ -222,7 +199,6 @@ async function renderClients(){
                 <td>${myProjects}</td>
                 <td>${statusBadge(capitalize(client.status))}</td>
                 <td>${actions}</td>
-                <td>${roleControl}</td>
             </tr>
         `;
     });
@@ -235,18 +211,6 @@ async function renderClients(){
 
 async function changeStatus(id, status){
     const ok = await updateStatus(id, status);
-    if (ok) renderClients();
-}
-
-async function promoteToAdmin(id){
-    if(!confirm("Promote this client to Admin? They will get full access.")) return;
-    const ok = await updateRole(id, "admin");
-    if (ok) renderClients();
-}
-
-async function moveToWorker(id){
-    if(!confirm("Switch this client to a Worker account?")) return;
-    const ok = await updateRole(id, "worker");
     if (ok) renderClients();
 }
 
