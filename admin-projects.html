@@ -260,59 +260,12 @@ async function renderProjects() {
                 </td>
             </tr>
 
-            <!-- DETAILS ROW -->
+           <!-- DETAILS ROW: content is loaded on demand, not upfront -->
             <tr id="details-${escapeHTML(o.orderId)}" style="display:none;">
                 <td colspan="8" style="background:rgba(255,255,255,0.03);padding:12px;">
-
-                    <div style="display:grid;gap:6px;font-size:.9rem;">
-
-                        <div><strong>Order ID:</strong> ${escapeHTML(o.orderId)}</div>
-                        <div><strong>Status:</strong> ${escapeHTML(o.status)}</div>
-                        <div><strong>Created:</strong> ${formatDate(o.createdAt)}</div>
-                        <div>
-                            <strong>Payment Proof:</strong>
-                            ${o.paymentProof ? `
-                                <br><br>
-                                <a href="${escapeHTML(o.paymentProof)}" target="_blank">View Uploaded Receipt</a>
-                                <br><br>
-                                <img src="${escapeHTML(o.paymentProof)}" style="max-width:220px;border-radius:10px;border:1px solid rgba(255,255,255,.08);">
-                            ` : "Not submitted"}
-                        </div>
-                        <div><strong>Submitted At:</strong> ${formatDate(o.submittedAt)}</div>
-
-                        <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
-
-                        <h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
-
-                        <div id="chat-${escapeHTML(o.orderId)}"
-                             style="background:rgba(255,255,255,.03);
-                                    border:1px solid rgba(255,255,255,.08);
-                                    border-radius:10px;
-                                    padding:12px;
-                                    max-height:250px;
-                                    overflow-y:auto;
-                                    margin-bottom:12px;">
-                            ${renderSupportChat(o)}
-                        </div>
-
-                        <textarea
-                            id="reply-${escapeHTML(o.orderId)}"
-                            placeholder="Reply to the client..."
-                            style="width:100%;
-                                   height:90px;
-                                   border-radius:8px;
-                                   padding:10px;
-                                   background:#111827;
-                                   color:white;
-                                   border:1px solid rgba(255,255,255,.08);
-                                   resize:vertical;"></textarea>
-
-                        <div style="margin-top:10px;">
-                            <button onclick="sendAdminReply('${escapeHTML(o.orderId)}')">Send Reply</button>
-                        </div>
-
+                    <div id="details-content-${escapeHTML(o.orderId)}" style="display:grid;gap:6px;font-size:.9rem;">
+                        Loading details...
                     </div>
-
                 </td>
             </tr>
         `;
