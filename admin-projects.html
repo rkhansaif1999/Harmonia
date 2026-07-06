@@ -281,10 +281,82 @@ async function renderProjects() {
    TOGGLE DETAILS
    ========================= */
 
-function toggleDetails(orderId) {
+const loadedOrderDetails = {};
+
+async function fetchOrderDetail(orderId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/detail?orderId=" + encodeURIComponent(orderId));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load order details");
+    return data.order;
+}
+
+function renderOrderDetailContent(order) {
+    return `
+        <div><strong>Order ID:</strong> ${escapeHTML(order.order_id)}</div>
+        <div><strong>Status:</strong> ${escapeHTML(order.status)}</div>
+        <div><strong>Created:</strong> ${formatDate(order.created_at)}</div>
+        <div>
+            <strong>Payment Proof:</strong>
+            ${order.payment_proof ? `
+                <br><br>
+                <a href="${escapeHTML(order.payment_proof)}" target="_blank">View Uploaded Receipt</a>
+                <br><br>
+                <img src="${escapeHTML(order.payment_proof)}" style="max-width:220px;border-radius:10px;border:1px solid rgba(255,255,255,.08);">
+            ` : "Not submitted"}
+        </div>
+        <div><strong>Submitted At:</strong> ${formatDate(order.submitted_at)}</div>
+
+        <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
+
+        <h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
+
+        <div id="chat-${escapeHTML(order.order_id)}"
+             style="background:rgba(255,255,255,.03);
+                    border:1px solid rgba(255,255,255,.08);
+                    border-radius:10px;
+                    padding:12px;
+                    max-height:250px;
+                    overflow-y:auto;
+                    margin-bottom:12px;">
+            ${renderSupportChat(order.supportChat)}
+        </div>
+
+        <textarea
+            id="reply-${escapeHTML(order.order_id)}"
+            placeholder="Reply to the client..."
+            style="width:100%;
+                   height:90px;
+                   border-radius:8px;
+                   padding:10px;
+                   background:#111827;
+                   color:white;
+                   border:1px solid rgba(255,255,255,.08);
+                   resize:vertical;"></textarea>
+
+        <div style="margin-top:10px;">
+            <button onclick="sendAdminReply('${escapeHTML(order.order_id)}')">Send Reply</button>
+        </div>
+    `;
+}
+
+async function toggleDetails(orderId) {
     const row = document.getElementById("details-" + orderId);
     if (!row) return;
-    row.style.display = row.style.display === "none" ? "table-row" : "none";
+
+    const isHidden = row.style.display === "none" || row.style.display === "";
+
+    if (isHidden && !loadedOrderDetails[orderId]) {
+        const content = document.getElementById("details-content-" + orderId);
+        try {
+            const order = await fetchOrderDetail(orderId);
+            loadedOrderDetails[orderId] = true;
+            content.innerHTML = renderOrderDetailContent(order);
+        } catch (err) {
+            content.innerHTML = `<div style="color:#ff8080;">Could not load details: ${escapeHTML(err.message)}</div>`;
+        }
+    }
+
+    row.style.display = isHidden ? "table-row" : "none";
 }
 
 /* =========================
