@@ -224,10 +224,6 @@ function maskWallet(address) {
     return address.slice(0, 6) + "..." + address.slice(-6);
 }
 
-function formatMoney(amount) {
-    const n = Number(amount) || 0;
-    return "$" + n.toFixed(2);
-}
 
 function toggleDetails(id) {
     if (expandedRows.has(id)) expandedRows.delete(id);
