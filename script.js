@@ -120,6 +120,8 @@ function saveUser(user, token) {
 // Wraps fetch() and automatically attaches the logged-in user's
 // session token as a Bearer header. Use this for any call to a
 // protected /api/... route instead of calling fetch() directly.
+let sessionExpiredHandled = false;
+
 async function authFetch(url, options = {}) {
     const user = getUser();
     const headers = {
@@ -127,7 +129,19 @@ async function authFetch(url, options = {}) {
         ...(options.headers || {}),
         ...(user?.token ? { "Authorization": "Bearer " + user.token } : {})
     };
-    return fetch(url, { ...options, headers });
+
+    const response = await fetch(url, { ...options, headers });
+
+    // If the token is genuinely expired/invalid, the server already
+    // tells us via 401 on this same call - no need for a separate
+    // "is my session still good?" ping before every page even loads.
+    if (response.status === 401 && user?.token && !sessionExpiredHandled) {
+        sessionExpiredHandled = true;
+        alert("Your session has expired. Please log in again.");
+        logout();
+    }
+
+    return response;
 }
 
 function getUser() {
