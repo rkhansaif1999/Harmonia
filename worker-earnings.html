@@ -111,15 +111,6 @@ function getCurrentWeekRange() {
     return { start: monday, end: sunday };
 }
 
-function getNextPayoutDate() {
-    const now = new Date();
-    const day = now.getDay(); // 0 = Sun ... 3 = Wed ... 6 = Sat
-    const diffToWednesday = (3 - day + 7) % 7; // 0 if today IS Wednesday
-    const next = new Date(now);
-    next.setDate(now.getDate() + diffToWednesday);
-    next.setHours(0, 0, 0, 0);
-    return next;
-}
 
 function formatDateLong(date) {
     return date.toLocaleDateString(undefined, {
