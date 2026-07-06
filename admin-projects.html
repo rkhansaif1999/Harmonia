@@ -151,13 +151,13 @@ function formatDate(dateStr) {
    SUPPORT CHAT RENDER
    ========================= */
 
-function renderSupportChat(order){
+function renderSupportChat(chat){
 
-    if(!order.supportChat || order.supportChat.length===0){
+    if(!chat || chat.length===0){
         return `<div style="opacity:.6;">No conversation yet.</div>`;
     }
 
-    return order.supportChat.map(msg=>`
+    return chat.map(msg=>`
         <div style="
             margin-bottom:12px;
             padding:10px;
