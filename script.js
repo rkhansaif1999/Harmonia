@@ -297,17 +297,11 @@ function protectPage(role) {
         return;
     }
 
-    // Double-check with the server that this session is still real
-    // (not expired from an hour of inactivity, and not logged out from
-    // another device). Runs in the background so the page still loads
-    // instantly; if the server says it's invalid, it sends you back
-    // to login right away.
-    verifySessionWithServer().then(valid => {
-        if (!valid) {
-            alert("Your session has expired. Please log in again.");
-            logout();
-        }
-    });
+    // The page's own data calls (via authFetch) already validate this
+    // exact session token server-side, the moment they run - so a
+    // separate "is my session still good?" ping here was doing the
+    // same check twice, on every single page load, for no benefit.
+    // authFetch now handles the "expired" case itself if it ever hits it.
 }
 
 // =========================
