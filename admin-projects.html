@@ -132,10 +132,9 @@ function normalizeOrder(o) {
         reviews: o.reviews || 0,
         status: o.status || "Awaiting Payment",
         assignedTo: o.assigned_to || null,
-        paymentProof: o.payment_proof || null,
+        hasPaymentProof: !!o.has_payment_proof,
         submittedAt: o.submitted_at || null,
-        createdAt: o.created_at || new Date().toISOString(),
-        supportChat: o.supportChat || []
+        createdAt: o.created_at || new Date().toISOString()
     };
 }
 
