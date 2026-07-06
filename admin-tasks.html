@@ -290,14 +290,25 @@ async function handleCreateTask() {
     }
 }
 
-async function handleEditRate(projectId, currentAmount) {
-    const input = prompt(
-        `New payout amount per correct code for Project #${projectId} (USD):`,
-        currentAmount.toFixed(2)
-    );
-    if (input === null) return; // cancelled
+let editRateProjectId = null;
 
-    const amount = Number(input);
+function handleEditRate(projectId, currentAmount) {
+    editRateProjectId = projectId;
+    document.getElementById("editRateInfo").innerHTML = `<strong>Project:</strong> #${projectId}`;
+    document.getElementById("editRateInput").value = currentAmount;
+    document.getElementById("editRateModal").style.display = "flex";
+    document.getElementById("editRateInput").focus();
+}
+
+function closeEditRate() {
+    document.getElementById("editRateModal").style.display = "none";
+    editRateProjectId = null;
+}
+
+async function confirmEditRate() {
+    const input = document.getElementById("editRateInput");
+    const amount = Number(input.value);
+
     if (!amount || amount <= 0) {
         alert("Please enter a valid payout amount.");
         return;
@@ -307,7 +318,7 @@ async function handleEditRate(projectId, currentAmount) {
         const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/update-rate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id: projectId, payoutAmount: amount })
+            body: JSON.stringify({ id: editRateProjectId, payoutAmount: amount })
         });
         const data = await response.json();
 
@@ -316,6 +327,7 @@ async function handleEditRate(projectId, currentAmount) {
             return;
         }
 
+        closeEditRate();
         await renderAll();
 
     } catch (err) {
@@ -323,7 +335,6 @@ async function handleEditRate(projectId, currentAmount) {
         console.error(err);
     }
 }
-
 async function decideApplication(applicationId, decision) {
     try {
         const response = await authFetch(WORKER_URL + "/api/admin/task-applications/decide", {
