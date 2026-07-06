@@ -168,9 +168,9 @@ async function init() {
             return;
         }
 
-        payoutAmount = Number(task.payoutAmount);
+       payoutAmount = Number(task.payoutAmount);
         document.getElementById("projectTitle").textContent =
-            `Project #${task.id} — $${payoutAmount.toFixed(2)} per correct code`;
+            `Project #${task.id} — ${formatMoney(payoutAmount)} per correct code`;
 
         document.getElementById("loadingState").style.display = "none";
         document.getElementById("taskContent").style.display = "block";
