@@ -239,7 +239,7 @@ async function renderAll() {
                 <td>${escapeHTML(a.full_name)}</td>
                 <td>${escapeHTML(a.email)}</td>
                 <td>#${a.micro_task_id}</td>
-                <td>$${Number(a.payout_amount).toFixed(2)}</td>
+                <td>${formatCurrency(a.payout_amount)}</td>
                 <td>${formatDate(a.created_at)}</td>
                 <td>
                     <button onclick="decideApplication(${a.id}, 'approved')">Approve</button>
