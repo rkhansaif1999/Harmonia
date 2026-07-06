@@ -210,7 +210,7 @@ async function renderAll() {
         projectsTable.innerHTML += `
             <tr>
                 <td>#${p.id}</td>
-                <td id="payout-${p.id}">$${Number(p.payout_amount).toFixed(2)}</td>
+                <td id="payout-${p.id}">${formatCurrency(p.payout_amount)}</td>
                 <td>${statusBadge(capitalize(p.status))}</td>
                 <td>${p.total_applied || 0}</td>
                 <td>${p.total_approved || 0}</td>
