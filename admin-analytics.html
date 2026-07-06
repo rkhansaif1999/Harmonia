@@ -19,14 +19,19 @@
             border: 1px solid rgba(255,255,255,.1);
             border-radius: 14px;
             padding: 18px 20px;
-            cursor: pointer;
-            transition: border-color .15s ease, background .15s ease, transform .15s ease;
+            transition: border-color .15s ease, background .15s ease;
             text-align: left;
         }
         .project-card:hover {
             border-color: #5b6cff;
-            background: rgba(91,108,255,.1);
-            transform: translateY(-2px);
+        }
+        .project-card.expanded {
+            grid-column: 1 / -1;
+            border-color: #5b6cff;
+            background: rgba(91,108,255,.06);
+        }
+        .project-card-summary {
+            cursor: pointer;
         }
         .project-card h3 {
             margin: 0 0 6px 0;
@@ -48,40 +53,110 @@
             font-weight: 700;
             color: #fff;
         }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 14px;
-            color: #9dadc1;
-            cursor: pointer;
-            font-size: .9rem;
+        .expand-hint {
+            margin-top: 10px;
+            font-size: .78rem;
+            color: #6d7cff;
             font-weight: 600;
-        }
-        .back-link:hover { color: #fff; }
-        .filter-btn {
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,.15);
-            background: transparent;
-            color: #cfd8e3;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: .85rem;
-        }
-        .filter-btn.active {
-            background: #5b6cff;
-            border-color: #5b6cff;
-            color: white;
         }
         .hold-badge {
             display: inline-block;
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 999px;
-            font-size: .72rem;
+            font-size: .68rem;
             font-weight: 700;
             background: rgba(255,140,60,.18);
             color: #ffb066;
         }
-        #projectDetail { display: none; }
+        .active-badge {
+            font-size: .68rem;
+            color: #7dffb2;
+            opacity: .85;
+        }
+
+        /* ---- expandable panel ---- */
+        .project-card-panel {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+        .worker-search-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.04);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 10px;
+        }
+        .worker-search-input:focus {
+            outline: none;
+            border-color: #5b6cff;
+        }
+        .list-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #7d8aa3;
+            margin-bottom: 8px;
+        }
+        .worker-mini-row {
+            padding: 9px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .12s ease;
+        }
+        .worker-mini-row:hover {
+            background: rgba(255,255,255,.05);
+        }
+        .worker-mini-row .top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .worker-mini-row .name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worker-mini-row .email {
+            font-size: .72rem;
+            color: #8d9bb3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worker-mini-row .total {
+            font-size: .82rem;
+            font-weight: 700;
+            color: #7dffb2;
+            white-space: nowrap;
+        }
+        .worker-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: rgba(255,255,255,.03);
+            border-radius: 8px;
+        }
+        .worker-action-row button {
+            font-size: .78rem;
+            padding: 6px 12px;
+        }
+        .empty-mini {
+            font-size: .8rem;
+            color: #7d8aa3;
+            padding: 10px 2px;
+        }
     </style>
 </head>
 
@@ -149,55 +224,16 @@
 
         </section>
 
-        <!-- PROJECT LIST VIEW -->
         <section class="recent" id="projectListView" style="margin-top:25px;">
 
             <h2>Projects</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Pick a project to see which workers are earning on it.
+                Click a project to search for a worker or see the top earners.
             </p>
 
             <div class="project-grid" id="projectGrid">
                 <p class="empty-state">Loading projects...</p>
             </div>
-
-        </section>
-
-        <!-- PROJECT DETAIL VIEW -->
-        <section class="recent" id="projectDetail" style="margin-top:25px;">
-
-            <span class="back-link" onclick="showProjectList()">&larr; Back to all projects</span>
-
-            <h2 id="detailTitle">Project</h2>
-            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;" id="detailSubtitle">
-                Only workers with an approved application appear here.
-            </p>
-
-            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-                <button class="filter-btn active" data-filter="all" onclick="setWorkerFilter('all')">All</button>
-                <button class="filter-btn" data-filter="zero" onclick="setWorkerFilter('zero')">Sitting on $0</button>
-                <button class="filter-btn" data-filter="pending" onclick="setWorkerFilter('pending')">Has Pending Payout</button>
-                <button class="filter-btn" data-filter="held" onclick="setWorkerFilter('held')">On Hold</button>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Worker</th>
-                        <th>Email</th>
-                        <th>Submissions</th>
-                        <th>Correct</th>
-                        <th>Accuracy</th>
-                        <th>Pending</th>
-                        <th>Paid</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="workerDetailTable">
-                </tbody>
-            </table>
 
         </section>
 
@@ -249,11 +285,11 @@ async function setTaskHold(userId, hold) {
 
 let allProjects = [];
 let allBreakdown = [];
-let currentProjectId = null;
-let currentWorkerFilter = "all";
+let expandedProjectId = null;   // which project card is currently open
+let openWorkerRowId = null;     // which worker row inside that panel is showing the hold button
 
 /* =========================
-   RENDER: cards at top
+   RENDER: top stat cards
    ========================= */
 
 async function renderTopStats() {
@@ -272,6 +308,15 @@ async function renderTopStats() {
    RENDER: project cards
    ========================= */
 
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function workersEarningCount(projectId) {
+    return allBreakdown.filter(r => r.micro_task_id === projectId).length;
+}
+
 function renderProjectGrid() {
     const grid = document.getElementById("projectGrid");
     grid.innerHTML = "";
@@ -282,120 +327,163 @@ function renderProjectGrid() {
     }
 
     allProjects.forEach(p => {
-        const workerCount = allBreakdown.filter(r => r.micro_task_id === p.id).length;
         const card = document.createElement("div");
-        card.className = "project-card";
-        card.onclick = () => showProjectDetail(p.id);
+        card.className = "project-card" + (expandedProjectId === p.id ? " expanded" : "");
+        card.id = "card-" + p.id;
+
         card.innerHTML = `
-            <h3>Project #${p.id}</h3>
-            <div class="rate">$${Number(p.payout_amount).toFixed(2)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
-            <div class="stat-row"><span>Workers earning</span><span>${workerCount}</span></div>
-            <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
-            <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
-            <div class="stat-row"><span>Approved workers</span><span>${p.total_approved || 0}</span></div>
+            <div class="project-card-summary" onclick="toggleProjectExpand(${p.id})">
+                <h3>Project #${p.id}</h3>
+                <div class="rate">$${Number(p.payout_amount).toFixed(2)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
+                <div class="stat-row"><span>Workers earning</span><span>${workersEarningCount(p.id)}</span></div>
+                <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
+                <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
+                <div class="expand-hint">${expandedProjectId === p.id ? "▴ Hide workers" : "▾ Find a worker / view top earners"}</div>
+            </div>
+            <div class="project-card-panel" id="panel-${p.id}" style="display:${expandedProjectId === p.id ? "block" : "none"};">
+                <input
+                    type="text"
+                    class="worker-search-input"
+                    placeholder="Search by email..."
+                    oninput="handleWorkerSearch(${p.id}, this.value)"
+                >
+                <div class="list-label" id="listLabel-${p.id}">Top 5 earners</div>
+                <div id="workerList-${p.id}"></div>
+            </div>
         `;
         grid.appendChild(card);
     });
+
+    if (expandedProjectId !== null) {
+        renderWorkerList(expandedProjectId, "");
+    }
 }
 
 /* =========================
-   RENDER: project detail (per-project worker table)
+   EXPAND / COLLAPSE
    ========================= */
 
-function capitalize(s) {
-    if (!s) return "";
-    return s.charAt(0).toUpperCase() + s.slice(1);
+function toggleProjectExpand(projectId) {
+    openWorkerRowId = null;
+
+    if (expandedProjectId === projectId) {
+        expandedProjectId = null;
+    } else {
+        expandedProjectId = projectId;
+    }
+
+    renderProjectGrid();
 }
 
-function showProjectList() {
-    currentProjectId = null;
-    document.getElementById("projectListView").style.display = "";
-    document.getElementById("projectDetail").style.display = "none";
+/* =========================
+   SEARCH / TOP 5
+   ========================= */
+
+function totalEarnedFor(row) {
+    return Number(row.pending_earned || 0) + Number(row.paid_earned || 0);
 }
 
-function showProjectDetail(projectId) {
-    currentProjectId = projectId;
-    currentWorkerFilter = "all";
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.filter === "all");
-    });
-
-    const project = allProjects.find(p => p.id === projectId);
-    document.getElementById("detailTitle").textContent = `Project #${projectId}`;
-    document.getElementById("detailSubtitle").textContent = project
-        ? `$${Number(project.payout_amount).toFixed(2)} per correct code · only approved workers shown`
-        : "Only workers with an approved application appear here.";
-
-    document.getElementById("projectListView").style.display = "none";
-    document.getElementById("projectDetail").style.display = "";
-    document.getElementById("projectDetail").classList.add("in-view");
-
-    renderWorkerDetailTable();
+function handleWorkerSearch(projectId, query) {
+    renderWorkerList(projectId, query);
 }
 
-function setWorkerFilter(filter) {
-    currentWorkerFilter = filter;
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.filter === filter);
-    });
-    renderWorkerDetailTable();
-}
+function renderWorkerList(projectId, query) {
+    const listEl = document.getElementById("workerList-" + projectId);
+    const labelEl = document.getElementById("listLabel-" + projectId);
+    if (!listEl) return;
 
-function renderWorkerDetailTable() {
-    const table = document.getElementById("workerDetailTable");
-    table.innerHTML = "";
+    const term = query.trim().toLowerCase();
+    const projectRows = allBreakdown.filter(r => r.micro_task_id === projectId);
 
-    let rows = allBreakdown.filter(r => r.micro_task_id === currentProjectId);
+    let rows;
+    if (term === "") {
+        labelEl.textContent = "Top 5 earners";
+        rows = [...projectRows]
+            .sort((a, b) => totalEarnedFor(b) - totalEarnedFor(a))
+            .slice(0, 5);
+    } else {
+        labelEl.textContent = "Search results";
+        rows = projectRows.filter(r => (r.email || "").toLowerCase().includes(term));
+    }
 
-    rows = rows.filter(row => {
-        const pendingEarned = Number(row.pending_earned || 0);
-        const paidEarned = Number(row.paid_earned || 0);
-        const totalEarned = pendingEarned + paidEarned;
-        if (currentWorkerFilter === "zero") return totalEarned === 0;
-        if (currentWorkerFilter === "pending") return pendingEarned > 0;
-        if (currentWorkerFilter === "held") return !!row.task_hold;
-        return true;
-    });
+    listEl.innerHTML = "";
 
     if (rows.length === 0) {
-        table.innerHTML = `<tr><td colspan="10" class="empty-state">No workers match this filter</td></tr>`;
+        listEl.innerHTML = `<div class="empty-mini">${term === "" ? "No workers on this project yet." : "No worker found with that email."}</div>`;
         return;
     }
 
     rows.forEach(row => {
-        const submissions = Number(row.submissions || 0);
-        const correct = Number(row.correct || 0);
-        const accuracy = submissions > 0 ? Math.round((correct / submissions) * 100) + "%" : "-";
-        const pendingEarned = Number(row.pending_earned || 0);
-        const paidEarned = Number(row.paid_earned || 0);
-        const totalEarned = pendingEarned + paidEarned;
         const isHeld = !!row.task_hold;
+        const total = totalEarnedFor(row);
+        const rowKey = projectId + "-" + row.user_id;
 
-        table.innerHTML += `
-            <tr>
-                <td>${escapeHTML(row.full_name)}</td>
-                <td>${escapeHTML(row.email)}</td>
-                <td>${submissions}</td>
-                <td>${correct}</td>
-                <td>${accuracy}</td>
-                <td>$${pendingEarned.toFixed(2)}</td>
-                <td>$${paidEarned.toFixed(2)}</td>
-                <td>$${totalEarned.toFixed(2)}</td>
-                <td>${isHeld ? '<span class="hold-badge">On Hold</span>' : '<span style="opacity:.6;">Active</span>'}</td>
-                <td><button onclick="toggleHold(${row.user_id}, ${isHeld ? "false" : "true"})">${isHeld ? "Remove Hold" : "Hold from New Tasks"}</button></td>
-            </tr>
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+            <div class="worker-mini-row" onclick="toggleWorkerRow('${rowKey}')">
+                <div class="top-line">
+                    <div style="min-width:0;">
+                        <div class="name">${escapeHTML(row.full_name)}</div>
+                        <div class="email">${escapeHTML(row.email)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="total">$${total.toFixed(2)}</div>
+                        <div>${isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>'}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="action-${rowKey}"></div>
         `;
+        listEl.appendChild(wrap);
+
+        if (openWorkerRowId === rowKey) {
+            renderWorkerAction(rowKey, row);
+        }
     });
 }
 
+function toggleWorkerRow(rowKey) {
+    openWorkerRowId = (openWorkerRowId === rowKey) ? null : rowKey;
+    const [projectIdStr] = rowKey.split("-");
+    const projectId = Number(projectIdStr);
+    const input = document.querySelector(`#panel-${projectId} .worker-search-input`);
+    renderWorkerList(projectId, input ? input.value : "");
+}
+
+function renderWorkerAction(rowKey, row) {
+    const actionEl = document.getElementById("action-" + rowKey);
+    if (!actionEl) return;
+
+    const isHeld = !!row.task_hold;
+
+    actionEl.innerHTML = `
+        <div class="worker-action-row">
+            <span style="font-size:.78rem;color:#9dadc1;">${isHeld ? "This worker can't apply for new tasks." : "This worker can apply for new tasks."}</span>
+            <button onclick="event.stopPropagation(); toggleHold(${row.user_id}, ${isHeld ? "false" : "true"})">
+                ${isHeld ? "Remove Hold" : "Hold from New Tasks"}
+            </button>
+        </div>
+    `;
+}
+
+/* =========================
+   HOLD ACTION
+   ========================= */
+
 async function toggleHold(userId, hold) {
-    const verb = hold ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)" : "remove this worker's hold";
+    const verb = hold
+        ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)"
+        : "remove this worker's hold";
     if (!confirm(`Are you sure you want to ${verb}?`)) return;
 
     try {
         await setTaskHold(userId, hold);
         allBreakdown = allBreakdown.map(r => r.user_id === userId ? { ...r, task_hold: hold ? 1 : 0 } : r);
-        renderWorkerDetailTable();
+
+        if (expandedProjectId !== null) {
+            const input = document.querySelector(`#panel-${expandedProjectId} .worker-search-input`);
+            renderWorkerList(expandedProjectId, input ? input.value : "");
+        }
     } catch (err) {
         alert(err.message || "Failed to update hold status.");
     }
