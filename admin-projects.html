@@ -390,12 +390,14 @@ async function sendAdminReply(orderId) {
         return;
     }
 
-    await renderProjects();
-
-    setTimeout(() => {
-        const detailsRow = document.getElementById("details-" + orderId);
-        if (detailsRow) detailsRow.style.display = "table-row";
-    }, 50);
+    // Only refresh this one order's details (proof + chat), not the whole list.
+    const content = document.getElementById("details-content-" + orderId);
+    try {
+        const order = await fetchOrderDetail(orderId);
+        content.innerHTML = renderOrderDetailContent(order);
+    } catch (err) {
+        content.innerHTML = `<div style="color:#ff8080;">Could not reload conversation: ${escapeHTML(err.message)}</div>`;
+    }
 }
 
 /* =========================
