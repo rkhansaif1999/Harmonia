@@ -26,6 +26,17 @@ function escapeHTML(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+// =========================
+// UI HELPER: MONEY FORMATTING
+// Normal amounts show 2 decimals. Sub-cent amounts (e.g. $0.003 per
+// micro-task) expand to up to 4 decimals instead of rounding to "$0.00".
+// =========================
+function formatMoney(amount) {
+    const n = Number(amount) || 0;
+    if (n === 0) return "$0.00";
+    if (Math.abs(n) >= 0.01) return "$" + n.toFixed(2);
+    return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
 
 // =========================
 // SECURITY: BASIC LOGIN RATE LIMITING
