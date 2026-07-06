@@ -258,7 +258,7 @@ async function submitCode() {
         if (data.correct) {
             sessionCorrect++;
             sessionEarned += Number(data.earned || 0);
-            feedbackBox.textContent = `✅ Correct! You earned $${Number(data.earned).toFixed(2)}`;
+            feedbackBox.textContent = `✅ Correct! You earned ${formatMoney(data.earned)}`;
             feedbackBox.className = "feedback-box feedback-correct";
         } else {
             feedbackBox.textContent = "❌ Incorrect. Try the next code.";
