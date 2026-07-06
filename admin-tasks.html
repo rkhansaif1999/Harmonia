@@ -361,5 +361,27 @@ renderAll();
 
 </script>
 
+<!-- EDIT RATE MODAL -->
+<div id="editRateModal"
+style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;justify-content:center;align-items:center;">
+
+    <div style="background:#111827;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px;width:420px;max-width:92%;">
+
+        <h2 style="margin-top:0;">Edit Pay Rate</h2>
+        <p id="editRateInfo" style="color:#9dadc1;font-size:.9rem;"></p>
+
+        <label>New payout amount per correct code (USD)</label>
+        <input type="number" id="editRateInput" min="0.0001" step="0.0001"
+            style="width:100%;box-sizing:border-box;border-radius:8px;padding:10px 12px;margin-top:8px;background:#1a2333;color:white;border:1px solid rgba(255,255,255,.08);">
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
+            <button class="detail-btn" onclick="closeEditRate()">Cancel</button>
+            <button class="detail-btn" onclick="confirmEditRate()">Save</button>
+        </div>
+
+    </div>
+
+</div>
+
 </body>
 </html>
