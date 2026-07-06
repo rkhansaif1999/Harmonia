@@ -267,7 +267,7 @@ async function submitCode() {
 
         document.getElementById("statSubmissions").textContent = sessionSubmissions;
         document.getElementById("statCorrect").textContent = sessionCorrect;
-        document.getElementById("statEarned").textContent = "$" + sessionEarned.toFixed(2);
+        document.getElementById("statEarned").textContent = formatMoney(sessionEarned);
 
         setTimeout(getNextChallenge, 1200);
 
