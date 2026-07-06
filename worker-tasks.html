@@ -32,8 +32,27 @@
                 Worker
             </div>
         </header>
-        <section class="recent">
+       <section class="recent">
             <h2>Assigned Tasks</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Projects you're approved for. Click Start Working to begin earning.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>ID</th>
+                        <th>Pay Rate</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="approvedMicroTaskTable">
+                    <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </section>
+        <section class="recent" style="margin-top:25px;">
+            <h2>Order Tasks</h2>
             <table>
                 <thead>
                     <tr>
@@ -47,27 +66,6 @@
                     <tr><td colspan="4" class="empty-state">Loading tasks...</td></tr>
                 </tbody>
             </table>
-        </section>
-        <section class="recent" style="margin-top:25px;">
-
-            <h2>Micro Tasks</h2>
-            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Projects you're approved for. Click Start Working to begin earning.
-            </p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Project ID</th>
-                        <th>Payout per Correct Code</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="approvedMicroTaskTable">
-                    <tr><td colspan="3" class="empty-state">Loading...</td></tr>
-                </tbody>
-            </table>
-
         </section>
     </main>
 </div>
