@@ -301,6 +301,38 @@ async function deleteMsg(id){
     renderMessages();
 }
 
+async function handleSendAnnouncement() {
+    const audience = document.getElementById("announceAudience").value;
+    const subject = document.getElementById("announceSubject").value.trim();
+    const message = document.getElementById("announceMessage").value.trim();
+    const statusEl = document.getElementById("announceStatus");
+
+    if (!subject || !message) {
+        statusEl.textContent = "Please fill in both subject and message.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    const label = audience === "workers" ? "all workers" : "all clients";
+    if (!confirm(`Send this announcement to ${label}?`)) return;
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await sendAnnouncement(audience, subject, message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = `Sent to ${result.sentCount} of ${result.recipientCount} ${label} ✔`;
+    statusEl.style.color = "#2e7d32";
+    document.getElementById("announceSubject").value = "";
+    document.getElementById("announceMessage").value = "";
+}
+
 renderMessages();
 </script>
 </body>
