@@ -157,8 +157,8 @@ async function loadEarnings() {
             return;
         }
 
-        document.getElementById("totalEarnedAllTime").textContent = "$" + Number(data.totalAllTime).toFixed(2);
-        document.getElementById("weeklyPending").textContent = "$" + Number(data.weeklyPending).toFixed(2);
+        document.getElementById("totalEarnedAllTime").textContent = "$" + Number(data.totalPaid).toFixed(2);
+document.getElementById("weeklyPending").textContent = "$" + Number(data.totalPending).toFixed(2);
 
         const { start, end } = getCurrentWeekRange();
         document.getElementById("weekRangeLabel").textContent =
