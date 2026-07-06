@@ -155,7 +155,7 @@ document.getElementById("weeklyPending").textContent = "$" + Number(data.totalPe
         document.getElementById("weekRangeLabel").textContent =
             formatDateShort(start) + " – " + formatDateShort(end);
 
-        document.getElementById("nextPayoutDate").textContent = formatDateLong(getNextPayoutDate());
+        document.getElementById("nextPayoutDate").textContent = "Coming Soon";
 
     } catch (err) {
         console.error(err);
