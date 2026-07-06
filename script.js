@@ -423,7 +423,34 @@ async function deleteMessage(id) {
     }
 
 }
+async function sendAnnouncement(audience, subject, message) {
 
+    try {
+
+        const response = await authFetch(
+            WORKER_URL + "/api/admin/announcements/send",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ audience, subject, message })
+            }
+        );
+
+        return await response.json();
+
+    } catch (err) {
+
+        console.error(err);
+
+        return {
+            error: "Unable to send announcement."
+        };
+
+    }
+
+}
 // =========================
 // GLOBAL NAV — public marketing navbar (mobile menu + active link)
 // Applies automatically to any page with .navbar/.nav-links
