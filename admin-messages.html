@@ -133,6 +133,32 @@
             <h1>Contact Messages</h1>
             <div class="profile">Administrator</div>
         </header>
+       <section class="recent">
+            <h2>Send Announcement</h2>
+
+            <div class="card" style="max-width:520px;">
+
+                <label>Send to</label>
+                <select id="announceAudience" style="width:100%;margin-bottom:12px;">
+                    <option value="workers">All Workers</option>
+                    <option value="clients">All Clients</option>
+                </select>
+
+                <label>Subject</label>
+                <input type="text" id="announceSubject" placeholder="e.g. Scheduled maintenance this weekend" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                <label>Message</label>
+                <textarea id="announceMessage" rows="5" placeholder="Type your announcement here..." style="width:100%;box-sizing:border-box;"></textarea>
+
+                <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                    <button class="primary" onclick="handleSendAnnouncement()">📢 Send Announcement</button>
+                    <span class="reply-status" id="announceStatus"></span>
+                </div>
+
+            </div>
+
+        </section>
+
         <section class="recent">
             <h2>Inbox</h2>
             <table>
