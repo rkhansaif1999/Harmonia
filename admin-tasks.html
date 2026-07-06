@@ -163,6 +163,14 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleString();
 }
 
+function formatCurrency(amount) {
+    const n = Number(amount) || 0;
+    // Values under $0.01 were rounding down to "$0.00" with toFixed(2).
+    // Show 4 decimals only when needed so sub-cent rates are visible.
+    if (n > 0 && n < 0.01) return "$" + n.toFixed(4);
+    return "$" + n.toFixed(2);
+}
+
 /* =========================
    RENDER
    ========================= */
