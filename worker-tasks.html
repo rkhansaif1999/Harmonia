@@ -189,6 +189,15 @@ fetchTasks();
 </script>
     <script>
 
+// $0.003 with .toFixed(2) rounds to "$0.00" — this keeps 2 decimals
+// for normal rates but expands to up to 4 decimals for sub-cent rates.
+function formatPayRate(amount) {
+    const n = Number(amount) || 0;
+    if (n === 0) return "$0.00";
+    if (Math.abs(n) >= 0.01) return "$" + n.toFixed(2);
+    return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
+
 async function loadApprovedMicroTasks() {
     const table = document.getElementById("approvedMicroTaskTable");
     if (!table) return;
@@ -198,7 +207,7 @@ async function loadApprovedMicroTasks() {
         const data = await response.json();
 
         if (!response.ok) {
-            table.innerHTML = `<tr><td colspan="3" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`;
+            table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`;
             return;
         }
 
@@ -206,15 +215,16 @@ async function loadApprovedMicroTasks() {
         table.innerHTML = "";
 
         if (approved.length === 0) {
-            table.innerHTML = `<tr><td colspan="3" class="empty-state">You're not approved for any micro-task project yet. Apply from your Dashboard.</td></tr>`;
+            table.innerHTML = `<tr><td colspan="4" class="empty-state">You're not approved for any micro-task project yet. Apply from your Dashboard.</td></tr>`;
             return;
         }
 
         approved.forEach(task => {
             table.innerHTML += `
                 <tr>
+                    <td>${escapeHTML(task.taskType || "Micro Task")}</td>
                     <td>#${task.id}</td>
-                    <td>$${Number(task.payoutAmount).toFixed(2)}</td>
+                    <td>${formatPayRate(task.payoutAmount)}</td>
                     <td><a href="worker-micro-task.html?taskId=${task.id}"><button>Start Working</button></a></td>
                 </tr>
             `;
@@ -222,7 +232,7 @@ async function loadApprovedMicroTasks() {
 
     } catch (err) {
         console.error(err);
-        table.innerHTML = `<tr><td colspan="3" class="empty-state">Unable to connect to the server.</td></tr>`;
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
     }
 }
 
