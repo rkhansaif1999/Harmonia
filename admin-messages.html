@@ -408,7 +408,7 @@ async function handleSendDirectEmail() {
         return;
     }
 
-    if (!confirm(`Send this email to ${to}?`)) return;
+    if (!(await showConfirm(`Send this email to ${to}?`))) return;
 
     statusEl.textContent = "Sending...";
     statusEl.style.color = "#888";
