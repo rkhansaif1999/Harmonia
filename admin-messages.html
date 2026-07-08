@@ -395,7 +395,37 @@ async function handleSendAnnouncement() {
     document.getElementById("announceSubject").value = "";
     document.getElementById("announceMessage").value = "";
 }
+async function handleSendDirectEmail() {
+    const to = document.getElementById("directEmailTo").value.trim();
+    const subject = document.getElementById("directEmailSubject").value.trim();
+    const message = document.getElementById("directEmailMessage").value.trim();
+    const statusEl = document.getElementById("directEmailStatus");
 
+    if (!to || !subject || !message) {
+        statusEl.textContent = "Please fill in recipient, subject, and message.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    if (!confirm(`Send this email to ${to}?`)) return;
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await sendDirectEmail(to, subject, message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Email sent ✔";
+    statusEl.style.color = "#2e7d32";
+    document.getElementById("directEmailTo").value = "";
+    document.getElementById("directEmailSubject").value = "";
+    document.getElementById("directEmailMessage").value = "";
+}
 renderMessages();
 </script>
 </body>
