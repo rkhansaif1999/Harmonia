@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
 <script>
@@ -20,6 +22,11 @@
 <script src="script.js?v=2"></script>
 <script>
     protectPage("client");
+    // TODO(pricing-followup): billing math here is still per-review
+    // (see perReview usage below), inherited from the old pricing
+    // model. Update together with client-new-project.html /
+    // client-checkout.html once they move to the new package pricing
+    // from pricing.html.
 </script>
 <div class="dashboard">
     <!-- Sidebar -->
