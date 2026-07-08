@@ -293,8 +293,24 @@ if (!data?.user) {
 
 // =========================
 // PAGE PROTECTION
+//
+// SECURITY NOTE: this check (and everything else in this file) is
+// client-side JavaScript. It stops a real browser from *rendering*
+// a dashboard for someone who isn't logged in - it cannot stop a
+// direct HTTP fetch (curl, a scraper, "view source") from downloading
+// the raw HTML of a protected page, because that request never runs
+// this script at all. Every gated page's <head> hides its content
+// (visibility:hidden) until this function proves the session is
+// real, and every gated page's <html> also carries
+// <meta name="robots" content="noindex"> plus a robots.txt Disallow
+// entry, so at least these pages won't be crawled or shown in search
+// results. True protection against direct fetching would require a
+// server-side check (e.g. a Cloudflare Pages Function / edge
+// middleware verifying a real session cookie before the HTML is even
+// returned) - that's a hosting-level change, not something JS running
+// inside the page itself can guarantee.
 // =========================
-function protectPage(role) {
+async function protectPage(role) {
     const user = getUser();
 
     if (!user || !user.token) {
@@ -303,16 +319,31 @@ function protectPage(role) {
     }
 
     if (role && user.role !== role) {
+        // Don't trust the locally-cached role at all here - anyone can
+        // edit localStorage in devtools and claim to be any role. Fall
+        // through to the real server check below instead of trusting
+        // this comparison on its own; it's just a fast-path redirect
+        // for the common "wrong dashboard" case.
         alert("Access denied");
         logout();
         return;
     }
 
-    // The page's own data calls (via authFetch) already validate this
-    // exact session token server-side, the moment they run - so a
-    // separate "is my session still good?" ping here was doing the
-    // same check twice, on every single page load, for no benefit.
-    // authFetch now handles the "expired" case itself if it ever hits it.
+    // The local copy (localStorage) is just a cache and can be forged
+    // by anyone with devtools open. Before revealing this page's
+    // content, ask the server - the actual source of truth - whether
+    // this token is really valid and really belongs to this role.
+    const ok = await verifySessionWithServer();
+    const verifiedUser = getUser();
+
+    if (!ok || !verifiedUser || (role && verifiedUser.role !== role)) {
+        logout();
+        return;
+    }
+
+    // Only now do we know this is a real, currently-valid session for
+    // the right role - safe to show the page.
+    document.body.style.visibility = "visible";
 }
 
 // =========================
