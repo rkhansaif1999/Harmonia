@@ -1,0 +1,5 @@
+# NOTE: This is a static fallback file only.
+# The authoritative, auto-updating ads.txt is served via the redirect
+# configured in _redirects (Cloudflare Pages) pointing to:
+# https://srv.adstxtmanager.com/19390/harmoniaportal.online
+# If that redirect is active, this static file is never actually served.

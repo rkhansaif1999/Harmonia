@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Ezoic Privacy Scripts (must load first) -->
+<script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
+<script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+<!-- Ezoic Header Script -->
+<script async src="https://www.ezojs.com/ezoic/sa.min.js"></script>
+<script>
+    window.ezstandalone = window.ezstandalone || {};
+    ezstandalone.cmd = ezstandalone.cmd || [];
+</script>
+<script src="https://ezoicanalytics.com/analytics.js"></script>
+
   <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
   <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
@@ -60,13 +71,28 @@
     </aside>
     <!-- Main -->
     <main class="main">
+
+<!-- Ezoic Ad: top_of_page -->
+<script>
+    ezstandalone.cmd.push(function () {
+        ezstandalone.showAds({ location: "top_of_page" });
+    });
+</script>
+
         <header class="topbar">
             <h1>My Tasks</h1>
             <div class="profile">
                 Worker
             </div>
         </header>
-       <section class="recent">
+       
+<!-- Ezoic Ad: mid_content -->
+<script>
+    ezstandalone.cmd.push(function () {
+        ezstandalone.showAds({ location: "mid_content" });
+    });
+</script>
+<section class="recent">
             <h2>Assigned Tasks</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
                 Projects you're approved for. Click Start Working to begin earning.
@@ -101,7 +127,14 @@
                 </tbody>
             </table>
         </section>
-    </main>
+    
+<!-- Ezoic Ad: bottom_of_page -->
+<script>
+    ezstandalone.cmd.push(function () {
+        ezstandalone.showAds({ location: "bottom_of_page" });
+    });
+</script>
+</main>
 </div>
 <script>
 const table = document.getElementById("taskTable");
