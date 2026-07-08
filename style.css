@@ -1685,6 +1685,11 @@ own width:100% / margin used everywhere else.
 .toggle-password:hover{
     color:#62d4ff;
     background:rgba(255,255,255,.04);
+    transform:translateY(-50%);
+}
+
+.toggle-password:active{
+    transform:translateY(-50%);
 }
 
 .toggle-password:focus-visible{
