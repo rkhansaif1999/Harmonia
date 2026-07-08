@@ -740,3 +740,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+// =========================
+// PASSWORD VISIBILITY TOGGLE
+// Used on login.html and signup.html. Toggles a password
+// <input>'s type between "password" and "text", and swaps
+// which eye icon (open/slashed) is shown inside the button.
+// Safe no-ops if the input or icons aren't found.
+// =========================
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input || !btn) return;
+
+    const isCurrentlyHidden = input.type === "password";
+    input.type = isCurrentlyHidden ? "text" : "password";
+
+    const eyeIcon = btn.querySelector(".icon-eye");
+    const eyeOffIcon = btn.querySelector(".icon-eye-off");
+
+    if (eyeIcon && eyeOffIcon) {
+        eyeIcon.style.display = isCurrentlyHidden ? "none" : "block";
+        eyeOffIcon.style.display = isCurrentlyHidden ? "block" : "none";
+    }
+
+    btn.setAttribute("aria-label", isCurrentlyHidden ? "Hide password" : "Show password");
+}
