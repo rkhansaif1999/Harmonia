@@ -1643,3 +1643,62 @@ RESPONSIVE
         width:min(290px,88vw);
     }
 }
+
+/*==================================================
+PASSWORD VISIBILITY TOGGLE (show/hide "eye" button)
+Wraps a password <input> in <div class="password-field">
+so the toggle button can be absolutely positioned inside
+it, vertically centered, without disturbing the input's
+own width:100% / margin used everywhere else.
+==================================================*/
+.password-field{
+    position:relative;
+    width:100%;
+}
+
+.password-field input{
+    width:100%;
+    padding-right:48px !important;
+}
+
+.toggle-password{
+    position:absolute;
+    top:50%;
+    right:6px;
+    transform:translateY(-50%);
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor:pointer;
+    color:#7688a0;
+    z-index:3;
+    border-radius:8px;
+    transition:.2s ease;
+}
+
+.toggle-password:hover{
+    color:#62d4ff;
+    background:rgba(255,255,255,.04);
+}
+
+.toggle-password:focus-visible{
+    outline:2px solid rgba(88,180,255,.5);
+    outline-offset:1px;
+}
+
+.toggle-password svg{
+    width:19px;
+    height:19px;
+    display:block;
+    pointer-events:none;
+}
+
+.toggle-password .icon-eye-off{
+    display:none;
+}
