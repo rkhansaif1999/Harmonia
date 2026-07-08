@@ -493,6 +493,26 @@ async function sendAnnouncement(audience, subject, message) {
     }
 
 }
+async function sendDirectEmail(to, subject, message) {
+    try {
+        const response = await authFetch(
+            WORKER_URL + "/api/admin/send-email",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ to, subject, message })
+            }
+        );
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return {
+            error: "Unable to send email."
+        };
+    }
+}
 // =========================
 // GLOBAL NAV — public marketing navbar (mobile menu + active link)
 // Applies automatically to any page with .navbar/.nav-links
