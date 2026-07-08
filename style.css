@@ -284,14 +284,6 @@ NAVBAR
     background-clip:text;
     -webkit-text-fill-color:transparent;
     color:#7d79ff;
-    display:inline-flex;
-    align-items:center;
-}
-
-.logo-img{
-    height:38px;
-    width:auto;
-    display:block;
 }
 
 .nav-links{
