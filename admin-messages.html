@@ -378,7 +378,7 @@ async function handleSendAnnouncement() {
     }
 
     const label = audience === "workers" ? "all workers" : "all clients";
-    if (!confirm(`Send this announcement to ${label}?`)) return;
+    if (!(await showConfirm(`Send this announcement to ${label}?`))) return;
 
     statusEl.textContent = "Sending...";
     statusEl.style.color = "#888";
