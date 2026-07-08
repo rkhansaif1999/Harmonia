@@ -79,6 +79,41 @@ border-top:1px solid rgba(255,255,255,.06);
 text-align:center;
 color:#7f8b9b;
 }
+.plan-features{
+list-style:none;
+padding:0;
+margin:0 0 26px;
+text-align:left;
+display:flex;
+flex-direction:column;
+gap:12px;
+position:relative;
+z-index:2;
+}
+.plan-features li{
+color:#c3ccd8;
+font-size:.88rem;
+line-height:1.5;
+padding-left:26px;
+position:relative;
+}
+.plan-features li::before{
+content:"✓";
+position:absolute;
+left:0;
+top:0;
+color:#62d4ff;
+font-weight:800;
+}
+.pricing-note{
+max-width:760px;
+margin:0 auto 100px;
+text-align:center;
+color:#8695a8;
+font-size:.88rem;
+line-height:1.8;
+padding:0 20px;
+}
 @media (max-width:1200px){
 .footer-grid{
 grid-template-columns:1fr 1fr;
@@ -138,7 +173,7 @@ grid-template-columns:1fr;
     </h1>
 
     <p id="basePriceText">
-      Starting at $3 per review. Pick a package below, or request a custom quantity once you sign up.
+      Data annotation and AI training-data packages, scoped to your task volume. Every package is reviewed by our admin team for task type and quantity before work begins.
     </p>
   </section>
 
@@ -147,8 +182,14 @@ grid-template-columns:1fr;
 
     <div class="price-card">
       <h3>Starter</h3>
-      <div class="price" id="price20">$60</div>
-      <p class="desc">20 reviews — perfect for testing the waters.</p>
+      <div class="price">$1,000</div>
+      <p class="desc">Best for a first data annotation run.</p>
+      <ul class="plan-features">
+        <li>1 task type supported</li>
+        <li>Reviewed &amp; QA-checked data</li>
+        <li>Real-time analytics — completed vs. remaining data</li>
+        <li>Fixed, fair data quota</li>
+      </ul>
       <button class="btn btn-primary full" onclick="window.location.href='signup.html'">
         Get Started
       </button>
@@ -156,8 +197,15 @@ grid-template-columns:1fr;
 
     <div class="price-card featured">
       <h3>Growth</h3>
-      <div class="price" id="price50">$150</div>
-      <p class="desc">50 reviews — our most popular package.</p>
+      <div class="price">$5,000</div>
+      <p class="desc">For teams scaling up data operations.</p>
+      <ul class="plan-features">
+        <li>2 task types supported</li>
+        <li>Reviewed &amp; QA-checked data</li>
+        <li>Real-time analytics — completed vs. remaining data</li>
+        <li>Add or remove specific workers from your project</li>
+        <li>Fixed, fair data quota</li>
+      </ul>
       <button class="btn btn-primary full" onclick="window.location.href='signup.html'">
         Get Started
       </button>
@@ -165,8 +213,17 @@ grid-template-columns:1fr;
 
     <div class="price-card">
       <h3>Scale</h3>
-      <div class="price" id="price100">$300</div>
-      <p class="desc">100 reviews — for serious volume needs.</p>
+      <div class="price">$20,000</div>
+      <p class="desc">For high-volume, multi-task data pipelines.</p>
+      <ul class="plan-features">
+        <li>5 task types supported</li>
+        <li>Reviewed &amp; QA-checked data</li>
+        <li>Real-time analytics — completed vs. remaining data</li>
+        <li>Add or remove specific workers from your project</li>
+        <li>Personalized dashboard for earnings distribution across workers</li>
+        <li>Delete completed projects to start new ones, within your remaining quota</li>
+        <li>Fixed, fair data quota</li>
+      </ul>
       <button class="btn btn-primary full" onclick="window.location.href='signup.html'">
         Get Started
       </button>
@@ -176,14 +233,22 @@ grid-template-columns:1fr;
       <h3>Custom</h3>
       <div class="price">Let’s Talk</div>
       <p class="desc">
-        Need a different quantity? Set your own amount after signing up.
+        Bigger requirements? Tell us what you need and we'll scope a package around it.
       </p>
+      <ul class="plan-features">
+        <li>Task types &amp; volume tailored to you</li>
+        <li>All Scale features, sized to your needs</li>
+      </ul>
       <button class="btn btn-secondary full" onclick="window.location.href='contact.html'">
         Contact Us
       </button>
     </div>
 
   </section>
+
+  <p class="pricing-note">
+    Every package is reviewed by our admin team for task type and data quantity before work begins, and comes with a fixed data quota — so capacity stays fair and equal across all clients.
+  </p>
 
   <!-- ================= FOOTER ================= -->
 <footer class="footer">
@@ -246,39 +311,24 @@ We're creating a future where talented people and innovative businesses grow tog
 <script src="script.js"></script>
 
 <script>
-/* dynamic pricing - now from the real backend (D1) via the Worker's
-   public GET /api/settings route, instead of the local getSettings()
-   helper. This page has no login, so it can't call the admin-only
-   /api/admin/settings - /api/settings exposes just the safe subset
-   (platformName, pricePerReview) needed here. */
+/* NOTE (pricing redesign): these four tiers (Starter/Growth/Scale/Custom)
+   are now fixed, hand-set dollar amounts describing data-annotation /
+   AI-task packages - they are intentionally NOT pulled from
+   /api/settings pricePerReview anymore, since that setting describes
+   the old per-review internal rate, not these package prices. If the
+   packages ever need to come from the backend instead of being
+   hardcoded in this HTML, that's a bigger change (new settings/plan
+   rows) than what's in scope right now.
 
-async function loadPricing() {
-    try {
-        const response = await fetch(WORKER_URL + "/api/settings");
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Failed to load pricing");
-        }
-
-        const rate = data.settings.pricePerReview;
-
-        document.getElementById("basePriceText").textContent =
-            `Starting at $${rate} per review. Pick a package below, or request a custom quantity once you sign up.`;
-
-        document.getElementById("price20").textContent = "$" + (rate * 20);
-        document.getElementById("price50").textContent = "$" + (rate * 50);
-        document.getElementById("price100").textContent = "$" + (rate * 100);
-
-    } catch (err) {
-        // Keep the static fallback prices already in the HTML if the
-        // fetch fails, just log it - this page shouldn't hard-fail for
-        // a logged-out marketing page.
-        console.error("Could not load live pricing:", err);
-    }
-}
-
-loadPricing();
+   TODO(pricing-followup): the old "reviews" business model (buying
+   Trustpilot/Google/App Store/Yelp/G2 review batches) still lives on
+   the backend and on other pages - it's just no longer the story told
+   on this public pricing page. See the TODO markers left in:
+     - client-new-project.html  (platform dropdown + review packages)
+     - client-checkout.html / client-billing.html (review-based pricing)
+     - terms.html / privacy-policy.html (mentions "reviews requested")
+   Worth revisiting those together once the new package pricing above
+   is wired up for real (with matching backend settings/plans). */
 
 /* navbar blur */
 const navbar = document.getElementById("navbar");
