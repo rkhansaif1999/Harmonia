@@ -124,23 +124,7 @@
             Loading...
         </div>
 
-        <div id="taskContent" style="display:none;max-width:700px;margin:0 auto;" onclick="event.stopPropagation();">
-
-            <!--
-              onclick="event.stopPropagation()" above is intentional and important:
-              Monetag's OnClick tag attaches a click listener to the whole document
-              and treats every click anywhere on the page as an ad-trigger event.
-              Without this, every "Submit" click from the task loop (roughly one
-              every 4-6 seconds, for hours) was bubbling up and firing the ad
-              listener on a near-metronomic cadence - a classic bot-like signature
-              that ad networks' fraud filters are built to catch and discard.
-              This keeps clicks *inside the task widget* from reaching that
-              listener at all, so only real, incidental page interaction
-              (scrolling to a link, clicking elsewhere, navigating) triggers an
-              ad opportunity. Fewer ad requests, but a much higher share of them
-              should actually be genuine enough to survive Monetag's filtering
-              and show up in your Statistics tab.
-            -->
+        <div id="taskContent" style="display:none;max-width:700px;margin:0 auto;">
 
             <section class="card">
                 <h2 id="projectTitle" style="margin-top:0;">Project</h2>
@@ -341,19 +325,14 @@ init();
 
 </script>
 
-<!--
-  Monetag ad (zone 256681)
+<!-- Monetag: Push Notification (zone 11256554) - requires sw.js at site root -->
+<script src="https://5gvci.com/act/files/tag.min.js?z=11256554" data-cfasync="false" async></script>
 
-  Next step worth doing in your Monetag dashboard (not a code change):
-  go to Sites -> this zone -> "Get MultiTag" and swap this single OnClick
-  tag for the MultiTag script. MultiTag lets Monetag's own system choose
-  the best-performing format per visitor (banner / in-page push /
-  interstitial / push notification / onclick) instead of relying on one
-  click-triggered format, which tends to be the most sensitive to the
-  click-cadence issue this page had. Their own case studies show
-  meaningfully higher realized CPM from MultiTag vs a single classic tag.
--->
-<script src="https://quge5.com/88/tag.min.js" data-zone="256681" async data-cfasync="false"></script>
+<!-- Monetag: Vignette Banner (zone 11239078) -->
+<script>(function(s){s.dataset.zone='11239078',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+<!-- Monetag: In-Page Push (zone 11239054) -->
+<script>(function(s){s.dataset.zone='11239054',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 </body>
 </html>
