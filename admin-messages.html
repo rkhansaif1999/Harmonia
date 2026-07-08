@@ -179,47 +179,48 @@
             <div class="profile">Administrator</div>
         </header>
        <section class="recent">
-            <h2>Send Announcement</h2>
+            <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
 
-            <div class="card" style="max-width:520px;">
+                <div class="card" style="flex:1;min-width:320px;max-width:520px;">
+                    <h3 style="margin-top:0;">📢 Send Announcement</h3>
 
-                <label>Send to</label>
-                <select id="announceAudience" style="width:100%;margin-bottom:12px;">
-                    <option value="workers">All Workers</option>
-                    <option value="clients">All Clients</option>
-                </select>
+                    <label>Send to</label>
+                    <select id="announceAudience" style="width:100%;margin-bottom:12px;">
+                        <option value="workers">All Workers</option>
+                        <option value="clients">All Clients</option>
+                    </select>
 
-                <label>Subject</label>
-                <input type="text" id="announceSubject" placeholder="e.g. Scheduled maintenance this weekend" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+                    <label>Subject</label>
+                    <input type="text" id="announceSubject" placeholder="e.g. Scheduled maintenance this weekend" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
 
-                <label>Message</label>
-                <textarea id="announceMessage" rows="5" placeholder="Type your announcement here..." style="width:100%;box-sizing:border-box;"></textarea>
+                    <label>Message</label>
+                    <textarea id="announceMessage" rows="5" placeholder="Type your announcement here..." style="width:100%;box-sizing:border-box;"></textarea>
 
-                <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
-                    <button class="primary" onclick="handleSendAnnouncement()">📢 Send Announcement</button>
-                    <span class="reply-status" id="announceStatus"></span>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                        <button class="primary" onclick="handleSendAnnouncement()">📢 Send Announcement</button>
+                        <span class="reply-status" id="announceStatus"></span>
+                    </div>
+                </div>
+
+                <div class="card" style="flex:1;min-width:320px;max-width:520px;">
+                    <h3 style="margin-top:0;">📧 Send Email</h3>
+
+                    <label>To (email address)</label>
+                    <input type="email" id="directEmailTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                    <label>Subject</label>
+                    <input type="text" id="directEmailSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                    <label>Message</label>
+                    <textarea id="directEmailMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
+
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                        <button class="primary" onclick="handleSendDirectEmail()">📧 Send Email</button>
+                        <span class="reply-status" id="directEmailStatus"></span>
+                    </div>
                 </div>
 
             </div>
-
-           <div class="card" style="max-width:520px;margin-top:20px;">
-                <h3 style="margin-top:0;">📧 Send Email</h3>
-
-                <label>To (email address)</label>
-                <input type="email" id="directEmailTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
-
-                <label>Subject</label>
-                <input type="text" id="directEmailSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
-
-                <label>Message</label>
-                <textarea id="directEmailMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
-
-                <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
-                    <button class="primary" onclick="handleSendDirectEmail()">📧 Send Email</button>
-                    <span class="reply-status" id="directEmailStatus"></span>
-                </div>
-            </div>
-
         </section>
 
         <section class="recent">
