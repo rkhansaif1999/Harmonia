@@ -1,0 +1,42 @@
+User-agent: *
+
+# Public marketing/legal pages — fine to crawl and index
+Allow: /$
+Allow: /index.html
+Allow: /about.html
+Allow: /pricing.html
+Allow: /contact.html
+Allow: /login.html
+Allow: /signup.html
+Allow: /forgot-password.html
+Allow: /reset-password.html
+Allow: /terms.html
+Allow: /privacy-policy.html
+Allow: /cookie-policy.html
+Allow: /refund-policy.html
+
+# Logged-in-only dashboards — nothing here should be crawled or indexed.
+# (Also carry a <meta name="robots" content="noindex"> tag individually,
+# in case any of these URLs ever get linked from outside the site.)
+Disallow: /admin-login.html
+Disallow: /admin-dashboard.html
+Disallow: /admin-settings.html
+Disallow: /admin-clients.html
+Disallow: /admin-analytics.html
+Disallow: /admin-projects.html
+Disallow: /admin-workers.html
+Disallow: /admin-tasks.html
+Disallow: /admin-messages.html
+Disallow: /client-dashboard.html
+Disallow: /client-new-project.html
+Disallow: /client-orders.html
+Disallow: /client-projects.html
+Disallow: /client-billing.html
+Disallow: /client-checkout.html
+Disallow: /worker-dashboard.html
+Disallow: /worker-tasks.html
+Disallow: /worker-micro-task.html
+Disallow: /worker-payments.html
+Disallow: /worker-earnings.html
+Disallow: /reviewer-dashboard.html
+Disallow: /payment-confirm.html
