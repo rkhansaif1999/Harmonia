@@ -284,6 +284,31 @@ NAVBAR
     background-clip:text;
     -webkit-text-fill-color:transparent;
     color:#7d79ff;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+}
+
+.logo-img{
+    height:1.35em;
+    width:auto;
+    display:block;
+    flex-shrink:0;
+}
+
+.login-box h1,
+.footer-brand h2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.login-box h1 .logo-img{
+    height:1.3em;
+}
+
+.footer-brand h2 .logo-img{
+    height:1.1em;
 }
 
 .nav-links{
