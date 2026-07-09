@@ -493,6 +493,76 @@ async function sendAnnouncement(audience, subject, message) {
     }
 
 }
+async function updateEmailPermission(id, allowed) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/email-permission", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, allowed })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to update permission.");
+        return false;
+    }
+    return true;
+}
+
+async function startWorkerThread(companyEmail, subject, message) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/threads/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ companyEmail, subject, message })
+        });
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to send email." };
+    }
+}
+
+async function replyWorkerThread(threadId, message) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/threads/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ threadId, message })
+        });
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to send reply." };
+    }
+}
+
+async function fetchWorkerThreads() {
+    const response = await authFetch(WORKER_URL + "/api/worker/threads");
+    return await response.json();
+}
+
+async function fetchWorkerThreadDetail(threadId) {
+    const response = await authFetch(WORKER_URL + "/api/worker/threads/detail?threadId=" + threadId);
+    return await response.json();
+}
+
+async function fetchAdminThreads() {
+    const response = await authFetch(WORKER_URL + "/api/admin/worker-threads");
+    return await response.json();
+}
+
+async function fetchAdminThreadDetail(threadId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/worker-threads/detail?threadId=" + threadId);
+    return await response.json();
+}
+
+async function replyAdminThread(threadId, message) {
+    const response = await authFetch(WORKER_URL + "/api/admin/worker-threads/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ threadId, message })
+    });
+    return await response.json();
+}
 async function sendDirectEmail(to, subject, message) {
     try {
         const response = await authFetch(
