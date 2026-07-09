@@ -526,6 +526,15 @@ async function moveToReviewer(id){
     if (ok) loadAndRenderAll();
 }
 
+    async function toggleEmailPermission(id, allow){
+    const msg = allow
+        ? "Give this worker permission to message companies from their dashboard?"
+        : "Revoke this worker's messaging permission?";
+    if (!confirm(msg)) return;
+    const ok = await updateEmailPermission(id, allow);
+    if (ok) loadAndRenderAll();
+}
+
 function renderReviewers(){
     const reviewers = allUsers.filter(u => u.role === "reviewer");
     const table = document.getElementById("reviewerTable");
