@@ -240,6 +240,7 @@
                 <tbody id="messagesTable"></tbody>
             </table>
         </section>
+
         <section class="recent">
             <h2>Worker Conversations</h2>
             <table>
@@ -462,7 +463,7 @@ async function handleSendDirectEmail() {
     document.getElementById("directEmailMessage").value = "";
 }
 
-    function showConfirm(message) {
+function showConfirm(message) {
     return new Promise((resolve) => {
         const overlay = document.getElementById("confirmOverlay");
         document.getElementById("confirmMessage").textContent = message;
@@ -484,8 +485,88 @@ async function handleSendDirectEmail() {
         cancelBtn.addEventListener("click", onCancel);
     });
 }
-    
+
+// ------------------------------------------------------------
+// Worker Conversations (threaded worker <-> company messages)
+// ------------------------------------------------------------
+
+let currentThreadId = null;
+
+async function loadAdminThreads() {
+    const table = document.getElementById("adminThreadsTable");
+    try {
+        const data = await fetchAdminThreads();
+        if (!data.threads || data.threads.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
+            return;
+        }
+        table.innerHTML = "";
+        data.threads.forEach(t => {
+            table.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(t.worker_name)}</td>
+                    <td>${escapeHTML(t.company_email)}</td>
+                    <td>${escapeHTML(t.subject)}</td>
+                    <td>${new Date(t.last_message_at).toLocaleString()}</td>
+                    <td><button onclick="openThreadOverlay(${t.id})">View</button></td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">Failed to load.</td></tr>`;
+    }
+}
+
+async function openThreadOverlay(threadId) {
+    currentThreadId = threadId;
+    const data = await fetchAdminThreadDetail(threadId);
+    if (!data.thread) { alert(data.error || "Failed to load conversation."); return; }
+
+    document.getElementById("threadOverlaySubject").textContent = data.thread.subject;
+    document.getElementById("threadOverlayMeta").textContent =
+        `${data.thread.worker_name} → ${data.thread.company_email}`;
+
+    const box = document.getElementById("threadOverlayMessages");
+    box.innerHTML = "";
+    data.messages.forEach(m => {
+        const label = m.sender === "worker" ? data.thread.worker_name
+                    : m.sender === "admin" ? "Admin"
+                    : data.thread.company_email;
+        const align = m.sender === "company" ? "flex-start" : "flex-end";
+        const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;background:${bg};padding:10px 14px;border-radius:12px;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
+                <div style="color:#fff;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+
+    document.getElementById("threadOverlayReplyInput").value = "";
+    document.getElementById("threadOverlay").style.display = "flex";
+}
+
+function closeThreadOverlay() {
+    document.getElementById("threadOverlay").style.display = "none";
+    currentThreadId = null;
+}
+
+async function submitAdminThreadReply() {
+    const input = document.getElementById("threadOverlayReplyInput");
+    const message = input.value.trim();
+    if (!message || !currentThreadId) return;
+
+    const result = await replyAdminThread(currentThreadId, message);
+    if (result.error) { alert(result.error); return; }
+
+    openThreadOverlay(currentThreadId);
+    loadAdminThreads();
+}
+
 renderMessages();
+loadAdminThreads();
 </script>
     <div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
