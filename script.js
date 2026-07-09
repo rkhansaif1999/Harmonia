@@ -563,6 +563,35 @@ async function replyAdminThread(threadId, message) {
     });
     return await response.json();
 }
+
+async function deleteAdminThread(threadId) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/worker-threads/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ threadId })
+        });
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to delete conversation." };
+    }
+}
+
+async function deleteWorkerThread(threadId) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/threads/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ threadId })
+        });
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to delete conversation." };
+    }
+}
+
 async function sendDirectEmail(to, subject, message) {
     try {
         const response = await authFetch(
