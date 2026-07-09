@@ -275,7 +275,7 @@
         </div>
 
         <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
-            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:560px;width:92%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                     <div>
                         <h3 id="threadOverlaySubject" style="margin:0;color:#fff;"></h3>
@@ -283,9 +283,9 @@
                     </div>
                     <button onclick="closeThreadOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
                 </div>
-                <div id="threadOverlayMessages" style="overflow-y:auto;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
-                <div style="display:flex;gap:10px;">
-                    <input type="text" id="threadOverlayReplyInput" placeholder="Type a reply..." style="flex:1;box-sizing:border-box;">
+                <div id="threadOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="threadOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:200px;overflow-y:auto;font-family:inherit;"></textarea>
                     <button class="primary" onclick="submitAdminThreadReply()">Send</button>
                 </div>
             </div>
@@ -609,15 +609,17 @@ async function openThreadOverlay(threadId) {
         const align = m.sender === "company" ? "flex-start" : "flex-end";
         const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
         box.innerHTML += `
-            <div style="align-self:${align};max-width:80%;background:${bg};padding:10px 14px;border-radius:12px;">
+            <div style="align-self:${align};max-width:80%;min-width:0;background:${bg};padding:10px 14px;border-radius:12px;box-sizing:border-box;">
                 <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
-                <div style="color:#fff;">${escapeHTML(m.message)}</div>
+                <div style="color:#fff;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">${escapeHTML(m.message)}</div>
             </div>
         `;
     });
     box.scrollTop = box.scrollHeight;
 
-    document.getElementById("threadOverlayReplyInput").value = "";
+    const replyInput = document.getElementById("threadOverlayReplyInput");
+    replyInput.value = "";
+    replyInput.style.height = "auto";
     document.getElementById("threadOverlay").style.display = "flex";
 }
 
@@ -640,6 +642,25 @@ async function submitAdminThreadReply() {
         openWorkerConversations(currentWorkerId);
     }
 }
+
+// Enter sends the reply; Shift+Enter or Ctrl+Enter inserts a new line.
+// The textarea also grows with content (up to its max-height, after
+// which it scrolls vertically instead of the old horizontal overflow).
+(function setupReplyTextarea() {
+    const el = document.getElementById("threadOverlayReplyInput");
+    el.addEventListener("input", () => {
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+    });
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            submitAdminThreadReply();
+        }
+        // Shift+Enter / Ctrl+Enter fall through to the textarea's default
+        // behavior, which inserts a newline.
+    });
+})();
 
 renderMessages();
 loadAdminThreads();
