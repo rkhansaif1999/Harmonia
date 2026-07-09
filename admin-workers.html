@@ -526,11 +526,11 @@ async function moveToReviewer(id){
     if (ok) loadAndRenderAll();
 }
 
-    async function toggleEmailPermission(id, allow){
+   async function toggleEmailPermission(id, allow){
     const msg = allow
         ? "Give this worker permission to message companies from their dashboard?"
         : "Revoke this worker's messaging permission?";
-    if (!confirm(msg)) return;
+    if (!(await showConfirm(msg))) return;
     const ok = await updateEmailPermission(id, allow);
     if (ok) loadAndRenderAll();
 }
