@@ -562,7 +562,28 @@ async function demoteToWorker(id){
     const ok = await updateRole(id, "worker");
     if (ok) loadAndRenderAll();
 }
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("confirmOverlay");
+        document.getElementById("confirmMessage").textContent = message;
+        overlay.style.display = "flex";
 
+        const okBtn = document.getElementById("confirmOkBtn");
+        const cancelBtn = document.getElementById("confirmCancelBtn");
+
+        function cleanup(result) {
+            overlay.style.display = "none";
+            okBtn.removeEventListener("click", onOk);
+            cancelBtn.removeEventListener("click", onCancel);
+            resolve(result);
+        }
+        function onOk() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+
+        okBtn.addEventListener("click", onOk);
+        cancelBtn.addEventListener("click", onCancel);
+    });
+}
 loadAndRenderAll();
 
 </script>
