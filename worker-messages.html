@@ -41,6 +41,110 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
+<style>
+    .wm-card { padding: 0; overflow: visible; }
+    .wm-card:hover { transform: none; box-shadow: none; }
+    .wm-card::before { display: none; }
+
+    .wm-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.02);
+        border-radius: 24px 24px 0 0;
+    }
+    .wm-toolbar input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        cursor: pointer;
+        margin-right: 8px;
+        accent-color: #587dff;
+    }
+    .wm-toolbar button {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,.12);
+        color: #e8ecf5;
+        padding: 7px 11px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1;
+    }
+    .wm-toolbar button:hover { background: rgba(255,255,255,.07); }
+    .wm-toolbar button.wm-danger:hover { background: rgba(192,57,43,.25); border-color: #c0392b; }
+    .wm-selcount { color: #9dadc1; font-size: 13px; margin-left: 4px; }
+    .wm-spacer { flex: 1; }
+    .wm-compose-btn {
+        background: #3a6df0 !important;
+        border: none !important;
+        color: #fff;
+        font-weight: 600;
+        padding: 9px 16px !important;
+    }
+    .wm-compose-btn:hover { background: #5081ff !important; }
+
+    #threadList { max-height: 65vh; overflow-y: auto; }
+
+    .wm-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        cursor: pointer;
+        transition: background .15s ease;
+    }
+    .wm-row:hover { background: rgba(255,255,255,0.045); }
+    .wm-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+        accent-color: #587dff;
+    }
+    .wm-star {
+        flex-shrink: 0;
+        cursor: pointer;
+        font-size: 16px;
+        color: rgba(255,255,255,.25);
+        user-select: none;
+    }
+    .wm-star.active { color: #f5c518; }
+    .wm-row-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .wm-row-top { display: flex; justify-content: space-between; gap: 10px; }
+    .wm-row-subject {
+        color: #d7ddec;
+        font-size: .92rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .wm-row-company {
+        color: #9dadc1;
+        font-size: .8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .wm-row-time { color: #9dadc1; font-size: .78rem; flex-shrink: 0; white-space: nowrap; }
+    .wm-row.unread .wm-row-subject,
+    .wm-row.unread .wm-row-company { font-weight: 700; color: #fff; }
+    .wm-row.unread::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #587dff;
+        flex-shrink: 0;
+    }
+    .wm-row:not(.unread)::before {
+        content: "";
+        width: 7px;
+        flex-shrink: 0;
+    }
+</style>
 </head>
 
 <body>
@@ -83,54 +187,98 @@
         </section>
 
         <section class="recent" id="messagesUI" style="display:none;">
-            <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
-
-                <div class="card" style="flex:1;min-width:280px;max-width:340px;">
-                    <h3 style="margin-top:0;">Conversations</h3>
-                    <button class="primary" style="width:100%;margin-bottom:14px;" onclick="showNewThreadForm()">+ New Message</button>
-                    <div id="threadList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;">
-                        <p class="empty-state">Loading...</p>
-                    </div>
+            <div class="card wm-card">
+                <div class="wm-toolbar">
+                    <input type="checkbox" id="wmSelectAll" onchange="toggleSelectAllThreads(this.checked)" title="Select all">
+                    <button onclick="handleBulkDelete()" class="wm-danger" title="Delete">🗑</button>
+                    <button onclick="handleBulkMarkUnread()" title="Mark as unread">📩</button>
+                    <button onclick="handleBulkMarkImportant()" title="Mark as important">⭐</button>
+                    <span class="wm-selcount" id="wmSelCount"></span>
+                    <div class="wm-spacer"></div>
+                    <button class="wm-compose-btn" onclick="showNewThreadForm()">+ New Message</button>
                 </div>
-
-                <div class="card" style="flex:2;min-width:320px;">
-
-                    <div id="newThreadForm" style="display:none;">
-                        <h3 style="margin-top:0;">📧 New Message</h3>
-                        <label>To (company email)</label>
-                        <input type="email" id="newThreadTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
-                        <label>Subject</label>
-                        <input type="text" id="newThreadSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
-                        <label>Message</label>
-                        <textarea id="newThreadMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
-                        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
-                            <button class="primary" onclick="handleStartThread()">Send</button>
-                            <span class="reply-status" id="newThreadStatus"></span>
-                        </div>
-                    </div>
-
-                    <div id="threadDetail" style="display:none;">
-                        <h3 id="threadDetailSubject" style="margin-top:0;"></h3>
-                        <p id="threadDetailMeta" style="color:#9dadc1;font-size:.85rem;margin-top:-8px;"></p>
-                        <div id="threadDetailMessages" style="display:flex;flex-direction:column;gap:10px;max-height:45vh;overflow-y:auto;margin:16px 0;"></div>
-                        <div style="display:flex;gap:10px;">
-                            <input type="text" id="threadReplyInput" placeholder="Type a reply..." style="flex:1;box-sizing:border-box;">
-                            <button class="primary" onclick="handleReplyThread()">Send</button>
-                        </div>
-                    </div>
-
-                    <p id="noThreadSelected" class="empty-state">Select a conversation, or start a new one.</p>
-
+                <div id="threadList">
+                    <p class="empty-state" style="padding:24px;">Loading...</p>
                 </div>
             </div>
         </section>
+
+        <!-- Compose popup -->
+        <div id="newThreadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:520px;width:92%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+                    <h3 style="margin:0;color:#fff;">📧 New Message</h3>
+                    <button onclick="closeNewThreadForm()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                </div>
+                <label>To (company email)</label>
+                <input type="email" id="newThreadTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+                <label>Subject</label>
+                <input type="text" id="newThreadSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+                <label>Message</label>
+                <textarea id="newThreadMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                    <button class="primary" onclick="handleStartThread()">Send</button>
+                    <span class="reply-status" id="newThreadStatus"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversation popup -->
+        <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="threadOverlaySubject" style="margin:0;color:#fff;"></h3>
+                        <p id="threadOverlayMeta" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button onclick="handleDeleteFromOverlay()" title="Delete conversation" style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#e8ecf5;border-radius:8px;padding:6px 10px;cursor:pointer;">🗑</button>
+                        <button onclick="closeThreadOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                    </div>
+                </div>
+                <div id="threadOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="threadOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter or Ctrl+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:200px;overflow-y:auto;font-family:inherit;"></textarea>
+                    <button class="primary" onclick="handleReplyThread()">Send</button>
+                </div>
+            </div>
+        </div>
 
     </main>
 </div>
 
 <script>
 
+let allThreads = [];
 let activeThreadId = null;
+let selectedThreadIds = new Set();
+
+// ------------------------------------------------------------
+// Per-thread "unread" / "important" flags. The backend doesn't track
+// these (no schema for it), so they're kept client-side, scoped to
+// this worker's account, and persist across visits on this device.
+// ------------------------------------------------------------
+
+function threadFlagsKey() {
+    const user = getUser();
+    return "wmThreadFlags_" + (user ? user.id : "anon");
+}
+function loadThreadFlags() {
+    try { return JSON.parse(localStorage.getItem(threadFlagsKey()) || "{}"); }
+    catch { return {}; }
+}
+function saveThreadFlags(flags) {
+    localStorage.setItem(threadFlagsKey(), JSON.stringify(flags));
+}
+function getThreadFlag(threadId) {
+    const flags = loadThreadFlags();
+    return flags[threadId] || { unread: true, important: false };
+}
+function setThreadFlag(threadId, patch) {
+    const flags = loadThreadFlags();
+    flags[threadId] = Object.assign(getThreadFlag(threadId), patch);
+    saveThreadFlags(flags);
+}
 
 async function initMessagesPage() {
     const user = getUser();
@@ -142,66 +290,115 @@ async function initMessagesPage() {
     }
 }
 
-function showNewThreadForm() {
-    activeThreadId = null;
-    document.getElementById("threadDetail").style.display = "none";
-    document.getElementById("noThreadSelected").style.display = "none";
-    document.getElementById("newThreadForm").style.display = "block";
-    document.getElementById("newThreadStatus").textContent = "";
-}
-
 async function loadThreadList() {
     const list = document.getElementById("threadList");
     try {
         const data = await fetchWorkerThreads();
-        if (!data.threads || data.threads.length === 0) {
-            list.innerHTML = `<p class="empty-state">No conversations yet.</p>`;
-            return;
-        }
-        list.innerHTML = "";
-        data.threads.forEach(t => {
-            const el = document.createElement("div");
-            el.style = "padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);cursor:pointer;";
-            el.innerHTML = `
-                <div style="color:#fff;font-weight:600;font-size:.9rem;">${escapeHTML(t.subject)}</div>
-                <div style="color:#9dadc1;font-size:.8rem;">${escapeHTML(t.company_email)}</div>
-            `;
-            el.onclick = () => openThread(t.id);
-            list.appendChild(el);
-        });
+        allThreads = data.threads || [];
+        selectedThreadIds.clear();
+        renderThreadList();
+        updateBulkUI();
     } catch (err) {
         console.error(err);
-        list.innerHTML = `<p class="empty-state">Failed to load.</p>`;
+        list.innerHTML = `<p class="empty-state" style="padding:24px;">Failed to load.</p>`;
     }
 }
 
-async function openThread(threadId) {
-    activeThreadId = threadId;
-    document.getElementById("newThreadForm").style.display = "none";
-    document.getElementById("noThreadSelected").style.display = "none";
-    document.getElementById("threadDetail").style.display = "block";
-
-    const data = await fetchWorkerThreadDetail(threadId);
-    if (!data.thread) { alert(data.error || "Failed to load conversation."); return; }
-
-    document.getElementById("threadDetailSubject").textContent = data.thread.subject;
-    document.getElementById("threadDetailMeta").textContent = `To: ${data.thread.company_email}`;
-
-    const box = document.getElementById("threadDetailMessages");
-    box.innerHTML = "";
-    data.messages.forEach(m => {
-        const label = m.sender === "worker" ? "You" : m.sender === "admin" ? "Admin" : data.thread.company_email;
-        const align = m.sender === "company" ? "flex-start" : "flex-end";
-        const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
-        box.innerHTML += `
-            <div style="align-self:${align};max-width:80%;background:${bg};padding:10px 14px;border-radius:12px;">
-                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
-                <div style="color:#fff;">${escapeHTML(m.message)}</div>
+function renderThreadList() {
+    const list = document.getElementById("threadList");
+    if (allThreads.length === 0) {
+        list.innerHTML = `<p class="empty-state" style="padding:24px;">No conversations yet.</p>`;
+        return;
+    }
+    const sorted = allThreads.slice().sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+    list.innerHTML = "";
+    sorted.forEach(t => {
+        const flag = getThreadFlag(t.id);
+        const row = document.createElement("div");
+        row.className = "wm-row" + (flag.unread ? " unread" : "");
+        row.innerHTML = `
+            <input type="checkbox" class="wm-row-check" ${selectedThreadIds.has(t.id) ? "checked" : ""}>
+            <span class="wm-star ${flag.important ? "active" : ""}">★</span>
+            <div class="wm-row-main">
+                <div class="wm-row-top">
+                    <span class="wm-row-subject">${escapeHTML(t.subject)}</span>
+                    <span class="wm-row-time">${new Date(t.last_message_at).toLocaleDateString()}</span>
+                </div>
+                <span class="wm-row-company">${escapeHTML(t.company_email)}</span>
             </div>
         `;
+        row.querySelector(".wm-row-check").addEventListener("click", (e) => e.stopPropagation());
+        row.querySelector(".wm-row-check").addEventListener("change", (e) => onThreadCheckChange(t.id, e.target.checked));
+        row.querySelector(".wm-star").addEventListener("click", (e) => { e.stopPropagation(); toggleImportant(t.id); });
+        row.querySelector(".wm-row-main").addEventListener("click", () => openThreadOverlay(t.id));
+        list.appendChild(row);
     });
-    box.scrollTop = box.scrollHeight;
-    document.getElementById("threadReplyInput").value = "";
+}
+
+function onThreadCheckChange(id, checked) {
+    if (checked) selectedThreadIds.add(id); else selectedThreadIds.delete(id);
+    updateBulkUI();
+}
+
+function toggleSelectAllThreads(checked) {
+    selectedThreadIds.clear();
+    if (checked) allThreads.forEach(t => selectedThreadIds.add(t.id));
+    renderThreadList();
+    updateBulkUI();
+}
+
+function updateBulkUI() {
+    const count = selectedThreadIds.size;
+    document.getElementById("wmSelCount").textContent = count > 0 ? `${count} selected` : "";
+    const selectAll = document.getElementById("wmSelectAll");
+    selectAll.checked = allThreads.length > 0 && count === allThreads.length;
+    selectAll.indeterminate = count > 0 && count < allThreads.length;
+}
+
+function toggleImportant(id) {
+    const flag = getThreadFlag(id);
+    setThreadFlag(id, { important: !flag.important });
+    renderThreadList();
+}
+
+async function handleBulkDelete() {
+    if (selectedThreadIds.size === 0) { alert("Select at least one conversation first."); return; }
+    if (!confirm(`Permanently delete ${selectedThreadIds.size} conversation(s)? This cannot be undone.`)) return;
+
+    const ids = Array.from(selectedThreadIds);
+    for (const id of ids) {
+        await deleteWorkerThread(id);
+    }
+    if (activeThreadId && ids.includes(activeThreadId)) closeThreadOverlay();
+    await loadThreadList();
+}
+
+function handleBulkMarkUnread() {
+    if (selectedThreadIds.size === 0) { alert("Select at least one conversation first."); return; }
+    selectedThreadIds.forEach(id => setThreadFlag(id, { unread: true }));
+    renderThreadList();
+}
+
+function handleBulkMarkImportant() {
+    if (selectedThreadIds.size === 0) { alert("Select at least one conversation first."); return; }
+    selectedThreadIds.forEach(id => setThreadFlag(id, { important: true }));
+    renderThreadList();
+}
+
+// ------------------------------------------------------------
+// Compose popup
+// ------------------------------------------------------------
+
+function showNewThreadForm() {
+    document.getElementById("newThreadTo").value = "";
+    document.getElementById("newThreadSubject").value = "";
+    document.getElementById("newThreadMessage").value = "";
+    document.getElementById("newThreadStatus").textContent = "";
+    document.getElementById("newThreadOverlay").style.display = "flex";
+}
+
+function closeNewThreadForm() {
+    document.getElementById("newThreadOverlay").style.display = "none";
 }
 
 async function handleStartThread() {
@@ -227,26 +424,94 @@ async function handleStartThread() {
         return;
     }
 
-    document.getElementById("newThreadTo").value = "";
-    document.getElementById("newThreadSubject").value = "";
-    document.getElementById("newThreadMessage").value = "";
-    document.getElementById("newThreadForm").style.display = "none";
-
+    closeNewThreadForm();
     await loadThreadList();
-    openThread(result.threadId);
+    openThreadOverlay(result.threadId);
+}
+
+// ------------------------------------------------------------
+// Conversation popup (Facebook-chat style bubbles)
+// ------------------------------------------------------------
+
+async function openThreadOverlay(threadId) {
+    activeThreadId = threadId;
+    setThreadFlag(threadId, { unread: false });
+
+    const data = await fetchWorkerThreadDetail(threadId);
+    if (!data.thread) { alert(data.error || "Failed to load conversation."); return; }
+
+    document.getElementById("threadOverlaySubject").textContent = data.thread.subject;
+    document.getElementById("threadOverlayMeta").textContent = `To: ${data.thread.company_email}`;
+
+    const box = document.getElementById("threadOverlayMessages");
+    box.innerHTML = "";
+    data.messages.forEach(m => {
+        const label = m.sender === "worker" ? "You" : m.sender === "admin" ? "Admin" : data.thread.company_email;
+        const align = m.sender === "company" ? "flex-start" : "flex-end";
+        const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;min-width:0;background:${bg};padding:10px 14px;border-radius:12px;box-sizing:border-box;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
+                <div style="color:#fff;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+
+    const replyInput = document.getElementById("threadOverlayReplyInput");
+    replyInput.value = "";
+    replyInput.style.height = "auto";
+
+    document.getElementById("threadOverlay").style.display = "flex";
+    renderThreadList();
+}
+
+function closeThreadOverlay() {
+    document.getElementById("threadOverlay").style.display = "none";
+    activeThreadId = null;
+}
+
+async function handleDeleteFromOverlay() {
+    if (!activeThreadId) return;
+    if (!confirm("Permanently delete this conversation? This cannot be undone.")) return;
+
+    const result = await deleteWorkerThread(activeThreadId);
+    if (result.error) { alert(result.error); return; }
+
+    closeThreadOverlay();
+    await loadThreadList();
 }
 
 async function handleReplyThread() {
-    const input = document.getElementById("threadReplyInput");
+    const input = document.getElementById("threadOverlayReplyInput");
     const message = input.value.trim();
     if (!message || !activeThreadId) return;
 
     const result = await replyWorkerThread(activeThreadId, message);
     if (result.error) { alert(result.error); return; }
 
-    openThread(activeThreadId);
+    openThreadOverlay(activeThreadId);
     loadThreadList();
 }
+
+// Enter sends the reply; Shift+Enter or Ctrl+Enter inserts a new line
+// (same Facebook-chat behavior as admin-messages.html). The textarea
+// also grows with content up to its max-height.
+(function setupReplyTextarea() {
+    const el = document.getElementById("threadOverlayReplyInput");
+    el.addEventListener("input", () => {
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+    });
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            handleReplyThread();
+        }
+        // Shift+Enter / Ctrl+Enter fall through to the textarea's default
+        // behavior, which inserts a newline.
+    });
+})();
 
 initMessagesPage();
 </script>
