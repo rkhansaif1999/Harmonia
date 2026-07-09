@@ -566,6 +566,15 @@ async function demoteToWorker(id){
 loadAndRenderAll();
 
 </script>
-
+<div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+        <h3 style="margin:0 0 12px 0;color:#fff;font-size:1.2rem;">Confirm</h3>
+        <p id="confirmMessage" style="color:#9dadc1;line-height:1.6;margin-bottom:26px;"></p>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button id="confirmCancelBtn" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;cursor:pointer;">Cancel</button>
+            <button id="confirmOkBtn" style="padding:10px 20px;border-radius:10px;border:none;background:#587dff;color:#fff;cursor:pointer;font-weight:600;">OK</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
