@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<!-- Ezoic Privacy Scripts (must load first) -->
+<script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
+<script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+<!-- Ezoic Header Script -->
+<script async src="https://www.ezojs.com/ezoic/sa.min.js"></script>
+<script>
+    window.ezstandalone = window.ezstandalone || {};
+    ezstandalone.cmd = ezstandalone.cmd || [];
+</script>
+<script src="https://ezoicanalytics.com/analytics.js"></script>
+
+  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TRQRKZFPY6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Harmonia</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Messages - Harmonia">
+  <meta property="og:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta property="og:url" content="https://harmoniaportal.online/worker-messages.html">
+  <meta property="og:site_name" content="Harmonia">
+  <meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Messages - Harmonia">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Messages - Harmonia">
+  <meta name="twitter:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js?v=2"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <h2 class="logo">Harmonia</h2>
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li class="active">✉️ Messages</li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <header class="topbar">
+            <h1>Messages</h1>
+            <div class="profile">Worker</div>
+        </header>
+
+        <section class="recent" id="noPermissionSection" style="display:none;">
+            <div class="card">
+                <h3 style="margin-top:0;">Email access not enabled</h3>
+                <p>You don't currently have permission to message companies from Harmonia. Contact admin support if you believe you need this.</p>
+            </div>
+        </section>
+
+        <section class="recent" id="messagesUI" style="display:none;">
+            <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+
+                <div class="card" style="flex:1;min-width:280px;max-width:340px;">
+                    <h3 style="margin-top:0;">Conversations</h3>
+                    <button class="primary" style="width:100%;margin-bottom:14px;" onclick="showNewThreadForm()">+ New Message</button>
+                    <div id="threadList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;">
+                        <p class="empty-state">Loading...</p>
+                    </div>
+                </div>
+
+                <div class="card" style="flex:2;min-width:320px;">
+
+                    <div id="newThreadForm" style="display:none;">
+                        <h3 style="margin-top:0;">📧 New Message</h3>
+                        <label>To (company email)</label>
+                        <input type="email" id="newThreadTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+                        <label>Subject</label>
+                        <input type="text" id="newThreadSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+                        <label>Message</label>
+                        <textarea id="newThreadMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
+                        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                            <button class="primary" onclick="handleStartThread()">Send</button>
+                            <span class="reply-status" id="newThreadStatus"></span>
+                        </div>
+                    </div>
+
+                    <div id="threadDetail" style="display:none;">
+                        <h3 id="threadDetailSubject" style="margin-top:0;"></h3>
+                        <p id="threadDetailMeta" style="color:#9dadc1;font-size:.85rem;margin-top:-8px;"></p>
+                        <div id="threadDetailMessages" style="display:flex;flex-direction:column;gap:10px;max-height:45vh;overflow-y:auto;margin:16px 0;"></div>
+                        <div style="display:flex;gap:10px;">
+                            <input type="text" id="threadReplyInput" placeholder="Type a reply..." style="flex:1;box-sizing:border-box;">
+                            <button class="primary" onclick="handleReplyThread()">Send</button>
+                        </div>
+                    </div>
+
+                    <p id="noThreadSelected" class="empty-state">Select a conversation, or start a new one.</p>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+
+let activeThreadId = null;
+
+async function initMessagesPage() {
+    const user = getUser();
+    if (user && user.canSendEmail) {
+        document.getElementById("messagesUI").style.display = "block";
+        loadThreadList();
+    } else {
+        document.getElementById("noPermissionSection").style.display = "block";
+    }
+}
+
+function showNewThreadForm() {
+    activeThreadId = null;
+    document.getElementById("threadDetail").style.display = "none";
+    document.getElementById("noThreadSelected").style.display = "none";
+    document.getElementById("newThreadForm").style.display = "block";
+    document.getElementById("newThreadStatus").textContent = "";
+}
+
+async function loadThreadList() {
+    const list = document.getElementById("threadList");
+    try {
+        const data = await fetchWorkerThreads();
+        if (!data.threads || data.threads.length === 0) {
+            list.innerHTML = `<p class="empty-state">No conversations yet.</p>`;
+            return;
+        }
+        list.innerHTML = "";
+        data.threads.forEach(t => {
+            const el = document.createElement("div");
+            el.style = "padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.05);cursor:pointer;";
+            el.innerHTML = `
+                <div style="color:#fff;font-weight:600;font-size:.9rem;">${escapeHTML(t.subject)}</div>
+                <div style="color:#9dadc1;font-size:.8rem;">${escapeHTML(t.company_email)}</div>
+            `;
+            el.onclick = () => openThread(t.id);
+            list.appendChild(el);
+        });
+    } catch (err) {
+        console.error(err);
+        list.innerHTML = `<p class="empty-state">Failed to load.</p>`;
+    }
+}
+
+async function openThread(threadId) {
+    activeThreadId = threadId;
+    document.getElementById("newThreadForm").style.display = "none";
+    document.getElementById("noThreadSelected").style.display = "none";
+    document.getElementById("threadDetail").style.display = "block";
+
+    const data = await fetchWorkerThreadDetail(threadId);
+    if (!data.thread) { alert(data.error || "Failed to load conversation."); return; }
+
+    document.getElementById("threadDetailSubject").textContent = data.thread.subject;
+    document.getElementById("threadDetailMeta").textContent = `To: ${data.thread.company_email}`;
+
+    const box = document.getElementById("threadDetailMessages");
+    box.innerHTML = "";
+    data.messages.forEach(m => {
+        const label = m.sender === "worker" ? "You" : m.sender === "admin" ? "Admin" : data.thread.company_email;
+        const align = m.sender === "company" ? "flex-start" : "flex-end";
+        const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;background:${bg};padding:10px 14px;border-radius:12px;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
+                <div style="color:#fff;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+    document.getElementById("threadReplyInput").value = "";
+}
+
+async function handleStartThread() {
+    const to = document.getElementById("newThreadTo").value.trim();
+    const subject = document.getElementById("newThreadSubject").value.trim();
+    const message = document.getElementById("newThreadMessage").value.trim();
+    const statusEl = document.getElementById("newThreadStatus");
+
+    if (!to || !subject || !message) {
+        statusEl.textContent = "Please fill in all fields.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await startWorkerThread(to, subject, message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    document.getElementById("newThreadTo").value = "";
+    document.getElementById("newThreadSubject").value = "";
+    document.getElementById("newThreadMessage").value = "";
+    document.getElementById("newThreadForm").style.display = "none";
+
+    await loadThreadList();
+    openThread(result.threadId);
+}
+
+async function handleReplyThread() {
+    const input = document.getElementById("threadReplyInput");
+    const message = input.value.trim();
+    if (!message || !activeThreadId) return;
+
+    const result = await replyWorkerThread(activeThreadId, message);
+    if (result.error) { alert(result.error); return; }
+
+    openThread(activeThreadId);
+    loadThreadList();
+}
+
+initMessagesPage();
+</script>
+
+</body>
+</html>
