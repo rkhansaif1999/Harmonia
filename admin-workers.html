@@ -484,9 +484,10 @@ function renderWorkers(){
                                 <div>${payoutAction}</div>
                             </div>
                         </div>
-                        <div class="details-actions">
+                      <div class="details-actions">
                             ${statusActions}
                             <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
+                            <button onclick="toggleEmailPermission(${worker.id}, ${worker.can_send_email ? 'false' : 'true'})">${worker.can_send_email ? '🚫 Revoke Email Access' : '📧 Grant Email Access'}</button>
                         </div>
                     </td>
                 </tr>
