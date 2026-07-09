@@ -237,8 +237,8 @@
                 <thead>
                     <tr>
                         <th>Worker</th>
-                        <th>Company Email</th>
-                        <th>Subject</th>
+                        <th>Email</th>
+                        <th>Conversations</th>
                         <th>Last Activity</th>
                         <th>Action</th>
                     </tr>
@@ -248,6 +248,31 @@
                 </tbody>
             </table>
         </section>
+
+        <div id="workerConvOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9998;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:640px;width:92%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="workerConvOverlayName" style="margin:0;color:#fff;"></h3>
+                        <p id="workerConvOverlayEmail" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <button onclick="closeWorkerConvOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                </div>
+                <div style="overflow-y:auto;flex:1;margin-top:14px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company Email</th>
+                                <th>Subject</th>
+                                <th>Last Activity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workerConvTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
             <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:560px;width:92%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
@@ -481,24 +506,50 @@ function showConfirm(message) {
 // ------------------------------------------------------------
 
 let currentThreadId = null;
+let allAdminThreads = [];
+let currentWorkerId = null;
 
 async function loadAdminThreads() {
     const table = document.getElementById("adminThreadsTable");
     try {
         const data = await fetchAdminThreads();
-        if (!data.threads || data.threads.length === 0) {
+        allAdminThreads = data.threads || [];
+        if (allAdminThreads.length === 0) {
             table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
             return;
         }
+
+        // Group individual threads into one row per worker.
+        const byWorker = new Map();
+        allAdminThreads.forEach(t => {
+            if (!byWorker.has(t.worker_id)) {
+                byWorker.set(t.worker_id, {
+                    worker_id: t.worker_id,
+                    worker_name: t.worker_name,
+                    worker_email: t.worker_email,
+                    threads: [],
+                    lastActivity: t.last_message_at,
+                });
+            }
+            const group = byWorker.get(t.worker_id);
+            group.threads.push(t);
+            if (new Date(t.last_message_at) > new Date(group.lastActivity)) {
+                group.lastActivity = t.last_message_at;
+            }
+        });
+
+        const workers = Array.from(byWorker.values())
+            .sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity));
+
         table.innerHTML = "";
-        data.threads.forEach(t => {
+        workers.forEach(w => {
             table.innerHTML += `
-                <tr>
-                    <td>${escapeHTML(t.worker_name)}</td>
-                    <td>${escapeHTML(t.company_email)}</td>
-                    <td>${escapeHTML(t.subject)}</td>
-                    <td>${new Date(t.last_message_at).toLocaleString()}</td>
-                    <td><button onclick="openThreadOverlay(${t.id})">View</button></td>
+                <tr class="msg-row" onclick="openWorkerConversations(${w.worker_id})">
+                    <td>${escapeHTML(w.worker_name)}</td>
+                    <td>${escapeHTML(w.worker_email)}</td>
+                    <td>${w.threads.length}</td>
+                    <td>${new Date(w.lastActivity).toLocaleString()}</td>
+                    <td><button onclick="event.stopPropagation(); openWorkerConversations(${w.worker_id})">View</button></td>
                 </tr>
             `;
         });
@@ -506,6 +557,38 @@ async function loadAdminThreads() {
         console.error(err);
         table.innerHTML = `<tr><td colspan="5" class="empty-state">Failed to load.</td></tr>`;
     }
+}
+
+function openWorkerConversations(workerId) {
+    currentWorkerId = workerId;
+    const threads = allAdminThreads
+        .filter(t => t.worker_id === workerId)
+        .sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+
+    if (threads.length === 0) return;
+
+    document.getElementById("workerConvOverlayName").textContent = threads[0].worker_name;
+    document.getElementById("workerConvOverlayEmail").textContent = threads[0].worker_email;
+
+    const body = document.getElementById("workerConvTable");
+    body.innerHTML = "";
+    threads.forEach(t => {
+        body.innerHTML += `
+            <tr>
+                <td>${escapeHTML(t.company_email)}</td>
+                <td>${escapeHTML(t.subject)}</td>
+                <td>${new Date(t.last_message_at).toLocaleString()}</td>
+                <td><button onclick="openThreadOverlay(${t.id})">View</button></td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("workerConvOverlay").style.display = "flex";
+}
+
+function closeWorkerConvOverlay() {
+    document.getElementById("workerConvOverlay").style.display = "none";
+    currentWorkerId = null;
 }
 
 async function openThreadOverlay(threadId) {
@@ -552,7 +635,10 @@ async function submitAdminThreadReply() {
     if (result.error) { alert(result.error); return; }
 
     openThreadOverlay(currentThreadId);
-    loadAdminThreads();
+    await loadAdminThreads();
+    if (currentWorkerId !== null) {
+        openWorkerConversations(currentWorkerId);
+    }
 }
 
 renderMessages();
