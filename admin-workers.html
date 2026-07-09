@@ -179,7 +179,8 @@
 
         <section class="recent">
 
-            <h2>Registered Workers</h2>
+           <h2>Registered Workers</h2>
+            <input type="text" id="workerSearchInput" placeholder="🔍 Search by name or email..." style="width:100%;max-width:400px;box-sizing:border-box;margin-bottom:14px;" oninput="handleWorkerSearch(this.value)">
             <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
     <button class="filter-btn active" data-filter="all" onclick="setPayoutFilter('all')">All</button>
     <button class="filter-btn" data-filter="unpaid" onclick="setPayoutFilter('unpaid')">Unpaid</button>
