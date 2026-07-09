@@ -433,13 +433,26 @@ function renderWorkers(){
         if (worker.status === "rejected") rejected++;
     });
 
-    const visibleWorkers = workers.filter(worker => {
+   let visibleWorkers = workers.filter(worker => {
         const payout = payoutsByUserId[worker.id];
         if (currentPayoutFilter === "unpaid") return payout && payout.pendingAmount > 0;
         if (currentPayoutFilter === "paidThisWeek") return payout && payout.paidThisWeek > 0;
         if (currentPayoutFilter === "noMethod") return !payout || !payout.methodVerified;
         return true;
     });
+
+    if (workerSearchTerm) {
+        visibleWorkers = visibleWorkers.filter(worker =>
+            worker.full_name.toLowerCase().includes(workerSearchTerm) ||
+            worker.email.toLowerCase().includes(workerSearchTerm)
+        );
+    }
+
+    const totalMatching = visibleWorkers.length;
+    visibleWorkers = visibleWorkers.slice(0, workerVisibleCount);
+
+    const showMoreBtn = document.getElementById("workerShowMoreBtn");
+    showMoreBtn.style.display = totalMatching > workerVisibleCount ? "inline-block" : "none";
 
     table.innerHTML = "";
 
@@ -448,7 +461,6 @@ function renderWorkers(){
     }
 
     visibleWorkers.forEach(worker => {
-
         const payout = payoutsByUserId[worker.id];
         const isOpen = expandedRows.has(worker.id);
 
