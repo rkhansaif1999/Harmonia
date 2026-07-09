@@ -254,6 +254,19 @@ let allUsers = [];
 let allPayouts = [];
 let currentPayoutFilter = "all";
 let expandedRows = new Set();
+    let workerVisibleCount = 10;
+let workerSearchTerm = "";
+
+function handleWorkerSearch(value) {
+    workerSearchTerm = value.trim().toLowerCase();
+    workerVisibleCount = 10;
+    renderWorkers();
+}
+
+function showMoreWorkers() {
+    workerVisibleCount += 10;
+    renderWorkers();
+}
 
 function capitalize(s) {
     if (!s) return "";
