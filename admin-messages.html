@@ -281,7 +281,10 @@
                         <h3 id="threadOverlaySubject" style="margin:0;color:#fff;"></h3>
                         <p id="threadOverlayMeta" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
                     </div>
-                    <button onclick="closeThreadOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button onclick="handleDeleteAdminThread(currentThreadId)" title="Delete conversation" style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#e8ecf5;border-radius:8px;padding:6px 10px;cursor:pointer;">🗑</button>
+                        <button onclick="closeThreadOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                    </div>
                 </div>
                 <div id="threadOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
                 <div style="display:flex;gap:10px;align-items:flex-end;">
@@ -578,7 +581,10 @@ function openWorkerConversations(workerId) {
                 <td>${escapeHTML(t.company_email)}</td>
                 <td>${escapeHTML(t.subject)}</td>
                 <td>${new Date(t.last_message_at).toLocaleString()}</td>
-                <td><button onclick="openThreadOverlay(${t.id})">View</button></td>
+                <td style="white-space:nowrap;">
+                    <button onclick="openThreadOverlay(${t.id})">View</button>
+                    <button onclick="handleDeleteAdminThread(${t.id})" style="margin-left:6px;background:#c0392b;">🗑 Delete</button>
+                </td>
             </tr>
         `;
     });
@@ -589,6 +595,28 @@ function openWorkerConversations(workerId) {
 function closeWorkerConvOverlay() {
     document.getElementById("workerConvOverlay").style.display = "none";
     currentWorkerId = null;
+}
+
+async function handleDeleteAdminThread(threadId) {
+    if (!threadId) return;
+    if (!(await showConfirm("Permanently delete this conversation? This cannot be undone."))) return;
+
+    const result = await deleteAdminThread(threadId);
+    if (result.error) { alert(result.error); return; }
+
+    const workerId = currentWorkerId;
+    if (currentThreadId === threadId) closeThreadOverlay();
+
+    await loadAdminThreads();
+
+    if (workerId !== null) {
+        const stillHasThreads = allAdminThreads.some(t => t.worker_id === workerId);
+        if (stillHasThreads) {
+            openWorkerConversations(workerId);
+        } else {
+            closeWorkerConvOverlay();
+        }
+    }
 }
 
 async function openThreadOverlay(threadId) {
