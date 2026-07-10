@@ -81,7 +81,23 @@
             color: #9dadc1;
             font-size: .9rem;
         }
+        .gate-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.05rem;
+        }
+        .gate-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+        .gate-note {
+            text-align: center;
+            color: #9dadc1;
+            font-size: .85rem;
+            margin-top: 14px;
+        }
     </style>
+
 </head>
 
 <body>
@@ -130,7 +146,35 @@
 
         <p><a href="worker-tasks.html">&larr; Back to My Tasks</a></p>
 
-        <div id="loadingState" class="card" style="max-width:700px;margin:0 auto;">
+        <div style="display:flex;gap:24px;align-items:flex-start;justify-content:center;flex-wrap:wrap;">
+
+            <!-- Left rail: extra Native Banner impressions for the long session -->
+            <div style="width:260px;max-width:100%;display:flex;flex-direction:column;gap:20px;">
+                <div>
+                    <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+                    <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+                </div>
+                <div>
+                    <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+                    <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+                </div>
+            </div>
+
+            <div style="width:700px;max-width:100%;">
+
+        <div style="margin:0 auto 20px;">
+            <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+            <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+        </div>
+
+        <div id="gateState" class="card" style="max-width:700px;margin:0 auto;">
+            <h2 style="margin-top:0;">Before You Start</h2>
+            <p>Please visit the link below and stay on that page for at least 10 seconds (scroll around a bit), then come back here and click Continue to start your session.</p>
+            <button class="primary gate-btn" id="gateBtn" onclick="handleGateClick()">Visit Link</button>
+            <p class="gate-note" id="gateNote">Step 1 of 2: Click the button above to open the link.</p>
+        </div>
+
+        <div id="loadingState" class="card" style="max-width:700px;margin:0 auto;display:none;">
             Loading...
         </div>
 
@@ -163,6 +207,28 @@
             You're not approved for this project. <a href="worker-tasks.html">Go back to My Tasks</a>.
         </div>
 
+        <div style="margin:20px auto 0;">
+            <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+            <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+        </div>
+
+            </div>
+
+            <!-- Right rail: extra Native Banner impressions for the long session -->
+            <div style="width:260px;max-width:100%;display:flex;flex-direction:column;gap:20px;">
+                <div>
+                    <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+                    <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+                </div>
+                <div>
+                    <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+                    <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+                </div>
+            </div>
+
+        </div>
+
+
     
 <!-- Ezoic Ad: bottom_of_page -->
 <script>
@@ -185,6 +251,43 @@ let payoutAmount = 0;
 let sessionSubmissions = 0;
 let sessionCorrect = 0;
 let sessionEarned = 0;
+
+const GATE_LINK = "https://omg10.com/4/7554726";
+const GATE_WAIT_SECONDS = 10;
+let gateStep = 1; // 1 = need to click the link, 2 = waiting/ready to continue
+
+function handleGateClick() {
+    const gateBtn = document.getElementById("gateBtn");
+    const gateNote = document.getElementById("gateNote");
+
+    if (gateStep === 1) {
+        window.open(GATE_LINK, "_blank", "noopener");
+
+        gateStep = 2;
+        gateBtn.disabled = true;
+        gateBtn.textContent = `Please wait ${GATE_WAIT_SECONDS}s...`;
+        gateNote.textContent = "Step 2 of 2: Waiting for you to visit the link. Continue will unlock shortly.";
+
+        let remaining = GATE_WAIT_SECONDS;
+        const countdown = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+                clearInterval(countdown);
+                gateBtn.disabled = false;
+                gateBtn.textContent = "Continue to Task";
+                gateNote.textContent = "Thanks! Click Continue to start your session.";
+            } else {
+                gateBtn.textContent = `Please wait ${remaining}s...`;
+            }
+        }, 1000);
+        return;
+    }
+
+    // Step 2 -> gate passed, reveal the actual task flow.
+    document.getElementById("gateState").style.display = "none";
+    document.getElementById("loadingState").style.display = "block";
+    init();
+}
 
 async function logVisit() {
     try {
@@ -338,18 +441,16 @@ document.getElementById("codeInput").addEventListener("keydown", function(e) {
     }
 });
 
-init();
+// init() now runs only after the worker completes the gate step
+// above (handleGateClick), not automatically on page load.
 
 </script>
 
-<!-- Monetag: Push Notification (zone 11256554) - requires sw.js at site root -->
-<script src="https://5gvci.com/act/files/tag.min.js?z=11256554" data-cfasync="false" async></script>
+<!-- Adsterra: Social Bar -->
+<script src="https://pl30293958.effectivecpmnetwork.com/ec/e2/d8/ece2d809df111818f531eac6948dfcd0.js"></script>
 
-<!-- Monetag: Vignette Banner (zone 11239078) -->
-<script>(function(s){s.dataset.zone='11239078',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-
-<!-- Monetag: In-Page Push (zone 11239054) -->
-<script>(function(s){s.dataset.zone='11239054',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<!-- Adsterra: Popunder -->
+<script src="https://pl30293959.effectivecpmnetwork.com/ff/cb/4c/ffcb4ca0eec38e1aad0695b509b65061.js"></script>
 
 </body>
 </html>
