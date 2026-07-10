@@ -1554,6 +1554,26 @@ MOBILE SIDEBAR TOGGLE
 }
 
 /*==================================================
+AD SLOTS (topbar-promo-slot / side-promo-slot)
+The Adsterra units are fixed desktop sizes (468x60,
+160x300). The iframe Adsterra injects also comes with
+fixed width/height attributes, so without this rule it
+can force these containers wider than their wrapper on
+any screen where the wrapper itself is a bit tight,
+pushing the rest of the dashboard layout sideways.
+==================================================*/
+
+.topbar-promo-slot,
+.side-promo-slot{
+    max-width:100%;
+}
+
+.topbar-promo-slot iframe,
+.side-promo-slot iframe{
+    max-width:100%;
+}
+
+/*==================================================
 RESPONSIVE
 ==================================================*/
 
@@ -1607,6 +1627,15 @@ RESPONSIVE
 
     .sidebar-toggle{
         display:flex;
+    }
+
+    /* Desktop-sized ad units (468x60 / 160x300) don't fit phone
+       screens and were the cause of the broken mobile layout +
+       missing menu button. Hide them below the same breakpoint
+       where the sidebar switches to the slide-out mobile menu. */
+    .topbar-promo-slot,
+    .side-promo-slot{
+        display:none;
     }
 
     .dashboard{
