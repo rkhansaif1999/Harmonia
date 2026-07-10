@@ -699,10 +699,16 @@ function enhanceTopbar() {
     const right = document.createElement("div");
     right.className = "topbar-right";
 
-    const searchWrap = document.createElement("div");
-    searchWrap.className = "topbar-search";
-    searchWrap.innerHTML = `🔍 <input type="text" id="topbarSearch" placeholder="Search this page...">`;
-    right.appendChild(searchWrap);
+    // Pages that carry a header ad banner (see e.g. admin-dashboard.html)
+    // skip the page-search box so the ad has room and nothing overlaps it.
+    const hasAdBanner = !!topbar.querySelector(".adsterra-header-banners");
+
+    if (!hasAdBanner) {
+        const searchWrap = document.createElement("div");
+        searchWrap.className = "topbar-search";
+        searchWrap.innerHTML = `🔍 <input type="text" id="topbarSearch" placeholder="Search this page...">`;
+        right.appendChild(searchWrap);
+    }
 
     const notifWrap = document.createElement("div");
     notifWrap.className = "notif-wrap";
