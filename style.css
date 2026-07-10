@@ -399,6 +399,19 @@ DASHBOARD TOPBAR CHROME
     color:#7688a0;
 }
 
+.topbar-ad{
+    flex:1 1 480px;
+    max-width:700px;
+    min-height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    overflow:hidden;
+}
+
 .notif-wrap,
 .profile-wrap{
     position:relative;
@@ -1592,6 +1605,10 @@ RESPONSIVE
     }
 
     .topbar-search{
+        display:none;
+    }
+
+    .topbar-ad{
         display:none;
     }
 

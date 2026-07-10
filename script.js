@@ -695,14 +695,35 @@ function enhanceTopbar() {
         left.appendChild(h1);
     }
 
-    // ---- right cluster: search + notifications + profile ----
+    // ---- right cluster: search/ad + notifications + profile ----
     const right = document.createElement("div");
     right.className = "topbar-right";
 
-    const searchWrap = document.createElement("div");
-    searchWrap.className = "topbar-search";
-    searchWrap.innerHTML = `🔍 <input type="text" id="topbarSearch" placeholder="Search this page...">`;
-    right.appendChild(searchWrap);
+    // Admin portal gets a native banner ad slot here instead of the
+    // page search box. Every other role keeps the search bar.
+    const isAdmin = user && user.role === "admin";
+    let searchWrap = null;
+
+    if (isAdmin) {
+        const adWrap = document.createElement("div");
+        adWrap.className = "topbar-ad";
+        adWrap.id = "container-d9498e35eec000a2f38d2a65dfe20361";
+        right.appendChild(adWrap);
+
+        if (!document.querySelector('script[data-topbar-ad="true"]')) {
+            const adScript = document.createElement("script");
+            adScript.async = true;
+            adScript.dataset.cfasync = "false";
+            adScript.dataset.topbarAd = "true";
+            adScript.src = "https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js";
+            document.body.appendChild(adScript);
+        }
+    } else {
+        searchWrap = document.createElement("div");
+        searchWrap.className = "topbar-search";
+        searchWrap.innerHTML = `🔍 <input type="text" id="topbarSearch" placeholder="Search this page...">`;
+        right.appendChild(searchWrap);
+    }
 
     const notifWrap = document.createElement("div");
     notifWrap.className = "notif-wrap";
@@ -794,7 +815,7 @@ function enhanceTopbar() {
     document.addEventListener("click", () => closeAll());
 
     // ---- live search across this page's main table, if any ----
-    const searchInput = searchWrap.querySelector("input");
+    const searchInput = searchWrap ? searchWrap.querySelector("input") : null;
     const table = document.querySelector(".recent table, .main table");
 
     if (searchInput && table) {
