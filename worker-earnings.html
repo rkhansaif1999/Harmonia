@@ -64,7 +64,6 @@
         <ul>
             <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
             <li><a href="worker-tasks.html">✅ My Tasks</a></li>
-            <li><a href="worker-bonus-tasks.html">🎁 Bonus Tasks</a></li>
             <li><a href="worker-messages.html">✉️ Messages</a></li>
             <li><a href="worker-earnings.html">💰 Earnings</a></li>
             <li><a href="worker-payments.html">🏦 Payments</a></li>
@@ -179,6 +178,26 @@
 
         </section>
 
+        <section class="recent" style="margin-top:25px;">
+            <h2>Earnings History</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Every payout you've earned across order tasks, micro-tasks, and bonus tasks, in one place.
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Source</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="earningsHistoryTable">
+                    <tr><td colspan="4" class="empty-state">Loading…</td></tr>
+                </tbody>
+            </table>
+        </section>
+
     
 <!-- Ezoic Ad: bottom_of_page -->
 <script>
@@ -270,6 +289,65 @@ document.getElementById("weeklyPending").textContent = "$" + Number(data.totalPe
 }
 
 loadEarnings();
+
+/* =========================================================
+   EARNINGS HISTORY (unified across task types)
+   -----------------------------------------------------------
+   One combined ledger view for the worker. Today the backend
+   only exposes a line-item feed for Bonus Tasks
+   (/api/worker/offerwall-earnings) - Order Tasks and Micro
+   Tasks don't yet return individual completion records, only
+   the aggregate totals used in the cards above. Every row
+   rendered here is tagged with its Source so that once the
+   backend adds line-item endpoints for those other modules
+   (see Harmonia roadmap Phase 3: Unified Transactions), they
+   can be merged into this same table with zero markup changes.
+   ========================================================= */
+
+async function loadEarningsHistory() {
+    const table = document.getElementById("earningsHistoryTable");
+
+    let rows = [];
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwall-earnings");
+        const data = await response.json();
+
+        if (response.ok) {
+            rows = (data.earnings || []).map(e => ({
+                date: e.createdAt ? new Date(e.createdAt) : null,
+                source: "Bonus Task",
+                amount: e.workerAmount,
+                status: e.status
+            }));
+        } else {
+            console.error("Failed to load bonus task earnings:", data?.error);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+
+    if (rows.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No earnings yet — completed tasks will show up here.</td></tr>`;
+        return;
+    }
+
+    rows.sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
+
+    table.innerHTML = "";
+    rows.forEach(r => {
+        table.innerHTML += `
+            <tr>
+                <td>${r.date ? r.date.toLocaleDateString() : "-"}</td>
+                <td>${escapeHTML(r.source)}</td>
+                <td>${formatMoney(r.amount)}</td>
+                <td>${statusBadge(capitalize(r.status))}</td>
+            </tr>
+        `;
+    });
+}
+
+loadEarningsHistory();
 
 </script>
 

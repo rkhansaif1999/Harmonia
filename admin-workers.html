@@ -323,6 +323,98 @@ async function fetchAllPayouts() {
     return data.payouts || [];
 }
 
+// =========================================================
+// UNIFIED EARNINGS BREAKDOWN (per worker, inside Details panel)
+// -----------------------------------------------------------
+// Reuses endpoints already live elsewhere in the admin (Task
+// Analytics + Offerwalls pages) rather than adding new routes.
+// Order Task / client-project earnings don't have a per-worker
+// itemized endpoint yet, so they're folded into a single "Other
+// Tasks" line computed as (aggregate total from /api/admin/payouts)
+// minus (sum of the itemized sources below) - this keeps the
+// breakdown always reconciling with the totals already shown,
+// instead of silently dropping a source we can't itemize yet.
+// =========================================================
+
+let allMicroTaskBreakdown = [];
+let allOfferwallEarnings = [];
+let allOfferwallProviders = [];
+
+async function fetchMicroTaskBreakdown() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/earnings-breakdown");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load micro-task earnings");
+    return data.breakdown || [];
+}
+
+async function fetchOfferwallEarnings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load offerwall earnings");
+    return data.earnings || [];
+}
+
+async function fetchOfferwallProviders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load offerwall providers");
+    return data.providers || [];
+}
+
+function offerwallDisplayName(providerKey) {
+    const p = allOfferwallProviders.find(p => p.providerKey === providerKey);
+    return p ? p.displayName : providerKey;
+}
+
+// Returns [{ source, pending, paid }] for one worker, plus a
+// reconciling "Other Tasks" row so the sum always matches the
+// worker's real pending/paid totals from /api/admin/payouts.
+function earningsBreakdownFor(worker, payout) {
+    const rows = [];
+
+    // ---- Micro Tasks: one row per project this worker has earned on ----
+    const microRows = allMicroTaskBreakdown.filter(r => r.user_id === worker.id);
+    const microByProject = {};
+    microRows.forEach(r => {
+        const key = "Micro Task #" + r.micro_task_id;
+        if (!microByProject[key]) microByProject[key] = { source: key, pending: 0, paid: 0 };
+        microByProject[key].pending += Number(r.pending_earned || 0);
+        microByProject[key].paid += Number(r.paid_earned || 0);
+    });
+    Object.values(microByProject).forEach(r => rows.push(r));
+
+    // ---- Bonus Tasks: one row per offerwall provider ----
+    const owRows = allOfferwallEarnings.filter(e =>
+        (e.userId && e.userId === worker.id) ||
+        (!e.userId && e.workerEmail && worker.email && e.workerEmail.toLowerCase() === worker.email.toLowerCase())
+    );
+    const owByProvider = {};
+    owRows.forEach(e => {
+        const key = offerwallDisplayName(e.providerKey) + " (Bonus Task)";
+        if (!owByProvider[key]) owByProvider[key] = { source: key, pending: 0, paid: 0 };
+        const amt = Number(e.workerAmount || 0);
+        if (e.status === "paid") owByProvider[key].paid += amt;
+        else if (e.status === "pending") owByProvider[key].pending += amt;
+    });
+    Object.values(owByProvider).forEach(r => rows.push(r));
+
+    // ---- Reconcile against the real totals from /api/admin/payouts ----
+    const knownPending = rows.reduce((s, r) => s + r.pending, 0);
+    const knownPaid = rows.reduce((s, r) => s + r.paid, 0);
+    const totalPending = payout ? Number(payout.pendingAmount || 0) : 0;
+    const totalPaid = payout ? Number(payout.paidAmount || 0) : 0;
+    const otherPending = totalPending - knownPending;
+    const otherPaid = totalPaid - knownPaid;
+
+    // Only show "Other Tasks" if there's actually an unaccounted amount -
+    // avoids a confusing "$0.00" row for workers with no order tasks.
+    if (Math.abs(otherPending) > 0.005 || Math.abs(otherPaid) > 0.005) {
+        rows.push({ source: "Other Tasks (Order Tasks, etc.)", pending: otherPending, paid: otherPaid });
+    }
+
+    return rows;
+}
+
 async function updateStatus(id, status) {
     const response = await authFetch(WORKER_URL + "/api/admin/users/status", {
         method: "POST",
@@ -500,6 +592,17 @@ function renderWorkers(){
         `;
 
         if (isOpen) {
+            const breakdown = earningsBreakdownFor(worker, payout);
+            const breakdownRows = breakdown.length === 0
+                ? `<tr><td colspan="3" class="empty-state">No earnings yet</td></tr>`
+                : breakdown.map(r => `
+                    <tr>
+                        <td>${escapeHTML(r.source)}</td>
+                        <td>${formatMoney(r.pending)}</td>
+                        <td>${formatMoney(r.paid)}</td>
+                    </tr>
+                `).join("");
+
             table.innerHTML += `
                 <tr class="details-panel">
                     <td colspan="5">
@@ -520,6 +623,21 @@ function renderWorkers(){
                                 <div class="label">Payout Action</div>
                                 <div>${payoutAction}</div>
                             </div>
+                        </div>
+                        <div style="margin-top:6px;margin-bottom:14px;">
+                            <div class="label" style="margin-bottom:8px;">Earnings Breakdown &mdash; every task type, one place</div>
+                            <table style="min-width:0;">
+                                <thead>
+                                    <tr>
+                                        <th>Source</th>
+                                        <th>Pending</th>
+                                        <th>Paid</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${breakdownRows}
+                                </tbody>
+                            </table>
                         </div>
                       <div class="details-actions">
                             ${statusActions}
@@ -543,12 +661,31 @@ function renderWorkers(){
 
 async function loadAndRenderAll() {
     const table = document.getElementById("workerTable");
+
+    // Core data: if this fails, there's nothing to show.
     try {
         [allUsers, allPayouts] = await Promise.all([fetchAllUsers(), fetchAllPayouts()]);
     } catch (err) {
         table.innerHTML = `<tr><td colspan="5" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
         return;
     }
+
+    // Earnings-breakdown data: nice-to-have inside the Details panel.
+    // If any of these fail, the worker table still renders fine -
+    // the breakdown for that source just falls back to "Other Tasks".
+    try {
+        [allMicroTaskBreakdown, allOfferwallEarnings, allOfferwallProviders] = await Promise.all([
+            fetchMicroTaskBreakdown(),
+            fetchOfferwallEarnings(),
+            fetchOfferwallProviders()
+        ]);
+    } catch (err) {
+        console.error("Could not load earnings breakdown data:", err);
+        allMicroTaskBreakdown = [];
+        allOfferwallEarnings = [];
+        allOfferwallProviders = [];
+    }
+
     renderWorkers();
 }
 

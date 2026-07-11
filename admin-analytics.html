@@ -192,6 +192,37 @@
             color: #7d8aa3;
             padding: 10px 2px;
         }
+
+        /* ---- module tabs (mirrors worker Task Center) ---- */
+        .analytics-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .analytics-tab-btn {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #9dadc1;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: .92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s ease;
+            font-family: inherit;
+        }
+        .analytics-tab-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,.18);
+        }
+        .analytics-tab-btn.active {
+            background: rgba(2,197,154,.12);
+            border-color: rgba(2,197,154,.35);
+            color: #02c59a;
+        }
+        .analytics-panel { display: none; }
+        .analytics-panel.active { display: block; }
     </style>
 </head>
 
@@ -252,6 +283,14 @@
             <div class="profile">Administrator</div>
         </header>
 
+        <div class="analytics-tabs">
+            <button class="analytics-tab-btn active" data-tab="microtasks" onclick="switchAnalyticsTab('microtasks')">🧩 Micro Tasks</button>
+            <button class="analytics-tab-btn" data-tab="offerwalls" onclick="switchAnalyticsTab('offerwalls')">🎯 Offerwalls</button>
+        </div>
+
+        <!-- ============ MICRO TASKS PANEL ============ -->
+        <div class="analytics-panel active" id="analytics-panel-microtasks">
+
         <section class="cards">
 
             <div class="dashboard-card">
@@ -289,9 +328,70 @@
 
         </section>
 
+        </div>
+
+        <!-- ============ OFFERWALLS PANEL ============ -->
+        <div class="analytics-panel" id="analytics-panel-offerwalls">
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Active Providers</h3>
+                <h2 id="owTotalActiveProviders">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Completions</h3>
+                <h2 id="owTotalCompletions">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Payout</h3>
+                <h2 id="owTotalPending">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Paid Out</h3>
+                <h2 id="owTotalPaidOut">$0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="recent" id="providerListView" style="margin-top:25px;">
+
+            <h2>Providers</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Click a provider to search for a worker or see the top earners. Manage keys, iframe URLs, and
+                enable/disable from the <a href="admin-offerwalls.html" style="color:#58d4ff;">Offerwalls</a> page.
+            </p>
+
+            <div class="project-grid" id="providerGrid">
+                <p class="empty-state">Loading providers...</p>
+            </div>
+
+        </section>
+
+        </div>
+
     </main>
 
 </div>
+
+<script>
+function switchAnalyticsTab(tab) {
+    document.querySelectorAll(".analytics-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+    document.querySelectorAll(".analytics-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === "analytics-panel-" + tab);
+    });
+
+    if (tab === "offerwalls" && !offerwallDataLoaded) {
+        offerwallDataLoaded = true;
+        renderOfferwallAll();
+    }
+}
+</script>
 
 <script>
 
@@ -561,6 +661,267 @@ async function renderAll() {
 }
 
 renderAll();
+
+/* =========================================================
+   OFFERWALL ANALYTICS
+   -----------------------------------------------------------
+   Reuses the same provider + earnings endpoints already live in
+   admin-offerwalls.html - no new backend routes needed. "Provider"
+   here plays the same role "Project" plays for Micro Tasks: one
+   card per provider, expandable into a searchable worker list with
+   top earners, same interaction pattern as the Micro Tasks tab.
+
+   NOTE: the Hold action only renders if a given earnings row
+   includes userId/fullName/taskHold fields. As of this build the
+   /api/admin/offerwall-earnings response (per its current usage in
+   admin-offerwalls.html) isn't confirmed to include those - if it
+   doesn't yet, add them there and this list will pick it up with
+   no frontend changes, same as the Bonus Task row in Earnings
+   History on the worker side.
+   ========================================================= */
+
+let offerwallDataLoaded = false;
+let owProviders = [];
+let owEarnings = [];
+let expandedProviderKey = null;
+let openOwWorkerRowId = null;
+
+async function fetchOwProviders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load providers");
+    return data.providers || [];
+}
+
+async function fetchOwEarnings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load earnings");
+    return data.earnings || [];
+}
+
+function owEarningsFor(providerKey) {
+    return owEarnings.filter(e => e.providerKey === providerKey);
+}
+
+function owWorkersEarningCount(providerKey) {
+    const seen = new Set();
+    owEarningsFor(providerKey).forEach(e => seen.add(e.userId || e.workerEmail));
+    return seen.size;
+}
+
+async function renderOfferwallTopStats() {
+    document.getElementById("owTotalActiveProviders").textContent =
+        owProviders.filter(p => p.status === "active").length;
+
+    document.getElementById("owTotalCompletions").textContent = owEarnings.length;
+
+    const pending = owEarnings.filter(e => e.status === "pending").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
+    const paid = owEarnings.filter(e => e.status === "paid").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
+
+    document.getElementById("owTotalPending").textContent = formatMoney(pending);
+    document.getElementById("owTotalPaidOut").textContent = formatMoney(paid);
+}
+
+function renderProviderGrid() {
+    const grid = document.getElementById("providerGrid");
+    grid.innerHTML = "";
+
+    if (owProviders.length === 0) {
+        grid.innerHTML = `<p class="empty-state">No providers configured yet — add one from the Offerwalls page.</p>`;
+        return;
+    }
+
+    owProviders.forEach(p => {
+        const rows = owEarningsFor(p.providerKey);
+        const submissions = rows.length;
+        const paidCount = rows.filter(r => r.status === "paid").length;
+
+        const card = document.createElement("div");
+        card.className = "project-card" + (expandedProviderKey === p.providerKey ? " expanded" : "");
+        card.id = "ow-card-" + p.providerKey;
+
+        card.innerHTML = `
+            <div class="project-card-summary" onclick="toggleProviderExpand('${escapeHTML(p.providerKey)}')">
+                <h3>${escapeHTML(p.displayName)}</h3>
+                <div class="rate">${statusBadge(capitalize(p.status))}</div>
+                <div class="stat-row"><span>Workers earning</span><span>${owWorkersEarningCount(p.providerKey)}</span></div>
+                <div class="stat-row"><span>Completions</span><span>${submissions}</span></div>
+                <div class="stat-row"><span>Paid</span><span>${paidCount}</span></div>
+                <div class="expand-hint">${expandedProviderKey === p.providerKey ? "▴ Hide workers" : "▾ Find a worker / view top earners"}</div>
+            </div>
+            <div class="project-card-panel" id="ow-panel-${p.providerKey}" style="display:${expandedProviderKey === p.providerKey ? "block" : "none"};">
+                <input
+                    type="text"
+                    class="worker-search-input"
+                    placeholder="Search by email..."
+                    oninput="handleOwWorkerSearch('${escapeHTML(p.providerKey)}', this.value)"
+                >
+                <div class="list-label" id="ow-listLabel-${p.providerKey}">Top 5 earners</div>
+                <div id="ow-workerList-${p.providerKey}"></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    if (expandedProviderKey !== null) {
+        renderOwWorkerList(expandedProviderKey, "");
+    }
+}
+
+function toggleProviderExpand(providerKey) {
+    openOwWorkerRowId = null;
+    expandedProviderKey = (expandedProviderKey === providerKey) ? null : providerKey;
+    renderProviderGrid();
+}
+
+function owTotalEarnedFor(row) {
+    // "paid"/"pending" is all we know for certain from the earnings feed;
+    // anything not explicitly paid counts as pending, same convention as
+    // the Micro Tasks pending/paid split above.
+    return Number(row.workerAmount || 0);
+}
+
+function handleOwWorkerSearch(providerKey, query) {
+    renderOwWorkerList(providerKey, query);
+}
+
+function renderOwWorkerList(providerKey, query) {
+    const listEl = document.getElementById("ow-workerList-" + providerKey);
+    const labelEl = document.getElementById("ow-listLabel-" + providerKey);
+    if (!listEl) return;
+
+    const term = query.trim().toLowerCase();
+    const providerRows = owEarningsFor(providerKey);
+
+    // Group by worker so one worker's multiple completions become one row,
+    // same "one row per worker" shape as the Micro Tasks list.
+    const byWorker = new Map();
+    providerRows.forEach(r => {
+        const key = r.userId || r.workerEmail;
+        if (!byWorker.has(key)) {
+            byWorker.set(key, {
+                userId: r.userId,
+                email: r.workerEmail || "",
+                fullName: r.fullName || r.workerEmail || "Worker",
+                taskHold: r.taskHold,
+                total: 0,
+                count: 0
+            });
+        }
+        const entry = byWorker.get(key);
+        entry.total += owTotalEarnedFor(r);
+        entry.count += 1;
+    });
+
+    let rows = Array.from(byWorker.values());
+
+    if (term === "") {
+        labelEl.textContent = "Top 5 earners";
+        rows = rows.sort((a, b) => b.total - a.total).slice(0, 5);
+    } else {
+        labelEl.textContent = "Search results";
+        rows = rows.filter(r => r.email.toLowerCase().includes(term));
+    }
+
+    listEl.innerHTML = "";
+
+    if (rows.length === 0) {
+        listEl.innerHTML = `<div class="empty-mini">${term === "" ? "No workers on this provider yet." : "No worker found with that email."}</div>`;
+        return;
+    }
+
+    rows.forEach(row => {
+        const isHeld = !!row.taskHold;
+        const rowKey = providerKey + "-" + (row.userId || row.email);
+
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+            <div class="worker-mini-row" onclick="toggleOwWorkerRow('${escapeHTML(rowKey)}', '${escapeHTML(providerKey)}')">
+                <div class="top-line">
+                    <div style="min-width:0;">
+                        <div class="name">${escapeHTML(row.fullName)}</div>
+                        <div class="email">${escapeHTML(row.email)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="total">$${row.total.toFixed(2)}</div>
+                        <div>${row.userId ? (isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>') : ""}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="ow-action-${rowKey}"></div>
+        `;
+        listEl.appendChild(wrap);
+
+        if (openOwWorkerRowId === rowKey) {
+            renderOwWorkerAction(rowKey, row);
+        }
+    });
+}
+
+function toggleOwWorkerRow(rowKey, providerKey) {
+    openOwWorkerRowId = (openOwWorkerRowId === rowKey) ? null : rowKey;
+    const input = document.querySelector(`#ow-panel-${providerKey} .worker-search-input`);
+    renderOwWorkerList(providerKey, input ? input.value : "");
+}
+
+function renderOwWorkerAction(rowKey, row) {
+    const actionEl = document.getElementById("ow-action-" + rowKey);
+    if (!actionEl) return;
+
+    // Without a confirmed userId on the earnings row we can't safely wire
+    // the Hold action - degrade gracefully instead of guessing an ID.
+    if (!row.userId) {
+        actionEl.innerHTML = "";
+        return;
+    }
+
+    const isHeld = !!row.taskHold;
+
+    actionEl.innerHTML = `
+        <div class="worker-action-row">
+            <span style="font-size:.78rem;color:#9dadc1;">${isHeld ? "This worker can't apply for new tasks." : "This worker can apply for new tasks."}</span>
+            <button onclick="event.stopPropagation(); toggleOwHold(${row.userId}, ${isHeld ? "false" : "true"})">
+                ${isHeld ? "Remove Hold" : "Hold from New Tasks"}
+            </button>
+        </div>
+    `;
+}
+
+async function toggleOwHold(userId, hold) {
+    const verb = hold
+        ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)"
+        : "remove this worker's hold";
+    if (!confirm(`Are you sure you want to ${verb}?`)) return;
+
+    try {
+        await setTaskHold(userId, hold);
+        owEarnings = owEarnings.map(r => r.userId === userId ? { ...r, taskHold: hold } : r);
+
+        if (expandedProviderKey !== null) {
+            const input = document.querySelector(`#ow-panel-${expandedProviderKey} .worker-search-input`);
+            renderOwWorkerList(expandedProviderKey, input ? input.value : "");
+        }
+    } catch (err) {
+        alert(err.message || "Failed to update hold status.");
+    }
+}
+
+async function renderOfferwallAll() {
+    renderOfferwallTopStats();
+
+    const grid = document.getElementById("providerGrid");
+
+    try {
+        [owProviders, owEarnings] = await Promise.all([fetchOwProviders(), fetchOwEarnings()]);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</p>`;
+        return;
+    }
+
+    renderOfferwallTopStats();
+    renderProviderGrid();
+}
 
 </script>
 

@@ -40,6 +40,40 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
+<style>
+    /* Task Center tabs — scoped to this page, follows the existing
+       dark-glass card language (.recent) rather than introducing a
+       new visual system. */
+    .task-tabs{
+        display:flex;
+        gap:8px;
+        margin-bottom:22px;
+        flex-wrap:wrap;
+    }
+    .task-tab-btn{
+        background:rgba(255,255,255,.03);
+        border:1px solid rgba(255,255,255,.08);
+        color:#9dadc1;
+        padding:12px 20px;
+        border-radius:14px;
+        font-size:.92rem;
+        font-weight:600;
+        cursor:pointer;
+        transition:.2s ease;
+        font-family:inherit;
+    }
+    .task-tab-btn:hover{
+        color:#fff;
+        border-color:rgba(255,255,255,.18);
+    }
+    .task-tab-btn.active{
+        background:rgba(2,197,154,.12);
+        border-color:rgba(2,197,154,.35);
+        color:#02c59a;
+    }
+    .task-panel{ display:none; }
+    .task-panel.active{ display:block; }
+</style>
 </head>
 <body>
 <div class="noise"></div>
@@ -53,14 +87,13 @@
         <h2 class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
         <ul>
             <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
-           <li><a href="worker-tasks.html">✅ My Tasks</a></li>
-            <li><a href="worker-bonus-tasks.html">🎁 Bonus Tasks</a></li>
+            <li class="active">✅ My Tasks</li>
             <li><a href="worker-messages.html">✉️ Messages</a></li>
             <li><a href="worker-earnings.html">💰 Earnings</a></li>
             <li><a href="worker-payments.html">🏦 Payments</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
-    
+
         <div class="adsterra-sidebar-banners" style="margin-top:24px;display:flex;flex-direction:column;gap:16px;align-items:center;">
             <div style="width:160px;max-width:100%;overflow:hidden;">
                 <script>
@@ -133,49 +166,101 @@
                 Worker
             </div>
         </header>
-       
+
 <!-- Ezoic Ad: mid_content -->
 <script>
     ezstandalone.cmd.push(function () {
         ezstandalone.showAds({ location: "mid_content" });
     });
 </script>
-<section class="recent">
-            <h2>Assigned Tasks</h2>
-            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Projects you're approved for. Click Start Working to begin earning.
-            </p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>ID</th>
-                        <th>Pay Rate</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="approvedMicroTaskTable">
-                    <tr><td colspan="4" class="empty-state">Loading...</td></tr>
-                </tbody>
-            </table>
-        </section>
-        <section class="recent" style="margin-top:25px;">
-            <h2>Order Tasks</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="taskTable">
-                    <tr><td colspan="4" class="empty-state">Loading tasks...</td></tr>
-                </tbody>
-            </table>
-        </section>
-    
+
+        <div class="task-tabs">
+            <button class="task-tab-btn active" data-tab="orders" onclick="switchTaskTab('orders')">📋 Order Tasks</button>
+            <button class="task-tab-btn" data-tab="micro" onclick="switchTaskTab('micro')">🧩 Micro Tasks</button>
+            <button class="task-tab-btn" data-tab="bonus" onclick="switchTaskTab('bonus')">🎁 Bonus Tasks</button>
+        </div>
+
+        <!-- ============ ORDER TASKS PANEL ============ -->
+        <div class="task-panel active" id="panel-orders">
+            <section class="recent">
+                <h2>Order Tasks</h2>
+                <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                    Client projects assigned directly to you.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTable">
+                        <tr><td colspan="4" class="empty-state">Loading tasks...</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- ============ MICRO TASKS PANEL ============ -->
+        <div class="task-panel" id="panel-micro">
+            <section class="recent">
+                <h2>Assigned Micro Tasks</h2>
+                <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                    Projects you're approved for. Click Start Working to begin earning.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>ID</th>
+                            <th>Pay Rate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvedMicroTaskTable">
+                        <tr><td colspan="4" class="empty-state">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <!-- ============ BONUS TASKS PANEL ============ -->
+        <div class="task-panel" id="panel-bonus">
+            <section class="recent">
+                <h2>Extra Ways To Earn</h2>
+                <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                    Quick tasks and surveys that pay on top of your regular work. Finish one and the payout is added
+                    to your account automatically — no need to submit anything. Check your
+                    <a href="worker-earnings.html" style="color:#02c59a;">Earnings</a> page to see it credited.
+                </p>
+
+                <!-- Harmonia-branded chrome around the embedded task list. We never
+                     show the underlying network's name/logo/domain to the worker -
+                     this bar and everything visible here is ours. -->
+                <div id="bonusFrameWrap" style="border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:8px;">
+                            <span style="width:8px;height:8px;border-radius:50%;background:#02c59a;display:inline-block;"></span>
+                            Bonus Tasks
+                        </span>
+                        <span id="bonusStatusLabel" style="color:#9dadc1;font-size:.8rem;">Not loaded</span>
+                    </div>
+
+                    <!-- Harmonia-styled completion banner. Populated by the postMessage
+                         listener below when a task finishes. Sits above the embedded
+                         frame so the worker's last impression is ours, not the
+                         network's own confirmation screen. -->
+                    <div id="bonusCompletionBanner" style="display:none;padding:14px 18px;background:rgba(2,197,154,.12);color:#02c59a;font-size:.9rem;border-bottom:1px solid rgba(2,197,154,.25);"></div>
+
+                    <div id="bonusIframeHolder" style="min-height:520px;display:flex;align-items:center;justify-content:center;">
+                        <p class="empty-state" id="bonusEmptyState">Click this tab to load bonus tasks…</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
 <!-- Ezoic Ad: bottom_of_page -->
 <script>
     ezstandalone.cmd.push(function () {
@@ -184,6 +269,42 @@
 </script>
 </main>
 </div>
+
+<script>
+/* =========================================================
+   TAB SWITCHING
+   -----------------------------------------------------------
+   Order Tasks + Micro Tasks load immediately (cheap API calls).
+   Bonus Tasks embeds a third-party iframe, so it's lazy-loaded
+   only the first time that tab is opened - no point spending an
+   iframe load + postMessage listener on workers who never look
+   at that tab, and it keeps this page's initial load light.
+   ========================================================= */
+let bonusTasksLoaded = false;
+
+function switchTaskTab(tab) {
+    document.querySelectorAll(".task-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+    document.querySelectorAll(".task-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === "panel-" + tab);
+    });
+
+    if (tab === "bonus" && !bonusTasksLoaded) {
+        bonusTasksLoaded = true;
+        loadBonusTasks();
+    }
+}
+
+// Support deep-linking, e.g. worker-tasks.html#bonus
+(function () {
+    const hash = (window.location.hash || "").replace("#", "");
+    if (hash === "micro" || hash === "bonus") {
+        switchTaskTab(hash);
+    }
+})();
+</script>
+
 <script>
 const table = document.getElementById("taskTable");
 
@@ -355,6 +476,141 @@ loadApprovedMicroTasks();
 
 </script>
 
+<script>
+/* =========================================================
+   BONUS TASKS (Offerwalls)
+   -----------------------------------------------------------
+   Backend concept: this embeds a third-party task network
+   (starting with CPX Research) inside an iframe, but the
+   worker should never see that network's name or branding -
+   only "Bonus Tasks". The network pays Harmonia directly, and
+   Harmonia credits the worker's earnings automatically via a
+   server-side postback. Those credited earnings now surface on
+   the unified Earnings page (worker-earnings.html) alongside
+   every other type of task, instead of a separate table here.
+   Admin still sees this broken out by provider in Task Analytics.
+
+   GET /api/worker/offerwalls is expected to return:
+     { offerwalls: [ { providerKey, iframeUrl } ] }
+   with iframeUrl already fully built server-side (app id +
+   this worker's id substituted in) - the provider's own admin
+   display name is intentionally NOT sent to/rendered on this
+   page, so nothing here ever needs to say "CPX" or similar.
+   ========================================================= */
+
+const frameHolder = document.getElementById("bonusIframeHolder");
+const emptyState = document.getElementById("bonusEmptyState");
+const statusLabel = document.getElementById("bonusStatusLabel");
+const completionBanner = document.getElementById("bonusCompletionBanner");
+
+// Origins we trust postMessage events from. Populated once we know
+// which provider iframe(s) are actually embedded, so a random page
+// can't spoof a "you earned money" banner.
+let trustedMessageOrigins = [];
+
+async function loadBonusTasks() {
+    try {
+        statusLabel.textContent = "Loading…";
+        emptyState.textContent = "Loading bonus tasks…";
+
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
+        const data = await response.json();
+
+        if (!response.ok) {
+            statusLabel.textContent = "Unavailable";
+            emptyState.textContent = escapeHTML(data?.error || "Bonus tasks aren't available right now.");
+            return;
+        }
+
+        const offerwalls = data.offerwalls || [];
+
+        if (offerwalls.length === 0) {
+            statusLabel.textContent = "None available";
+            emptyState.textContent = "No bonus tasks available right now — check back soon.";
+            return;
+        }
+
+        // For now we only ever expect one active provider (CPX Research),
+        // but this loop is written to embed however many the backend sends,
+        // so adding a second provider later needs no frontend change.
+        frameHolder.innerHTML = "";
+        statusLabel.textContent = "Available";
+
+        offerwalls.forEach(ow => {
+            try {
+                trustedMessageOrigins.push(new URL(ow.iframeUrl).origin);
+            } catch (e) {
+                // Malformed URL from backend - skip rather than embed something broken.
+                return;
+            }
+
+            const iframe = document.createElement("iframe");
+            iframe.src = ow.iframeUrl;
+            iframe.style.width = "100%";
+            iframe.style.minHeight = "520px";
+            iframe.style.border = "none";
+            iframe.style.display = "block";
+            iframe.title = "Bonus Tasks";
+            // sandbox kept permissive-but-scoped: the provider's page needs
+            // scripts/forms/popups (surveys open partner sites) but we don't
+            // allow it to navigate the whole Harmonia tab out from under the worker.
+            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+            frameHolder.appendChild(iframe);
+        });
+
+    } catch (err) {
+        console.error(err);
+        statusLabel.textContent = "Unavailable";
+        emptyState.textContent = "Unable to connect to the server.";
+    }
+}
+
+/* =========================================================
+   COMPLETION SIGNAL (best-effort, needs live verification)
+   -----------------------------------------------------------
+   CPX Research's own docs mention a "Message ID System"
+   (?message_id=1 style flag on the embed URL) that has their
+   iframe postMessage() the parent page when a task finishes,
+   instead of - or in addition to - showing their own in-frame
+   popup. We listen for that here to show our own banner.
+
+   IMPORTANT / NOT YET CONFIRMED: the exact message payload
+   shape wasn't in the docs we had on hand. This handler is
+   deliberately permissive (checks a few likely field names)
+   so it degrades safely - if the shape doesn't match, we just
+   don't show a banner, we never show an error. Once you have
+   a real completion in the CPX test/sandbox mode, check the
+   browser console log below to see the real payload shape and
+   tighten this up.
+
+   HARD LIMITATION: if CPX's iframe renders its own popup
+   *inside* its own document (rather than only postMessage-ing
+   us), we cannot hide or restyle that - it's cross-origin
+   content we don't control. The Message ID System existing at
+   all is what lets us avoid that by having them message us
+   instead; whether it fully suppresses their own popup too is
+   something to confirm once this is live in test mode.
+   ========================================================= */
+window.addEventListener("message", (event) => {
+    if (trustedMessageOrigins.length && !trustedMessageOrigins.includes(event.origin)) return;
+
+    console.log("Bonus task provider message:", event.origin, event.data);
+
+    let payload = event.data;
+    if (typeof payload === "string") {
+        try { payload = JSON.parse(payload); } catch (e) { /* not JSON, ignore */ }
+    }
+    if (!payload || typeof payload !== "object") return;
+
+    const status = String(payload.status || payload.type || "").toLowerCase();
+
+    if (status.includes("complete") || status === "1" || status === "success") {
+        completionBanner.textContent = "Nice — that one's in! Check your Earnings page once it's confirmed.";
+        completionBanner.style.display = "block";
+        setTimeout(() => { completionBanner.style.display = "none"; }, 8000);
+    }
+});
+</script>
 
 <!-- Adsterra: Social Bar -->
 <script src="https://pl30293958.effectivecpmnetwork.com/ec/e2/d8/ece2d809df111818f531eac6948dfcd0.js"></script>
