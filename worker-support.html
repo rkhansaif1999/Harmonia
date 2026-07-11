@@ -82,12 +82,28 @@
             <div class="card" style="max-width:640px;">
                 <h3 style="margin-top:0;">🎧 Get in touch with Harmonia support</h3>
                 <p style="color:#9dadc1;margin-top:-6px;">
-                    Have a question about a task, payout, or your account? Send a message
-                    below and our admin team will reply straight to your account email.
+                    Have a question about a task, payout, or your account? Chat with
+                    our admin team below — replies show up right here.
                 </p>
 
+                <div id="supportChatBox" style="
+                    background:rgba(255,255,255,.03);
+                    border:1px solid rgba(255,255,255,.08);
+                    border-radius:10px;
+                    padding:12px;
+                    max-height:360px;
+                    min-height:120px;
+                    overflow-y:auto;
+                    margin-bottom:16px;
+                    display:flex;
+                    flex-direction:column;
+                    gap:10px;
+                ">
+                    <div style="opacity:.6;">Loading conversation...</div>
+                </div>
+
                 <label>Message</label>
-                <textarea id="supportMessage" rows="6" placeholder="Describe what you need help with..." style="width:100%;box-sizing:border-box;"></textarea>
+                <textarea id="supportMessage" rows="3" placeholder="Describe what you need help with..." style="width:100%;box-sizing:border-box;resize:vertical;"></textarea>
 
                 <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
                     <button class="primary" onclick="handleSendSupportMessage()">📤 Send Message</button>
@@ -99,6 +115,44 @@
 </div>
 
 <script>
+
+function renderSupportChat(messages) {
+    const box = document.getElementById("supportChatBox");
+    const msgs = messages || [];
+
+    if (!msgs.length) {
+        box.innerHTML = `<div style="opacity:.6;">No messages yet — say hello!</div>`;
+        return;
+    }
+
+    box.innerHTML = msgs.map(m => `
+        <div style="
+            align-self:${m.sender === "admin" ? "flex-start" : "flex-end"};
+            max-width:85%;
+            background:${m.sender === "admin" ? "rgba(255,255,255,.06)" : "rgba(91,108,255,.18)"};
+            padding:10px 14px;
+            border-radius:12px;
+            box-sizing:border-box;
+        ">
+            <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">
+                ${m.sender === "admin" ? "Admin" : "You"} • ${m.time ? new Date(m.time).toLocaleString() : ""}
+            </div>
+            <div style="color:#fff;white-space:pre-wrap;word-break:break-word;">${escapeHTML(m.message)}</div>
+        </div>
+    `).join("");
+
+    box.scrollTop = box.scrollHeight;
+}
+
+async function loadSupportChat() {
+    const data = await fetchWorkerSupportChat();
+    if (data && data.error) {
+        document.getElementById("supportChatBox").innerHTML =
+            `<div style="opacity:.6;">Could not load conversation: ${escapeHTML(data.error)}</div>`;
+        return;
+    }
+    renderSupportChat(data.messages);
+}
 
 async function handleSendSupportMessage() {
     const textarea = document.getElementById("supportMessage");
@@ -146,10 +200,14 @@ async function handleSendSupportMessage() {
         return;
     }
 
-    statusEl.textContent = "Message sent ✔ Our team will reply by email.";
-    statusEl.style.color = "#2e7d32";
+    statusEl.textContent = "";
     textarea.value = "";
+    renderSupportChat(result.messages);
 }
+
+loadSupportChat();
+// Light polling so a worker sees admin replies without refreshing.
+setInterval(loadSupportChat, 15000);
 
 </script>
 

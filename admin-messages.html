@@ -318,12 +318,12 @@
                     </div>
                 </div>
 
-                <!-- Worker Support card -->
+                <!-- Worker Support card (live chat, not one-way email) -->
                 <div class="msg-card" id="msgCard-support">
                     <div class="msg-card-summary" onclick="toggleMsgSection('support')">
                         <h3>&#127911; Worker Support</h3>
-                        <div class="msg-card-sub">"Contact Support" messages sent by workers</div>
-                        <div class="stat-row"><span>Total messages</span><span id="supportCountTotal">0</span></div>
+                        <div class="msg-card-sub">Live chat between workers and admin</div>
+                        <div class="stat-row"><span>Conversations</span><span id="supportCountTotal">0</span></div>
                         <div class="stat-row"><span>Unread</span><span id="supportCountUnread">0</span></div>
                         <div class="msg-expand-hint" id="supportExpandHint">&#9662; Click to view messages</div>
                     </div>
@@ -333,13 +333,12 @@
                                 <tr>
                                     <th>Worker</th>
                                     <th>Email</th>
-                                    <th>Message</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Last Message</th>
+                                    <th>Last Activity</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="supportMessagesTable"></tbody>
+                            <tbody id="supportChatsTable"></tbody>
                         </table>
                     </div>
                 </div>
@@ -399,6 +398,23 @@
             </div>
         </div>
 
+        <div id="supportChatOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="supportChatOverlayName" style="margin:0;color:#fff;"></h3>
+                        <p id="supportChatOverlayEmail" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <button onclick="closeSupportChatOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                </div>
+                <div id="supportChatOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="supportChatOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:200px;overflow-y:auto;font-family:inherit;"></textarea>
+                    <button class="primary" onclick="submitSupportChatReply()">Send</button>
+                </div>
+            </div>
+        </div>
+
         <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
             <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
@@ -449,24 +465,17 @@ function toggleMsgSection(section){
     });
 }
 
-// Renders the Inbox and Worker Support tables from one shared fetch -
-// the only thing that differs between them is which "type" of
-// contact_messages row they show (worker_support vs everything else).
+// Renders the public Inbox table (contact form submissions). Worker
+// Support now lives in its own live chat system, not contact_messages.
 async function renderMessages(){
     const data = await getContactMessages();
-    const all = (data.messages || []).slice().reverse();
-
-    const inboxMessages = all.filter(m => m.type !== "worker_support");
-    const supportMessages = all.filter(m => m.type === "worker_support");
+    const inboxMessages = (data.messages || []).slice().reverse();
     const isUnread = m => m.status !== "read" && m.status !== "replied";
 
     document.getElementById("inboxCountTotal").textContent = inboxMessages.length;
     document.getElementById("inboxCountUnread").textContent = inboxMessages.filter(isUnread).length;
-    document.getElementById("supportCountTotal").textContent = supportMessages.length;
-    document.getElementById("supportCountUnread").textContent = supportMessages.filter(isUnread).length;
 
     renderMessageTable("messagesTable", inboxMessages, 7, true);
-    renderMessageTable("supportMessagesTable", supportMessages, 6, false);
 }
 
 function renderMessageTable(tbodyId, messages, colspan, showTypeColumn){
@@ -862,8 +871,111 @@ async function submitAdminThreadReply() {
     });
 })();
 
+// ------------------------------------------------------------
+// Worker Support (live chat between a worker and admin)
+// ------------------------------------------------------------
+
+let allSupportChats = [];
+let currentSupportUserId = null;
+
+async function loadWorkerSupportChats() {
+    const table = document.getElementById("supportChatsTable");
+    try {
+        const data = await fetchAdminWorkerSupportChats();
+        if (data.error) throw new Error(data.error);
+
+        allSupportChats = data.chats || [];
+        document.getElementById("supportCountTotal").textContent = allSupportChats.length;
+        document.getElementById("supportCountUnread").textContent =
+            allSupportChats.filter(c => c.admin_unread).length;
+
+        if (allSupportChats.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
+            return;
+        }
+
+        table.innerHTML = "";
+        allSupportChats.forEach(c => {
+            table.innerHTML += `
+                <tr class="msg-row" onclick="openSupportChatOverlay(${c.user_id})">
+                    <td>${escapeHTML(c.full_name)} ${c.admin_unread ? '<span style="color:#5b6cff;">●</span>' : ""}</td>
+                    <td>${escapeHTML(c.email)}</td>
+                    <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(c.last_message || "")}">${escapeHTML(c.last_message || "")}</td>
+                    <td>${c.updated_at ? new Date(c.updated_at).toLocaleString() : ""}</td>
+                    <td><button onclick="event.stopPropagation(); openSupportChatOverlay(${c.user_id})">View</button></td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">Failed to load.</td></tr>`;
+    }
+}
+
+async function openSupportChatOverlay(userId) {
+    currentSupportUserId = userId;
+    const data = await fetchAdminWorkerSupportDetail(userId);
+    if (data.error) { alert(data.error); return; }
+
+    const meta = allSupportChats.find(c => c.user_id === userId) || {};
+    document.getElementById("supportChatOverlayName").textContent = meta.full_name || "Worker";
+    document.getElementById("supportChatOverlayEmail").textContent = meta.email || "";
+
+    const box = document.getElementById("supportChatOverlayMessages");
+    box.innerHTML = "";
+    (data.messages || []).forEach(m => {
+        const align = m.sender === "admin" ? "flex-end" : "flex-start";
+        const bg = m.sender === "admin" ? "#587dff22" : "rgba(255,255,255,.06)";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;min-width:0;background:${bg};padding:10px 14px;border-radius:12px;box-sizing:border-box;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${m.sender === "admin" ? "Admin" : escapeHTML(meta.full_name || "Worker")} • ${m.time ? new Date(m.time).toLocaleString() : ""}</div>
+                <div style="color:#fff;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+
+    const replyInput = document.getElementById("supportChatOverlayReplyInput");
+    replyInput.value = "";
+    replyInput.style.height = "auto";
+    document.getElementById("supportChatOverlay").style.display = "flex";
+
+    await loadWorkerSupportChats();
+}
+
+function closeSupportChatOverlay() {
+    document.getElementById("supportChatOverlay").style.display = "none";
+    currentSupportUserId = null;
+}
+
+async function submitSupportChatReply() {
+    const input = document.getElementById("supportChatOverlayReplyInput");
+    const message = input.value.trim();
+    if (!message || currentSupportUserId === null) return;
+
+    const result = await replyAdminWorkerSupport(currentSupportUserId, message);
+    if (result.error) { alert(result.error); return; }
+
+    openSupportChatOverlay(currentSupportUserId);
+}
+
+(function setupSupportReplyTextarea() {
+    const el = document.getElementById("supportChatOverlayReplyInput");
+    el.addEventListener("input", () => {
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+    });
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            submitSupportChatReply();
+        }
+    });
+})();
+
 renderMessages();
 loadAdminThreads();
+loadWorkerSupportChats();
 </script>
     <div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">

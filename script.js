@@ -418,11 +418,11 @@ async function submitContactMessage(msg) {
 
 }
 
-// Worker "Contact Support" — a logged-in worker sending a message to
-// the Harmonia admin team. Reuses the same contact_messages inbox the
-// admin already reviews (tagged type: "worker_support" server-side),
-// so it shows up in its own card on admin-messages.html. Identity
-// comes from the worker's session, not a typed-in name/email.
+// Worker "Contact Support" — a real back-and-forth chat between a
+// logged-in worker and admin, instead of a one-way email. Messages
+// live in the worker_support_chats table (one row per worker) and
+// are fetched/appended over the API. Identity comes from the
+// worker's session, not a typed-in name/email.
 async function submitWorkerSupportMessage(message) {
 
     try {
@@ -450,6 +450,55 @@ async function submitWorkerSupportMessage(message) {
 
     }
 
+}
+
+// GET the logged-in worker's own support chat with admin.
+async function fetchWorkerSupportChat() {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/support");
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to load conversation." };
+    }
+}
+
+// [ADMIN] List every worker who has a support chat (with last message
+// preview + unread flag), newest activity first.
+async function fetchAdminWorkerSupportChats() {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/worker-support");
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to load worker support chats." };
+    }
+}
+
+// [ADMIN] Full message history for one worker's support chat.
+async function fetchAdminWorkerSupportDetail(userId) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/worker-support/detail?userId=" + userId);
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to load conversation." };
+    }
+}
+
+// [ADMIN] Reply in a specific worker's support chat.
+async function replyAdminWorkerSupport(userId, message) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/worker-support/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, message })
+        });
+        return await response.json();
+    } catch (err) {
+        console.error(err);
+        return { error: "Unable to send reply." };
+    }
 }
 
 async function replyToMessage(id, message) {
