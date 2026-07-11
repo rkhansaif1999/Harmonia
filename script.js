@@ -141,7 +141,22 @@ async function authFetch(url, options = {}) {
         ...(user?.token ? { "Authorization": "Bearer " + user.token } : {})
     };
 
-    const response = await fetch(url, { ...options, headers });
+    // Guard against a hung request (dead endpoint, network stall, etc.)
+    // leaving the caller's UI stuck on a loading state forever.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    let response;
+    try {
+        response = await fetch(url, { ...options, headers, signal: controller.signal });
+    } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === "AbortError") {
+            throw new Error("Request timed out. Please check your connection and try again.");
+        }
+        throw err;
+    }
+    clearTimeout(timeoutId);
 
     // If the token is genuinely expired/invalid, the server already
     // tells us via 401 on this same call - no need for a separate
@@ -775,6 +790,13 @@ function enhanceTopbar() {
         admin: "admin-settings.html",
     };
 
+    // Roles that get a "Contact Support" item in the profile dropdown.
+    // Currently just workers (worker-support.html) - the sidebar link
+    // was removed from all worker-*.html pages and moved in here.
+    const SUPPORT_URL_BY_ROLE = {
+        worker: "worker-support.html",
+    };
+
     if (user) {
         const initials = (user.fullName || user.role || "U")
             .trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
@@ -782,6 +804,11 @@ function enhanceTopbar() {
         const settingsUrl = SETTINGS_URL_BY_ROLE[user.role];
         const settingsLink = settingsUrl
             ? `<a href="${settingsUrl}">⚙ Settings</a>`
+            : "";
+
+        const supportUrl = SUPPORT_URL_BY_ROLE[user.role];
+        const supportLink = supportUrl
+            ? `<a href="${supportUrl}">🎧 Contact Support</a>`
             : "";
 
         profileWrap.innerHTML = `
@@ -792,6 +819,8 @@ function enhanceTopbar() {
             <div class="profile-menu">
                 ${settingsLink}
                 ${settingsLink ? "<hr>" : ""}
+                ${supportLink}
+                ${supportLink ? "<hr>" : ""}
                 <button type="button" class="menu-item" onclick="logout()">🚪 Logout</button>
             </div>
         `;

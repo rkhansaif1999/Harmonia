@@ -47,7 +47,7 @@
 
 <div class="noise"></div>
 
-<script src="script.js?v=3"></script>
+<script src="script.js?v=4"></script>
 
 <script>
     protectPage("worker");
@@ -66,7 +66,6 @@
             <li><a href="worker-messages.html">✉️ Messages</a></li>
             <li><a href="worker-earnings.html">💰 Earnings</a></li>
             <li><a href="worker-payments.html">🏦 Payments</a></li>
-            <li class="active">🎧 Contact Support</li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
 
@@ -104,6 +103,7 @@
 async function handleSendSupportMessage() {
     const textarea = document.getElementById("supportMessage");
     const statusEl = document.getElementById("supportStatus");
+    const button = document.querySelector('button[onclick="handleSendSupportMessage()"]');
     const message = textarea.value.trim();
 
     if (!message) {
@@ -114,11 +114,34 @@ async function handleSendSupportMessage() {
 
     statusEl.textContent = "Sending...";
     statusEl.style.color = "#888";
+    if (button) button.disabled = true;
 
-    const result = await submitWorkerSupportMessage(message);
+    // Safety net: if the request hangs (network issue, dead endpoint,
+    // etc.) don't leave the UI stuck on "Sending..." forever.
+    const TIMEOUT_MS = 15000;
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+        timedOut = true;
+        statusEl.textContent = "Failed: Request timed out. Please check your connection and try again.";
+        statusEl.style.color = "#c0392b";
+        if (button) button.disabled = false;
+    }, TIMEOUT_MS);
 
-    if (result.error) {
-        statusEl.textContent = "Failed: " + result.error;
+    let result;
+    try {
+        result = await submitWorkerSupportMessage(message);
+    } catch (err) {
+        console.error(err);
+        result = { error: "Unexpected error. Please try again." };
+    }
+
+    clearTimeout(timeoutId);
+    if (timedOut) return; // timeout message is already showing
+
+    if (button) button.disabled = false;
+
+    if (!result || result.error) {
+        statusEl.textContent = "Failed: " + (result && result.error ? result.error : "Unknown error. Please try again.");
         statusEl.style.color = "#c0392b";
         return;
     }
