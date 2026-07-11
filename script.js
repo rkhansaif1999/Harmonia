@@ -703,8 +703,9 @@ function enhanceTopbar() {
     // skip the page-search box so the ad has room and nothing overlaps it.
     const hasAdBanner = !!topbar.querySelector(".adsterra-header-banners");
 
+    let searchWrap = null;
     if (!hasAdBanner) {
-        const searchWrap = document.createElement("div");
+        searchWrap = document.createElement("div");
         searchWrap.className = "topbar-search";
         searchWrap.innerHTML = `🔍 <input type="text" id="topbarSearch" placeholder="Search this page...">`;
         right.appendChild(searchWrap);
@@ -800,7 +801,7 @@ function enhanceTopbar() {
     document.addEventListener("click", () => closeAll());
 
     // ---- live search across this page's main table, if any ----
-    const searchInput = searchWrap.querySelector("input");
+    const searchInput = searchWrap ? searchWrap.querySelector("input") : null;
     const table = document.querySelector(".recent table, .main table");
 
     if (searchInput && table) {
