@@ -1699,6 +1699,59 @@ RESPONSIVE
 }
 
 /*==================================================
+MICRO-TASK PAGE LAYOUT (task card + surrounding ads)
+==================================================*/
+
+.task-layout{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.task-ads-rail{
+    width:180px;
+    max-width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    align-items:center;
+}
+
+.task-center{
+    width:700px;
+    max-width:100%;
+}
+
+@media (max-width:900px){
+    /* On mobile, keep the task card front and center, and pull the
+       side-rail ads in tight right underneath it (as a compact
+       side-by-side row) instead of letting them stack as two tall
+       300px-high blocks far above/below the task - that's what was
+       pushing the CAPTCHA box way down the page. */
+    .task-layout{
+        flex-direction:column;
+        align-items:stretch;
+        gap:16px;
+    }
+
+    .task-center{
+        order:1;
+        width:100%;
+    }
+
+    .task-ads-rail{
+        order:2;
+        width:100%;
+        flex-direction:row;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:12px;
+    }
+}
+
+/*==================================================
 PASSWORD VISIBILITY TOGGLE (show/hide "eye" button)
 Wraps a password <input> in <div class="password-field">
 so the toggle button can be absolutely positioned inside
