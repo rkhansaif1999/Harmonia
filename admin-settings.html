@@ -57,6 +57,7 @@
             <li><a href="admin-clients.html">🏢 Clients</a></li>
             <li><a href="admin-projects.html">📂 Projects</a></li>
             <li><a href="admin-tasks.html">📋 Tasks</a></li>
+            <li><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
             <li><a href="admin-messages.html">✉️ Messages</a></li>
             <li><a href="admin-workers.html">💰 Payments</a></li>
             <li><a href="admin-analytics.html">📈 Analytics</a></li>
@@ -109,6 +110,8 @@
                 </select>
                 <label>Reviewer Share (%)</label>
                 <input type="number" id="reviewerSharePercent" min="0" max="100">
+                <label>Bonus Task Worker Share (%) <span style="color:#9dadc1;font-weight:400;">(worker's cut of the real USD the offerwall network pays out)</span></label>
+                <input type="number" id="offerwallWorkerSharePercent" min="0" max="100">
                 <button class="primary" onclick="handleSaveSettings()" style="margin-top:15px;">Save Settings</button>
             </div>
         </section>
@@ -136,6 +139,10 @@ async function loadSettings() {
         document.getElementById("supportEmail").value = settings.supportEmail;
         document.getElementById("reviewerEnabled").value = String(settings.reviewerEnabled);
         document.getElementById("reviewerSharePercent").value = settings.reviewerSharePercent;
+        // Defaults to 50 (50/50 split) if the backend hasn't been migrated
+        // with this field yet, rather than showing a blank/NaN input.
+        document.getElementById("offerwallWorkerSharePercent").value =
+            settings.offerwallWorkerSharePercent ?? 50;
     } catch (err) {
         alert("Could not load settings: " + err.message);
     }
@@ -148,7 +155,8 @@ async function handleSaveSettings() {
         autoApproval: document.getElementById("autoApproval").value,
         supportEmail: document.getElementById("supportEmail").value.trim(),
         reviewerEnabled: document.getElementById("reviewerEnabled").value === "true",
-        reviewerSharePercent: Number(document.getElementById("reviewerSharePercent").value)
+        reviewerSharePercent: Number(document.getElementById("reviewerSharePercent").value),
+        offerwallWorkerSharePercent: Number(document.getElementById("offerwallWorkerSharePercent").value)
     };
 
     try {
