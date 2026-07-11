@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TRQRKZFPY6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Support - Harmonia</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contact Support - Harmonia">
+  <meta property="og:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta property="og:url" content="https://harmoniaportal.online/worker-support.html">
+  <meta property="og:site_name" content="Harmonia">
+  <meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Contact Support - Harmonia">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact Support - Harmonia">
+  <meta name="twitter:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js?v=3"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li><a href="worker-messages.html">✉️ Messages</a></li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li><a href="worker-payments.html">🏦 Payments</a></li>
+            <li class="active">🎧 Contact Support</li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+        <header class="topbar">
+            <h1>Contact Support</h1>
+            <div class="profile">Worker</div>
+        </header>
+
+        <section class="recent">
+            <div class="card" style="max-width:640px;">
+                <h3 style="margin-top:0;">🎧 Get in touch with Harmonia support</h3>
+                <p style="color:#9dadc1;margin-top:-6px;">
+                    Have a question about a task, payout, or your account? Send a message
+                    below and our admin team will reply straight to your account email.
+                </p>
+
+                <label>Message</label>
+                <textarea id="supportMessage" rows="6" placeholder="Describe what you need help with..." style="width:100%;box-sizing:border-box;"></textarea>
+
+                <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                    <button class="primary" onclick="handleSendSupportMessage()">📤 Send Message</button>
+                    <span class="reply-status" id="supportStatus"></span>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+
+async function handleSendSupportMessage() {
+    const textarea = document.getElementById("supportMessage");
+    const statusEl = document.getElementById("supportStatus");
+    const message = textarea.value.trim();
+
+    if (!message) {
+        statusEl.textContent = "Please type a message first.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await submitWorkerSupportMessage(message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Message sent ✔ Our team will reply by email.";
+    statusEl.style.color = "#2e7d32";
+    textarea.value = "";
+}
+
+</script>
+
+</body>
+</html>

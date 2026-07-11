@@ -403,6 +403,40 @@ async function submitContactMessage(msg) {
 
 }
 
+// Worker "Contact Support" — a logged-in worker sending a message to
+// the Harmonia admin team. Reuses the same contact_messages inbox the
+// admin already reviews (tagged type: "worker_support" server-side),
+// so it shows up in its own card on admin-messages.html. Identity
+// comes from the worker's session, not a typed-in name/email.
+async function submitWorkerSupportMessage(message) {
+
+    try {
+
+        const response = await authFetch(
+            WORKER_URL + "/api/worker/support/send",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message })
+            }
+        );
+
+        return await response.json();
+
+    } catch (err) {
+
+        console.error(err);
+
+        return {
+            error: "Unable to send message."
+        };
+
+    }
+
+}
+
 async function replyToMessage(id, message) {
 
     try {

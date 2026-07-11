@@ -137,6 +137,64 @@
             font-size: 13px;
             font-weight: 500;
         }
+
+        /* ---- collapsible message cards (same pattern as admin-analytics.html project cards) ---- */
+        .msg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 6px;
+        }
+        .msg-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: border-color .15s ease, background .15s ease;
+        }
+        .msg-card:hover {
+            border-color: #5b6cff;
+        }
+        .msg-card.expanded {
+            grid-column: 1 / -1;
+            border-color: #5b6cff;
+            background: rgba(91,108,255,.06);
+        }
+        .msg-card-summary {
+            cursor: pointer;
+        }
+        .msg-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+        .msg-card .msg-card-sub {
+            color: #9dadc1;
+            font-size: .85rem;
+            margin-bottom: 12px;
+        }
+        .msg-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            color: #cfd8e3;
+            margin-top: 4px;
+        }
+        .msg-card .stat-row span:last-child {
+            font-weight: 700;
+            color: #fff;
+        }
+        .msg-expand-hint {
+            margin-top: 10px;
+            font-size: .78rem;
+            color: #6d7cff;
+            font-weight: 600;
+        }
+        .msg-card-panel {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -230,39 +288,90 @@
         </section>
 
         <section class="recent">
-            <h2>Inbox</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Type</th>
-                        <th>Message</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="messagesTable"></tbody>
-            </table>
-        </section>
+            <h2>Messages</h2>
+            <div class="msg-grid" id="msgCardsGrid">
 
-        <section class="recent">
-            <h2>Worker Conversations</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Worker</th>
-                        <th>Email</th>
-                        <th>Conversations</th>
-                        <th>Last Activity</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="adminThreadsTable">
-                    <tr><td colspan="5" class="empty-state">Loading...</td></tr>
-                </tbody>
-            </table>
+                <!-- Inbox card -->
+                <div class="msg-card" id="msgCard-inbox">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('inbox')">
+                        <h3>📥 Inbox</h3>
+                        <div class="msg-card-sub">Public contact form submissions</div>
+                        <div class="stat-row"><span>Total messages</span><span id="inboxCountTotal">0</span></div>
+                        <div class="stat-row"><span>Unread</span><span id="inboxCountUnread">0</span></div>
+                        <div class="msg-expand-hint" id="inboxExpandHint">&#9662; Click to view messages</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-inbox" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Worker Support card -->
+                <div class="msg-card" id="msgCard-support">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('support')">
+                        <h3>&#127911; Worker Support</h3>
+                        <div class="msg-card-sub">"Contact Support" messages sent by workers</div>
+                        <div class="stat-row"><span>Total messages</span><span id="supportCountTotal">0</span></div>
+                        <div class="stat-row"><span>Unread</span><span id="supportCountUnread">0</span></div>
+                        <div class="msg-expand-hint" id="supportExpandHint">&#9662; Click to view messages</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-support" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Worker</th>
+                                    <th>Email</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supportMessagesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Worker Conversations card -->
+                <div class="msg-card" id="msgCard-conversations">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('conversations')">
+                        <h3>&#128172; Worker Conversations</h3>
+                        <div class="msg-card-sub">Worker &rarr; company email threads</div>
+                        <div class="stat-row"><span>Workers with threads</span><span id="convoCountWorkers">0</span></div>
+                        <div class="stat-row"><span>Total threads</span><span id="convoCountThreads">0</span></div>
+                        <div class="msg-expand-hint" id="conversationsExpandHint">&#9662; Click to view conversations</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-conversations" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Worker</th>
+                                    <th>Email</th>
+                                    <th>Conversations</th>
+                                    <th>Last Activity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminThreadsTable">
+                                <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </section>
 
         <div id="workerConvOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9998;align-items:center;justify-content:center;">
@@ -315,13 +424,56 @@
 // Keeps track of which message rows are currently expanded
 let expandedIds = new Set();
 
+// Which top-level message card (if any) is currently expanded. Only one
+// is open at a time - same accordion-style behavior as the project
+// cards on admin-analytics.html, so no table data renders/opens until
+// the person actually clicks a card.
+let expandedMsgSection = null; // 'inbox' | 'support' | 'conversations' | null
+
+function toggleMsgSection(section){
+    expandedMsgSection = (expandedMsgSection === section) ? null : section;
+
+    ["inbox", "support", "conversations"].forEach(name => {
+        const card = document.getElementById(`msgCard-${name}`);
+        const panel = document.getElementById(`msgPanel-${name}`);
+        const hint = document.getElementById(`${name}ExpandHint`);
+        const isOpen = expandedMsgSection === name;
+
+        card.classList.toggle("expanded", isOpen);
+        panel.style.display = isOpen ? "block" : "none";
+        if (hint) {
+            hint.innerHTML = isOpen
+                ? "&#9652; Hide"
+                : (name === "conversations" ? "&#9662; Click to view conversations" : "&#9662; Click to view messages");
+        }
+    });
+}
+
+// Renders the Inbox and Worker Support tables from one shared fetch -
+// the only thing that differs between them is which "type" of
+// contact_messages row they show (worker_support vs everything else).
 async function renderMessages(){
     const data = await getContactMessages();
-    const messages = (data.messages || []).slice().reverse();
-    const table = document.getElementById("messagesTable");
+    const all = (data.messages || []).slice().reverse();
+
+    const inboxMessages = all.filter(m => m.type !== "worker_support");
+    const supportMessages = all.filter(m => m.type === "worker_support");
+    const isUnread = m => m.status !== "read" && m.status !== "replied";
+
+    document.getElementById("inboxCountTotal").textContent = inboxMessages.length;
+    document.getElementById("inboxCountUnread").textContent = inboxMessages.filter(isUnread).length;
+    document.getElementById("supportCountTotal").textContent = supportMessages.length;
+    document.getElementById("supportCountUnread").textContent = supportMessages.filter(isUnread).length;
+
+    renderMessageTable("messagesTable", inboxMessages, 7, true);
+    renderMessageTable("supportMessagesTable", supportMessages, 6, false);
+}
+
+function renderMessageTable(tbodyId, messages, colspan, showTypeColumn){
+    const table = document.getElementById(tbodyId);
     table.innerHTML = "";
     if (messages.length === 0) {
-        table.innerHTML = `<tr><td colspan="7" class="empty-state">No messages yet</td></tr>`;
+        table.innerHTML = `<tr><td colspan="${colspan}" class="empty-state">No messages yet</td></tr>`;
         return;
     }
     messages.forEach(m => {
@@ -331,7 +483,7 @@ async function renderMessages(){
             <tr class="msg-row" onclick="toggleExpand(${m.id})">
                 <td>${escapeHTML(m.name)}</td>
                 <td>${escapeHTML(m.email)}</td>
-                <td>${escapeHTML(m.type)}</td>
+                ${showTypeColumn ? `<td>${escapeHTML(m.type)}</td>` : ""}
                 <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(m.message)}">${escapeHTML(m.message)}</td>
                 <td>${m.created_at || ""}</td>
                 <td>${statusBadge(m.status)}</td>
@@ -342,7 +494,7 @@ async function renderMessages(){
         if (isExpanded) {
             table.innerHTML += `
                 <tr class="msg-expanded" onclick="event.stopPropagation()">
-                    <td colspan="7">
+                    <td colspan="${colspan}">
                         <div class="expanded-content">
                             <div>
                                 <p class="block-label">Full message</p>
@@ -533,6 +685,10 @@ async function loadAdminThreads() {
     try {
         const data = await fetchAdminThreads();
         allAdminThreads = data.threads || [];
+        document.getElementById("convoCountThreads").textContent = allAdminThreads.length;
+        document.getElementById("convoCountWorkers").textContent =
+            new Set(allAdminThreads.map(t => t.worker_id)).size;
+
         if (allAdminThreads.length === 0) {
             table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
             return;
