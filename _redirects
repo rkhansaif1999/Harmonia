@@ -1,3 +1,0 @@
-# Ezoic ads.txt manager - keeps ads.txt synced automatically.
-# Works if this site is hosted on Cloudflare Pages.
-/ads.txt  https://srv.adstxtmanager.com/19390/harmoniaportal.online  301
