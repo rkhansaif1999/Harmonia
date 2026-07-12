@@ -1665,6 +1665,59 @@ RESPONSIVE
     }
 }
 
+/*==================================================
+CHECKOUT / PAYMENT RESPONSIVE GRIDS
+(these were hard-coded fixed-px inline grids that
+couldn't respond to viewport size — pulled out into
+classes here so they can collapse to 1 column on mobile)
+==================================================*/
+.checkout-summary-grid{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:25px;
+    align-items:start;
+}
+
+.payment-methods-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-bottom:25px;
+}
+
+.payment-methods-grid-2{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    margin-bottom:25px;
+}
+
+.checkout-crypto-grid{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:25px;
+    align-items:center;
+}
+
+@media (max-width:900px){
+    .checkout-summary-grid{
+        grid-template-columns:1fr;
+    }
+    .checkout-crypto-grid{
+        grid-template-columns:1fr;
+    }
+    .payment-methods-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media (max-width:480px){
+    .payment-methods-grid,
+    .payment-methods-grid-2{
+        grid-template-columns:1fr;
+    }
+}
+
 @media (max-width:700px){
     .hero{ padding-top:100px; }
     .hero h1{ font-size:2.4rem; letter-spacing:-1px; }
