@@ -3,3 +3,5 @@
 # configured in _redirects (Cloudflare Pages) pointing to:
 # https://srv.adstxtmanager.com/19390/harmoniaportal.online
 # If that redirect is active, this static file is never actually served.
+
+google.com, pub-2720348977759139, DIRECT, f08c47fec0942fa0
