@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>How Harmonia Works | Connecting People, Creating Opportunities</title>
+<meta name="description" content="See exactly how to earn online with Harmonia — from creating an account to completing your first paid AI data task. A transparent, step-by-step look at how to work online and earn AI earnings, for contributors and businesses alike.">
+<link rel="canonical" href="https://harmoniaportal.online/how-it-works.html">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="How Harmonia Works | Connecting People, Creating Opportunities">
+<meta property="og:description" content="A transparent, step-by-step look at how to earn online and work online by helping train AI, and how businesses collaborate with contributors on Harmonia.">
+<meta property="og:url" content="https://harmoniaportal.online/how-it-works.html">
+<meta property="og:site_name" content="Harmonia">
+<meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Harmonia | How the platform works">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Harmonia Works | Connecting People, Creating Opportunities">
+<meta name="twitter:description" content="A transparent, step-by-step look at how contributors and businesses collaborate on Harmonia.">
+<meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/*=================== RESET ===================*/
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif;}
+html{scroll-behavior:smooth;overflow-y:scroll;}
+body{
+  background:
+    radial-gradient(900px 600px at 10% 10%, rgba(92,140,255,.10), transparent 60%),
+    radial-gradient(800px 500px at 90% 20%, rgba(0,185,255,.08), transparent 55%),
+    radial-gradient(700px 500px at 50% 90%, rgba(140,120,255,.06), transparent 60%),
+    #050811;
+  color:#ffffff;min-height:100vh;overflow-x:hidden;line-height:1.7;position:relative;
+}
+img{display:block;max-width:100%;}
+a{text-decoration:none;color:inherit;transition:.25s ease;}
+ul{list-style:none;}
+button{font-family:inherit;}
+.container{width:min(1280px,92%);margin:auto;position:relative;z-index:2;}
+section{padding:140px 0;position:relative;}
+
+/*=================== AMBIENT ===================*/
+body::before{content:"";position:fixed;top:-350px;left:-250px;width:750px;height:750px;border-radius:50%;background:#605dff;filter:blur(220px);opacity:.13;z-index:-3;animation:glowOne 16s ease-in-out infinite alternate;pointer-events:none;}
+body::after{content:"";position:fixed;right:-280px;bottom:-320px;width:800px;height:800px;border-radius:50%;background:#00b9ff;filter:blur(240px);opacity:.12;z-index:-3;animation:glowTwo 20s ease-in-out infinite alternate;pointer-events:none;}
+@keyframes glowOne{0%{transform:translate(0,0);}100%{transform:translate(170px,130px);}}
+@keyframes glowTwo{0%{transform:translate(0,0);}100%{transform:translate(-180px,-140px);}}
+
+.noise{position:fixed;inset:0;pointer-events:none;opacity:.035;background-image:radial-gradient(circle at 20% 20%,white 1px,transparent 1px),radial-gradient(circle at 80% 40%,white 1px,transparent 1px),radial-gradient(circle at 40% 80%,white 1px,transparent 1px),radial-gradient(circle at 60% 60%,white 1px,transparent 1px);background-size:220px 220px;z-index:-2;}
+
+.particles{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1;}
+.particle{position:absolute;width:26px;height:26px;background:radial-gradient(circle,rgba(255,255,255,.95),rgba(120,200,255,.45),rgba(0,0,0,0) 70%);border-radius:50%;opacity:.55;filter:blur(5px);animation:floatSoft 14s ease-in-out infinite;}
+@keyframes floatSoft{0%{transform:translateY(110vh) translateX(0px) scale(.95);opacity:0;}12%{opacity:.6;}50%{transform:translateY(50vh) translateX(40px) scale(1.25);opacity:.55;}85%{opacity:.4;}100%{transform:translateY(-20vh) translateX(-30px) scale(1);opacity:0;}}
+
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+
+/*=================== BUTTONS ===================*/
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:17px 34px;border-radius:14px;font-weight:700;transition:.35s ease;cursor:pointer;}
+.btn-primary{background:white;color:#111827;box-shadow:0 18px 45px rgba(255,255,255,.12);}
+.btn-primary:hover{transform:translateY(-6px);box-shadow:0 25px 60px rgba(255,255,255,.18);}
+.btn-secondary{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(24px);color:white;}
+.btn-secondary:hover{transform:translateY(-6px);background:rgba(255,255,255,.08);}
+
+/*=================== NAV ===================*/
+nav{position:fixed;top:0;left:0;width:100%;height:82px;display:flex;align-items:center;backdrop-filter:blur(24px);background:rgba(6,10,18,.72);border-bottom:1px solid rgba(255,255,255,.06);z-index:999;}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 min(60px,6%);box-sizing:border-box;}
+.logo{font-size:1.7rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#7d79ff,#45d7ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#7d79ff;display:inline-flex;align-items:center;gap:9px;}
+.logo-img{height:1.35em;width:auto;display:block;flex-shrink:0;}
+.menu{display:flex;align-items:center;gap:34px;}
+.menu a{color:#b7c4d6;font-weight:500;font-size:.95rem;transition:.35s;}
+.menu a:hover, .menu a.active{color:white;}
+.nav-toggle{display:none;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;font-size:1.2rem;align-items:center;justify-content:center;cursor:pointer;}
+.mobile-menu{position:fixed;top:82px;left:0;width:100%;max-height:0;overflow:hidden;background:rgba(6,10,18,.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06);transition:max-height .4s ease;z-index:998;}
+.mobile-menu.open{max-height:460px;}
+.mobile-menu a{display:block;padding:18px 24px;color:#b7c4d6;font-weight:600;border-top:1px solid rgba(255,255,255,.05);}
+.mobile-menu a:hover{color:#fff;background:rgba(255,255,255,.03);}
+@media (max-width:900px){.nav-toggle{display:flex;}.menu{display:none;}}
+
+/*=================== HERO ===================*/
+.hero{min-height:108vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;text-align:center;padding-top:120px;}
+.hero::before{content:"";position:absolute;width:950px;height:950px;border-radius:50%;background:radial-gradient(circle,rgba(88,110,255,.18),transparent 70%);top:38%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.hero-content{max-width:980px;width:100%;margin:0 auto;position:relative;z-index:5;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(24px);margin-bottom:32px;font-size:.82rem;letter-spacing:2px;font-weight:700;text-transform:uppercase;color:#78cbff;}
+.hero h1{font-size:5.6rem;font-weight:800;line-height:.98;letter-spacing:-3px;margin-bottom:30px;}
+.hero h1 span{background:linear-gradient(135deg,#8d82ff,#4ad6ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8d82ff;}
+.hero p{font-size:1.22rem;max-width:760px;margin:auto;color:#9dadc1;line-height:1.9;text-align:center;}
+.hero-buttons{display:flex;justify-content:center;gap:18px;margin-top:46px;flex-wrap:wrap;}
+
+/* Hero illustration — connection network */
+.hero-visual{margin-top:80px;width:100%;max-width:920px;position:relative;}
+.hero-visual svg{width:100%;height:auto;overflow:visible;}
+.hv-node{animation:hvPulse 3.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+.hv-node.d1{animation-delay:.2s;} .hv-node.d2{animation-delay:.9s;} .hv-node.d3{animation-delay:1.5s;} .hv-node.d4{animation-delay:2.1s;} .hv-node.d5{animation-delay:.5s;}
+@keyframes hvPulse{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:1;transform:scale(1.18);}}
+.hv-line{stroke-dasharray:6 8;animation:hvDash 6s linear infinite;}
+@keyframes hvDash{to{stroke-dashoffset:-140;}}
+.hv-float{animation:hvFloat 7s ease-in-out infinite;}
+@keyframes hvFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+
+.scroll-down{position:absolute;bottom:-90px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:5;}
+.scroll-down span{font-size:.72rem;letter-spacing:3px;color:#7f8b9b;}
+.scroll-line{width:1px;height:46px;background:linear-gradient(180deg,#5cbcff,transparent);}
+
+/*=================== SECTION HEAD ===================*/
+.section-tag{display:inline-flex;align-items:center;padding:10px 20px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#73caff;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;backdrop-filter:blur(20px);margin-bottom:24px;}
+.section-header{text-align:center;max-width:820px;margin:0 auto 70px;}
+.section-header h2{font-size:3.8rem;font-weight:800;letter-spacing:-2px;line-height:1.08;margin-bottom:22px;}
+.section-header h2 span{background:linear-gradient(135deg,#8c82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8c82ff;}
+.section-header p{max-width:760px;margin:auto;font-size:1.13rem;color:#9aa9bb;}
+
+/*=================== STATEMENT / PULL QUOTE ===================*/
+.statement{text-align:center;}
+.statement-lead{max-width:900px;margin:0 auto 50px;font-size:1.2rem;color:#a4b1c3;line-height:2;}
+.statement-quote{font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;line-height:1.25;max-width:880px;margin:0 auto;}
+.statement-quote span{background:linear-gradient(135deg,#8c82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8c82ff;}
+
+/*=================== STATS (IMPACT) ===================*/
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:10px;}
+.impact-card{position:relative;padding:42px 36px;border-radius:30px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(28px);overflow:hidden;transition:.45s cubic-bezier(.16,1,.3,1);}
+.impact-card::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(84,142,255,.12);filter:blur(70px);top:-120px;right:-120px;transition:.45s;}
+.impact-card:hover{transform:translateY(-10px);border-color:rgba(82,182,255,.35);box-shadow:0 30px 70px rgba(0,0,0,.35);}
+.impact-card:hover::before{transform:scale(1.3);}
+.impact-icon{font-size:1.8rem;margin-bottom:18px;}
+.impact-number{font-size:2.6rem;font-weight:800;line-height:1;margin-bottom:16px;background:linear-gradient(135deg,#9a8dff,#47d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#9a8dff;}
+.impact-title{font-size:1.15rem;font-weight:700;margin-bottom:14px;}
+.impact-description{color:#9dadc1;line-height:1.8;font-size:.96rem;}
+
+/*=================== PRINCIPLES (VALUES) ===================*/
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:10px;}
+.value-card{position:relative;width:100%;padding:48px 40px;border-radius:30px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(30px);overflow:hidden;text-align:left;transition:transform .5s cubic-bezier(.16,1,.3,1), box-shadow .5s ease, border-color .5s ease;}
+.value-card:hover{transform:translateY(-14px);border-color:rgba(94,203,255,.35);box-shadow:0 30px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(94,203,255,.08);}
+.value-card::before{content:"";position:absolute;top:-100px;right:-100px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(90,170,255,.18),transparent 70%);filter:blur(60px);opacity:.9;transition:transform .6s ease;}
+.value-card:hover::before{transform:scale(1.4);}
+.value-icon{font-size:2.6rem;margin-bottom:20px;display:inline-block;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4));transition:transform .4s ease;}
+.value-card:hover .value-icon{transform:scale(1.15) rotate(-5deg);}
+.value-card h3{font-size:1.4rem;margin-bottom:14px;letter-spacing:-.5px;}
+.value-card p{color:#9dadc1;font-size:.98rem;line-height:1.85;}
+
+/*=================== OPPORTUNITIES ===================*/
+.opp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.opp-card{position:relative;padding:34px 28px;border-radius:24px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);backdrop-filter:blur(24px);transition:.4s ease;}
+.opp-card:hover{transform:translateY(-8px);border-color:rgba(94,203,255,.3);background:rgba(255,255,255,.05);}
+.opp-icon{font-size:1.9rem;margin-bottom:16px;}
+.opp-card h4{font-size:1.05rem;margin-bottom:10px;font-weight:700;}
+.opp-card p{color:#93a1b5;font-size:.9rem;line-height:1.7;}
+.opp-note{text-align:center;color:#7f8b9b;font-size:.95rem;margin-top:34px;}
+
+/*=================== JOURNEY TABS + TIMELINE ===================*/
+.journey-tabs{display:flex;justify-content:center;gap:14px;margin-bottom:60px;flex-wrap:wrap;}
+.journey-tab{padding:15px 30px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px);color:#b7c4d6;font-weight:700;font-size:.95rem;cursor:pointer;transition:.35s ease;}
+.journey-tab.active{background:linear-gradient(135deg,#8d82ff,#4ad6ff);color:#0b0f1a;border-color:transparent;}
+.journey-tab:hover:not(.active){background:rgba(255,255,255,.08);color:#fff;}
+
+.journey-panel{display:none;}
+.journey-panel.active{display:block;}
+
+.timeline-scroll{overflow-x:auto;overflow-y:hidden;padding-bottom:10px;scrollbar-width:none;cursor:grab;}
+.timeline-scroll::-webkit-scrollbar{display:none;}
+.timeline-scroll:active{cursor:grabbing;}
+.timeline-track{position:relative;display:flex;gap:36px;padding:20px 6px 40px;width:max-content;}
+
+.timeline-card{position:relative;z-index:10;width:340px;min-height:340px;padding:40px;border-radius:30px;background:#0b1220;border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(30px);overflow:hidden;transition:.45s cubic-bezier(.16,1,.3,1);flex-shrink:0;}
+.timeline-card:hover{transform:translateY(-10px);border-color:#55d2ff;box-shadow:0 35px 90px rgba(0,0,0,.45);}
+.timeline-card::before{content:"";position:absolute;top:-100px;right:-100px;width:210px;height:210px;border-radius:50%;background:rgba(88,125,255,.15);filter:blur(70px);transition:.45s;}
+.timeline-card:hover::before{transform:scale(1.35);}
+.timeline-step{position:absolute;top:22px;right:30px;font-size:5.5rem;font-weight:800;opacity:.06;line-height:1;user-select:none;}
+.timeline-year{display:inline-flex;align-items:center;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.78rem;letter-spacing:2px;font-weight:700;color:#78cfff;margin-bottom:22px;}
+.timeline-card h3{font-size:1.5rem;margin-bottom:14px;letter-spacing:-.5px;}
+.timeline-card p{color:#9eacc0;font-size:.98rem;line-height:1.85;}
+.timeline-hint{text-align:center;color:#7f8b9b;font-size:.88rem;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+/*=================== PROCESS FLOW (Quality) ===================*/
+.process-track{display:flex;align-items:flex-start;gap:0;position:relative;}
+.process-step{flex:1;text-align:center;position:relative;padding:0 14px;}
+.process-circle{width:78px;height:78px;border-radius:50%;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(20px);position:relative;z-index:3;transition:.4s ease;}
+.process-step:hover .process-circle{transform:scale(1.1);border-color:#55d2ff;box-shadow:0 0 40px rgba(85,210,255,.35);}
+.process-connector{position:absolute;top:39px;left:calc(50% + 39px);width:calc(100% - 78px);height:2px;background:linear-gradient(90deg,rgba(140,130,255,.55),rgba(70,216,255,.55));z-index:1;overflow:hidden;}
+.process-connector::after{content:"";position:absolute;top:0;left:-40%;width:40%;height:100%;background:linear-gradient(90deg,transparent,#fff,transparent);animation:flowRight 2.6s linear infinite;}
+@keyframes flowRight{0%{left:-40%;}100%{left:100%;}}
+.process-step:last-child .process-connector{display:none;}
+.process-step h4{font-size:1.05rem;margin-bottom:10px;font-weight:700;}
+.process-step p{color:#93a1b5;font-size:.88rem;line-height:1.7;max-width:210px;margin:0 auto;}
+
+/*=================== TRUST STRIP ===================*/
+.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.trust-card{padding:44px;border-radius:30px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(28px);}
+.trust-card h3{font-size:1.4rem;margin-bottom:24px;display:flex;align-items:center;gap:12px;}
+.trust-list{display:flex;flex-direction:column;gap:16px;}
+.trust-list li{display:flex;align-items:flex-start;gap:12px;color:#b6c2d3;font-size:.98rem;line-height:1.7;}
+.trust-check{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(88,212,255,.14);color:#58d4ff;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin-top:2px;}
+
+/*=================== WORLD MAP / VISION ===================*/
+.worldmap-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:70px;align-items:center;}
+.worldmap-visual{position:relative;border-radius:32px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(24px);padding:30px;}
+.worldmap-visual svg{width:100%;height:auto;}
+.wm-dot{animation:wmBlink 3s ease-in-out infinite;}
+.wm-dot.d2{animation-delay:.7s;} .wm-dot.d3{animation-delay:1.3s;} .wm-dot.d4{animation-delay:1.9s;} .wm-dot.d5{animation-delay:.4s;} .wm-dot.d6{animation-delay:2.4s;}
+@keyframes wmBlink{0%,100%{opacity:.35;r:3;}50%{opacity:1;r:5;}}
+.roadmap-title{font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;margin-bottom:22px;line-height:1.15;}
+.roadmap-title span{background:linear-gradient(135deg,#8c82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8c82ff;}
+.roadmap-text{color:#9dadc1;font-size:1.05rem;line-height:1.95;margin-bottom:34px;}
+.roadmap-chips{display:flex;flex-wrap:wrap;gap:12px;}
+.roadmap-chip{padding:11px 18px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:.86rem;color:#c3cede;font-weight:600;}
+
+/*=================== FAQ ACCORDION ===================*/
+.faq-list{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:16px;}
+.faq-item{border-radius:22px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(24px);overflow:hidden;transition:border-color .35s ease, background .35s ease;}
+.faq-item.open{border-color:rgba(94,203,255,.35);background:rgba(255,255,255,.05);}
+.faq-question{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:26px 30px;cursor:pointer;user-select:none;}
+.faq-question h4{font-size:1.05rem;font-weight:700;}
+.faq-icon{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:transform .4s cubic-bezier(.16,1,.3,1);color:#78cbff;}
+.faq-item.open .faq-icon{transform:rotate(45deg);background:linear-gradient(135deg,#8d82ff,#4ad6ff);color:#0b0f1a;border-color:transparent;}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.16,1,.3,1);}
+.faq-answer-inner{padding:0 30px 28px;color:#9dadc1;font-size:.98rem;line-height:1.85;}
+.faq-cat{text-align:center;color:#73caff;font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:50px 0 18px;}
+.faq-cat:first-child{margin-top:0;}
+
+/*=================== CTA ===================*/
+.cta-box{position:relative;padding:110px 80px;border-radius:40px;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(30px);text-align:center;}
+.cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(82,177,255,.16),transparent 70%);filter:blur(120px);pointer-events:none;}
+.cta-content{position:relative;z-index:2;max-width:850px;margin:auto;}
+.cta-content h2{font-size:4rem;font-weight:800;line-height:1.08;letter-spacing:-2px;margin-bottom:28px;}
+.cta-content h2 span{background:linear-gradient(135deg,#8b82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8b82ff;}
+.cta-content p{font-size:1.13rem;line-height:2;color:#a2afc2;margin-bottom:44px;}
+.cta-buttons{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+.cta-note{margin-top:44px;color:#7f8b9b;font-size:.92rem;font-style:italic;}
+
+/*=================== FOOTER ===================*/
+.footer{padding:100px 0 40px;border-top:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;}
+.footer::before{content:"";position:absolute;left:50%;top:-300px;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(77,170,255,.08),transparent 70%);filter:blur(100px);pointer-events:none;}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1fr;gap:60px;margin-bottom:70px;}
+.footer-brand h2{font-size:2.4rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#8c82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8c82ff;margin-bottom:24px;display:flex;align-items:center;gap:10px;}
+.footer-brand p{color:#9dadc1;line-height:2;max-width:420px;}
+.footer-links h4{margin-bottom:24px;font-size:1.1rem;}
+.footer-links{display:flex;flex-direction:column;gap:16px;}
+.footer-links a{color:#98a6b9;transition:.3s;}
+.footer-links a:hover{color:#62d4ff;padding-left:8px;}
+.footer-bottom{padding-top:35px;border-top:1px solid rgba(255,255,255,.06);text-align:center;color:#7f8b9b;}
+.footer-legal-links{margin-top:10px;font-size:.85rem;}
+.footer-legal-links a{color:#8a97a8;}
+.footer-legal-links a:hover{color:#62d4ff;}
+.footer-legal-links span{color:#3d4756;margin:0 10px;}
+
+/*=================== RESPONSIVE ===================*/
+@media (max-width:1200px){
+  .hero h1{font-size:4.4rem;}
+  .section-header h2{font-size:3.1rem;}
+  .impact-grid{grid-template-columns:1fr 1fr;}
+  .opp-grid{grid-template-columns:1fr 1fr;}
+  .worldmap-wrap{grid-template-columns:1fr;gap:50px;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:50px;}
+  .process-track{flex-wrap:wrap;row-gap:60px;}
+  .process-connector{display:none;}
+}
+@media (max-width:900px){
+  .hero{min-height:90vh;}
+  .hero h1{font-size:3.4rem;line-height:1.02;}
+  .section-header h2{font-size:2.7rem;}
+  .values-grid{grid-template-columns:1fr;}
+  .trust-grid{grid-template-columns:1fr;}
+  .cta-box{padding:80px 34px;}
+  .cta-content h2{font-size:2.8rem;}
+  .footer-grid{grid-template-columns:1fr;}
+  .hero-buttons, .cta-buttons{flex-direction:column;align-items:center;}
+  .process-step{flex:0 0 45%;}
+}
+@media (max-width:600px){
+  section{padding:90px 0;}
+  .hero{padding-top:110px;}
+  .hero h1{font-size:2.5rem;letter-spacing:-1.5px;}
+  .hero p{font-size:1rem;}
+  .section-header h2{font-size:2.1rem;}
+  .impact-grid{grid-template-columns:1fr;}
+  .opp-grid{grid-template-columns:1fr;}
+  .statement-quote{font-size:1.8rem;}
+  .cta-content h2{font-size:2.2rem;}
+  .cta-box{padding:60px 22px;}
+  .timeline-card{width:280px;padding:30px;min-height:300px;}
+  .process-step{flex:0 0 100%;}
+  .roadmap-title{font-size:2rem;}
+  .faq-question h4{font-size:.96rem;}
+  .journey-tab{padding:12px 20px;font-size:.85rem;}
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://harmoniaportal.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "How It Works",
+      "item": "https://harmoniaportal.online/how-it-works.html"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<div class="particles">
+<div class="particle" style="left:6%;animation-duration:18s;animation-delay:-2s;"></div>
+<div class="particle" style="left:14%;animation-duration:23s;animation-delay:-8s;"></div>
+<div class="particle" style="left:24%;animation-duration:20s;animation-delay:-5s;"></div>
+<div class="particle" style="left:35%;animation-duration:19s;animation-delay:-12s;"></div>
+<div class="particle" style="left:47%;animation-duration:22s;animation-delay:-6s;"></div>
+<div class="particle" style="left:58%;animation-duration:18s;animation-delay:-15s;"></div>
+<div class="particle" style="left:69%;animation-duration:24s;animation-delay:-4s;"></div>
+<div class="particle" style="left:81%;animation-duration:21s;animation-delay:-10s;"></div>
+<div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
+</div>
+
+<nav>
+<div class="nav-inner">
+<a href="index.html" class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</a>
+<div class="menu">
+<a href="index.html">Home</a>
+<a href="how-it-works.html" class="active">How It Works</a>
+<a href="about.html">About</a>
+<a href="pricing.html">Pricing</a>
+<a href="contact.html">Contact</a>
+<a href="login.html">Login</a>
+</div>
+<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">☰</button>
+</div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="index.html">Home</a>
+<a href="how-it-works.html">How It Works</a>
+<a href="about.html">About</a>
+<a href="pricing.html">Pricing</a>
+<a href="contact.html">Contact</a>
+<a href="login.html">Login</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+<div class="container">
+<div class="hero-content">
+
+<div class="hero-badge">HOW HARMONIA WORKS</div>
+
+<h1>Connecting People.<br><span>Creating Opportunities.</span><br>Building Trust.</h1>
+
+<p>Harmonia is a growing global community where contributors and businesses come together to achieve meaningful results. Whether you're looking to earn through flexible online opportunities or searching for dependable people to help complete your projects, here's exactly how it works.</p>
+
+<div class="hero-buttons">
+<a href="signup.html" class="btn btn-primary">Start Your Journey</a>
+<a href="#opportunities" class="btn btn-secondary">Explore Opportunities</a>
+</div>
+
+<div class="hero-visual">
+<svg viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hvGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8d82ff"/>
+      <stop offset="100%" stop-color="#46d8ff"/>
+    </linearGradient>
+  </defs>
+  <line class="hv-line" x1="120" y1="90" x2="330" y2="60" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".5"/>
+  <line class="hv-line" x1="330" y1="60" x2="560" y2="110" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".5"/>
+  <line class="hv-line" x1="560" y1="110" x2="780" y2="70" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".5"/>
+  <line class="hv-line" x1="330" y1="60" x2="450" y2="190" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".4"/>
+  <line class="hv-line" x1="450" y1="190" x2="560" y2="110" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".4"/>
+  <line class="hv-line" x1="120" y1="90" x2="230" y2="200" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".4"/>
+  <line class="hv-line" x1="230" y1="200" x2="450" y2="190" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".4"/>
+  <line class="hv-line" x1="780" y1="70" x2="700" y2="200" stroke="url(#hvGrad)" stroke-width="1.5" opacity=".4"/>
+
+  <g class="hv-float">
+    <circle class="hv-node d1" cx="120" cy="90" r="9" fill="#8d82ff"/>
+    <circle class="hv-node d2" cx="330" cy="60" r="13" fill="#46d8ff"/>
+    <circle class="hv-node d3" cx="560" cy="110" r="9" fill="#8d82ff"/>
+    <circle class="hv-node d4" cx="780" cy="70" r="11" fill="#46d8ff"/>
+    <circle class="hv-node d5" cx="450" cy="190" r="15" fill="#ffffff" opacity=".85"/>
+    <circle class="hv-node d3" cx="230" cy="200" r="8" fill="#46d8ff"/>
+    <circle class="hv-node d2" cx="700" cy="200" r="8" fill="#8d82ff"/>
+  </g>
+</svg>
+</div>
+
+</div>
+
+<div class="scroll-down">
+<span>SCROLL</span>
+<div class="scroll-line"></div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ WHY / STATEMENT ============ -->
+<section class="statement" id="story">
+<div class="container">
+
+<div class="section-tag" style="display:flex;margin:0 auto 24px;width:fit-content;">A BETTER WAY TO WORK TOGETHER</div>
+
+<p class="statement-lead reveal">
+The internet has changed how people connect, learn, and work — yet many talented people still struggle to access reliable online opportunities, while businesses keep searching for contributors they can trust. Harmonia was created to close that gap: not as just another marketplace, but as a trusted ecosystem where contributors, clients, researchers, and organizations collaborate through transparency, accountability, and shared success.
+</p>
+
+<p class="statement-quote reveal">Every feature we build is guided by one objective:<br><span>create opportunities that benefit everyone.</span></p>
+
+</div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section id="stats">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">HARMONIA AT A GLANCE</div>
+<h2>A Platform Built on <span>Real Numbers</span></h2>
+<p>We'd rather be accurate than impressive. Here's an honest look at where Harmonia stands today.</p>
+</div>
+
+<div class="impact-grid">
+
+<div class="impact-card reveal">
+<div class="impact-icon">🌍</div>
+<div class="impact-number">Global</div>
+<div class="impact-title">Countries Supported</div>
+<div class="impact-description">Contributors and clients join from many parts of the world, with specific opportunities depending on project needs and regional availability.</div>
+</div>
+
+<div class="impact-card reveal">
+<div class="impact-icon">🧩</div>
+<div class="impact-number">7+</div>
+<div class="impact-title">Project Categories</div>
+<div class="impact-description">AI training, surveys, data annotation, reviews, product testing, data collection, and more, with new categories added as we grow.</div>
+</div>
+
+<div class="impact-card reveal">
+<div class="impact-icon">🤝</div>
+<div class="impact-number">Trust</div>
+<div class="impact-title">Community Focus</div>
+<div class="impact-description">Every policy is written around fairness, transparency, and quality, for contributors and businesses alike.</div>
+</div>
+
+<div class="impact-card reveal">
+<div class="impact-icon">🔄</div>
+<div class="impact-number">Ongoing</div>
+<div class="impact-title">Continuous Growth</div>
+<div class="impact-description">We are actively expanding opportunities, tools, and quality systems as our community grows.</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ PRINCIPLES ============ -->
+<section id="principles">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">THE PRINCIPLES THAT GUIDE US</div>
+<h2>Six Values Behind <span>Every Decision</span></h2>
+<p>Every feature we build, every policy we write, and every improvement we make is guided by these six principles.</p>
+</div>
+
+<div class="values-grid">
+
+<div class="value-card reveal">
+<div class="value-icon">⚖️</div>
+<h3>Fairness</h3>
+<p>Opportunities are based on the quality of someone's work, not their background or location.</p>
+</div>
+
+<div class="value-card reveal">
+<div class="value-icon">🔎</div>
+<h3>Transparency</h3>
+<p>Clear communication and honest policies create lasting trust between contributors, clients, and the platform.</p>
+</div>
+
+<div class="value-card reveal">
+<div class="value-icon">💎</div>
+<h3>Quality</h3>
+<p>Every project deserves careful attention. We encourage contributors to focus on accuracy, consistency, and continuous improvement.</p>
+</div>
+
+<div class="value-card reveal">
+<div class="value-icon">🌐</div>
+<h3>Inclusivity</h3>
+<p>Talent exists everywhere. Harmonia welcomes contributors from diverse backgrounds around a global community.</p>
+</div>
+
+<div class="value-card reveal">
+<div class="value-icon">🚀</div>
+<h3>Innovation</h3>
+<p>We embrace new technologies, evolving industries, and better ways of connecting people with meaningful work.</p>
+</div>
+
+<div class="value-card reveal">
+<div class="value-icon">🤍</div>
+<h3>Integrity</h3>
+<p>Trust is earned through honesty, accountability, and respect — these values guide every interaction on the platform.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ JOURNEY TIMELINE ============ -->
+<section id="journey">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">ONE PLATFORM. TWO JOURNEYS.</div>
+<h2>Choose Your <span>Journey</span></h2>
+<p>Every person who joins Harmonia arrives with a different goal — but both journeys begin on the same foundation: trust, transparency, and quality.</p>
+</div>
+
+<div class="journey-tabs">
+<button class="journey-tab active" data-target="panel-contributor" type="button">👷 I'm a Contributor</button>
+<button class="journey-tab" data-target="panel-business" type="button">💼 I'm a Business</button>
+</div>
+
+<div class="journey-panel active" id="panel-contributor">
+<div class="timeline-scroll" id="contributorScroll">
+<div class="timeline-track">
+
+<div class="timeline-card reveal">
+<div class="timeline-step">01</div>
+<div class="timeline-year">STEP 01</div>
+<h3>Create Your Account</h3>
+<p>Register with your email and create your personal Harmonia account. We encourage every new member to verify their email to help keep the community secure.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">02</div>
+<div class="timeline-year">STEP 02</div>
+<h3>Complete Your Profile</h3>
+<p>Tell us about yourself. A complete profile helps us recommend projects that better match your skills, interests, language, and experience.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">03</div>
+<div class="timeline-year">STEP 03</div>
+<h3>Discover Opportunities</h3>
+<p>Explore available opportunities from your dashboard — AI training, surveys, data annotation, reviews, product testing, and more.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">04</div>
+<div class="timeline-year">STEP 04</div>
+<h3>Complete Tasks Carefully</h3>
+<p>Every opportunity includes clear instructions. Taking the time to complete work accurately builds your reputation and benefits everyone.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">05</div>
+<div class="timeline-year">STEP 05</div>
+<h3>Quality Review</h3>
+<p>Before work is finalized, submissions may pass through automated validation, manual review, client verification, or other project-specific checks.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">06</div>
+<div class="timeline-year">STEP 06</div>
+<h3>Receive Payment</h3>
+<p>Once approved, eligible work becomes available for payment according to our Payment Policy — as transparent and predictable as possible.</p>
+</div>
+
+</div>
+</div>
+<div class="timeline-hint">↔ Drag or scroll to explore each step</div>
+</div>
+
+<div class="journey-panel" id="panel-business">
+<div class="timeline-scroll" id="businessScroll">
+<div class="timeline-track">
+
+<div class="timeline-card reveal">
+<div class="timeline-step">01</div>
+<div class="timeline-year">STEP 01</div>
+<h3>Create a Client Account</h3>
+<p>Businesses begin by creating a client account where they can securely manage projects and communicate through the platform.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">02</div>
+<div class="timeline-year">STEP 02</div>
+<h3>Submit Your Project</h3>
+<p>Describe your project requirements, objectives, timeline, and instructions — research, AI data, surveys, content evaluation, and more.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">03</div>
+<div class="timeline-year">STEP 03</div>
+<h3>Project Review</h3>
+<p>Our team may review submitted projects before publication to help ensure clarity and maintain quality standards across the platform.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">04</div>
+<div class="timeline-year">STEP 04</div>
+<h3>Contributors Complete the Work</h3>
+<p>Approved contributors complete tasks according to your requirements. Work may be distributed across multiple contributors for efficiency.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">05</div>
+<div class="timeline-year">STEP 05</div>
+<h3>Quality Assurance</h3>
+<p>Completed work may undergo additional quality checks before delivery, helping ensure dependable results for your business.</p>
+</div>
+
+<div class="timeline-card reveal">
+<div class="timeline-step">06</div>
+<div class="timeline-year">STEP 06</div>
+<h3>Project Completion</h3>
+<p>Once all work is finalized and approved, your project is complete — the foundation for a long-term, reliable partnership.</p>
+</div>
+
+</div>
+</div>
+<div class="timeline-hint">↔ Drag or scroll to explore each step</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ OPPORTUNITIES ============ -->
+<section id="opportunities">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">WHAT YOU CAN WORK ON</div>
+<h2>Opportunities on <span>Harmonia</span></h2>
+<p>As the platform grows, contributors gain access to an expanding range of digital work opportunities.</p>
+</div>
+
+<div class="opp-grid">
+
+<div class="opp-card reveal"><div class="opp-icon">🧠</div><h4>AI Training</h4><p>Support AI development through annotation, evaluation, and data improvement projects.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">📊</div><h4>Surveys & Research</h4><p>Participate in research that helps organizations understand products, services, and communities.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">🏷️</div><h4>Data Annotation</h4><p>Label images, text, audio, and other digital content to improve machine learning systems.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">⭐</div><h4>Reviews & Evaluations</h4><p>Provide structured feedback that helps businesses improve quality and customer experience.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">🧪</div><h4>Product Testing</h4><p>Test websites, apps, or digital experiences by following project-specific instructions.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">📄</div><h4>Data Collection</h4><p>Contribute structured information used in research, analysis, and technology development.</p></div>
+
+<div class="opp-card reveal"><div class="opp-icon">🌍</div><h4>Future Opportunities</h4><p>Translation, moderation, transcription, localization, education, and accessibility testing, as we expand.</p></div>
+
+</div>
+
+<p class="opp-note">Opportunity availability varies depending on client demand, project requirements, and your qualifications.</p>
+
+</div>
+</section>
+
+<!-- ============ QUALITY PROCESS FLOW ============ -->
+<section id="quality">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">HOW WE MAINTAIN QUALITY</div>
+<h2>A Process Built for <span>Reliable Results</span></h2>
+<p>Delivering reliable results takes more than assigning tasks. Depending on the project, Harmonia may use one or more of these steps to maintain high standards.</p>
+</div>
+
+<div class="process-track">
+
+<div class="process-step reveal">
+<div class="process-circle">📋</div>
+<div class="process-connector"></div>
+<h4>Clear Instructions</h4>
+<p>Structured guidance so contributors understand what's expected before beginning.</p>
+</div>
+
+<div class="process-step reveal">
+<div class="process-circle">🤖</div>
+<div class="process-connector"></div>
+<h4>Intelligent Validation</h4>
+<p>Automated systems help flag incomplete submissions or formatting issues early.</p>
+</div>
+
+<div class="process-step reveal">
+<div class="process-circle">🧑‍💻</div>
+<div class="process-connector"></div>
+<h4>Manual Review</h4>
+<p>Reviewers or project managers evaluate submissions against client expectations.</p>
+</div>
+
+<div class="process-step reveal">
+<div class="process-circle">✅</div>
+<div class="process-connector"></div>
+<h4>Client Verification</h4>
+<p>Many projects include direct client approval to keep the workflow transparent.</p>
+</div>
+
+<div class="process-step reveal">
+<div class="process-circle">📈</div>
+<h4>Continuous Improvement</h4>
+<p>We keep refining our review process and tools based on community feedback.</p>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ TRUST & SAFETY ============ -->
+<section id="trust">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">KEEPING OUR COMMUNITY SAFE</div>
+<h2>Trust Is the <span>Foundation</span> of Everything</h2>
+<p>Contributors trust that their time will be treated fairly. Businesses trust that projects will be handled with care. Neither works without transparency and accountability.</p>
+</div>
+
+<div class="trust-grid">
+
+<div class="trust-card reveal">
+<h3>🛡️ Protecting Contributors</h3>
+<ul class="trust-list">
+<li><span class="trust-check">✓</span>Transparent platform policies and clear project instructions</li>
+<li><span class="trust-check">✓</span>Fair review processes and secure account management</li>
+<li><span class="trust-check">✓</span>Reliable communication and opportunities for continuous growth</li>
+<li><span class="trust-check">✓</span>Email verification and secure authentication</li>
+</ul>
+</div>
+
+<div class="trust-card reveal">
+<h3>🏢 Supporting Businesses</h3>
+<ul class="trust-list">
+<li><span class="trust-check">✓</span>Access to a global contributor community</li>
+<li><span class="trust-check">✓</span>Ability to scale projects efficiently</li>
+<li><span class="trust-check">✓</span>Quality-reviewed submissions and progress monitoring</li>
+<li><span class="trust-check">✓</span>Long-term relationships built with trusted contributors</li>
+</ul>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ WORLD MAP / VISION ============ -->
+<section id="vision">
+<div class="container">
+
+<div class="worldmap-wrap">
+
+<div class="worldmap-visual reveal">
+<svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="wmGlow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#46d8ff" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#46d8ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="300" cy="170" r="220" fill="url(#wmGlow)"/>
+  <g fill="#ffffff" opacity=".16">
+    <circle cx="60" cy="90" r="2.4"/><circle cx="90" cy="80" r="2.4"/><circle cx="120" cy="95" r="2.4"/><circle cx="150" cy="75" r="2.4"/>
+    <circle cx="70" cy="130" r="2.4"/><circle cx="100" cy="140" r="2.4"/><circle cx="135" cy="130" r="2.4"/>
+    <circle cx="220" cy="60" r="2.4"/><circle cx="250" cy="55" r="2.4"/><circle cx="280" cy="65" r="2.4"/><circle cx="310" cy="55" r="2.4"/><circle cx="340" cy="65" r="2.4"/>
+    <circle cx="230" cy="100" r="2.4"/><circle cx="265" cy="105" r="2.4"/><circle cx="300" cy="95" r="2.4"/><circle cx="330" cy="105" r="2.4"/>
+    <circle cx="240" cy="150" r="2.4"/><circle cx="270" cy="160" r="2.4"/><circle cx="300" cy="150" r="2.4"/>
+    <circle cx="180" cy="180" r="2.4"/><circle cx="200" cy="210" r="2.4"/><circle cx="185" cy="240" r="2.4"/><circle cx="205" cy="270" r="2.4"/>
+    <circle cx="400" cy="90" r="2.4"/><circle cx="430" cy="100" r="2.4"/><circle cx="460" cy="90" r="2.4"/><circle cx="490" cy="100" r="2.4"/>
+    <circle cx="420" cy="130" r="2.4"/><circle cx="450" cy="140" r="2.4"/><circle cx="480" cy="130" r="2.4"/>
+    <circle cx="440" cy="180" r="2.4"/><circle cx="465" cy="210" r="2.4"/><circle cx="450" cy="240" r="2.4"/>
+    <circle cx="510" cy="220" r="2.4"/><circle cx="540" cy="230" r="2.4"/><circle cx="525" cy="255" r="2.4"/>
+  </g>
+  <circle class="wm-dot d1" cx="100" cy="105" r="4" fill="#8d82ff"/>
+  <circle class="wm-dot d2" cx="280" cy="80" r="4" fill="#46d8ff"/>
+  <circle class="wm-dot d3" cx="450" cy="110" r="4" fill="#8d82ff"/>
+  <circle class="wm-dot d4" cx="195" cy="220" r="4" fill="#46d8ff"/>
+  <circle class="wm-dot d5" cx="455" cy="200" r="4" fill="#8d82ff"/>
+  <circle class="wm-dot d6" cx="525" cy="240" r="4" fill="#46d8ff"/>
+</svg>
+</div>
+
+<div>
+<div class="section-tag">LOOKING AHEAD</div>
+<h2 class="roadmap-title">Opportunity Should Never Be <span>Limited by Where You're Born</span></h2>
+<p class="roadmap-text">Countless skilled people around the world have the motivation to learn, contribute, and grow — while businesses need dependable contributors to support research, AI development, data processing, and many other digital projects. Harmonia exists to bring these two worlds together. What you see today is only the beginning; here's where we're headed next.</p>
+<div class="roadmap-chips">
+<span class="roadmap-chip">🧠 Advanced AI Training</span>
+<span class="roadmap-chip">🌍 Expanded International Opportunities</span>
+<span class="roadmap-chip">🏢 Enterprise Solutions</span>
+<span class="roadmap-chip">📚 Learning Resources</span>
+<span class="roadmap-chip">🤝 Strategic Partnerships</span>
+<span class="roadmap-chip">⚙️ Improved Automation</span>
+<span class="roadmap-chip">📱 Enhanced Mobile Experience</span>
+<span class="roadmap-chip">💬 Community Features</span>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+<div class="container">
+
+<div class="section-header">
+<div class="section-tag">FREQUENTLY ASKED QUESTIONS</div>
+<h2>Everything You Need <span>to Know</span></h2>
+<p>Can't find what you're looking for? Our support team is always ready to help.</p>
+</div>
+
+<div class="faq-list">
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>What is Harmonia?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Harmonia is a global digital work platform connecting contributors with businesses through opportunities like surveys, AI-related projects, data annotation, research participation, reviews, and testing.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>Is creating an account free?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Absolutely — creating a Harmonia account is completely free.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>Do I need previous experience to start?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Not always. Some opportunities are beginner-friendly, while others may require specific knowledge or skills. Each project clearly explains its own requirements before you begin.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>Is Harmonia available worldwide?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Yes. Harmonia welcomes members from many countries. However, certain opportunities may depend on project requirements, regional availability, language, or client preferences.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>How are payments processed?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Approved work becomes eligible for payment according to our Payment Policy. Payment schedules and available methods may vary depending on your country, project requirements, and verification status.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>Who can create projects on Harmonia?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Businesses, organizations, researchers, startups, and other approved clients can use Harmonia to connect with contributors for a wide range of digital projects.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>How does Harmonia maintain quality?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Depending on the project, submissions may undergo automated validation, manual review, client approval, or other quality assurance processes designed to deliver reliable results.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>What happens if someone violates the rules?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Accounts that violate Harmonia's policies may be reviewed and, where appropriate, restricted or suspended to help protect the integrity of the community.</div></div>
+</div>
+
+<div class="faq-item reveal">
+<div class="faq-question"><h4>Can I have more than one account?</h4><div class="faq-icon">+</div></div>
+<div class="faq-answer"><div class="faq-answer-inner">Unless explicitly permitted by Harmonia, each individual should maintain only one personal account. Multiple accounts may interfere with platform fairness and could result in account action.</div></div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="cta">
+<div class="container">
+
+<div class="cta-box reveal">
+<div class="cta-glow"></div>
+<div class="cta-content">
+<h2>Build the Future <span>With Harmonia</span></h2>
+<p>Every journey begins with a single step. Whether you're looking to discover meaningful online opportunities or find talented people to help your organization succeed, Harmonia is here to support your goals.</p>
+<div class="cta-buttons">
+<a href="signup.html" class="btn btn-primary">Start Your Journey</a>
+<a href="contact.html" class="btn btn-secondary">Talk to Our Team</a>
+</div>
+<p class="cta-note">"Our journey is only just beginning, and we're excited to build the future together." — The Harmonia Team</p>
+</div>
+</div>
+
+</div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+<div class="container">
+<div class="footer-grid">
+
+<div class="footer-brand">
+<h2><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
+<p>Building meaningful opportunities through AI, trust, and community. We're creating a future where talented people and innovative businesses grow together.</p>
+</div>
+
+<div class="footer-links">
+<h4>Company</h4>
+<a href="how-it-works.html">How It Works</a>
+<a href="about.html">About</a>
+<a href="pricing.html">Pricing</a>
+<a href="contact.html">Contact</a>
+<a href="login.html">Login</a>
+</div>
+
+<div class="footer-links">
+<h4>Platform</h4>
+<a href="worker-dashboard.html">Worker Dashboard</a>
+<a href="client-dashboard.html">Client Portal</a>
+<a href="client-projects.html">Projects</a>
+<a href="contact.html">Support</a>
+</div>
+
+<div class="footer-links">
+<h4>Resources</h4>
+<a href="faq.html">FAQ</a>
+<a href="help-center.html">Help Center</a>
+<a href="trust-safety.html">Trust &amp; Safety</a>
+<a href="disclaimer.html">Disclaimer</a>
+</div>
+
+<div class="footer-links">
+<h4>Connect</h4>
+<a href="https://discord.gg/DqVtp2bJRP" target="_blank" rel="noopener noreferrer">Discord Community</a>
+<a href="mailto:support@harmoniaportal.online">support@harmoniaportal.online</a>
+</div>
+
+<div class="footer-links">
+<h4>Legal</h4>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms.html">Terms of Service</a>
+<a href="cookie-policy.html">Cookie Policy</a>
+<a href="refund-policy.html">Refund Policy</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+<p>© 2026 Harmonia. All Rights Reserved.</p>
+<p class="footer-legal-links">
+<a href="privacy-policy.html">Privacy Policy</a><span>·</span><a href="terms.html">Terms of Service</a><span>·</span><a href="cookie-policy.html">Cookie Policy</a><span>·</span><a href="refund-policy.html">Refund Policy</a>
+</p>
+</div>
+
+</div>
+</footer>
+
+<script>
+
+/* MOBILE NAV TOGGLE */
+(function(){
+  const toggle = document.getElementById("navToggle");
+  const menu = document.getElementById("mobileMenu");
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", () => {
+    menu.classList.toggle("open");
+    toggle.textContent = menu.classList.contains("open") ? "✕" : "☰";
+  });
+  menu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      menu.classList.remove("open");
+      toggle.textContent = "☰";
+    });
+  });
+})();
+
+/* SCROLL REVEAL */
+(function(){
+  const targets = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach(el => observer.observe(el));
+  } else {
+    targets.forEach(el => el.classList.add("in-view"));
+  }
+})();
+
+/* CLICK & DRAG HORIZONTAL SCROLL FOR TIMELINES */
+function enableDragScroll(el){
+  if (!el) return;
+  let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+
+  el.addEventListener("mousedown", (e) => {
+    isDown = true; moved = false;
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  el.addEventListener("mouseleave", () => { isDown = false; });
+  el.addEventListener("mouseup", () => { isDown = false; });
+  el.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    const walk = x - startX;
+    if (Math.abs(walk) > 5) moved = true;
+    el.scrollLeft = scrollLeft - walk;
+  });
+  el.addEventListener("click", (e) => {
+    if (moved) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+}
+enableDragScroll(document.getElementById("contributorScroll"));
+enableDragScroll(document.getElementById("businessScroll"));
+
+/* JOURNEY TABS */
+(function(){
+  const tabs = document.querySelectorAll(".journey-tab");
+  const panels = document.querySelectorAll(".journey-panel");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      panels.forEach(p => p.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(tab.dataset.target).classList.add("active");
+    });
+  });
+})();
+
+/* FAQ ACCORDION */
+(function(){
+  const items = document.querySelectorAll(".faq-item");
+  items.forEach(item => {
+    const question = item.querySelector(".faq-question");
+    const answer = item.querySelector(".faq-answer");
+    question.addEventListener("click", () => {
+      const isOpen = item.classList.contains("open");
+      items.forEach(other => {
+        other.classList.remove("open");
+        other.querySelector(".faq-answer").style.maxHeight = null;
+      });
+      if (!isOpen) {
+        item.classList.add("open");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+      }
+    });
+  });
+})();
+
+</script>
+
+</body>
+</html>

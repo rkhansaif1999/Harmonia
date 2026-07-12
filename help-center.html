@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center | Harmonia — Support for Earning Online with AI</title>
+<meta name="description" content="Get help with your Harmonia account, AI data annotation tasks, payments, and everything you need to earn online and work online with confidence.">
+<link rel="canonical" href="https://harmoniaportal.online/help-center.html">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Help Center | Harmonia — Support for Earning Online with AI">
+<meta property="og:description" content="Get help with your Harmonia account, AI data annotation tasks, payments, and everything you need to earn online and work online with confidence.">
+<meta property="og:url" content="https://harmoniaportal.online/help-center.html">
+<meta property="og:site_name" content="Harmonia">
+<meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Help Center | Harmonia — Support for Earning Online with AI">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Help Center | Harmonia — Support for Earning Online with AI">
+<meta name="twitter:description" content="Get help with your Harmonia account, AI data annotation tasks, payments, and everything you need to earn online and work online with confidence.">
+<meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
+
+<style>
+    :root {
+    --bg: #050811;
+    --text: #e7edf6;
+    --muted: #9dadc1;
+    --accent: #62d4ff;
+    --border: rgba(255,255,255,.1);
+    --card-bg: rgba(255,255,255,.03);
+    --radius: 10px;
+    --max-width: 860px;
+  }
+
+  body{
+    font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  a{ text-decoration:none; }
+
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+  }
+
+  a { color: var(--accent); }
+
+  /* Hero */
+  .hero {
+    padding: 72px 24px 56px;
+    text-align: center;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero .emoji-badge {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero .subtitle {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto 28px;
+  }
+
+  .hero .intro {
+    max-width: 640px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 0.98rem;
+  }
+
+  .hero .intro p { margin: 0 0 10px; }
+
+  /* Layout */
+  .page-wrap {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  .text-block {
+    margin-bottom: 48px;
+    scroll-margin-top: 24px;
+  }
+
+  .text-block h2 {
+    font-size: 1.6rem;
+    margin: 0 0 14px;
+  }
+
+  .text-block h3 {
+    font-size: 1.15rem;
+    margin: 28px 0 10px;
+  }
+
+  .text-block p {
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+
+  .text-block ul {
+    margin: 8px 0 16px;
+    padding-left: 22px;
+    color: var(--muted);
+  }
+
+  .text-block li {
+    margin-bottom: 6px;
+  }
+
+  /* Table of contents / quick nav */
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 32px 0 56px;
+    padding: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .toc a {
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    padding: 7px 14px;
+    border-radius: 999px;
+    transition: all 0.15s ease;
+  }
+
+  .toc a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Chapter markers */
+  .chapter-title {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin: 72px 0 8px;
+    font-weight: 700;
+    scroll-margin-top: 24px;
+  }
+
+  .chapter-title:first-of-type { margin-top: 0; }
+
+  /* Checklist */
+  .checklist {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 24px;
+  }
+
+  .checklist li {
+    padding: 10px 0 10px 30px;
+    position: relative;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .checklist li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: var(--accent);
+    font-size: 0.9rem;
+  }
+
+  /* Numbered steps (Getting Started) */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: var(--card-bg);
+  }
+
+  .step .step-num {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .step .step-content h3 {
+    margin: 2px 0 6px;
+    font-size: 1.05rem;
+  }
+
+  .step .step-content p {
+    margin: 0;
+    font-size: 0.94rem;
+  }
+
+  /* Directory / feature card grid */
+  .directory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+
+  .directory-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    background: var(--card-bg);
+  }
+
+  .directory-card .emoji {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .directory-card h3 {
+    margin: 0 0 6px;
+    font-size: 1.02rem;
+  }
+
+  .directory-card p {
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+
+  /* Accordion / FAQ items (used for troubleshooting Q&A) */
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: rgba(255,255,255,.04);
+  }
+
+  .faq-question {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 18px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    font-family: inherit;
+  }
+
+  .faq-question:hover {
+    background: var(--card-bg);
+  }
+
+  .faq-question .icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .faq-item.open .faq-question .icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+
+  .faq-answer-inner {
+    padding: 0 20px 20px;
+    color: var(--muted);
+  }
+
+  .faq-answer-inner p { margin: 0 0 10px; }
+  .faq-answer-inner p:last-child { margin-bottom: 0; }
+  .faq-answer-inner ul { margin: 8px 0; padding-left: 20px; }
+  .faq-answer-inner li { margin-bottom: 6px; }
+
+  /* Discord callout */
+  .callout {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    padding: 28px;
+    margin: 24px 0 32px;
+  }
+
+  .callout h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+  }
+
+  .callout p {
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+
+  /* Closing / philosophy block */
+  .closing-block {
+    margin-top: 72px;
+    padding: 40px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    text-align: center;
+  }
+
+  .closing-block h2 {
+    font-size: 1.4rem;
+    margin: 0 0 16px;
+  }
+
+  .closing-block p {
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 8px;
+  }
+
+  .closing-block .signoff {
+    margin-top: 24px;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 1.1rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 48px 18px 40px; }
+    .page-wrap { padding: 32px 18px 64px; }
+    .toc { gap: 8px; }
+    .step { flex-direction: column; }
+  }
+
+/* ===== SITE FOOTER (matches Harmonia global footer) ===== */
+.footer{
+padding:100px 0 40px;
+border-top:1px solid rgba(255,255,255,.06);
+position:relative;
+overflow:hidden;
+}
+.footer::before{
+content:"";
+position:absolute;
+left:50%;
+top:-300px;
+transform:translateX(-50%);
+width:700px;
+height:700px;
+border-radius:50%;
+background:radial-gradient(circle, rgba(77,170,255,.08), transparent 70%);
+filter:blur(100px);
+pointer-events:none;
+}
+.footer .container{
+width:min(1200px,92%);
+margin:auto;
+position:relative;
+z-index:2;
+}
+.footer-grid{
+display:grid;
+grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;
+gap:60px;
+margin-bottom:70px;
+}
+.footer-brand h2{
+font-size:2.4rem;
+font-weight:800;
+letter-spacing:-1px;
+background:linear-gradient(135deg,#8c82ff,#46d8ff);
+-webkit-background-clip:text;
+background-clip:text;
+-webkit-text-fill-color:transparent;
+color:#8c82ff;
+margin-bottom:24px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+.footer-brand p{
+color:#9dadc1;
+line-height:2;
+max-width:420px;
+}
+.footer-links h4{
+margin-bottom:24px;
+font-size:1.1rem;
+color:#e7edf6;
+}
+.footer-links{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+.footer-links a{
+color:#98a6b9;
+transition:.3s;
+text-decoration:none;
+}
+.footer-links a:hover{
+color:#62d4ff;
+padding-left:8px;
+}
+.footer-bottom{
+padding-top:35px;
+border-top:1px solid rgba(255,255,255,.06);
+text-align:center;
+color:#7f8b9b;
+}
+.footer-legal-links{
+margin-top:10px;
+font-size:.85rem;
+}
+.footer-legal-links a{
+color:#8a97a8;
+text-decoration:none;
+}
+.footer-legal-links a:hover{
+color:#62d4ff;
+}
+.footer-legal-links span{
+color:#3d4756;
+margin:0 10px;
+}
+@media (max-width:1200px){
+.footer-grid{
+grid-template-columns:1fr 1fr;
+gap:50px;
+}
+}
+@media (max-width:900px){
+.footer-grid{
+grid-template-columns:1fr;
+}
+}
+
+</style>
+
+<link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TRQRKZFPY6');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://harmoniaportal.online/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Help Center",
+      "item": "https://harmoniaportal.online/help-center.html"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- BASE EFFECTS -->
+<div class="noise"></div>
+
+<!-- PARTICLES -->
+<div class="particles">
+  <div class="particle" style="left:6%;animation-duration:18s;animation-delay:-2s;"></div>
+  <div class="particle" style="left:14%;animation-duration:23s;animation-delay:-8s;"></div>
+  <div class="particle" style="left:24%;animation-duration:20s;animation-delay:-5s;"></div>
+  <div class="particle" style="left:35%;animation-duration:19s;animation-delay:-12s;"></div>
+  <div class="particle" style="left:47%;animation-duration:22s;animation-delay:-6s;"></div>
+  <div class="particle" style="left:58%;animation-duration:18s;animation-delay:-15s;"></div>
+  <div class="particle" style="left:69%;animation-duration:24s;animation-delay:-4s;"></div>
+  <div class="particle" style="left:81%;animation-duration:21s;animation-delay:-10s;"></div>
+  <div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</a>
+
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="pricing.html">Pricing</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+
+<header class="hero">
+  <span class="emoji-badge">💡</span>
+  <h1>Help Center</h1>
+  <p class="subtitle">Find answers, solve problems, and get the most out of Harmonia.</p>
+  <div class="intro">
+    <p>Welcome to the Harmonia Help Center—your central resource for understanding how our platform works, finding solutions to common issues, and learning how to use Harmonia with confidence.</p>
+    <p>Whether you're joining for the first time, managing projects, or looking for guidance, we're here to help.</p>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <nav class="toc" aria-label="Quick navigation">
+    <a href="#welcome">Welcome</a>
+    <a href="#what-youll-find">What You'll Find Here</a>
+    <a href="#getting-started">Getting Started</a>
+    <a href="#finding-what-you-need">Finding What You Need</a>
+    <a href="#common-reasons">Common Reasons People Visit</a>
+    <a href="#tips">Tips for the Best Experience</a>
+    <a href="#account-management">Account Management</a>
+    <a href="#account-security">Keeping Your Account Secure</a>
+    <a href="#account-issues">Common Account Issues</a>
+    <a href="#projects">Understanding Opportunities</a>
+    <a href="#payments">Understanding Payments</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#support">Contacting Support</a>
+    <a href="#discord">Join Our Discord</a>
+    <a href="#resource-directory">Quick Resource Directory</a>
+    <a href="#commitment">Our Commitment</a>
+  </nav>
+
+  <!-- ===================== CHAPTER 1 ===================== -->
+  <p class="chapter-title" id="chapter-1">Chapter 1 — Welcome to the Harmonia Help Center</p>
+
+  <div class="text-block" id="welcome">
+    <h2>Welcome</h2>
+    <p>Every journey starts with a question.</p>
+    <p>How do I create an account? How do I find opportunities? Why isn't something working? Where can I get help?</p>
+    <p>The Harmonia Help Center has been created to answer these questions through clear, practical guidance that helps both contributors and businesses use the platform successfully.</p>
+    <p>As Harmonia continues to grow, this Help Center will continue expanding alongside it.</p>
+  </div>
+
+  <div class="text-block" id="what-youll-find">
+    <h2>What You'll Find Here</h2>
+    <p>The Help Center brings together important information from across the platform in one convenient place.</p>
+    <p>Here you'll find guidance on:</p>
+    <ul class="checklist">
+      <li>Creating and managing your account</li>
+      <li>Understanding platform features</li>
+      <li>Finding and completing projects</li>
+      <li>Managing payments</li>
+      <li>Security and account protection</li>
+      <li>Troubleshooting common issues</li>
+      <li>Platform policies</li>
+      <li>Contacting support</li>
+    </ul>
+    <p>Our goal is to help you solve problems quickly so you can spend more time focusing on meaningful opportunities.</p>
+  </div>
+
+  <div class="text-block" id="getting-started">
+    <h2>Getting Started with Harmonia</h2>
+    <p>If you're new to Harmonia, getting started is simple.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <div class="step-content">
+          <h3>Create Your Account</h3>
+          <p>Register using a valid email address and create a secure password. After registration, verify your email address to activate your account.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <div class="step-content">
+          <h3>Complete Your Profile</h3>
+          <p>Providing accurate account information helps improve your experience and may be required for certain features or project opportunities. Always keep your information current.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <div class="step-content">
+          <h3>Explore the Platform</h3>
+          <p>Once your account is ready, you can explore the features available to your account, browse opportunities, and become familiar with the platform's tools and resources. Different account types may have access to different features depending on their role.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">4</span>
+        <div class="step-content">
+          <h3>Follow Platform Guidelines</h3>
+          <p>Before participating in projects, we encourage every member to read the relevant policies and instructions. Understanding platform expectations helps create a better experience for both contributors and businesses.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-block" id="finding-what-you-need">
+    <h2>Finding What You Need</h2>
+    <p>To make information easier to access, Harmonia's documentation is organized into dedicated sections.</p>
+    <div class="directory-grid">
+      <div class="directory-card">
+        <span class="emoji">📖</span>
+        <h3>How Harmonia Works</h3>
+        <p>Learn how the platform operates from start to finish.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">❓</span>
+        <h3>Frequently Asked Questions</h3>
+        <p>Find answers to the questions we receive most often.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🛡</span>
+        <h3>Trust &amp; Safety</h3>
+        <p>Understand how Harmonia promotes security, fairness, and responsible platform use.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🔒</span>
+        <h3>Privacy Policy</h3>
+        <p>Learn how information is collected, used, and protected.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">⚖</span>
+        <h3>Terms of Service</h3>
+        <p>Review the rules and responsibilities that apply when using Harmonia.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">📄</span>
+        <h3>Disclaimer</h3>
+        <p>Understand important information regarding platform availability, third-party services, and general use.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-block" id="common-reasons">
+    <h2>Common Reasons People Visit the Help Center</h2>
+    <p>Many visitors come here to learn how to:</p>
+    <ul>
+      <li>Create an account.</li>
+      <li>Reset their password.</li>
+      <li>Verify their email.</li>
+      <li>Find available opportunities.</li>
+      <li>Understand project requirements.</li>
+      <li>Learn about payments.</li>
+      <li>Troubleshoot technical issues.</li>
+      <li>Contact support.</li>
+      <li>Review platform policies.</li>
+    </ul>
+    <p>If you're looking for any of these topics, you're in the right place.</p>
+  </div>
+
+  <div class="text-block" id="tips">
+    <h2>Tips for Getting the Best Experience</h2>
+    <p>A few simple habits can make your experience smoother.</p>
+    <h3>Keep your account information accurate.</h3>
+    <p>This helps ensure that important notifications and account-related information reach you successfully.</p>
+    <h3>Read project instructions carefully.</h3>
+    <p>Every project may have different objectives and requirements. Taking a few moments to review the instructions can improve your overall experience.</p>
+    <h3>Keep your browser updated.</h3>
+    <p>Modern browsers provide better security, performance, and compatibility with Harmonia.</p>
+    <h3>Use a secure internet connection.</h3>
+    <p>Protecting your account begins with safe browsing practices. Avoid signing in from untrusted public devices whenever possible.</p>
+    <h3>Check announcements regularly.</h3>
+    <p>Important updates, platform improvements, and community news may be shared through Harmonia's official communication channels.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Need Assistance?</h2>
+    <p>If you cannot find the information you're looking for, don't worry.</p>
+    <p>Our support team is available to help with questions related to your account, technical issues, platform functionality, and other general concerns.</p>
+    <p>Before contacting support, we recommend reviewing the relevant Help Center article, as many common questions can be answered immediately.</p>
+  </div>
+
+  <div class="closing-block">
+    <h2>Our Philosophy</h2>
+    <p>A great platform doesn't only provide opportunities.</p>
+    <p>It also provides guidance.</p>
+    <p>The Harmonia Help Center exists because we believe every member deserves access to clear information, practical resources, and reliable support.</p>
+    <p>Helping our community succeed is just as important as building the technology that powers the platform.</p>
+    <p>As Harmonia continues to evolve, this Help Center will grow alongside it—making knowledge easier to access and helping every member move forward with confidence.</p>
+    <p class="signoff">Welcome to Harmonia.<br>Knowledge builds confidence. Confidence builds opportunity.</p>
+  </div>
+
+  <!-- ===================== CHAPTER 2 ===================== -->
+  <p class="chapter-title" id="chapter-2">Chapter 2 — Account Management &amp; Access</p>
+
+  <div class="text-block" id="account-management">
+    <h2>Your Harmonia Account</h2>
+    <p>Your Harmonia account is your gateway to the platform.</p>
+    <p>It allows you to access available features, manage your profile, participate in opportunities, and communicate with the platform where applicable.</p>
+    <p>Keeping your account secure and up to date helps ensure the best possible experience.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Creating an Account</h2>
+    <p>Creating an account is simple. To get started:</p>
+    <ul>
+      <li>Register using a valid email address.</li>
+      <li>Create a strong password.</li>
+      <li>Verify your email address.</li>
+      <li>Complete any required profile information.</li>
+      <li>Sign in and explore the platform.</li>
+    </ul>
+    <p>Providing accurate information during registration helps reduce account issues and supports a smoother experience.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Email Verification</h2>
+    <p>Email verification helps confirm that the email address belongs to you.</p>
+    <p>It also improves account security and allows us to send important notifications related to your account.</p>
+    <p>If you haven't received your verification email:</p>
+    <ul>
+      <li>Check your Spam or Junk folder.</li>
+      <li>Wait a few minutes and refresh your inbox.</li>
+      <li>Confirm that you entered the correct email address.</li>
+      <li>Request a new verification email if the option is available.</li>
+    </ul>
+    <p>If the issue continues, our support team will be happy to assist.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Signing In</h2>
+    <p>To access Harmonia, simply enter your registered email address and password on the login page.</p>
+    <p>For the best experience:</p>
+    <ul>
+      <li>Double-check your email address.</li>
+      <li>Ensure your password is entered correctly.</li>
+      <li>Make sure Caps Lock is turned off if using a keyboard.</li>
+      <li>Use the latest version of your web browser.</li>
+    </ul>
+    <p>If you still cannot sign in, follow the password recovery process or contact support.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Resetting Your Password</h2>
+    <p>If you've forgotten your password, use the password recovery option available on the login page.</p>
+    <p>To keep your account secure:</p>
+    <ul>
+      <li>Choose a unique password.</li>
+      <li>Avoid using passwords you've used on other websites.</li>
+      <li>Store your password safely.</li>
+      <li>Never share your login credentials with anyone.</li>
+    </ul>
+    <p>A strong password is one of the simplest ways to protect your account.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Updating Your Account Information</h2>
+    <p>Keeping your account information current helps ensure smooth communication and accurate account management.</p>
+    <p>Depending on available platform features, you may be able to update information such as:</p>
+    <ul>
+      <li>Your display name.</li>
+      <li>Contact details.</li>
+      <li>Password.</li>
+      <li>Notification preferences.</li>
+      <li>Other profile information.</li>
+    </ul>
+    <p>Some changes may require additional verification for security purposes.</p>
+  </div>
+
+  <div class="text-block" id="account-security">
+    <h2>Keeping Your Account Secure</h2>
+    <p>Security is a shared responsibility.</p>
+    <p>We recommend following these best practices:</p>
+    <ul class="checklist">
+      <li>Use a strong, unique password.</li>
+      <li>Verify your email address.</li>
+      <li>Never share your account credentials.</li>
+      <li>Avoid signing in on untrusted public devices.</li>
+      <li>Sign out after using shared computers.</li>
+      <li>Report suspicious activity immediately.</li>
+    </ul>
+    <p>Small security habits make a big difference.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>If You Can't Access Your Account</h2>
+    <p>Occasionally, members may experience difficulty accessing their accounts.</p>
+    <p>Common reasons include:</p>
+    <ul>
+      <li>Incorrect login credentials.</li>
+      <li>Forgotten password.</li>
+      <li>Browser-related issues.</li>
+      <li>Temporary technical problems.</li>
+      <li>Account security reviews.</li>
+    </ul>
+    <p>Before contacting support, try:</p>
+    <ul>
+      <li>Refreshing the page.</li>
+      <li>Clearing your browser cache.</li>
+      <li>Trying another browser.</li>
+      <li>Trying another device.</li>
+      <li>Checking your internet connection.</li>
+    </ul>
+    <p>Many issues can be resolved with these simple steps.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Account Reviews</h2>
+    <p>To help maintain a fair and secure platform, some accounts may occasionally be reviewed.</p>
+    <p>Reviews may occur for reasons such as:</p>
+    <ul>
+      <li>Verifying account information.</li>
+      <li>Investigating unusual activity.</li>
+      <li>Protecting platform security.</li>
+      <li>Ensuring compliance with platform policies.</li>
+    </ul>
+    <p>Whenever appropriate, our goal is to handle account reviews fairly and responsibly.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Account Responsibilities</h2>
+    <p>Every member helps create a trustworthy community.</p>
+    <p>When using Harmonia, we encourage members to:</p>
+    <ul>
+      <li>Provide accurate information.</li>
+      <li>Protect their login credentials.</li>
+      <li>Respect platform policies.</li>
+      <li>Participate honestly.</li>
+      <li>Report suspicious activity.</li>
+      <li>Communicate respectfully.</li>
+    </ul>
+    <p>Responsible participation benefits the entire community.</p>
+  </div>
+
+  <div class="text-block" id="account-issues">
+    <h2>Frequently Encountered Account Issues</h2>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I didn't receive my verification email.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Check your Spam folder and ensure your email address was entered correctly.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I forgot my password.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Use the password recovery feature available on the login page.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I can't log in.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Double-check your email address and password, then try again using a supported browser.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>My account appears restricted.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Some accounts may undergo review to help maintain platform security and fairness.</p>
+        <p>If you believe a restriction was applied incorrectly, please contact support.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>Can I create another account?</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Unless specifically permitted by Harmonia, each individual should maintain only one personal account.</p>
+        <p>Maintaining a single account helps support fairness and platform integrity.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <h2>Need More Help?</h2>
+    <p>If you're still experiencing account-related issues after following the steps above, our support team is available to help.</p>
+    <p>When contacting support, providing clear information about the issue—including any error messages or screenshots—can help us investigate more efficiently.</p>
+    <p>Our goal is to resolve account issues as quickly and fairly as possible.</p>
+  </div>
+
+  <div class="closing-block">
+    <h2>Helping You Get Started with Confidence</h2>
+    <p>Your account is the beginning of your journey with Harmonia.</p>
+    <p>By keeping your information accurate, protecting your login credentials, and following platform guidance, you'll be better prepared to take advantage of the opportunities and features available on the platform.</p>
+    <p class="signoff">A secure account creates a stronger experience—not only for you, but for the entire Harmonia community.</p>
+  </div>
+
+  <!-- ===================== CHAPTER 3 ===================== -->
+  <p class="chapter-title" id="chapter-3">Chapter 3 — Projects, Payments &amp; Troubleshooting</p>
+
+  <div class="text-block" id="projects">
+    <h2>Understanding Opportunities</h2>
+    <p>Harmonia connects contributors with a variety of digital opportunities provided by businesses, researchers, and organizations.</p>
+    <p>Depending on platform availability, projects may include activities such as AI data services, research participation, surveys, data annotation, testing, reviews, and other forms of digital collaboration.</p>
+    <p>Available opportunities may change over time based on client demand, project requirements, and platform growth.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Before You Start a Project</h2>
+    <p>Before participating in any opportunity, we recommend taking a few moments to prepare.</p>
+    <p>Always:</p>
+    <ul class="checklist">
+      <li>Read the project description carefully.</li>
+      <li>Review all instructions before beginning.</li>
+      <li>Make sure you understand the requirements.</li>
+      <li>Confirm that you have enough time to complete the task.</li>
+      <li>Ensure your internet connection is stable.</li>
+    </ul>
+    <p>Taking a few extra minutes at the beginning can help prevent mistakes later.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Completing Projects Successfully</h2>
+    <p>Every project is unique, but the same principles apply across the platform.</p>
+    <p>Successful contributors generally:</p>
+    <ul>
+      <li>Follow instructions carefully.</li>
+      <li>Submit accurate work.</li>
+      <li>Avoid rushing through tasks.</li>
+      <li>Pay attention to detail.</li>
+      <li>Complete work honestly.</li>
+      <li>Respect project requirements.</li>
+    </ul>
+    <p>Quality work benefits everyone by helping businesses receive dependable results while strengthening opportunities for contributors.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Understanding Project Availability</h2>
+    <p>Project availability is not always the same for every member.</p>
+    <p>Opportunities may vary depending on factors such as:</p>
+    <ul>
+      <li>Client demand.</li>
+      <li>Project schedules.</li>
+      <li>Required qualifications.</li>
+      <li>Language requirements.</li>
+      <li>Geographic availability.</li>
+      <li>Overall platform activity.</li>
+    </ul>
+    <p>If opportunities are limited today, new projects may become available in the future as the platform continues to grow.</p>
+  </div>
+
+  <div class="text-block" id="payments">
+    <h2>Understanding Payments</h2>
+    <p>Payments are processed according to Harmonia's Payment Policy.</p>
+    <p>The exact payment process may vary depending on the type of opportunity, verification requirements, payment provider, and your country or region.</p>
+    <p>Whenever applicable, payment information—including eligibility, supported methods, and processing timelines—will be communicated through the platform or our official documentation.</p>
+    <p>For complete payment details, please refer to our dedicated Payment Policy page.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Payment Status</h2>
+    <p>During the payment process, you may notice different stages as your earnings move through review and processing.</p>
+    <p>Depending on the project, payment status may include steps such as:</p>
+    <ul>
+      <li>Pending Review</li>
+      <li>Approved</li>
+      <li>Processing</li>
+      <li>Completed</li>
+    </ul>
+    <p>The exact workflow may differ between projects.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>If You Experience a Payment Issue</h2>
+    <p>If you believe there is a problem with a payment, first review:</p>
+    <ul>
+      <li>Your project status.</li>
+      <li>Payment eligibility requirements.</li>
+      <li>Account verification status.</li>
+      <li>Any recent platform announcements.</li>
+    </ul>
+    <p>If the issue remains unresolved, contact Harmonia Support with the relevant project details so we can investigate further.</p>
+  </div>
+
+  <div class="text-block" id="troubleshooting">
+    <h2>Troubleshooting Common Issues</h2>
+    <p>Occasionally, technical issues may occur. Many can be resolved with a few simple steps.</p>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>The website isn't loading.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Try:</p>
+        <ul>
+          <li>Refreshing the page.</li>
+          <li>Checking your internet connection.</li>
+          <li>Trying another browser.</li>
+          <li>Clearing your browser cache.</li>
+          <li>Returning a few minutes later if maintenance is in progress.</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>A page isn't working correctly.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Ensure that you're using a supported browser and that JavaScript is enabled if required.</p>
+        <p>If the problem continues, report the issue to our support team.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I can't find any available opportunities.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Opportunity availability changes regularly.</p>
+        <p>If nothing is currently available, check back later or review any qualification requirements that may apply to certain projects.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>Something looks different after an update.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Harmonia is continuously improving.</p>
+        <p>Platform updates may introduce new features, improvements, or interface changes intended to enhance the user experience.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I found a bug.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>We appreciate community feedback.</p>
+        <p>If you discover a technical issue, please provide as much information as possible, including:</p>
+        <ul>
+          <li>What happened.</li>
+          <li>What you expected to happen.</li>
+          <li>The device you were using.</li>
+          <li>Your browser.</li>
+          <li>Screenshots, if available.</li>
+        </ul>
+        <p>Detailed reports help us investigate and resolve issues more efficiently.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <h2>Platform Maintenance</h2>
+    <p>To keep Harmonia secure and reliable, occasional maintenance or updates may be performed.</p>
+    <p>During these periods, certain features may be temporarily unavailable.</p>
+    <p>Whenever possible, important maintenance will be communicated through official platform announcements.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Keeping Your Experience Smooth</h2>
+    <p>To enjoy the best possible experience, we recommend:</p>
+    <ul class="checklist">
+      <li>Keeping your browser updated.</li>
+      <li>Using a reliable internet connection.</li>
+      <li>Reading project instructions carefully.</li>
+      <li>Reviewing platform announcements.</li>
+      <li>Following community guidelines.</li>
+      <li>Keeping your account information current.</li>
+    </ul>
+    <p>These simple practices can help reduce technical issues and improve your overall experience.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>We're Always Improving</h2>
+    <p>Technology never stands still—and neither do we.</p>
+    <p>Every update to Harmonia is guided by the goal of creating a faster, more reliable, and more user-friendly platform.</p>
+    <p>Community feedback, new technologies, and evolving industry standards all help shape the future of Harmonia.</p>
+    <p>While not every improvement is immediately visible, each update is part of our ongoing commitment to building a better platform for everyone.</p>
+  </div>
+
+  <div class="closing-block">
+    <h2>Moving Forward with Confidence</h2>
+    <p>Whether you're completing your first project or returning as an experienced member, our goal is to provide the guidance and resources you need to succeed.</p>
+    <p>Every project completed, every issue resolved, and every improvement released brings Harmonia one step closer to becoming a stronger platform for contributors and businesses around the world.</p>
+    <p class="signoff">Thank you for growing with us.</p>
+  </div>
+
+  <!-- ===================== CHAPTER 4 ===================== -->
+  <p class="chapter-title" id="chapter-4">Chapter 4 — Support, Community &amp; Staying Connected</p>
+
+  <div class="text-block">
+    <h2>Need More Help?</h2>
+    <p>Our goal is to make Harmonia as simple and straightforward as possible.</p>
+    <p>While this Help Center answers many common questions, we understand that every situation is unique.</p>
+    <p>If you can't find the information you're looking for, our team is here to help.</p>
+    <p>Whether you're experiencing a technical issue, have questions about your account, need clarification about a project, or simply want guidance, we'll do our best to provide clear and helpful assistance.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Before Contacting Support</h2>
+    <p>To help resolve issues as quickly as possible, we recommend checking the following first:</p>
+    <ul class="checklist">
+      <li>Review the relevant Help Center article.</li>
+      <li>Read the project instructions carefully.</li>
+      <li>Check your account notifications.</li>
+      <li>Verify that your browser and internet connection are working correctly.</li>
+      <li>Review our platform policies if your question relates to account rules or platform procedures.</li>
+    </ul>
+    <p>Many common questions can be answered immediately through our documentation.</p>
+  </div>
+
+  <div class="text-block" id="support">
+    <h2>Contacting Harmonia Support</h2>
+    <p>If you still need assistance, our support team is available to help.</p>
+    <p>When submitting a support request, providing detailed information can help us investigate your issue more efficiently.</p>
+    <p>Helpful information may include:</p>
+    <ul>
+      <li>A clear description of the issue.</li>
+      <li>The page or feature involved.</li>
+      <li>Any error messages displayed.</li>
+      <li>Screenshots, when available.</li>
+      <li>The device and browser you were using.</li>
+    </ul>
+    <p>The more information you provide, the faster we can understand and investigate the situation.</p>
+  </div>
+
+  <div class="text-block" id="discord">
+    <h2>Join Our Discord Community</h2>
+    <p>Need quick advice? Want to stay informed about platform updates? Interested in connecting with other members?</p>
+    <p>Our official Discord community is one of the best places to stay connected with Harmonia.</p>
+    <div class="callout">
+      <h3>Inside our Discord server, you can:</h3>
+      <p>🤝 Connect with community members.</p>
+      <p>📢 Receive platform announcements.</p>
+      <p>🚀 Learn about new opportunities and updates.</p>
+      <p>💬 Ask questions and share experiences.</p>
+      <p>🎯 Get guidance from experienced members and moderators.</p>
+      <p>🌍 Be part of a growing international community.</p>
+    </div>
+    <p>Whether you're new to Harmonia or an experienced member, you're always welcome to join the conversation.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Staying Informed</h2>
+    <p>Harmonia is continuously evolving.</p>
+    <p>New features, platform improvements, opportunities, and important announcements may be shared through our official communication channels.</p>
+    <p>We encourage members to stay connected by:</p>
+    <ul class="checklist">
+      <li>Checking platform announcements.</li>
+      <li>Joining our Discord community.</li>
+      <li>Visiting the Help Center regularly.</li>
+      <li>Reviewing policy updates when announced.</li>
+    </ul>
+    <p>Staying informed helps you make the most of everything Harmonia has to offer.</p>
+  </div>
+
+  <div class="text-block" id="resource-directory">
+    <h2>Quick Resource Directory</h2>
+    <p>Looking for something specific? Here are some of the most helpful pages on our website:</p>
+    <div class="directory-grid">
+      <div class="directory-card">
+        <span class="emoji">📖</span>
+        <h3>How Harmonia Works</h3>
+        <p>Understand how the platform operates from start to finish.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">❓</span>
+        <h3>Frequently Asked Questions</h3>
+        <p>Find answers to our most commonly asked questions.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🛡</span>
+        <h3>Trust &amp; Safety</h3>
+        <p>Learn how Harmonia promotes fairness, security, and responsible platform use.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🔒</span>
+        <h3>Privacy Policy</h3>
+        <p>Understand how your information is handled and protected.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">⚖</span>
+        <h3>Terms of Service</h3>
+        <p>Review the rules and responsibilities that help keep Harmonia fair and transparent.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">📄</span>
+        <h3>Disclaimer</h3>
+        <p>Read important information regarding platform availability, third-party services, and general use.</p>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">📞</span>
+        <h3>Contact Us</h3>
+        <p>Reach our support team if you need additional assistance.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <h2>Our Support Philosophy</h2>
+    <p>Support is about more than answering questions.</p>
+    <p>It's about helping people move forward.</p>
+    <p>We believe every member deserves to be treated with respect, professionalism, and patience.</p>
+    <p>Our goal is not only to resolve issues but also to provide guidance that helps contributors, businesses, and partners use Harmonia with confidence.</p>
+    <p>As our community continues to grow, we remain committed to improving our support resources and listening carefully to the people who use our platform every day.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Thank You for Being Part of Harmonia</h2>
+    <p>Every successful community is built by people who believe in helping one another.</p>
+    <p>Whether you're here to contribute your skills, launch a project, explore new opportunities, or simply learn more about Harmonia, we're grateful you've chosen to be part of our journey.</p>
+    <p>Thank you for your trust, your ideas, your feedback, and your continued support.</p>
+    <p>Together, we're creating a platform where collaboration, fairness, and opportunity can thrive.</p>
+  </div>
+
+  <div class="text-block" id="commitment">
+    <h2>Our Commitment</h2>
+    <p>As Harmonia continues to grow, we remain committed to:</p>
+    <div class="directory-grid">
+      <div class="directory-card">
+        <span class="emoji">🤝</span>
+        <h3>Supporting our community</h3>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🌍</span>
+        <h3>Expanding opportunities</h3>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">⭐</span>
+        <h3>Encouraging quality and professionalism</h3>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🔒</span>
+        <h3>Strengthening security and trust</h3>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">🚀</span>
+        <h3>Continuously improving the platform</h3>
+      </div>
+      <div class="directory-card">
+        <span class="emoji">❤️</span>
+        <h3>Building a community where everyone feels welcome</h3>
+      </div>
+    </div>
+    <p>These commitments guide every decision we make and every improvement we introduce.</p>
+  </div>
+
+  <div class="closing-block">
+    <p class="signoff">Welcome to Harmonia.<br>Learn. Connect. Grow Together.</p>
+    <p>The Help Center is here whenever you need it—and so is our community.</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+<div class="container">
+<div class="footer-grid">
+
+<div class="footer-brand">
+<h2><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
+<p>
+Building meaningful opportunities through AI, trust, and community.
+We're creating a future where talented people and innovative businesses grow together.
+</p>
+</div>
+
+<div class="footer-links">
+<h4>Company</h4>
+<a href="how-it-works.html">How It Works</a>
+<a href="about.html">About</a>
+<a href="pricing.html">Pricing</a>
+<a href="contact.html">Contact</a>
+<a href="login.html">Login</a>
+</div>
+
+<div class="footer-links">
+<h4>Platform</h4>
+<a href="worker-dashboard.html">Worker Dashboard</a>
+<a href="client-dashboard.html">Client Portal</a>
+<a href="client-projects.html">Projects</a>
+<a href="contact.html">Support</a>
+</div>
+
+<div class="footer-links">
+<h4>Resources</h4>
+<a href="faq.html">FAQ</a>
+<a href="help-center.html">Help Center</a>
+<a href="trust-safety.html">Trust &amp; Safety</a>
+<a href="disclaimer.html">Disclaimer</a>
+</div>
+
+<div class="footer-links">
+<h4>Connect</h4>
+<a href="https://discord.gg/DqVtp2bJRP" target="_blank" rel="noopener noreferrer">Discord Community</a>
+<a href="mailto:support@harmoniaportal.online">support@harmoniaportal.online</a>
+</div>
+
+<div class="footer-links">
+<h4>Legal</h4>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms.html">Terms of Service</a>
+<a href="cookie-policy.html">Cookie Policy</a>
+<a href="refund-policy.html">Refund Policy</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+<p>© 2026 Harmonia. All Rights Reserved.</p>
+<p class="footer-legal-links">
+<a href="privacy-policy.html">Privacy Policy</a><span>&middot;</span><a href="terms.html">Terms of Service</a><span>&middot;</span><a href="cookie-policy.html">Cookie Policy</a><span>&middot;</span><a href="refund-policy.html">Refund Policy</a>
+</p>
+</div>
+
+</div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="script.js?v=4"></script>
+<script>
+const navbar = document.getElementById("navbar");
+window.addEventListener("scroll", () => {
+  navbar.style.background =
+    window.scrollY > 20
+      ? "rgba(6,10,18,.85)"
+      : "rgba(6,10,18,.72)";
+});
+</script>
+
+</body>
+</html>

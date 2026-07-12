@@ -14,6 +14,11 @@ Allow: /terms.html
 Allow: /privacy-policy.html
 Allow: /cookie-policy.html
 Allow: /refund-policy.html
+Allow: /how-it-works.html
+Allow: /faq.html
+Allow: /help-center.html
+Allow: /trust-safety.html
+Allow: /disclaimer.html
 
 # Logged-in-only dashboards — nothing here should be crawled or indexed.
 # (Also carry a <meta name="robots" content="noindex"> tag individually,
@@ -40,3 +45,5 @@ Disallow: /worker-payments.html
 Disallow: /worker-earnings.html
 Disallow: /reviewer-dashboard.html
 Disallow: /payment-confirm.html
+
+Sitemap: https://harmoniaportal.online/sitemap.xml
