@@ -53,40 +53,40 @@
   a { color: var(--accent); }
 
   /* Hero */
-  .hero {
+  .hero-simple {
     padding: 72px 24px 56px;
     text-align: center;
     background: var(--card-bg);
     border-bottom: 1px solid var(--border);
   }
 
-  .hero .emoji-badge {
+  .hero-simple .emoji-badge {
     font-size: 2.4rem;
     display: block;
     margin-bottom: 12px;
   }
 
-  .hero h1 {
+  .hero-simple h1 {
     font-size: clamp(2rem, 4vw, 2.8rem);
     margin: 0 0 12px;
     letter-spacing: -0.02em;
   }
 
-  .hero .subtitle {
+  .hero-simple .subtitle {
     font-size: 1.15rem;
     color: var(--muted);
     max-width: 620px;
     margin: 0 auto 28px;
   }
 
-  .hero .intro {
+  .hero-simple .intro {
     max-width: 640px;
     margin: 0 auto;
     color: var(--muted);
     font-size: 0.98rem;
   }
 
-  .hero .intro p { margin: 0 0 10px; }
+  .hero-simple .intro p { margin: 0 0 10px; }
 
   /* Layout */
   .page-wrap {
@@ -225,7 +225,7 @@
   }
 
   @media (max-width: 600px) {
-    .hero { padding: 48px 18px 40px; }
+    .hero-simple { padding: 48px 18px 40px; }
     .page-wrap { padding: 32px 18px 64px; }
     .toc { gap: 8px; }
   }
@@ -258,7 +258,7 @@ z-index:2;
 }
 .footer-grid{
 display:grid;
-grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1fr;
+grid-template-columns:minmax(230px,1.6fr) repeat(5,minmax(0,1fr));
 gap:60px;
 margin-bottom:70px;
 }
@@ -405,7 +405,7 @@ grid-template-columns:1fr;
 </nav>
 
 
-<header class="hero">
+<header class="hero-simple">
   <span class="emoji-badge">📄</span>
   <h1>Disclaimer</h1>
   <p class="subtitle">Important information about using Harmonia and our services.</p>

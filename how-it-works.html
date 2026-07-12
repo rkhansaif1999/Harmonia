@@ -242,7 +242,7 @@ nav{position:fixed;top:0;left:0;width:100%;height:82px;display:flex;align-items:
 /*=================== FOOTER ===================*/
 .footer{padding:100px 0 40px;border-top:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;}
 .footer::before{content:"";position:absolute;left:50%;top:-300px;transform:translateX(-50%);width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(77,170,255,.08),transparent 70%);filter:blur(100px);pointer-events:none;}
-.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1fr;gap:60px;margin-bottom:70px;}
+.footer-grid{display:grid;grid-template-columns:minmax(230px,1.6fr) repeat(5,minmax(0,1fr));gap:60px;margin-bottom:70px;}
 .footer-brand h2{font-size:2.4rem;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#8c82ff,#46d8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#8c82ff;margin-bottom:24px;display:flex;align-items:center;gap:10px;}
 .footer-brand p{color:#9dadc1;line-height:2;max-width:420px;}
 .footer-links h4{margin-bottom:24px;font-size:1.1rem;}
