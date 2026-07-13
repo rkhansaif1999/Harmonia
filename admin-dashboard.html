@@ -51,7 +51,7 @@
 <script src="script.js?v=4"></script>
 
 <script>
-    protectPage("admin");
+    protectPage("admin", { permission: "dashboard" });
 </script>
 
 <div class="dashboard">
@@ -63,15 +63,17 @@
 
         <ul>
             <li class="active">📊 Dashboard</li>
-            <li><a href="admin-workers.html">👥 Workers</a></li>
-            <li><a href="admin-clients.html">🏢 Clients</a></li>
-            <li><a href="admin-projects.html">📂 Projects</a></li>
-            <li><a href="admin-tasks.html">📋 Tasks</a></li>
-            <li><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
-            <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li><a href="admin-workers.html">💰 Payments</a></li>
-            <li><a href="admin-analytics.html">📈 Analytics</a></li>
-            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li data-permission="workers"><a href="admin-workers.html">👥 Workers</a></li>
+            <li data-permission="clients"><a href="admin-clients.html">🏢 Clients</a></li>
+            <li data-permission="projects"><a href="admin-projects.html">📂 Projects</a></li>
+            <li data-permission="tasks"><a href="admin-tasks.html">📋 Tasks</a></li>
+            <li data-permission="offerwalls"><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
+            <li data-permission="messages"><a href="admin-messages.html">✉️ Messages</a></li>
+            <li data-permission="workers"><a href="admin-workers.html">💰 Payments</a></li>
+            <li data-permission="analytics"><a href="admin-analytics.html">📈 Analytics</a></li>
+            <li data-permission="settings"><a href="admin-settings.html">⚙ Settings</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-tasks.html">🧩 My Tasks</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-earnings.html">💵 My Earnings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
 
@@ -108,29 +110,29 @@
 
         <section class="cards">
 
-            <div class="dashboard-card">
+            <div class="dashboard-card" data-permission="workers">
                 <h3>Total Workers</h3>
                 <h2 id="totalWorkers">0</h2>
             </div>
 
-            <div class="dashboard-card">
+            <div class="dashboard-card" data-permission="clients">
                 <h3>Total Clients</h3>
                 <h2 id="totalClients">0</h2>
             </div>
 
-            <div class="dashboard-card">
+            <div class="dashboard-card" data-permission="projects">
                 <h3>Total Projects</h3>
                 <h2 id="totalProjects">0</h2>
             </div>
 
-            <div class="dashboard-card">
+            <div class="dashboard-card" data-permission="projects">
                 <h3>Pending Projects</h3>
                 <h2 id="pendingProjects">0</h2>
             </div>
 
         </section>
 
-        <section class="recent">
+        <section class="recent" data-permission="projects">
 
             <h2>Recent Projects</h2>
 

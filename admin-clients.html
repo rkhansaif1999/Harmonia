@@ -52,7 +52,7 @@
 <script src="script.js?v=4"></script>
 
 <script>
-    protectPage("admin");
+    protectPage("admin", { permission: "clients" });
 </script>
 
 <div class="dashboard">
@@ -64,15 +64,17 @@
 
         <ul>
             <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
-            <li><a href="admin-workers.html">👥 Workers</a></li>
-            <li class="active">🏢 Clients</li>
-            <li><a href="admin-projects.html">📂 Projects</a></li>
-            <li><a href="admin-tasks.html">📋 Tasks</a></li>
-            <li><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
-            <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li><a href="admin-workers.html">💰 Payments</a></li>
-            <li><a href="admin-analytics.html">📈 Analytics</a></li>
-            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li data-permission="workers"><a href="admin-workers.html">👥 Workers</a></li>
+            <li class="active" data-permission="clients">🏢 Clients</li>
+            <li data-permission="projects"><a href="admin-projects.html">📂 Projects</a></li>
+            <li data-permission="tasks"><a href="admin-tasks.html">📋 Tasks</a></li>
+            <li data-permission="offerwalls"><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
+            <li data-permission="messages"><a href="admin-messages.html">✉️ Messages</a></li>
+            <li data-permission="workers"><a href="admin-workers.html">💰 Payments</a></li>
+            <li data-permission="analytics"><a href="admin-analytics.html">📈 Analytics</a></li>
+            <li data-permission="settings"><a href="admin-settings.html">⚙ Settings</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-tasks.html">🧩 My Tasks</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-earnings.html">💵 My Earnings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
 

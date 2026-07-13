@@ -335,6 +335,7 @@ Don't have an account?
 
         switch (existing.role) {
             case "admin": window.location.href = "admin-dashboard.html"; break;
+            case "core_team": window.location.href = "admin-dashboard.html"; break;
             case "client": window.location.href = "client-dashboard.html"; break;
             case "worker": window.location.href = "worker-dashboard.html"; break;
             case "reviewer": window.location.href = "reviewer-dashboard.html"; break;
@@ -370,10 +371,22 @@ function selectRole(role, element){
 
 const ROLE_DASHBOARD = {
     admin: "admin-dashboard.html",
+    core_team: "admin-dashboard.html",
     client: "client-dashboard.html",
     worker: "worker-dashboard.html",
     reviewer: "reviewer-dashboard.html"
 };
+
+// Core Team is an admin-tier role (limited to whichever tabs they were
+// granted) - it logs in through the same "Admin" card as a full admin,
+// since from a login-page perspective they're both heading to
+// admin-dashboard.html. The actual page-by-page restriction happens
+// once they're in, via protectPage()'s permission checks.
+function roleMatchesSelection(actualRole, selectedRole) {
+    if (actualRole === selectedRole) return true;
+    if (selectedRole === "admin" && actualRole === "core_team") return true;
+    return false;
+}
 
 function setMsg(text){
     const el = document.getElementById("loginMsg");
@@ -418,7 +431,7 @@ async function loginUser(event){
             return;
         }
 
-        if (data.user.role !== selectedRole) {
+        if (!roleMatchesSelection(data.user.role, selectedRole)) {
             // Credentials were correct, but this account isn't the role
             // they meant to log into. Clean up the session we were just
             // issued rather than leaving it dangling unused.

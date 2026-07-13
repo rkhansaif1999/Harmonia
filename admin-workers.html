@@ -107,7 +107,7 @@
 <script src="script.js?v=4"></script>
 
 <script>
-    protectPage("admin");
+    protectPage("admin", { permission: "workers" });
 </script>
 
 <div class="dashboard">
@@ -119,15 +119,17 @@
 
         <ul>
             <li><a href="admin-dashboard.html">📊 Dashboard</a></li>
-            <li class="active">👥 Workers</li>
-            <li><a href="admin-clients.html">🏢 Clients</a></li>
-            <li><a href="admin-projects.html">📂 Projects</a></li>
-            <li><a href="admin-tasks.html">📋 Tasks</a></li>
-            <li><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
-            <li><a href="admin-messages.html">✉️ Messages</a></li>
-            <li><a href="admin-workers.html">💰 Payments</a></li>
-            <li><a href="admin-analytics.html">📈 Analytics</a></li>
-            <li><a href="admin-settings.html">⚙ Settings</a></li>
+            <li class="active" data-permission="workers">👥 Workers</li>
+            <li data-permission="clients"><a href="admin-clients.html">🏢 Clients</a></li>
+            <li data-permission="projects"><a href="admin-projects.html">📂 Projects</a></li>
+            <li data-permission="tasks"><a href="admin-tasks.html">📋 Tasks</a></li>
+            <li data-permission="offerwalls"><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
+            <li data-permission="messages"><a href="admin-messages.html">✉️ Messages</a></li>
+            <li data-permission="workers"><a href="admin-workers.html">💰 Payments</a></li>
+            <li data-permission="analytics"><a href="admin-analytics.html">📈 Analytics</a></li>
+            <li data-permission="settings"><a href="admin-settings.html">⚙ Settings</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-tasks.html">🧩 My Tasks</a></li>
+            <li data-core-team-only style="display:none;"><a href="worker-earnings.html">💵 My Earnings</a></li>
             <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
         </ul>
 
@@ -242,6 +244,33 @@
 
         </section>
 
+        <section class="recent" id="coreTeamSection" data-admin-only>
+
+            <h2>Core Team Access</h2>
+            <p style="opacity:.65;font-size:.85rem;margin-top:-6px;margin-bottom:14px;">
+                Core Team members can log in through the Admin option, but only see the admin tabs you tick for them below.
+                They keep their full Worker access (tasks, earnings, payouts) either way.
+            </p>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Permissions</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="coreTeamTable">
+                    <tr><td colspan="4" style="opacity:.6;">Loading Core Team...</td></tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
     </main>
 
 </div>
@@ -279,6 +308,27 @@ function capitalize(s) {
     if (!s) return "";
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
+
+// Core Team management (granting/editing admin-tab permissions) is
+// admin-only - a Core Team member viewing this same page (if given the
+// "workers" tab) never sees these controls, even though the page itself
+// is reachable to them.
+function isRealAdmin() {
+    const user = getUser();
+    return !!user && user.role === "admin";
+}
+
+const CORE_TEAM_PERMISSION_LABELS = {
+    dashboard: "📊 Dashboard",
+    workers: "👥 Workers & Payments",
+    clients: "🏢 Clients",
+    projects: "📂 Projects",
+    tasks: "📋 Tasks",
+    offerwalls: "🎯 Offerwalls",
+    messages: "✉️ Messages",
+    analytics: "📈 Analytics",
+    settings: "⚙ Settings",
+};
 
 function maskEmail(email) {
     if (!email) return "";
@@ -643,6 +693,7 @@ function renderWorkers(){
                             ${statusActions}
                             <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
                             <button onclick="toggleEmailPermission(${worker.id}, ${worker.can_send_email ? 'false' : 'true'})">${worker.can_send_email ? '🚫 Revoke Email Access' : '📧 Grant Email Access'}</button>
+                            ${isRealAdmin() ? `<button onclick="openCoreTeamModal(${worker.id}, '${safeName}', [])">🧩 Make Core Team</button>` : ''}
                         </div>
                     </td>
                 </tr>
@@ -657,6 +708,108 @@ function renderWorkers(){
     document.getElementById("rejectedWorkers").textContent = rejected;
 
     renderReviewers();
+    renderCoreTeam();
+}
+
+// =========================================================
+// CORE TEAM (limited-admin) access
+// =========================================================
+
+async function grantCoreTeam(id, permissions) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/core-team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, permissions })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to grant Core Team access.");
+        return false;
+    }
+    return true;
+}
+
+async function revokeCoreTeamAccess(id, name) {
+    if (!confirm(`Remove Core Team access for ${name}? They'll go back to being a regular Worker (their worker history, tasks and earnings stay untouched).`)) return;
+
+    const response = await authFetch(WORKER_URL + "/api/admin/users/core-team/revoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to revoke Core Team access.");
+        return;
+    }
+    loadAndRenderAll();
+}
+
+function renderCoreTeam() {
+    const section = document.getElementById("coreTeamSection");
+    if (!section) return;
+
+    // Non-admins never even fetch other core_team accounts (the backend
+    // filters them out of /api/admin/users entirely) - this is just a
+    // belt-and-suspenders hide for the section itself.
+    if (!isRealAdmin()) {
+        section.style.display = "none";
+        return;
+    }
+
+    const table = document.getElementById("coreTeamTable");
+    const members = allUsers.filter(u => u.role === "core_team");
+
+    if (members.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No Core Team members yet — use "Make Core Team" on any worker above</td></tr>`;
+        return;
+    }
+
+    table.innerHTML = "";
+    members.forEach(member => {
+        const perms = member.permissions || [];
+        const badges = perms.length
+            ? perms.map(p => `<span class="status status-approved" style="margin:2px;">${CORE_TEAM_PERMISSION_LABELS[p] || p}</span>`).join(" ")
+            : `<span style="opacity:.5;">No tabs granted yet</span>`;
+        const safeName = escapeHTML(member.full_name).replace(/'/g, "\\'");
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(member.full_name)}</td>
+                <td>${escapeHTML(member.email)}</td>
+                <td>${badges}</td>
+                <td style="white-space:nowrap;">
+                    <button onclick='openCoreTeamModal(${member.id}, "${safeName}", ${JSON.stringify(perms)})'>Edit Permissions</button>
+                    <button onclick="revokeCoreTeamAccess(${member.id}, '${safeName}')">Revert to Worker</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function openCoreTeamModal(userId, userName, currentPermissions) {
+    document.getElementById("coreTeamModalName").textContent = userName;
+    document.getElementById("coreTeamModal").dataset.userId = userId;
+
+    document.querySelectorAll("#coreTeamPermissionList input[type=checkbox]").forEach(cb => {
+        cb.checked = currentPermissions.includes(cb.value);
+    });
+
+    document.getElementById("coreTeamOverlay").style.display = "flex";
+}
+
+function closeCoreTeamModal() {
+    document.getElementById("coreTeamOverlay").style.display = "none";
+}
+
+async function saveCoreTeamModal() {
+    const userId = document.getElementById("coreTeamModal").dataset.userId;
+    const permissions = Array.from(document.querySelectorAll("#coreTeamPermissionList input[type=checkbox]:checked"))
+        .map(cb => cb.value);
+
+    const ok = await grantCoreTeam(Number(userId), permissions);
+    closeCoreTeamModal();
+    if (ok) loadAndRenderAll();
 }
 
 async function loadAndRenderAll() {
@@ -761,6 +914,29 @@ function showConfirm(message) {
 loadAndRenderAll();
 
 </script>
+<div id="coreTeamOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+    <div id="coreTeamModal" style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:460px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+        <h3 style="margin:0 0 6px 0;color:#fff;font-size:1.2rem;">Core Team Permissions</h3>
+        <p style="color:#9dadc1;font-size:.9rem;margin:0 0 20px 0;">
+            Tick which admin tabs <strong id="coreTeamModalName" style="color:#fff;"></strong> can see. Everything else stays hidden from them. They keep full Worker access either way.
+        </p>
+        <div id="coreTeamPermissionList" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="dashboard"> Dashboard</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="workers"> Workers &amp; Payments</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="clients"> Clients</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="projects"> Projects</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="tasks"> Tasks</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="offerwalls"> Offerwalls</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="messages"> Messages</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="analytics"> Analytics</label>
+            <label style="display:flex;align-items:center;gap:8px;color:#cfd8e3;font-size:.9rem;"><input type="checkbox" value="settings"> Settings</label>
+        </div>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeCoreTeamModal()" style="padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;cursor:pointer;">Cancel</button>
+            <button onclick="saveCoreTeamModal()" style="padding:10px 20px;border-radius:10px;border:none;background:#587dff;color:#fff;cursor:pointer;font-weight:600;">Save Permissions</button>
+        </div>
+    </div>
+</div>
 <div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
     <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
         <h3 style="margin:0 0 12px 0;color:#fff;font-size:1.2rem;">Confirm</h3>

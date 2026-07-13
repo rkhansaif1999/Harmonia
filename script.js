@@ -325,7 +325,20 @@ if (!data?.user) {
 // returned) - that's a hosting-level change, not something JS running
 // inside the page itself can guarantee.
 // =========================
-async function protectPage(role) {
+// "core_team" is an admin-tier role restricted to a subset of admin
+// tabs (see options.permission below) - but it also keeps full worker
+// access (tasks, unified earnings, payouts, etc.), so being made Core
+// Team never takes anything away from someone who was already working
+// as a Worker. This helper is what lets one call to protectPage(role)
+// admit core_team on both "admin" pages and "worker" pages.
+function roleSatisfies(requiredRole, actualRole) {
+    if (!requiredRole) return true;
+    if (requiredRole === "admin") return actualRole === "admin" || actualRole === "core_team";
+    if (requiredRole === "worker") return actualRole === "worker" || actualRole === "core_team";
+    return actualRole === requiredRole;
+}
+
+async function protectPage(role, options = {}) {
     const user = getUser();
 
     if (!user || !user.token) {
@@ -333,7 +346,7 @@ async function protectPage(role) {
         return;
     }
 
-    if (role && user.role !== role) {
+    if (role && !roleSatisfies(role, user.role)) {
         // Don't trust the locally-cached role at all here - anyone can
         // edit localStorage in devtools and claim to be any role. Fall
         // through to the real server check below instead of trusting
@@ -351,14 +364,49 @@ async function protectPage(role) {
     const ok = await verifySessionWithServer();
     const verifiedUser = getUser();
 
-    if (!ok || !verifiedUser || (role && verifiedUser.role !== role)) {
+    if (!ok || !verifiedUser || (role && !roleSatisfies(role, verifiedUser.role))) {
         logout();
         return;
+    }
+
+    // Core Team: on an admin page, gate it behind the tab permission it
+    // was called with (skip the check for "dashboard" - that overview
+    // page is always reachable as their landing page). On ANY page
+    // (admin or worker), reveal/hide the sidebar links and controls
+    // that depend on being Core Team specifically.
+    if (verifiedUser.role === "core_team") {
+        const perms = verifiedUser.permissions || [];
+        if (role === "admin" && options.permission && options.permission !== "dashboard" && !perms.includes(options.permission)) {
+            alert("You don't have permission to access this page.");
+            window.location.href = "admin-dashboard.html";
+            return;
+        }
+        applyCoreTeamRestrictions(perms);
     }
 
     // Only now do we know this is a real, currently-valid session for
     // the right role - safe to show the page.
     document.body.style.visibility = "visible";
+}
+
+// Hides any element tagged data-permission="X" that a logged-in Core
+// Team member hasn't been granted, and anything tagged data-admin-only
+// (controls reserved for a real admin, e.g. granting Core Team access
+// itself). Call this after rendering dynamic content too, if that
+// content adds its own data-permission/data-admin-only elements.
+function applyCoreTeamRestrictions(perms) {
+    document.querySelectorAll("[data-permission]").forEach((el) => {
+        if (!perms.includes(el.getAttribute("data-permission"))) el.style.display = "none";
+    });
+    document.querySelectorAll("[data-admin-only]").forEach((el) => {
+        el.style.display = "none";
+    });
+    // Links to the Worker side (My Tasks, My Earnings) are hidden by
+    // default in the admin sidebar markup - only a Core Team member
+    // needs them there, since a full admin doesn't have a worker account.
+    document.querySelectorAll("[data-core-team-only]").forEach((el) => {
+        el.style.display = "";
+    });
 }
 
 // =========================
