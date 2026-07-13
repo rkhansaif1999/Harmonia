@@ -691,7 +691,7 @@ function renderWorkers(){
                         </div>
                       <div class="details-actions">
                             ${statusActions}
-                            <button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>
+                            ${isRealAdmin() ? `<button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>` : ''}
                             <button onclick="toggleEmailPermission(${worker.id}, ${worker.can_send_email ? 'false' : 'true'})">${worker.can_send_email ? '🚫 Revoke Email Access' : '📧 Grant Email Access'}</button>
                             ${isRealAdmin() ? `<button onclick="openCoreTeamModal(${worker.id}, '${safeName}', [])">🧩 Make Core Team</button>` : ''}
                         </div>
