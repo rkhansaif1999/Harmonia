@@ -362,16 +362,10 @@ async function protectPage(role, options = {}) {
         return;
     }
 
-    if (role && !roleSatisfies(role, user.role)) {
-        // Don't trust the locally-cached role at all here - anyone can
-        // edit localStorage in devtools and claim to be any role. Fall
-        // through to the real server check below instead of trusting
-        // this comparison on its own; it's just a fast-path redirect
-        // for the common "wrong dashboard" case.
-        alert("Access denied");
-        logout();
-        return;
-    }
+    // Never trust the locally cached role.
+// The server is the source of truth.
+// We intentionally DO NOT logout here.
+// We'll verify everything with the server below.
 
     // The local copy (localStorage) is just a cache and can be forged
     // by anyone with devtools open. Before revealing this page's
