@@ -104,8 +104,11 @@
         </header>
 
         <p style="color:#9dadc1;font-size:.9rem;margin-top:-10px;">
-            Manage third-party task networks embedded as "Bonus Tasks" for workers. Workers never see the
-            network's name — only the provider key/display name below, which is admin-facing only.
+            Manage third-party task networks embedded in worker task tabs. Multiple providers run
+            simultaneously — each active provider gets its own dedicated tab on the worker's
+            <a href="worker-tasks.html" style="color:#58d4ff;" target="_blank">My Tasks</a> page
+            (CPX Research → "Bonus Tasks" tab, TimeWall → "TimeWall" tab). Workers never see
+            the network's real name — only Harmonia branding.
         </p>
 
         <section class="cards">
@@ -132,9 +135,78 @@
 
         </section>
 
+        <!-- =====================================================
+             TIMEWALL QUICK SETUP
+             Pre-filled card so admin doesn't need to look up
+             keys/secrets — just paste the iframe URL and save.
+             ===================================================== -->
         <section class="recent">
 
-            <h2>Add Provider</h2>
+            <h2>⏱️ TimeWall Quick Setup</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                TimeWall is already integrated. Once your placement is approved, fill in the iframe URL below
+                and click <strong>Activate TimeWall</strong>. Everything else (postback secret, provider key)
+                is pre-filled for you. TimeWall will appear as its own tab on the worker's
+                <a href="worker-tasks.html#timewall" style="color:#02c59a;" target="_blank">My Tasks</a> page
+                alongside Bonus Tasks — both run at the same time.
+            </p>
+
+            <div class="card" style="max-width:580px;">
+
+                <!-- Read-only info fields so admin can see what's set -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+                    <div>
+                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Worker Tab Label</label>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;">⏱️ TimeWall</div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Provider Key (fixed)</label>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;font-family:monospace;">timewall</div>
+                    </div>
+                </div>
+
+                <label>Postback Secret <span style="color:#9dadc1;font-weight:400;">(from your TimeWall placement dashboard)</span></label>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
+                    <input type="text" id="twSecret" value="d2257cb936b4a2abf922054480880bf0"
+                        style="flex:1;font-family:monospace;font-size:.85rem;"
+                        placeholder="d2257cb936b4a2abf922054480880bf0">
+                </div>
+
+                <label>Postback URL <span style="color:#9dadc1;font-weight:400;">(paste this into TimeWall's placement settings)</span></label>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
+                    <code id="twPostbackDisplay" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#9dadc1;word-break:break-all;display:block;">
+                        https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/timewall?userID={userID}&transactionID={transactionID}&revenue={revenue}&currencyAmount={currencyAmount}&hash={hash}&type={type}&reason={reason}&withdrawid={withdrawid}&offername={offername}&ip={ip}
+                    </code>
+                    <button class="detail-btn" onclick="copyTimewallPostback()" style="white-space:nowrap;align-self:flex-start;margin-top:4px;">Copy</button>
+                </div>
+
+                <label>Iframe URL <span style="color:#9dadc1;font-weight:400;">(from TimeWall → Placement → Integration tab — must contain <code style="font-size:.8rem;">{USER_ID}</code>)</span></label>
+                <input type="text" id="twIframeUrl" style="margin-top:6px;"
+                    placeholder="https://wall.timewall.io/v2/?placement=XXXXX&user_id={USER_ID}">
+                <p style="color:#9dadc1;font-size:.78rem;margin-top:6px;">
+                    Go to your TimeWall dashboard → Placements → your placement → Integration tab →
+                    copy the iframe embed URL and replace the user ID portion with <code>{USER_ID}</code>.
+                </p>
+
+                <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+                    <button class="primary" onclick="handleTimewallSetup()">✅ Activate TimeWall</button>
+                    <button class="detail-btn" onclick="handleTimewallDeactivate()">⏸ Deactivate</button>
+                </div>
+                <p id="twSetupMsg" style="margin-top:10px;font-size:.85rem;display:none;"></p>
+            </div>
+
+        </section>
+
+        <!-- =====================================================
+             GENERIC ADD PROVIDER (for future networks)
+             ===================================================== -->
+        <section class="recent">
+
+            <h2>Add Other Provider</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                For future task networks beyond CPX Research and TimeWall. The provider key must match
+                an adapter registered in <code style="font-size:.8rem;">worker.js</code>.
+            </p>
 
             <div class="card" style="max-width:520px;">
                 <label>Provider Key <span style="color:#9dadc1;font-weight:400;">(e.g. cpxresearch — must match the adapter key in the backend)</span></label>
@@ -443,6 +515,132 @@ async function handleToggleStatus(providerKey, newStatus) {
 }
 
 renderAll();
+
+/* =========================================================
+   TIMEWALL QUICK SETUP HELPERS
+   ========================================================= */
+
+function copyTimewallPostback() {
+    const url = "https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/timewall?userID={userID}&transactionID={transactionID}&revenue={revenue}&currencyAmount={currencyAmount}&hash={hash}&type={type}&reason={reason}&withdrawid={withdrawid}&offername={offername}&ip={ip}";
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Postback URL copied! Paste it into your TimeWall placement's postback URL field.");
+    }).catch(() => {
+        prompt("Copy this postback URL:", url);
+    });
+}
+
+async function handleTimewallSetup() {
+    const iframeUrl    = document.getElementById("twIframeUrl").value.trim();
+    const secret       = document.getElementById("twSecret").value.trim();
+    const msg          = document.getElementById("twSetupMsg");
+
+    if (!iframeUrl) {
+        msg.textContent = "⚠️ Please enter the iframe URL from your TimeWall placement.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+    if (!iframeUrl.includes("{USER_ID}")) {
+        msg.textContent = "⚠️ The iframe URL must include the {USER_ID} placeholder exactly as shown.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+    if (!secret) {
+        msg.textContent = "⚠️ Please enter the postback secret from TimeWall.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+
+    msg.textContent = "Saving…";
+    msg.style.color = "#9dadc1";
+    msg.style.display = "block";
+
+    try {
+        // Try create first; if it already exists, fall back to update.
+        let response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                providerKey: "timewall",
+                displayName: "TimeWall",
+                iframeUrlTemplate: iframeUrl,
+                postbackSecret: secret,
+            })
+        });
+
+        // 400 with "already exist" message means it's already in the DB — update instead.
+        if (!response.ok) {
+            const createData = await response.json();
+            if ((createData.error || "").toLowerCase().includes("already exist") || response.status === 400) {
+                response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        providerKey: "timewall",
+                        displayName: "TimeWall",
+                        iframeUrlTemplate: iframeUrl,
+                        postbackSecret: secret,
+                        status: "active",
+                    })
+                });
+                const updateData = await response.json();
+                if (!response.ok) {
+                    msg.textContent = "❌ " + (updateData.error || "Failed to update TimeWall.");
+                    msg.style.color = "#f87171";
+                    return;
+                }
+            } else {
+                msg.textContent = "❌ " + (createData.error || "Failed to activate TimeWall.");
+                msg.style.color = "#f87171";
+                return;
+            }
+        }
+
+        msg.textContent = "✅ TimeWall activated! Workers will now see the TimeWall tab on their My Tasks page.";
+        msg.style.color = "#02c59a";
+        await renderAll();
+
+    } catch (err) {
+        msg.textContent = "❌ Unable to connect to the server.";
+        msg.style.color = "#f87171";
+        console.error(err);
+    }
+}
+
+async function handleTimewallDeactivate() {
+    if (!confirm("Deactivate TimeWall? The tab will disappear from workers' My Tasks page until you activate it again.")) return;
+
+    const msg = document.getElementById("twSetupMsg");
+    msg.textContent = "Deactivating…";
+    msg.style.color = "#9dadc1";
+    msg.style.display = "block";
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ providerKey: "timewall", status: "inactive" })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            msg.textContent = "❌ " + (data.error || "Failed to deactivate.");
+            msg.style.color = "#f87171";
+            return;
+        }
+
+        msg.textContent = "⏸ TimeWall deactivated. Workers will no longer see the TimeWall tab.";
+        msg.style.color = "#9dadc1";
+        await renderAll();
+
+    } catch (err) {
+        msg.textContent = "❌ Unable to connect to the server.";
+        msg.style.color = "#f87171";
+        console.error(err);
+    }
+}
 
 </script>
 
