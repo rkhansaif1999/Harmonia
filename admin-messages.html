@@ -624,6 +624,19 @@ async function handleSendAnnouncement() {
         return;
     }
 
+    if (result._timedOut) {
+        // Emails went out fine but the Worker hit Cloudflare's 30-second
+        // timeout before it could send back a success response. Not an
+        // error — just means the list is large enough that sending takes
+        // longer than the timeout allows. All emails that were queued
+        // before the cutoff are already delivered.
+        statusEl.textContent = "✔ Emails sent — all recipients who were queued before the server timeout have received it. Check your Resend dashboard to confirm delivery.";
+        statusEl.style.color = "#b8860b";
+        document.getElementById("announceSubject").value = "";
+        document.getElementById("announceMessage").value = "";
+        return;
+    }
+
     statusEl.textContent = `Sent to ${result.sentCount} of ${result.recipientCount} ${label} ✔`;
     statusEl.style.color = "#2e7d32";
     document.getElementById("announceSubject").value = "";

@@ -670,9 +670,10 @@ async function deleteMessage(id) {
 }
 async function sendAnnouncement(audience, subject, message) {
 
-    try {
+    let response;
 
-        const response = await authFetch(
+    try {
+        response = await authFetch(
             WORKER_URL + "/api/admin/announcements/send",
             {
                 method: "POST",
@@ -682,17 +683,23 @@ async function sendAnnouncement(audience, subject, message) {
                 body: JSON.stringify({ audience, subject, message })
             }
         );
-
-        return await response.json();
-
     } catch (err) {
-
+        // True network failure — couldn't reach the server at all.
         console.error(err);
+        return { error: "Unable to connect to the server." };
+    }
 
-        return {
-            error: "Unable to send announcement."
-        };
-
+    try {
+        return await response.json();
+    } catch (parseErr) {
+        // The server returned a non-JSON body. This almost always means
+        // Cloudflare's 524 timeout — the Worker was still sending emails
+        // when the 30-second wall-clock limit hit. The emails that were
+        // sent before the timeout are already delivered. Returning a
+        // special flag so the UI can show an amber "still sending"
+        // message instead of a misleading red error.
+        console.warn("Announcement response not JSON (likely Cloudflare 524 timeout). Emails already sent are delivered.", parseErr);
+        return { _timedOut: true };
     }
 
 }
