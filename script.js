@@ -159,15 +159,31 @@ async function authFetch(url, options = {}) {
     clearTimeout(timeoutId);
 
     // If the token is genuinely expired/invalid, the server already
-    // tells us via 401 on this same call - no need for a separate
-    // "is my session still good?" ping before every page even loads.
-    if (response.status === 401 && user?.token && !sessionExpiredHandled) {
-        sessionExpiredHandled = true;
-        alert("Your session has expired. Please log in again.");
-        logout();
-    }
+// tells us via 401 on this same call - no need for a separate
+// "is my session still good?" ping before every page even loads.
+if (response.status === 401 && user?.token && !sessionExpiredHandled) {
+    sessionExpiredHandled = true;
+    alert("Your session has expired. Please log in again.");
+    logout();
+}
+
+// 403 means the user is logged in successfully but doesn't have
+// permission for this specific API. Keep the session alive.
+if (response.status === 403) {
+    console.warn("Permission denied.");
+
+    try {
+        const data = await response.clone().json();
+
+        if (data?.error) {
+            console.warn(data.error);
+        }
+    } catch (e) {}
 
     return response;
+}
+
+return response;
 }
 
 function getUser() {
