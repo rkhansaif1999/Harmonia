@@ -721,7 +721,13 @@ async function grantCoreTeam(id, permissions) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, permissions })
     });
-    const data = await response.json();
+    let data = {};
+    try {
+        data = await response.json();
+    } catch {
+        alert("Server error (status " + response.status + "). Check the Worker logs.");
+        return false;
+    }
     if (!response.ok) {
         alert(data.error || "Failed to grant Core Team access.");
         return false;
