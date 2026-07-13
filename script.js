@@ -372,12 +372,59 @@ async function protectPage(role, options = {}) {
     // content, ask the server - the actual source of truth - whether
     // this token is really valid and really belongs to this role.
     const ok = await verifySessionWithServer();
-    const verifiedUser = getUser();
 
-    if (!ok || !verifiedUser || (role && !roleSatisfies(role, verifiedUser.role))) {
-        logout();
+if (!ok) {
+    logout();
+    return;
+}
+
+const verifiedUser = getUser();
+
+if (!verifiedUser) {
+    logout();
+    return;
+}
+
+if (role && !roleSatisfies(role, verifiedUser.role)) {
+
+    alert("Access denied.");
+
+    if (verifiedUser.role === "admin") {
+        window.location.href = "admin-dashboard.html";
         return;
     }
+
+    if (verifiedUser.role === "core_team") {
+
+        if (role === "admin") {
+            window.location.href = "admin-dashboard.html";
+            return;
+        }
+
+        if (role === "worker") {
+            window.location.href = "worker-dashboard.html";
+            return;
+        }
+    }
+
+    if (verifiedUser.role === "worker") {
+        window.location.href = "worker-dashboard.html";
+        return;
+    }
+
+    if (verifiedUser.role === "client") {
+        window.location.href = "client-dashboard.html";
+        return;
+    }
+
+    if (verifiedUser.role === "reviewer") {
+        window.location.href = "reviewer-dashboard.html";
+        return;
+    }
+
+    logout();
+    return;
+}
 
     // Core Team: on an admin page, gate it behind the tab permission it
     // was called with (skip the check for "dashboard" - that overview
