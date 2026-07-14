@@ -866,16 +866,198 @@ function setupPublicNav() {
 // profile dropdown (name/role/logout) to every .topbar, on every
 // portal page, without needing to hand-edit each dashboard file.
 // =========================
-function buildNotifications(user) {
-    // NOTE: this used to read from a fake local-storage "database" of
-    // projects/users/earnings that no longer exists. The real data now
-    // lives only in D1, behind the Worker API. Returning an empty list
-    // here just turns the bell into "no notifications" for now, rather
-    // than showing stale/fake counts. Wiring this up to the real
-    // per-role API endpoints (e.g. /api/worker/tasks, /api/reviewer/queue)
-    // is a nice future improvement, not a security issue.
+async function fetchNotifications(user) {
     if (!user) return [];
-    return [];
+    const notifications = [];
+
+    try {
+        if (user.role === "worker" || user.role === "core_team") {
+            // Unread support messages from admin
+            const chatRes = await authFetch(WORKER_URL + "/api/worker/support");
+            if (chatRes.ok) {
+                const chatData = await chatRes.json();
+                const messages = chatData.messages || [];
+                const unreadAdminMessages = messages.filter(m => m.sender === "admin");
+                // Count messages after the last worker message
+                let lastWorkerIdx = -1;
+                messages.forEach((m, i) => { if (m.sender === "worker") lastWorkerIdx = i; });
+                const unreadCount = messages.slice(lastWorkerIdx + 1).filter(m => m.sender === "admin").length;
+                if (unreadCount > 0) {
+                    notifications.push({
+                        icon: "💬",
+                        text: `You have ${unreadCount} new message${unreadCount > 1 ? "s" : ""} from Support`,
+                        link: "worker-support.html"
+                    });
+                }
+            }
+
+            // New tasks assigned
+            const tasksRes = await authFetch(WORKER_URL + "/api/worker/tasks");
+            if (tasksRes.ok) {
+                const tasksData = await tasksRes.json();
+                const assigned = (tasksData.tasks || []).filter(t => t.status === "Assigned");
+                if (assigned.length > 0) {
+                    notifications.push({
+                        icon: "📋",
+                        text: `You have ${assigned.length} new task${assigned.length > 1 ? "s" : ""} assigned`,
+                        link: "worker-tasks.html"
+                    });
+                }
+                const needsRevision = (tasksData.tasks || []).filter(t => t.status === "Needs Revision");
+                if (needsRevision.length > 0) {
+                    notifications.push({
+                        icon: "⚠️",
+                        text: `${needsRevision.length} task${needsRevision.length > 1 ? "s need" : " needs"} revision`,
+                        link: "worker-tasks.html"
+                    });
+                }
+            }
+
+            // Pending micro-task applications
+            const microRes = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+            if (microRes.ok) {
+                const microData = await microRes.json();
+                const approvedTasks = (microData.tasks || []).filter(t => t.applicationStatus === "approved");
+                if (approvedTasks.length > 0) {
+                    notifications.push({
+                        icon: "✅",
+                        text: `${approvedTasks.length} micro task${approvedTasks.length > 1 ? "s" : ""} approved — ready to work`,
+                        link: "worker-micro-tasks.html"
+                    });
+                }
+            }
+        }
+
+        if (user.role === "client") {
+            const ordersRes = await authFetch(WORKER_URL + "/api/orders");
+            if (ordersRes.ok) {
+                const ordersData = await ordersRes.json();
+                const orders = ordersData.orders || [];
+
+                const completed = orders.filter(o => o.status === "Completed");
+                if (completed.length > 0) {
+                    notifications.push({
+                        icon: "🎉",
+                        text: `${completed.length} project${completed.length > 1 ? "s" : ""} completed`,
+                        link: "client-dashboard.html"
+                    });
+                }
+
+                const needsPayment = orders.filter(o => o.status === "Awaiting Payment");
+                if (needsPayment.length > 0) {
+                    notifications.push({
+                        icon: "💳",
+                        text: `${needsPayment.length} order${needsPayment.length > 1 ? "s" : ""} awaiting payment`,
+                        link: "client-dashboard.html"
+                    });
+                }
+
+                // Admin replies in support chat
+                orders.forEach(o => {
+                    const chat = o.supportChat || [];
+                    if (chat.length > 0 && chat[chat.length - 1].sender === "admin") {
+                        notifications.push({
+                            icon: "💬",
+                            text: `New reply on project "${o.project_name}"`,
+                            link: "client-dashboard.html"
+                        });
+                    }
+                });
+            }
+        }
+
+        if (user.role === "reviewer") {
+            const queueRes = await authFetch(WORKER_URL + "/api/reviewer/queue");
+            if (queueRes.ok) {
+                const queueData = await queueRes.json();
+                const pending = (queueData.queue || []).length;
+                if (pending > 0) {
+                    notifications.push({
+                        icon: "🔍",
+                        text: `${pending} order${pending > 1 ? "s" : ""} waiting for review`,
+                        link: "reviewer-dashboard.html"
+                    });
+                }
+            }
+        }
+
+        if (user.role === "admin" || user.role === "core_team") {
+            // Pending payment approvals
+            const ordersRes = await authFetch(WORKER_URL + "/api/admin/orders");
+            if (ordersRes.ok) {
+                const ordersData = await ordersRes.json();
+                const underReview = (ordersData.orders || []).filter(o => o.status === "Under Review");
+                if (underReview.length > 0) {
+                    notifications.push({
+                        icon: "💳",
+                        text: `${underReview.length} payment${underReview.length > 1 ? "s" : ""} awaiting approval`,
+                        link: "admin-projects.html"
+                    });
+                }
+            }
+
+            // Unread worker support messages
+            const supportRes = await authFetch(WORKER_URL + "/api/admin/worker-support");
+            if (supportRes.ok) {
+                const supportData = await supportRes.json();
+                const unread = (supportData.chats || []).filter(c => c.admin_unread).length;
+                if (unread > 0) {
+                    notifications.push({
+                        icon: "💬",
+                        text: `${unread} unread worker support message${unread > 1 ? "s" : ""}`,
+                        link: "admin-messages.html"
+                    });
+                }
+            }
+
+            // Unread contact messages
+            const contactRes = await authFetch(WORKER_URL + "/api/admin/contact-messages");
+            if (contactRes.ok) {
+                const contactData = await contactRes.json();
+                const unreadContact = (contactData.messages || []).filter(m => m.status === "unread").length;
+                if (unreadContact > 0) {
+                    notifications.push({
+                        icon: "📩",
+                        text: `${unreadContact} unread contact message${unreadContact > 1 ? "s" : ""}`,
+                        link: "admin-messages.html"
+                    });
+                }
+            }
+
+            // Pending user approvals (if auto-approval is off)
+            const usersRes = await authFetch(WORKER_URL + "/api/admin/users");
+            if (usersRes.ok) {
+                const usersData = await usersRes.json();
+                const pendingUsers = (usersData.users || []).filter(u => u.status === "pending").length;
+                if (pendingUsers > 0) {
+                    notifications.push({
+                        icon: "👤",
+                        text: `${pendingUsers} user${pendingUsers > 1 ? "s" : ""} pending approval`,
+                        link: "admin-workers.html"
+                    });
+                }
+            }
+
+            // Pending task applications
+            const appsRes = await authFetch(WORKER_URL + "/api/admin/task-applications");
+            if (appsRes.ok) {
+                const appsData = await appsRes.json();
+                const pendingApps = (appsData.applications || []).filter(a => a.status === "pending").length;
+                if (pendingApps > 0) {
+                    notifications.push({
+                        icon: "📋",
+                        text: `${pendingApps} task application${pendingApps > 1 ? "s" : ""} pending`,
+                        link: "admin-tasks.html"
+                    });
+                }
+            }
+        }
+
+    } catch (err) {
+        console.warn("Notification fetch error:", err);
+    }
+
+    return notifications;
 }
 
 function enhanceTopbar() {
