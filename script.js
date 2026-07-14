@@ -1105,23 +1105,48 @@ function enhanceTopbar() {
 
     const notifWrap = document.createElement("div");
     notifWrap.className = "notif-wrap";
-    const notifications = buildNotifications(user);
+    // Render bell immediately with a loading state, then populate async
     notifWrap.innerHTML = `
         <button class="notif-bell" type="button" aria-label="Notifications">
-            🔔${notifications.length ? `<span class="notif-badge">${notifications.length}</span>` : ""}
+            🔔
         </button>
         <div class="notif-dropdown">
+            <div class="notif-dropdown-title">Notifications</div>
+            <div class="notif-empty">Loading...</div>
+        </div>
+    `;
+    right.appendChild(notifWrap);
+
+    // Fetch notifications in the background and update the bell once ready
+    fetchNotifications(user).then(notifications => {
+        const bellBtn = notifWrap.querySelector(".notif-bell");
+        const dropdown = notifWrap.querySelector(".notif-dropdown");
+
+        // Update badge
+        const existingBadge = bellBtn.querySelector(".notif-badge");
+        if (existingBadge) existingBadge.remove();
+        if (notifications.length) {
+            const badge = document.createElement("span");
+            badge.className = "notif-badge";
+            badge.textContent = notifications.length;
+            bellBtn.appendChild(badge);
+        }
+
+        // Update dropdown content
+        dropdown.innerHTML = `
             <div class="notif-dropdown-title">Notifications</div>
             ${
                 notifications.length
                     ? notifications.map(n =>
-                        `<div class="notif-item"><span>${n.icon}</span><span>${escapeHTML(n.text)}</span></div>`
+                        `<a class="notif-item" href="${escapeHTML(n.link || "#")}">
+                            <span>${n.icon}</span>
+                            <span>${escapeHTML(n.text)}</span>
+                        </a>`
                       ).join("")
                     : `<div class="notif-empty">You're all caught up 🎉</div>`
             }
-        </div>
-    `;
-    right.appendChild(notifWrap);
+        `;
+    });
 
     const profileWrap = document.createElement("div");
     profileWrap.className = "profile-wrap";
