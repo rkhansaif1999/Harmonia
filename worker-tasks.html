@@ -333,8 +333,8 @@ function switchTaskTab(tab) {
 
 // Support deep-linking, e.g. worker-tasks.html#bonus or #timewall
 (function () {
-    const hash = (window.location.hash || "").replace("#", "");
-    if (hash === "micro" || hash === "bonus" || hash === "timewall") {
+   const hash = (window.location.hash || "").replace("#", "");
+    if (hash === "micro" || hash === "bonus" || hash === "cpalead") {
         switchTaskTab(hash);
     }
 })();
