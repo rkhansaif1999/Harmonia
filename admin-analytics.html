@@ -673,13 +673,12 @@ renderAll();
    card per provider, expandable into a searchable worker list with
    top earners, same interaction pattern as the Micro Tasks tab.
 
-   NOTE: the Hold action only renders if a given earnings row
-   includes userId/fullName/taskHold fields. As of this build the
-   /api/admin/offerwall-earnings response (per its current usage in
-   admin-offerwalls.html) isn't confirmed to include those - if it
-   doesn't yet, add them there and this list will pick it up with
-   no frontend changes, same as the Bonus Task row in Earnings
-   History on the worker side.
+   NOTE: the Hold action renders using userId/fullName/taskHold
+   fields on each earnings row. /api/admin/offerwall-earnings now
+   returns those (worker.js joins users on u.full_name/u.task_hold
+   and maps them to fullName/taskHold), so this list picks them up
+   with no frontend changes needed, same as the Bonus Task row in
+   Earnings History on the worker side.
    ========================================================= */
 
 let offerwallDataLoaded = false;
