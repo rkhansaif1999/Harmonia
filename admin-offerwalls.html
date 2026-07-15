@@ -107,7 +107,7 @@
             Manage third-party task networks embedded in worker task tabs. Multiple providers run
             simultaneously — each active provider gets its own dedicated tab on the worker's
             <a href="worker-tasks.html" style="color:#58d4ff;" target="_blank">My Tasks</a> page
-            (CPX Research → "Bonus Tasks" tab, TimeWall → "TimeWall" tab). Workers never see
+            (CPX Research → "Bonus Tasks" tab, CPAlead → "CPAlead" tab). Workers never see
             the network's real name — only Harmonia branding.
         </p>
 
@@ -136,7 +136,7 @@
         </section>
 
         <!-- =====================================================
-             TIMEWALL QUICK SETUP
+             CPALEAD QUICK SETUP
              Pre-filled card so admin doesn't need to look up
              keys/secrets — just paste the iframe URL and save.
              ===================================================== -->
@@ -145,9 +145,10 @@
            <h2>🎁 CPAlead Quick Setup</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
                 Fill in your postback secret below and click <strong>Activate CPAlead</strong>. The iframe URL
-                is already pre-filled from your CPAlead wall (slug: mpc3b). CPAlead will appear alongside any
-                other active providers on the worker's
-                <a href="worker-tasks.html#bonus" style="color:#02c59a;" target="_blank">My Tasks → Bonus Tasks</a> tab.
+                is already pre-filled from your CPAlead wall (slug: mpc3b). CPAlead appears on its own
+                dedicated tab on the worker's
+                <a href="worker-tasks.html" style="color:#02c59a;" target="_blank">My Tasks</a> page — it does
+                not show up on the "Bonus Tasks" tab, which is CPX Research only.
             </p>
 
             <div class="card" style="max-width:580px;">
@@ -202,7 +203,7 @@
 
             <h2>Add Other Provider</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                For future task networks beyond CPX Research and TimeWall. The provider key must match
+                For future task networks beyond CPX Research and CPAlead. The provider key must match
                 an adapter registered in <code style="font-size:.8rem;">worker.js</code>.
             </p>
 
@@ -515,7 +516,7 @@ async function handleToggleStatus(providerKey, newStatus) {
 renderAll();
 
 /* =========================================================
-   TIMEWALL QUICK SETUP HELPERS
+   CPALEAD QUICK SETUP HELPERS
    ========================================================= */
 
 function copyCpaleadPostback() {
@@ -594,7 +595,7 @@ async function handleCpaleadSetup() {
             }
         }
 
-        msg.textContent = "✅ CPAlead activated! Workers will now see it on their Bonus Tasks tab.";
+        msg.textContent = "✅ CPAlead activated! Workers will now see it on their own CPAlead tab.";
         msg.style.color = "#02c59a";
         await renderAll();
 
@@ -606,7 +607,7 @@ async function handleCpaleadSetup() {
 }
 
 async function handleCpaleadDeactivate() {
-    if (!confirm("Deactivate CPAlead? It will disappear from workers' Bonus Tasks tab until you activate it again.")) return;
+    if (!confirm("Deactivate CPAlead? It will disappear from workers' CPAlead tab until you activate it again.")) return;
 
     const msg = document.getElementById("cplSetupMsg");
     msg.textContent = "Deactivating…";
