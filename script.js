@@ -208,9 +208,18 @@ async function verifySessionWithServer() {
     if (!user?.token) return false;
 
     try {
-        const response = await fetch(WORKER_URL + "/api/session/verify", {
-            headers: { "Authorization": "Bearer " + user.token }
-        });
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000); // 10 s max
+        let response;
+        try {
+            response = await fetch(WORKER_URL + "/api/session/verify", {
+                headers: { "Authorization": "Bearer " + user.token },
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timer);
+        }
+
         if (!response.ok) return false;
 
         const data = await response.json();
@@ -239,72 +248,86 @@ async function loginUser(event) {
         return;
     }
 
+    const MAX_ATTEMPTS = 2;
+    const TIMEOUT_MS   = 15000;
+
+    async function attemptLogin() {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+        try {
+            const res = await fetch(WORKER_URL + "/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({ email, password }),
+                signal: controller.signal
+            });
+            clearTimeout(timer);
+            return res;
+        } catch (err) {
+            clearTimeout(timer);
+            throw err;
+        }
+    }
+
     try {
+        let response;
+        let lastErr;
 
-        const response = await fetch(WORKER_URL + "/api/login", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    },
-    body: JSON.stringify({
-        email,
-        password
-    })
-});
+        for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+            try {
+                if (attempt > 1) await new Promise(r => setTimeout(r, 1500));
+                response = await attemptLogin();
+                lastErr = null;
+                break;
+            } catch (err) {
+                lastErr = err;
+                console.warn(`Login attempt ${attempt} failed:`, err.name, err.message);
+            }
+        }
 
-let data;
+        if (lastErr) {
+            const msg = lastErr.name === "AbortError"
+                ? "The server took too long to respond. Please check your connection and try again."
+                : "Unable to connect to the server. Please check your connection and try again.";
+            alert(msg);
+            console.error("Login failed after retries:", lastErr);
+            return;
+        }
 
-try {
-    data = await response.json();
-} catch (e) {
-    alert("Server returned invalid response");
-    console.error("Invalid JSON:", e);
-    return;
-}
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            alert("Server returned an invalid response. Please try again.");
+            console.error("Invalid JSON from /api/login (status " + response.status + "):", e);
+            return;
+        }
 
-if (!response.ok) {
-    alert(data?.error || "Login failed.");
-    return;
-}
+        if (!response.ok) {
+            alert(data?.error || "Login failed.");
+            return;
+        }
 
-if (!data?.user) {
-    alert("Invalid server response (no user data)");
-    return;
-}
+        if (!data?.user) {
+            alert("Invalid server response (no user data). Please try again.");
+            return;
+        }
 
         clearLoginAttempts(email);
-
-       saveUser(data.user, data.token);
+        saveUser(data.user, data.token);
 
         switch (data.user.role) {
-
-            case "admin":
-                window.location.href = "admin-dashboard.html";
-                break;
-
-            case "client":
-                window.location.href = "client-dashboard.html";
-                break;
-
-            case "worker":
-                window.location.href = "worker-dashboard.html";
-                break;
-
-            case "reviewer":
-                window.location.href = "reviewer-dashboard.html";
-                break;
-
-            default:
-                alert("Unknown account role.");
+            case "admin":    window.location.href = "admin-dashboard.html";    break;
+            case "core_team":window.location.href = "admin-dashboard.html";    break;
+            case "client":   window.location.href = "client-dashboard.html";   break;
+            case "worker":   window.location.href = "worker-dashboard.html";   break;
+            case "reviewer": window.location.href = "reviewer-dashboard.html"; break;
+            default:         alert("Unknown account role.");
         }
 
     } catch (err) {
-
-        alert("Unable to connect to the server.");
-
-        console.error(err);
-
+        alert("An unexpected error occurred. Please try again.");
+        console.error("Unexpected login error:", err);
     }
 }
 
