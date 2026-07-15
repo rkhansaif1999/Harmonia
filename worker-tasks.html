@@ -652,57 +652,57 @@ window.addEventListener("message", (event) => {
 
 <script>
 /* =========================================================
-   TIMEWALL TASKS
+   CPALEAD TASKS
    -----------------------------------------------------------
    Works exactly the same way as Bonus Tasks (CPX Research):
    - Backend serves the iframe URL via GET /api/worker/offerwalls
-     with providerKey = "timewall".
-   - Worker sees "TimeWall Tasks" branding only — the underlying
+     with providerKey = "cpalead".
+   - Worker sees "CPAlead Tasks" branding only — the underlying
      network name is never displayed.
    - Earnings are credited automatically via server-side postback
-     (GET /api/offerwalls/postback/timewall) and appear on the
+     (GET /api/offerwalls/postback/cpalead) and appear on the
      unified Earnings page alongside all other task types.
    - Lazy-loaded: iframe is only embedded when the tab is first
      opened, keeping the page's initial load light.
    ========================================================= */
 
-const timewallFrameHolder    = document.getElementById("timewallIframeHolder");
-const timewallEmptyState     = document.getElementById("timewallEmptyState");
-const timewallStatusLabel    = document.getElementById("timewallStatusLabel");
-const timewallCompletionBanner = document.getElementById("timewallCompletionBanner");
+const cpaleadFrameHolder    = document.getElementById("cpaleadIframeHolder");
+const cpaleadEmptyState     = document.getElementById("cpaleadEmptyState");
+const cpaleadStatusLabel    = document.getElementById("cpaleadStatusLabel");
+const cpaleadCompletionBanner = document.getElementById("cpaleadCompletionBanner");
 
-let timewallTrustedOrigins = [];
+let cpaleadTrustedOrigins = [];
 
-async function loadTimewallTasks() {
+async function loadCpaleadTasks() {
     try {
-        timewallStatusLabel.textContent = "Loading…";
-        timewallEmptyState.textContent  = "Loading TimeWall tasks…";
+        cpaleadStatusLabel.textContent = "Loading…";
+        cpaleadEmptyState.textContent  = "Loading CPAlead tasks…";
 
         const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
         const data = await response.json();
 
         if (!response.ok) {
-            timewallStatusLabel.textContent = "Unavailable";
-            timewallEmptyState.textContent  = escapeHTML(data?.error || "TimeWall tasks aren't available right now.");
+            cpaleadStatusLabel.textContent = "Unavailable";
+            cpaleadEmptyState.textContent  = escapeHTML(data?.error || "CPAlead tasks aren't available right now.");
             return;
         }
 
-        // Filter to only the timewall provider — the same endpoint
+        // Filter to only the cpalead provider — the same endpoint
         // returns ALL active offerwalls, so we pick the right one here.
-        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "timewall");
+        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpalead");
 
         if (offerwalls.length === 0) {
-            timewallStatusLabel.textContent = "None available";
-            timewallEmptyState.textContent  = "TimeWall tasks aren't available right now — check back soon.";
+            cpaleadStatusLabel.textContent = "None available";
+            cpaleadEmptyState.textContent  = "CPAlead tasks aren't available right now — check back soon.";
             return;
         }
 
-        timewallFrameHolder.innerHTML = "";
-        timewallStatusLabel.textContent = "Available";
+        cpaleadFrameHolder.innerHTML = "";
+        cpaleadStatusLabel.textContent = "Available";
 
         offerwalls.forEach(ow => {
             try {
-                timewallTrustedOrigins.push(new URL(ow.iframeUrl).origin);
+                cpaleadTrustedOrigins.push(new URL(ow.iframeUrl).origin);
             } catch (e) {
                 return; // Malformed URL — skip
             }
@@ -713,26 +713,23 @@ async function loadTimewallTasks() {
             iframe.style.minHeight = "520px";
             iframe.style.border    = "none";
             iframe.style.display   = "block";
-            iframe.title = "TimeWall Tasks";
+            iframe.title = "CPAlead Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
-            timewallFrameHolder.appendChild(iframe);
+            cpaleadFrameHolder.appendChild(iframe);
         });
 
     } catch (err) {
         console.error(err);
-        timewallStatusLabel.textContent = "Unavailable";
-        timewallEmptyState.textContent  = "Unable to connect to the server.";
+        cpaleadStatusLabel.textContent = "Unavailable";
+        cpaleadEmptyState.textContent  = "Unable to connect to the server.";
     }
 }
 
-// Listen for completion signals from the TimeWall iframe.
-// TimeWall uses postMessage to notify the parent page when a
-// user completes a task/withdrawal. We show our own branded
-// confirmation banner instead of the network's own popup.
+// Listen for completion signals from the CPAlead iframe.
 window.addEventListener("message", (event) => {
-    if (timewallTrustedOrigins.length && !timewallTrustedOrigins.includes(event.origin)) return;
+    if (cpaleadTrustedOrigins.length && !cpaleadTrustedOrigins.includes(event.origin)) return;
 
-    console.log("TimeWall message:", event.origin, event.data);
+    console.log("CPAlead message:", event.origin, event.data);
 
     let payload = event.data;
     if (typeof payload === "string") {
@@ -743,9 +740,9 @@ window.addEventListener("message", (event) => {
     const status = String(payload.status || payload.type || payload.event || "").toLowerCase();
 
     if (status.includes("complete") || status.includes("credit") || status === "1" || status === "success") {
-        timewallCompletionBanner.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
-        timewallCompletionBanner.style.display = "block";
-        setTimeout(() => { timewallCompletionBanner.style.display = "none"; }, 8000);
+        cpaleadCompletionBanner.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
+        cpaleadCompletionBanner.style.display = "block";
+        setTimeout(() => { cpaleadCompletionBanner.style.display = "none"; }, 8000);
     }
 });
 </script>
