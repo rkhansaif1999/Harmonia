@@ -518,22 +518,22 @@ renderAll();
    TIMEWALL QUICK SETUP HELPERS
    ========================================================= */
 
-function copyTimewallPostback() {
-    const url = "https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/timewall?userID={userID}&transactionID={transactionID}&revenue={revenue}&currencyAmount={currencyAmount}&hash={hash}&type={type}&reason={reason}&withdrawid={withdrawid}&offername={offername}&ip={ip}";
+function copyCpaleadPostback() {
+    const url = "https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}";
     navigator.clipboard.writeText(url).then(() => {
-        alert("Postback URL copied! Paste it into your TimeWall placement's postback URL field.");
+        alert("Postback URL copied! Paste it into CPAlead's Postback → Configuration page.");
     }).catch(() => {
         prompt("Copy this postback URL:", url);
     });
 }
 
-async function handleTimewallSetup() {
-    const iframeUrl    = document.getElementById("twIframeUrl").value.trim();
-    const secret       = document.getElementById("twSecret").value.trim();
-    const msg          = document.getElementById("twSetupMsg");
+async function handleCpaleadSetup() {
+    const iframeUrl    = document.getElementById("cplIframeUrl").value.trim();
+    const secret       = document.getElementById("cplSecret").value.trim();
+    const msg          = document.getElementById("cplSetupMsg");
 
     if (!iframeUrl) {
-        msg.textContent = "⚠️ Please enter the iframe URL from your TimeWall placement.";
+        msg.textContent = "⚠️ Please enter the iframe URL from your CPAlead wall.";
         msg.style.color = "#f87171";
         msg.style.display = "block";
         return;
@@ -545,7 +545,7 @@ async function handleTimewallSetup() {
         return;
     }
     if (!secret) {
-        msg.textContent = "⚠️ Please enter the postback secret from TimeWall.";
+        msg.textContent = "⚠️ Please enter the postback password you set in CPAlead.";
         msg.style.color = "#f87171";
         msg.style.display = "block";
         return;
@@ -556,19 +556,17 @@ async function handleTimewallSetup() {
     msg.style.display = "block";
 
     try {
-        // Try create first; if it already exists, fall back to update.
         let response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/create", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                providerKey: "timewall",
-                displayName: "TimeWall",
+                providerKey: "cpalead",
+                displayName: "CPAlead",
                 iframeUrlTemplate: iframeUrl,
                 postbackSecret: secret,
             })
         });
 
-        // 400 with "already exist" message means it's already in the DB — update instead.
         if (!response.ok) {
             const createData = await response.json();
             if ((createData.error || "").toLowerCase().includes("already exist") || response.status === 400) {
@@ -576,8 +574,8 @@ async function handleTimewallSetup() {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        providerKey: "timewall",
-                        displayName: "TimeWall",
+                        providerKey: "cpalead",
+                        displayName: "CPAlead",
                         iframeUrlTemplate: iframeUrl,
                         postbackSecret: secret,
                         status: "active",
@@ -585,18 +583,18 @@ async function handleTimewallSetup() {
                 });
                 const updateData = await response.json();
                 if (!response.ok) {
-                    msg.textContent = "❌ " + (updateData.error || "Failed to update TimeWall.");
+                    msg.textContent = "❌ " + (updateData.error || "Failed to update CPAlead.");
                     msg.style.color = "#f87171";
                     return;
                 }
             } else {
-                msg.textContent = "❌ " + (createData.error || "Failed to activate TimeWall.");
+                msg.textContent = "❌ " + (createData.error || "Failed to activate CPAlead.");
                 msg.style.color = "#f87171";
                 return;
             }
         }
 
-        msg.textContent = "✅ TimeWall activated! Workers will now see the TimeWall tab on their My Tasks page.";
+        msg.textContent = "✅ CPAlead activated! Workers will now see it on their Bonus Tasks tab.";
         msg.style.color = "#02c59a";
         await renderAll();
 
@@ -607,10 +605,10 @@ async function handleTimewallSetup() {
     }
 }
 
-async function handleTimewallDeactivate() {
-    if (!confirm("Deactivate TimeWall? The tab will disappear from workers' My Tasks page until you activate it again.")) return;
+async function handleCpaleadDeactivate() {
+    if (!confirm("Deactivate CPAlead? It will disappear from workers' Bonus Tasks tab until you activate it again.")) return;
 
-    const msg = document.getElementById("twSetupMsg");
+    const msg = document.getElementById("cplSetupMsg");
     msg.textContent = "Deactivating…";
     msg.style.color = "#9dadc1";
     msg.style.display = "block";
@@ -619,7 +617,7 @@ async function handleTimewallDeactivate() {
         const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ providerKey: "timewall", status: "inactive" })
+            body: JSON.stringify({ providerKey: "cpalead", status: "inactive" })
         });
         const data = await response.json();
 
@@ -629,7 +627,7 @@ async function handleTimewallDeactivate() {
             return;
         }
 
-        msg.textContent = "⏸ TimeWall deactivated. Workers will no longer see the TimeWall tab.";
+        msg.textContent = "⏸ CPAlead deactivated. Workers will no longer see it.";
         msg.style.color = "#9dadc1";
         await renderAll();
 
