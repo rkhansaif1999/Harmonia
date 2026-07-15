@@ -142,57 +142,55 @@
              ===================================================== -->
         <section class="recent">
 
-            <h2>⏱️ TimeWall Quick Setup</h2>
+           <h2>🎁 CPAlead Quick Setup</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                TimeWall is already integrated. Once your placement is approved, fill in the iframe URL below
-                and click <strong>Activate TimeWall</strong>. Everything else (postback secret, provider key)
-                is pre-filled for you. TimeWall will appear as its own tab on the worker's
-                <a href="worker-tasks.html#timewall" style="color:#02c59a;" target="_blank">My Tasks</a> page
-                alongside Bonus Tasks — both run at the same time.
+                Fill in your postback secret below and click <strong>Activate CPAlead</strong>. The iframe URL
+                is already pre-filled from your CPAlead wall (slug: mpc3b). CPAlead will appear alongside any
+                other active providers on the worker's
+                <a href="worker-tasks.html#bonus" style="color:#02c59a;" target="_blank">My Tasks → Bonus Tasks</a> tab.
             </p>
 
             <div class="card" style="max-width:580px;">
 
-                <!-- Read-only info fields so admin can see what's set -->
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
                     <div>
                         <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Worker Tab Label</label>
-                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;">⏱️ TimeWall</div>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;">🎁 CPAlead</div>
                     </div>
                     <div>
                         <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Provider Key (fixed)</label>
-                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;font-family:monospace;">timewall</div>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;font-family:monospace;">cpalead</div>
                     </div>
                 </div>
 
-                <label>Postback Secret <span style="color:#9dadc1;font-weight:400;">(from your TimeWall placement dashboard)</span></label>
+                <label>Postback Password <span style="color:#9dadc1;font-weight:400;">(set this in CPAlead → Postback → Configuration, must match exactly)</span></label>
                 <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
-                    <input type="text" id="twSecret" value="d2257cb936b4a2abf922054480880bf0"
+                    <input type="text" id="cplSecret"
                         style="flex:1;font-family:monospace;font-size:.85rem;"
-                        placeholder="d2257cb936b4a2abf922054480880bf0">
+                        placeholder="Choose a password and set it in CPAlead too">
                 </div>
 
-                <label>Postback URL <span style="color:#9dadc1;font-weight:400;">(paste this into TimeWall's placement settings)</span></label>
+                <label>Postback URL <span style="color:#9dadc1;font-weight:400;">(paste this into CPAlead's Postback → Configuration page)</span></label>
                 <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
-                    <code id="twPostbackDisplay" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#9dadc1;word-break:break-all;display:block;">
-                        https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/timewall?userID={userID}&transactionID={transactionID}&revenue={revenue}&currencyAmount={currencyAmount}&hash={hash}&type={type}&reason={reason}&withdrawid={withdrawid}&offername={offername}&ip={ip}
+                    <code id="cplPostbackDisplay" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#9dadc1;word-break:break-all;display:block;">
+                        https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}
                     </code>
-                    <button class="detail-btn" onclick="copyTimewallPostback()" style="white-space:nowrap;align-self:flex-start;margin-top:4px;">Copy</button>
+                    <button class="detail-btn" onclick="copyCpaleadPostback()" style="white-space:nowrap;align-self:flex-start;margin-top:4px;">Copy</button>
                 </div>
 
-                <label>Iframe URL <span style="color:#9dadc1;font-weight:400;">(from TimeWall → Placement → Integration tab — must contain <code style="font-size:.8rem;">{USER_ID}</code>)</span></label>
-                <input type="text" id="twIframeUrl" style="margin-top:6px;"
-                    placeholder="https://wall.timewall.io/v2/?placement=XXXXX&user_id={USER_ID}">
+                <label>Iframe URL <span style="color:#9dadc1;font-weight:400;">(from CPAlead → Tools → Offerwall → Get Code — must contain <code style="font-size:.8rem;">{USER_ID}</code>)</span></label>
+                <input type="text" id="cplIframeUrl" style="margin-top:6px;"
+                    value="https://www.cdnnd.com/wall/mpc3b?subid={USER_ID}">
                 <p style="color:#9dadc1;font-size:.78rem;margin-top:6px;">
-                    Go to your TimeWall dashboard → Placements → your placement → Integration tab →
-                    copy the iframe embed URL and replace the user ID portion with <code>{USER_ID}</code>.
+                    Pre-filled using your current wall's Direct Link. If you ever recreate the wall and get a new
+                    slug, update this field with the new URL and keep the <code>{USER_ID}</code> placeholder.
                 </p>
 
                 <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
-                    <button class="primary" onclick="handleTimewallSetup()">✅ Activate TimeWall</button>
-                    <button class="detail-btn" onclick="handleTimewallDeactivate()">⏸ Deactivate</button>
+                    <button class="primary" onclick="handleCpaleadSetup()">✅ Activate CPAlead</button>
+                    <button class="detail-btn" onclick="handleCpaleadDeactivate()">⏸ Deactivate</button>
                 </div>
-                <p id="twSetupMsg" style="margin-top:10px;font-size:.85rem;display:none;"></p>
+                <p id="cplSetupMsg" style="margin-top:10px;font-size:.85rem;display:none;"></p>
             </div>
 
         </section>
