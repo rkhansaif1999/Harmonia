@@ -557,7 +557,10 @@ async function loadBonusTasks() {
             return;
         }
 
-        const offerwalls = data.offerwalls || [];
+       // Filter to only the cpxresearch provider — the same endpoint
+        // returns ALL active offerwalls, and CPAlead now has its own
+        // dedicated tab, so we exclude it here to avoid showing it twice.
+        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpxresearch");
 
         if (offerwalls.length === 0) {
             statusLabel.textContent = "None available";
@@ -565,9 +568,6 @@ async function loadBonusTasks() {
             return;
         }
 
-        // For now we only ever expect one active provider (CPX Research),
-        // but this loop is written to embed however many the backend sends,
-        // so adding a second provider later needs no frontend change.
         frameHolder.innerHTML = "";
         statusLabel.textContent = "Available";
 
