@@ -388,8 +388,7 @@ function switchAnalyticsTab(tab) {
         panel.classList.toggle("active", panel.id === "analytics-panel-" + tab);
     });
 
-    if (tab === "offerwalls" && !offerwallDataLoaded) {
-        offerwallDataLoaded = true;
+    if (tab === "offerwalls") {
         renderOfferwallAll();
     }
 }
