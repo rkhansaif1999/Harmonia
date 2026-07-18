@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
-  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
 <!-- Google tag (gtag.js) -->
@@ -19,37 +18,227 @@
   gtag('config', 'G-TRQRKZFPY6');
 </script>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worker Dashboard - Harmonia</title>
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Worker Dashboard - Harmonia">
-  <meta property="og:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
-  <meta property="og:url" content="https://harmoniaportal.online/worker-dashboard.html">
-  <meta property="og:site_name" content="Harmonia">
-  <meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Worker Dashboard - Harmonia">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Dashboard - Harmonia</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Worker Dashboard - Harmonia">
+<meta property="og:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+<meta property="og:url" content="https://harmoniaportal.online/worker-dashboard.html">
+<meta property="og:site_name" content="Harmonia">
+<meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Worker Dashboard - Harmonia">
-  <meta name="twitter:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
-  <meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
-
-
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* ==========================================================
+   HARMONIA WORKER SPA — self-contained light theme.
+   Scoped entirely to this page: overrides .dashboard/.sidebar/
+   .topbar/.card/etc for THIS file only. style.css / other pages
+   are untouched.
+   ========================================================== */
+:root{
+    --bg:#f4f6fb;
+    --panel:#ffffff;
+    --border:#e8ecf4;
+    --text:#0f172a;
+    --muted:#64748b;
+    --muted-light:#94a3b8;
+    --primary:#4f6df5;
+    --primary-dark:#3c56d6;
+    --primary-soft:rgba(79,109,245,.10);
+    --success:#16a34a;
+    --success-soft:rgba(22,163,74,.10);
+    --warning:#d97706;
+    --warning-soft:rgba(217,119,6,.10);
+    --danger:#dc2626;
+    --danger-soft:rgba(220,38,38,.10);
+    --purple:#7c3aed;
+    --purple-soft:rgba(124,58,237,.10);
+    --radius:16px;
+    --shadow:0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.04);
+}
+html,body{background:var(--bg) !important;}
+body{color:var(--text);font-family:'Plus Jakarta Sans',Arial,sans-serif;}
+.noise{display:none;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;}
+
+.dashboard{display:flex;min-height:100vh;background:var(--bg);align-items:stretch;}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+    width:260px;flex:0 0 260px;background:var(--panel);border-right:1px solid var(--border);
+    padding:24px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar .logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:var(--text);margin:4px 6px 22px;}
+.sidebar .logo-img{width:30px;height:30px;border-radius:8px;}
+.sidebar ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+.side-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--muted-light);margin:16px 10px 6px;text-transform:uppercase;}
+.side-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:var(--muted);font-weight:600;font-size:.93rem;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;}
+.side-item:hover{background:var(--bg);color:var(--text);}
+.side-item.active{background:var(--primary-soft);color:var(--primary-dark);}
+.side-item .ic{font-size:1.05rem;width:20px;text-align:center;}
+.side-badge{margin-left:auto;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
+.sidebar-bottom{margin-top:auto;padding-top:16px;}
+.sidebar-user-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;}
+.sidebar-user-card .av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 auto;}
+.sidebar-user-card .nm{font-weight:700;font-size:.85rem;color:var(--text);}
+.sidebar-user-card .rl{font-size:.75rem;color:var(--muted);text-transform:capitalize;}
+
+/* ---------- Main / topbar ---------- */
+.main{flex:1;min-width:0;padding:22px 30px 50px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;background:transparent;padding:0;}
+.topbar h1{font-size:1.5rem;margin:0;color:var(--text);}
+.topbar-left{display:flex;flex-direction:column;gap:2px;}
+.breadcrumb{font-size:.8rem;color:var(--muted-light);}
+.breadcrumb span{color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.topbar-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 14px;color:var(--muted);font-size:.88rem;min-width:220px;}
+.topbar-search input{border:none;outline:none;background:transparent;font-family:inherit;font-size:.88rem;color:var(--text);width:100%;}
+.notif-wrap,.profile-wrap{position:relative;}
+.notif-bell{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);cursor:pointer;font-size:1.05rem;position:relative;display:flex;align-items:center;justify-content:center;}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:20px;padding:1px 5px;border:2px solid var(--panel);}
+.notif-dropdown,.profile-menu{display:none;position:absolute;right:0;top:calc(100% + 10px);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);min-width:300px;padding:10px;z-index:400;}
+.notif-dropdown.open,.profile-menu.open{display:block;}
+.notif-dropdown-title{font-weight:700;font-size:.85rem;padding:6px 8px 10px;color:var(--text);}
+.notif-item{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:10px;font-size:.85rem;color:var(--text);}
+.notif-item:hover{background:var(--bg);}
+.notif-empty{padding:14px 8px;color:var(--muted);font-size:.85rem;}
+.profile-btn{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px 12px 6px 6px;cursor:pointer;}
+.profile-avatar{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;}
+.profile-name{font-size:.85rem;font-weight:700;color:var(--text);display:flex;flex-direction:column;line-height:1.2;text-align:left;}
+.profile-name small{font-weight:500;color:var(--muted);font-size:.72rem;text-transform:capitalize;}
+.profile-menu a,.profile-menu .menu-item{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:10px;font-size:.86rem;font-weight:600;color:var(--text);border:none;background:transparent;cursor:pointer;}
+.profile-menu a:hover,.profile-menu .menu-item:hover{background:var(--bg);}
+.profile-menu hr{border:none;border-top:1px solid var(--border);margin:6px 0;}
+
+/* ---------- Cards / stat grid ---------- */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.stat-card .top{display:flex;justify-content:space-between;align-items:flex-start;}
+.stat-card .lbl{color:var(--muted);font-size:.85rem;font-weight:600;}
+.stat-card .val{font-size:1.7rem;font-weight:800;margin-top:6px;color:var(--text);}
+.stat-card .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.stat-card .sub{font-size:.78rem;color:var(--muted);margin-top:8px;}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+.card h2,.card h3{margin-top:0;color:var(--text);}
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.section-gap{margin-top:20px;}
+.muted{color:var(--muted);}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.section-title h2{margin:0;font-size:1.05rem;}
+.link-btn{color:var(--primary);font-weight:700;font-size:.85rem;cursor:pointer;background:none;border:none;}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem;}
+thead th{text-align:left;color:var(--muted);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;padding:0 10px 10px;border-bottom:1px solid var(--border);}
+tbody td{padding:13px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+.empty-state{text-align:center;color:var(--muted);padding:26px !important;}
+
+button.primary,button.secondary,.btn{
+    border:none;border-radius:10px;padding:9px 16px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;
+}
+button.primary,.btn.primary{background:var(--primary);color:#fff;}
+button.primary:hover{background:var(--primary-dark);}
+button.secondary,.btn.secondary{background:var(--bg);color:var(--text);border:1px solid var(--border);}
+button:disabled{opacity:.55;cursor:not-allowed;}
+input,textarea,select{
+    border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:.88rem;color:var(--text);background:#fff;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);}
+label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10px 0 6px;}
+
+.status{display:inline-block;padding:4px 11px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.status-completed,.status-paid,.status-approved{background:var(--success-soft);color:var(--success);}
+.status-pending,.status-underreview,.status-inreview{background:var(--warning-soft);color:var(--warning);}
+.status-assigned,.status-inprogress{background:var(--primary-soft);color:var(--primary-dark);}
+.status-rejected,.status-suspended,.status-needsrevision{background:var(--danger-soft);color:var(--danger);}
+.status-awaitingpayment{background:var(--purple-soft);color:var(--purple);}
+
+/* ---------- Tabs ---------- */
+.page-panel{display:none;}
+.page-panel.active{display:block;}
+.subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.subtab-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:700;cursor:pointer;}
+.subtab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.subpanel{display:none;}
+.subpanel.active{display:block;}
+
+/* ---------- Overlays / modals ---------- */
+.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:#fff;border-radius:20px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(15,23,42,.25);}
+.modal.wide{max-width:720px;height:78vh;display:flex;flex-direction:column;}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.modal-close{background:transparent;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;}
+.reply-status{font-size:.82rem;color:var(--muted);}
+
+/* Facebook-style chat bubbles */
+.chat-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;max-height:380px;min-height:140px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.bubble{max-width:80%;padding:10px 14px;border-radius:14px;box-sizing:border-box;}
+.bubble.me{align-self:flex-end;background:var(--primary-soft);}
+.bubble.them{align-self:flex-start;background:#fff;border:1px solid var(--border);}
+.bubble .meta{font-size:.72rem;color:var(--muted);margin-bottom:3px;}
+.bubble .txt{color:var(--text);white-space:pre-wrap;word-break:break-word;}
+
+/* thread list */
+.thread-toolbar{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--border);}
+.thread-toolbar button{background:var(--bg);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;cursor:pointer;}
+.thread-toolbar .spacer{flex:1;}
+.thread-row{display:flex;align-items:center;gap:12px;padding:13px 8px;border-bottom:1px solid var(--border);cursor:pointer;}
+.thread-row:hover{background:var(--bg);}
+.thread-row.unread .subj{font-weight:800;}
+.thread-star{color:#d0d5e0;cursor:pointer;}
+.thread-star.active{color:#f5b301;}
+.thread-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.thread-top{display:flex;justify-content:space-between;gap:10px;}
+.thread-top .subj{color:var(--text);font-size:.9rem;}
+.thread-top .time{color:var(--muted-light);font-size:.78rem;flex:0 0 auto;}
+.thread-company{color:var(--muted);font-size:.8rem;}
+
+/* micro-task workspace */
+.code-display{font-family:monospace;font-size:2.4rem;letter-spacing:.3em;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0;color:var(--text);}
+.code-input{font-family:monospace;font-size:1.3rem;letter-spacing:.3em;text-align:center;text-transform:uppercase;width:100%;box-sizing:border-box;padding:13px;}
+.feedback-box{text-align:center;font-weight:700;margin:14px 0;min-height:24px;}
+.feedback-correct{color:var(--success);}
+.feedback-incorrect{color:var(--danger);}
+.session-stats{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:.85rem;}
+.gate-btn{width:100%;padding:15px;font-size:1rem;}
+
+.method-tile{border:2px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;flex:1;}
+.method-tile.active{border-color:var(--primary);background:var(--primary-soft);}
+.badge-linked{background:var(--success-soft);color:var(--success);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:8px;}
+
+/* offerwall iframe holder */
+.iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;}
+.completion-banner{display:none;background:var(--success-soft);color:var(--success);padding:12px 16px;border-radius:12px;font-weight:700;margin-bottom:14px;}
+
+/* mobile */
+.sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:399;}
+@media(max-width:980px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .sidebar{position:fixed;left:-280px;top:0;height:100vh;z-index:401;transition:left .25s ease;box-shadow:0 0 0 rgba(0,0,0,0);}
+    .sidebar.open{left:0;box-shadow:0 0 60px rgba(0,0,0,.25);}
+    .sidebar-toggle{display:flex;align-items:center;justify-content:center;}
+    .sidebar-backdrop.open{display:block;}
+    .main{padding:70px 16px 40px;}
+    .topbar-search{display:none;}
+}
+@media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
+</style>
 </head>
 
 <body>
 
-<div class="noise"></div>
-
-<script src="script.js?v=4"></script>
-
+<script src="script.js?v=5"></script>
 <script>
     protectPage("worker");
 </script>
@@ -58,20 +247,34 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-
         <h2 class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
 
         <ul>
-            <li class="active">🏠 Dashboard</li>
-           <li><a href="worker-tasks.html">✅ My Tasks</a></li>
-            <li><a href="worker-messages.html">✉️ Messages</a></li>
-            <li><a href="worker-earnings.html">💰 Earnings</a></li>
-            <li><a href="worker-payments.html">🏦 Payments</a></li>
-            <li data-core-team-only style="display:none;"><a href="admin-dashboard.html">🛡️ Admin Panel</a></li>
-            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+            <li><button class="side-item active" data-tab="overview"><span class="ic">🏠</span> Dashboard</button></li>
+            <li><button class="side-item" data-tab="tasks"><span class="ic">✅</span> My Tasks</button></li>
+            <li><button class="side-item" data-tab="messages"><span class="ic">✉️</span> Messages <span class="side-badge" id="msgBadge" style="display:none;"></span></button></li>
+            <li><button class="side-item" data-tab="earnings"><span class="ic">💰</span> Earnings</button></li>
+            <li><button class="side-item" data-tab="payments"><span class="ic">🏦</span> Payments</button></li>
         </ul>
 
-    
+        <div class="side-label" data-core-team-only style="display:none;">Admin</div>
+        <ul data-core-team-only style="display:none;">
+            <li><a href="admin-dashboard.html" class="side-item"><span class="ic">🛡️</span> Admin Panel</a></li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-user-card">
+                <div class="av" id="sideAvatar">W</div>
+                <div>
+                    <div class="nm" id="sideName">Worker</div>
+                    <div class="rl" id="sideRole">worker</div>
+                </div>
+            </div>
+            <ul style="margin-top:10px;">
+                <li><a href="login.html" onclick="logout()" class="side-item"><span class="ic">🚪</span> Logout</a></li>
+            </ul>
+        </div>
+
         <div class="adsterra-sidebar-banners" style="margin-top:24px;display:flex;flex-direction:column;gap:16px;align-items:center;">
             <div style="width:160px;max-width:100%;overflow:hidden;">
                 <script>
@@ -98,7 +301,6 @@
                 <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
             </div>
         </div>
-
     </aside>
 
     <!-- Main -->
@@ -111,9 +313,8 @@
     });
 </script>
 
-
         <header class="topbar">
-            <h1>Welcome Back 👋</h1>
+            <h1 id="pageTitle">Dashboard</h1>
             <div class="adsterra-header-banners" style="display:flex;gap:12px;flex-wrap:wrap;">
                 <div style="width:468px;max-width:100%;overflow:hidden;">
                     <script>
@@ -140,103 +341,453 @@
                     <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
                 </div>
             </div>
-
-
-            <div class="profile">
-                Worker
-            </div>
+            <div class="profile">Worker</div>
         </header>
 
-        <section class="cards">
+        <!-- ================= OVERVIEW ================= -->
+        <section class="page-panel active" id="panel-overview">
 
-          <div class="dashboard-card">
-    <h3>Active Projects</h3>
-    <h2 id="availableTasks">0</h2>
-</div>
-
-<div class="dashboard-card">
-    <h3>Available Projects</h3>
-    <h2 id="myTasks">0</h2>
-</div>
-
-            <div class="dashboard-card">
-                <h3>Pending Earnings</h3>
-                <h2 id="pendingEarnings">$0.00</h2>
+            <div class="card" style="margin-bottom:20px;">
+                <h2 id="welcomeHeading" style="margin-bottom:2px;">Welcome back 👋</h2>
+                <p class="muted" style="margin-top:0;">Here's what's happening with your account today.</p>
             </div>
 
-            <div class="dashboard-card">
-                <h3>Total Earned</h3>
-                <h2 id="totalEarned">$0.00</h2>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="top">
+                        <div><div class="lbl">Pending Earnings</div><div class="val" id="ovPending">$0.00</div></div>
+                        <div class="ic" style="background:var(--warning-soft);color:var(--warning);">⏳</div>
+                    </div>
+                    <div class="sub">Awaiting payout</div>
+                </div>
+                <div class="stat-card">
+                    <div class="top">
+                        <div><div class="lbl">Total Paid</div><div class="val" id="ovPaid">$0.00</div></div>
+                        <div class="ic" style="background:var(--success-soft);color:var(--success);">💵</div>
+                    </div>
+                    <div class="sub">All-time payouts received</div>
+                </div>
+                <div class="stat-card">
+                    <div class="top">
+                        <div><div class="lbl">Assigned Tasks</div><div class="val" id="ovTasks">0</div></div>
+                        <div class="ic" style="background:var(--primary-soft);color:var(--primary-dark);">📋</div>
+                    </div>
+                    <div class="sub">Client review projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="top">
+                        <div><div class="lbl">Active Micro Tasks</div><div class="val" id="ovMicro">0</div></div>
+                        <div class="ic" style="background:var(--purple-soft);color:var(--purple);">⚡</div>
+                    </div>
+                    <div class="sub">Approved projects you can work</div>
+                </div>
             </div>
 
+            <!-- Ezoic Ad: mid_content -->
+            <script>
+                ezstandalone.cmd.push(function () {
+                    ezstandalone.showAds({ location: "mid_content" });
+                });
+            </script>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="section-title"><h2>My Tasks</h2><button class="link-btn" onclick="goTab('tasks')">View all →</button></div>
+                    <table>
+                        <thead><tr><th>Project</th><th>Category</th><th>Reviews</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="ovTaskTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="card">
+                    <div class="section-title"><h2>Payout Method</h2><button class="link-btn" onclick="goTab('payments')">Manage →</button></div>
+                    <div id="ovPayoutStatus" class="muted">Loading…</div>
+                    <div class="section-gap" style="border-top:1px solid var(--border);padding-top:14px;">
+                        <div class="section-title" style="margin-bottom:8px;"><h3 style="font-size:.95rem;margin:0;">Quick Links</h3></div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            <a href="help-center.html" class="btn secondary" style="text-align:left;">📘 Task Guidelines</a>
+                            <button class="btn secondary" style="text-align:left;" onclick="goTab('messages');switchSubtab('messages','support')">🎧 Contact Support</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card section-gap">
+                <div class="section-title"><h2>Micro Tasks Open to Apply</h2><button class="link-btn" onclick="goTab('tasks');switchSubtab('tasks','micro')">View all →</button></div>
+                <table>
+                    <thead><tr><th>Project ID</th><th>Payout / correct code</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="ovMicroTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+                </table>
+            </div>
         </section>
 
-        
-<!-- Ezoic Ad: mid_content -->
-<script>
-    ezstandalone.cmd.push(function () {
-        ezstandalone.showAds({ location: "mid_content" });
-    });
-</script>
-<section class="recent">
+        <!-- ================= TASKS ================= -->
+        <section class="page-panel" id="panel-tasks">
+            <div class="subtabs">
+                <button class="subtab-btn active" data-group="tasks" data-sub="orders" onclick="switchSubtab('tasks','orders')">✅ My Tasks</button>
+                <button class="subtab-btn" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
+                <button class="subtab-btn" data-group="tasks" data-sub="bonus" onclick="switchSubtab('tasks','bonus')">🎁 Bonus Tasks</button>
+                <button class="subtab-btn" data-group="tasks" data-sub="cpalead" onclick="switchSubtab('tasks','cpalead')">🎯 CPAlead Tasks</button>
+            </div>
 
-            <h2>My Assigned Tasks</h2>
+            <div class="subpanel active" data-group="tasks" data-sub="orders">
+                <div class="card">
+                    <h2>My Assigned Tasks</h2>
+                    <table>
+                        <thead><tr><th>Project</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="taskTable"><tr><td colspan="4" class="empty-state">Loading tasks…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
 
-            <table>
+            <div class="subpanel" data-group="tasks" data-sub="micro">
+                <div class="card">
+                    <h2>Approved — Ready to Work</h2>
+                    <table>
+                        <thead><tr><th>Type</th><th>Project</th><th>Payout / correct code</th><th>Action</th></tr></thead>
+                        <tbody id="approvedMicroTaskTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="card section-gap">
+                    <h2>Open Micro-Task Projects</h2>
+                    <p class="muted" style="margin-top:-8px;">Apply below — once approved by an admin you can start earning.</p>
+                    <table>
+                        <thead><tr><th>Project ID</th><th>Payout / correct code</th><th>Application Status</th><th>Action</th></tr></thead>
+                        <tbody id="microTaskTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
 
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Category</th>
-                        <th>Reviews</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+            <div class="subpanel" data-group="tasks" data-sub="bonus">
+                <div class="card">
+                    <div class="section-title"><h2>🎁 Bonus Tasks</h2><span class="muted" id="bonusStatusLabel">Loading…</span></div>
+                    <div class="completion-banner" id="bonusCompletionBanner"></div>
+                    <p class="muted empty-state" id="bonusEmptyState" style="display:none;"></p>
+                    <div class="iframe-holder" id="bonusIframeHolder"></div>
+                </div>
+            </div>
 
-                <tbody id="taskTable"></tbody>
-
-            </table>
-
+            <div class="subpanel" data-group="tasks" data-sub="cpalead">
+                <div class="card">
+                    <div class="section-title"><h2>🎯 CPAlead Tasks</h2><span class="muted" id="cpaleadStatusLabel">Loading…</span></div>
+                    <div class="completion-banner" id="cpaleadCompletionBanner"></div>
+                    <p class="muted empty-state" id="cpaleadEmptyState" style="display:none;"></p>
+                    <div class="iframe-holder" id="cpaleadIframeHolder"></div>
+                </div>
+            </div>
         </section>
-<section class="recent" style="margin-top:25px;">
 
-            <h2>Micro Tasks</h2>
-            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Apply to a micro-task project below. Once approved by an admin, you can start earning from the Tasks page.
-            </p>
+        <!-- ================= MESSAGES ================= -->
+        <section class="page-panel" id="panel-messages">
+            <div class="subtabs">
+                <button class="subtab-btn active" data-group="messages" data-sub="support" onclick="switchSubtab('messages','support')">🎧 Support</button>
+                <button class="subtab-btn" data-group="messages" data-sub="threads" onclick="switchSubtab('messages','threads')">✉️ Company Threads</button>
+            </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Project ID</th>
-                        <th>Payout per Correct Code</th>
-                        <th>Application Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="microTaskTable">
-                    <tr><td colspan="4" class="empty-state">Loading micro-tasks...</td></tr>
-                </tbody>
-            </table>
+            <div class="subpanel active" data-group="messages" data-sub="support">
+                <div class="card" style="max-width:680px;">
+                    <h3>🎧 Get in touch with Harmonia support</h3>
+                    <p class="muted" style="margin-top:-6px;">Have a question about a task, payout, or your account? Chat with our admin team below — replies show up right here.</p>
+                    <div class="chat-box" id="supportChatBox"><div class="muted">Loading conversation…</div></div>
+                    <label>Message</label>
+                    <textarea id="supportMessage" rows="3" placeholder="Describe what you need help with..." style="width:100%;"></textarea>
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                        <button class="primary" onclick="handleSendSupportMessage()">📤 Send Message</button>
+                        <span class="reply-status" id="supportStatus"></span>
+                    </div>
+                </div>
+            </div>
 
+            <div class="subpanel" data-group="messages" data-sub="threads">
+                <div id="noPermissionSection" class="card" style="display:none;">
+                    <h3>Email access not enabled</h3>
+                    <p class="muted">You don't currently have permission to message companies from Harmonia. Contact admin support if you believe you need this.</p>
+                </div>
+                <div id="messagesUI" class="card" style="display:none;">
+                    <div class="thread-toolbar">
+                        <input type="checkbox" id="wmSelectAll" onchange="toggleSelectAllThreads(this.checked)" title="Select all">
+                        <button onclick="handleBulkDelete()" title="Delete">🗑</button>
+                        <button onclick="handleBulkMarkUnread()" title="Mark as unread">📩</button>
+                        <button onclick="handleBulkMarkImportant()" title="Mark as important">⭐</button>
+                        <span class="muted" id="wmSelCount"></span>
+                        <div class="spacer"></div>
+                        <button class="primary" onclick="showNewThreadForm()">+ New Message</button>
+                    </div>
+                    <div id="threadList"><p class="empty-state">Loading...</p></div>
+                </div>
+            </div>
         </section>
-    
-<!-- Ezoic Ad: bottom_of_page -->
-<script>
-    ezstandalone.cmd.push(function () {
-        ezstandalone.showAds({ location: "bottom_of_page" });
-    });
-</script>
-</main>
 
+        <!-- ================= EARNINGS ================= -->
+        <section class="page-panel" id="panel-earnings">
+            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div class="stat-card">
+                    <div class="lbl">Total Earned (all time)</div>
+                    <div class="val" id="totalEarnedAllTime">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">Pending Payout</div>
+                    <div class="val" id="weeklyPending">$0.00</div>
+                    <div class="sub" id="weekRangeLabel"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">Next Payout</div>
+                    <div class="val" id="nextPayoutDate">Coming Soon</div>
+                </div>
+            </div>
+
+            <div class="card section-gap">
+                <h2>Earnings History</h2>
+                <table>
+                    <thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="earningsHistoryTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ================= PAYMENTS ================= -->
+        <section class="page-panel" id="panel-payments">
+            <div class="card">
+                <h2>Payout Method</h2>
+                <p class="muted" style="margin-top:-6px;">Choose how you'd like to receive payouts. Changing your method requires a verification code sent to your account email.</p>
+
+                <div style="display:flex;gap:14px;flex-wrap:wrap;margin:18px 0;">
+                    <div class="method-tile" id="paypalTile" onclick="selectMethodTile('paypal')">
+                        <strong>PayPal</strong> <span class="badge-linked" id="paypalLinkedBadge" style="display:none;">Linked</span>
+                        <div class="muted" style="margin-top:6px;" id="paypalDisplay">Not linked</div>
+                        <div class="muted" style="font-size:.75rem;" id="paypalUpdatedAt"></div>
+                    </div>
+                    <div class="method-tile" id="cryptoTile" onclick="selectMethodTile('crypto')">
+                        <strong>Crypto (USDT · ERC-20)</strong> <span class="badge-linked" id="cryptoLinkedBadge" style="display:none;">Linked</span>
+                        <div class="muted" style="margin-top:6px;" id="cryptoDisplay">Not linked</div>
+                        <div class="muted" style="font-size:.75rem;" id="cryptoUpdatedAt"></div>
+                    </div>
+                </div>
+
+                <div id="paypalCard">
+                    <button class="secondary" id="paypalUpdateBtn" onclick="startUpdate('paypal')">Link PayPal</button>
+                    <div id="paypalEditPanel" style="display:none;margin-top:14px;">
+                        <label>PayPal email</label>
+                        <input type="email" id="paypalInput" placeholder="you@paypal.com" style="width:100%;box-sizing:border-box;">
+                        <div style="display:flex;gap:10px;margin-top:10px;">
+                            <button class="primary" onclick="sendVerificationCode('paypal')">Send Code</button>
+                            <button class="secondary" onclick="cancelUpdate('paypal')">Cancel</button>
+                        </div>
+                        <div id="paypalCodePanel" style="display:none;margin-top:14px;">
+                            <p class="muted" id="paypalCodeSentNote"></p>
+                            <label>6-digit code</label>
+                            <input type="text" id="paypalCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
+                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode('paypal')">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cryptoCard" style="display:none;margin-top:18px;">
+                    <button class="secondary" id="cryptoUpdateBtn" onclick="startUpdate('crypto')">Link Wallet</button>
+                    <div id="cryptoEditPanel" style="display:none;margin-top:14px;">
+                        <label>USDT (ERC-20) wallet address</label>
+                        <input type="text" id="cryptoInput" placeholder="0x..." style="width:100%;box-sizing:border-box;">
+                        <div style="display:flex;gap:10px;margin-top:10px;">
+                            <button class="primary" onclick="sendVerificationCode('crypto')">Send Code</button>
+                            <button class="secondary" onclick="cancelUpdate('crypto')">Cancel</button>
+                        </div>
+                        <div id="cryptoCodePanel" style="display:none;margin-top:14px;">
+                            <p class="muted" id="cryptoCodeSentNote"></p>
+                            <label>6-digit code</label>
+                            <input type="text" id="cryptoCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
+                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode('crypto')">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Ezoic Ad: bottom_of_page -->
+    <script>
+        ezstandalone.cmd.push(function () {
+            ezstandalone.showAds({ location: "bottom_of_page" });
+        });
+    </script>
+    </main>
+</div>
+
+<!-- ============= Micro-task workspace modal ============= -->
+<div class="overlay" id="microWorkspaceOverlay">
+    <div class="modal wide">
+        <div class="modal-head">
+            <h3 id="mwTitle" style="margin:0;">Micro Task</h3>
+            <button class="modal-close" onclick="closeMicroWorkspace()">×</button>
+        </div>
+        <div style="overflow-y:auto;flex:1;">
+
+            <div style="display:flex;justify-content:center;margin:0 auto 16px;overflow:hidden;">
+                <script>
+                atOptions = { 'key' : '61ea3a77741ed9bda6542f9b1b995e1d', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+                </script>
+                <script src="https://www.highperformanceformat.com/61ea3a77741ed9bda6542f9b1b995e1d/invoke.js"></script>
+            </div>
+
+            <div id="mwGateState">
+                <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
+                <button class="primary gate-btn" id="mwGateBtn" onclick="handleGateClick()">Visit Link</button>
+                <p class="muted" style="text-align:center;font-size:.85rem;margin-top:12px;" id="mwGateNote">Step 1 of 2: Click the button above to open the link.</p>
+            </div>
+            <div id="mwLoadingState" style="display:none;text-align:center;padding:30px 0;">Loading...</div>
+            <div id="mwTaskContent" style="display:none;">
+                <div class="code-display" id="mwCodeDisplay">------</div>
+                <input type="text" id="mwCodeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
+                <div style="text-align:center;margin-top:16px;">
+                    <button class="primary" id="mwSubmitBtn" onclick="submitCode()">Submit</button>
+                </div>
+                <div class="feedback-box" id="mwFeedbackBox"></div>
+                <div class="session-stats">
+                    <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
+                    <span>Correct: <strong id="mwStatCorrect">0</strong></span>
+                    <span>Earned this session: <strong id="mwStatEarned">$0.00</strong></span>
+                </div>
+            </div>
+            <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
+
+            <!-- Extra Native Banner + rail impressions (equivalent of the old
+                 page's left/right ad rails — stacked here since a modal has
+                 no room for side columns) -->
+            <div style="margin:20px auto 0;">
+                <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
+                <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:16px;">
+                <div style="width:160px;max-width:100%;overflow:hidden;">
+                    <script>
+                    atOptions = { 'key' : '3489a53651d7a846fe425e478559a485', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
+                    </script>
+                    <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
+                </div>
+                <div style="width:160px;max-width:100%;overflow:hidden;">
+                    <script>
+                    atOptions = { 'key' : '3489a53651d7a846fe425e478559a485', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
+                    </script>
+                    <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============= Compose new thread ============= -->
+<div class="overlay" id="newThreadOverlay">
+    <div class="modal">
+        <div class="modal-head">
+            <h3 style="margin:0;">📧 New Message</h3>
+            <button class="modal-close" onclick="closeNewThreadForm()">×</button>
+        </div>
+        <label>To (company email)</label>
+        <input type="email" id="newThreadTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;">
+        <label>Subject</label>
+        <input type="text" id="newThreadSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;">
+        <label>Message</label>
+        <textarea id="newThreadMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+            <button class="primary" onclick="handleStartThread()">Send</button>
+            <span class="reply-status" id="newThreadStatus"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ============= Conversation view ============= -->
+<div class="overlay" id="threadOverlay">
+    <div class="modal wide">
+        <div class="modal-head">
+            <div>
+                <h3 id="threadOverlaySubject" style="margin:0;"></h3>
+                <p class="muted" id="threadOverlayMeta" style="font-size:.85rem;margin:4px 0 0 0;"></p>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <button class="secondary" onclick="handleDeleteFromOverlay()" title="Delete conversation">🗑</button>
+                <button class="modal-close" onclick="closeThreadOverlay()">×</button>
+            </div>
+        </div>
+        <div id="threadOverlayMessages" class="chat-box" style="flex:1;margin-bottom:14px;"></div>
+        <div style="display:flex;gap:10px;align-items:flex-end;">
+            <textarea id="threadOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:180px;font-family:inherit;"></textarea>
+            <button class="primary" onclick="handleReplyThread()">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============= Themed alert / confirm ============= -->
+<div class="overlay" id="alertOverlay">
+    <div class="modal" style="text-align:center;">
+        <div id="alertIcon" style="width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;font-size:1.4rem;background:var(--primary-soft);color:var(--primary-dark);">ℹ️</div>
+        <h3 id="alertTitle" style="margin:0 0 10px 0;"></h3>
+        <p id="alertMessage" class="muted" style="line-height:1.6;margin:0 0 24px 0;"></p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <button id="alertCancelBtn" class="secondary" style="display:none;">Cancel</button>
+            <button id="alertOkBtn" class="primary">OK</button>
+        </div>
+    </div>
 </div>
 
 <script>
+/* ==========================================================
+   HARMONIA WORKER SPA — application logic
+   Every network call below hits the exact same endpoints the
+   old worker-*.html pages used (see comments), just from one
+   tab-switched page instead of separate page loads.
+   ========================================================== */
 
-const taskTable = document.getElementById("taskTable");
-const microTaskTable = document.getElementById("microTaskTable");
+/* ---------------- Tab routing ---------------- */
+const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments" };
+const loadedTabs = new Set();
 
+function goTab(tab) {
+    document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+    document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
+    document.getElementById("pageTitle").textContent = TAB_TITLES[tab] || "Dashboard";
+    window.location.hash = tab;
+    ensureTabLoaded(tab);
+}
+
+function ensureTabLoaded(tab) {
+    if (loadedTabs.has(tab)) return;
+    loadedTabs.add(tab);
+    if (tab === "overview") renderOverview();
+    if (tab === "tasks") { fetchTasks(); loadApprovedMicroTasks(); loadMicroTasksToApply(); }
+    if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
+    if (tab === "earnings") { loadEarnings(); loadEarningsHistory(); }
+    if (tab === "payments") loadPayoutMethod();
+}
+
+function switchSubtab(group, sub) {
+    document.querySelectorAll(`.subtab-btn[data-group="${group}"]`).forEach(b => b.classList.toggle("active", b.dataset.sub === sub));
+    document.querySelectorAll(`.subpanel[data-group="${group}"]`).forEach(p => p.classList.toggle("active", p.dataset.sub === sub));
+    if (group === "tasks" && sub === "bonus" && !loadedTabs.has("bonus")) { loadedTabs.add("bonus"); loadBonusTasks(); }
+    if (group === "tasks" && sub === "cpalead" && !loadedTabs.has("cpalead")) { loadedTabs.add("cpalead"); loadCpaleadTasks(); }
+}
+
+document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
+    btn.addEventListener("click", () => goTab(btn.dataset.tab));
+});
+
+(function initialRoute() {
+    const hash = (window.location.hash || "").replace("#", "");
+    const valid = ["overview", "tasks", "messages", "earnings", "payments"];
+    goTab(valid.includes(hash) ? hash : "overview");
+})();
+
+/* ---------------- Sidebar user card ---------------- */
+(function paintSidebarUser() {
+    const user = getUser();
+    if (!user) return;
+    const initials = (user.fullName || user.role || "W").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    document.getElementById("sideAvatar").textContent = initials;
+    document.getElementById("sideName").textContent = user.fullName || "Worker";
+    document.getElementById("sideRole").textContent = user.role;
+    document.getElementById("welcomeHeading").textContent = "Welcome back, " + (user.fullName ? user.fullName.split(" ")[0] : "Worker") + " 👋";
+})();
+
+/* ==========================================================
+   OVERVIEW  — GET /api/worker/tasks, /api/worker/micro-tasks,
+   /api/worker/earnings-summary, /api/worker/payout-method
+   ========================================================== */
 function microTaskStatusLabel(status) {
     if (status === "approved") return "✅ Approved";
     if (status === "pending") return "⏳ Pending Approval";
@@ -244,128 +795,724 @@ function microTaskStatusLabel(status) {
     return "Not Applied";
 }
 
-// One combined load: client-assigned tasks, this worker's micro-task
-// applications, and the real earnings summary. Everything renders from
-// this same data so the cards and tables can never drift apart again.
-async function renderWorkerDashboard() {
-
-    let tasks = [];
-    let microTasks = [];
-    let summary = { totalPending: 0, totalPaid: 0 };
+async function renderOverview() {
+    let tasks = [], microTasks = [], summary = { totalPending: 0, totalPaid: 0 };
 
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/tasks");
-        const data = await response.json();
-        if (response.ok) tasks = data.tasks || [];
-    } catch (err) { console.error("Failed to load tasks:", err); }
+        const r = await authFetch(WORKER_URL + "/api/worker/tasks");
+        const d = await r.json();
+        if (r.ok) tasks = d.tasks || [];
+    } catch (err) { console.error(err); }
 
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
-        const data = await response.json();
-        if (response.ok) microTasks = data.tasks || [];
-    } catch (err) { console.error("Failed to load micro-tasks:", err); }
+        const r = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const d = await r.json();
+        if (r.ok) microTasks = d.tasks || [];
+    } catch (err) { console.error(err); }
 
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/earnings-summary");
-        const data = await response.json();
-        if (response.ok) summary = data;
-    } catch (err) { console.error("Failed to load earnings summary:", err); }
+        const r = await authFetch(WORKER_URL + "/api/worker/earnings-summary");
+        const d = await r.json();
+        if (r.ok) summary = d;
+    } catch (err) { console.error(err); }
 
-    const approvedMicroTasks = microTasks.filter(t => t.applicationStatus === "approved");
-    const applicableMicroTasks = microTasks.filter(t => t.applicationStatus !== "approved");
+    const approvedMicro = microTasks.filter(t => t.applicationStatus === "approved");
+    const applicableMicro = microTasks.filter(t => t.applicationStatus !== "approved");
 
-    // Row 1: assigned client tasks + approved micro-task projects
+    document.getElementById("ovPending").textContent = formatMoney(summary.totalPending || 0);
+    document.getElementById("ovPaid").textContent = formatMoney(summary.totalPaid || 0);
+    document.getElementById("ovTasks").textContent = tasks.length;
+    document.getElementById("ovMicro").textContent = approvedMicro.length;
+
+    const taskTable = document.getElementById("ovTaskTable");
     taskTable.innerHTML = "";
-
-    tasks.forEach(task => {
-        taskTable.innerHTML += `
-            <tr>
-                <td>${escapeHTML(task.project_name)}</td>
-                <td>${escapeHTML(task.category)}</td>
-                <td>${task.reviews}</td>
-                <td>${statusBadge(task.status)}</td>
-                <td>
-                    ${
-                        task.status === "Completed" ? "✅ Completed"
-                        : task.status === "In Review" ? "⏳ Awaiting review"
-                        : task.status === "Needs Revision" ? `<button onclick="submitMyTask('${task.order_id}')">Resubmit</button>`
-                        : `<button onclick="submitMyTask('${task.order_id}')">Submit for Review</button>`
-                    }
-                </td>
-            </tr>`;
+    tasks.slice(0, 6).forEach(task => {
+        taskTable.innerHTML += `<tr>
+            <td>${escapeHTML(task.project_name)}</td>
+            <td>${escapeHTML(task.category)}</td>
+            <td>${task.reviews}</td>
+            <td>${statusBadge(task.status)}</td>
+            <td>${task.status === "Completed" ? "✅" : task.status === "In Review" ? "⏳" : `<button class="secondary" onclick="goTab('tasks')">Open</button>`}</td>
+        </tr>`;
     });
+    if (tasks.length === 0) taskTable.innerHTML = `<tr><td colspan="5" class="empty-state">No tasks assigned to you yet</td></tr>`;
 
-    approvedMicroTasks.forEach(task => {
-        taskTable.innerHTML += `
-            <tr>
-                <td>Micro Task #${task.id}</td>
-                <td>Micro Task</td>
-                <td>-</td>
-                <td>${statusBadge("Approved")}</td>
-                <td><a href="worker-micro-task.html?taskId=${task.id}"><button>Start Working</button></a></td>
-            </tr>`;
+    const microTable = document.getElementById("ovMicroTable");
+    microTable.innerHTML = "";
+    applicableMicro.slice(0, 6).forEach(task => {
+        const action = task.applicationStatus === "not_applied" ? `<button class="secondary" onclick="applyMicroTask(${task.id})">Apply</button>` : "-";
+        microTable.innerHTML += `<tr><td>#${task.id}</td><td>${formatMoney(task.payoutAmount)}</td><td>${microTaskStatusLabel(task.applicationStatus)}</td><td>${action}</td></tr>`;
     });
+    if (applicableMicro.length === 0) microTable.innerHTML = `<tr><td colspan="4" class="empty-state">No micro-tasks available to apply for right now</td></tr>`;
 
-    if (tasks.length === 0 && approvedMicroTasks.length === 0) {
-        taskTable.innerHTML = `<tr><td colspan="5" class="empty-state">No tasks assigned to you yet</td></tr>`;
-    }
-
-    // Row 2: micro-task projects still open to apply for
-    microTaskTable.innerHTML = "";
-
-    if (applicableMicroTasks.length === 0) {
-        microTaskTable.innerHTML = `<tr><td colspan="4" class="empty-state">No micro-tasks available to apply for right now</td></tr>`;
-    }
-
-    applicableMicroTasks.forEach(task => {
-        const action = task.applicationStatus === "not_applied"
-            ? `<button onclick="applyMicroTask(${task.id})">Apply</button>`
-            : "-";
-        microTaskTable.innerHTML += `
-            <tr>
-                <td>#${task.id}</td>
-                <td>$${Number(task.payoutAmount).toFixed(2)}</td>
-                <td>${microTaskStatusLabel(task.applicationStatus)}</td>
-                <td>${action}</td>
-            </tr>`;
-    });
-
-    // Top cards
-    document.getElementById("availableTasks").textContent = approvedMicroTasks.length;
-    document.getElementById("myTasks").textContent = microTasks.length;
-    document.getElementById("pendingEarnings").textContent = "$" + Number(summary.totalPending || 0).toFixed(2);
-    document.getElementById("totalEarned").textContent = "$" + Number(summary.totalPaid || 0).toFixed(2);
-}
-
-async function submitMyTask(orderId) {
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/tasks/submit", {
-            method: "POST", body: JSON.stringify({ orderId })
-        });
-        const data = await response.json();
-        if (!response.ok) { alert(data?.error || "Could not submit task."); return; }
-        await renderWorkerDashboard();
-    } catch (err) { alert("Unable to connect to the server."); console.error(err); }
+        const r = await authFetch(WORKER_URL + "/api/worker/payout-method");
+        const d = await r.json();
+        const el = document.getElementById("ovPayoutStatus");
+        if (r.ok && d.method && d.method.verified) {
+            el.innerHTML = `<span class="status status-approved">Linked</span> &nbsp; ${d.method.methodType === "paypal" ? "PayPal" : "Crypto (USDT)"}`;
+        } else {
+            el.innerHTML = `<span class="status status-pending">Not set up</span> &nbsp; Add a payout method to get paid.`;
+        }
+    } catch (err) { console.error(err); }
 }
 
 async function applyMicroTask(microTaskId) {
     try {
-        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks/apply", {
-            method: "POST", body: JSON.stringify({ microTaskId })
-        });
-        const data = await response.json();
-        if (!response.ok) { alert(data?.error || "Could not submit application."); return; }
-        await renderWorkerDashboard();
+        const r = await authFetch(WORKER_URL + "/api/worker/micro-tasks/apply", { method: "POST", body: JSON.stringify({ microTaskId }) });
+        const d = await r.json();
+        if (!r.ok) { alert(d?.error || "Could not submit application."); return; }
+        loadedTabs.delete("overview"); renderOverview();
+        loadMicroTasksToApply();
     } catch (err) { alert("Unable to connect to the server."); console.error(err); }
 }
 
-renderWorkerDashboard();
+/* ==========================================================
+   TASKS — My Tasks  (/api/worker/tasks, /start, /submit)
+   ========================================================== */
+async function fetchTasks() {
+    const table = document.getElementById("taskTable");
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/tasks");
+        let data;
+        try { data = await response.json(); } catch (e) { table.innerHTML = `<tr><td colspan="4" class="empty-state">Server returned an invalid response.</td></tr>`; return; }
+        if (!response.ok) { table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load tasks.")}</td></tr>`; return; }
+        renderTasks(data.tasks || []);
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
+    }
+}
 
+function renderTasks(tasks) {
+    const table = document.getElementById("taskTable");
+    table.innerHTML = "";
+    if (tasks.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No tasks assigned yet</td></tr>`; return; }
+
+    tasks.forEach(task => {
+        let actionButtons = "";
+        if (task.status === "Needs Revision") actionButtons = `<button class="secondary" onclick="resubmit('${task.order_id}')">Resubmit</button>`;
+        else if (task.status === "Completed") actionButtons = "✅ Done";
+        else if (task.status === "In Review") actionButtons = "⏳ Awaiting review";
+        else if (task.status === "In Progress") actionButtons = `<button class="secondary" onclick="submitTask('${task.order_id}')">Submit</button>`;
+        else actionButtons = `<button class="secondary" onclick="startTask('${task.order_id}')">Start</button> <button class="secondary" onclick="submitTask('${task.order_id}')">Submit</button>`;
+
+        table.innerHTML += `<tr>
+            <td>${escapeHTML(task.project_name)}</td>
+            <td>${escapeHTML(task.category)}</td>
+            <td>${statusBadge(task.status)}${task.status === "Needs Revision" && task.rejection_reason ? `<div class="muted" style="font-size:.78rem;margin-top:6px;">— ${escapeHTML(task.rejection_reason)}</div>` : ""}</td>
+            <td>${actionButtons}</td>
+        </tr>`;
+    });
+}
+
+async function callTaskAction(path, orderId) {
+    try {
+        const response = await authFetch(WORKER_URL + path, { method: "POST", body: JSON.stringify({ orderId }) });
+        let data;
+        try { data = await response.json(); } catch (e) { alert("Server returned an invalid response."); return; }
+        if (!response.ok) { alert(data?.error || "Something went wrong. Please try again."); return; }
+        await fetchTasks();
+        loadedTabs.delete("overview");
+    } catch (err) { alert("Unable to connect to the server."); console.error(err); }
+}
+function startTask(orderId) { callTaskAction("/api/worker/tasks/start", orderId); }
+function submitTask(orderId) { callTaskAction("/api/worker/tasks/submit", orderId); }
+function resubmit(orderId) { callTaskAction("/api/worker/tasks/submit", orderId); }
+
+/* ---------------- Micro tasks: approved / open to apply ---------------- */
+function formatPayRate(amount) {
+    const n = Number(amount) || 0;
+    if (n === 0) return "$0.00";
+    if (Math.abs(n) >= 0.01) return "$" + n.toFixed(2);
+    return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+async function loadApprovedMicroTasks() {
+    const table = document.getElementById("approvedMicroTaskTable");
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+        if (!response.ok) { table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`; return; }
+        const approved = (data.tasks || []).filter(t => t.applicationStatus === "approved");
+        table.innerHTML = "";
+        if (approved.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">You're not approved for any micro-task project yet.</td></tr>`; return; }
+        approved.forEach(task => {
+            table.innerHTML += `<tr>
+                <td>${escapeHTML(task.taskType || "Micro Task")}</td>
+                <td>#${task.id}</td>
+                <td>${formatPayRate(task.payoutAmount)}</td>
+                <td><button class="primary" onclick="openMicroWorkspace(${task.id})">Start Working</button></td>
+            </tr>`;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
+    }
+}
+
+async function loadMicroTasksToApply() {
+    const table = document.getElementById("microTaskTable");
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+        if (!response.ok) { table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`; return; }
+        const open = (data.tasks || []).filter(t => t.applicationStatus !== "approved");
+        table.innerHTML = "";
+        if (open.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No micro-tasks available to apply for right now</td></tr>`; return; }
+        open.forEach(task => {
+            const action = task.applicationStatus === "not_applied" ? `<button class="secondary" onclick="applyMicroTask(${task.id})">Apply</button>` : "-";
+            table.innerHTML += `<tr><td>#${task.id}</td><td>${formatPayRate(task.payoutAmount)}</td><td>${microTaskStatusLabel(task.applicationStatus)}</td><td>${action}</td></tr>`;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
+    }
+}
+
+/* ---------------- Micro-task workspace (was worker-micro-task.html) ---------------- */
+let mwTaskId = null, mwChallengeId = null, mwPayoutAmount = 0;
+let mwSessionSubmissions = 0, mwSessionCorrect = 0, mwSessionEarned = 0;
+const MW_GATE_LINK = "https://omg10.com/4/7554726";
+const MW_GATE_WAIT_SECONDS = 10;
+let mwGateStep = 1;
+
+function openMicroWorkspace(taskId) {
+    mwTaskId = taskId;
+    mwGateStep = 1;
+    mwChallengeId = null;
+    mwSessionSubmissions = 0; mwSessionCorrect = 0; mwSessionEarned = 0;
+    document.getElementById("mwGateState").style.display = "block";
+    document.getElementById("mwLoadingState").style.display = "none";
+    document.getElementById("mwTaskContent").style.display = "none";
+    document.getElementById("mwNotApprovedState").style.display = "none";
+    const gateBtn = document.getElementById("mwGateBtn");
+    gateBtn.disabled = false;
+    gateBtn.textContent = "Visit Link";
+    document.getElementById("mwGateNote").textContent = "Step 1 of 2: Click the button above to open the link.";
+    document.getElementById("microWorkspaceOverlay").classList.add("open");
+}
+function closeMicroWorkspace() {
+    document.getElementById("microWorkspaceOverlay").classList.remove("open");
+    loadApprovedMicroTasks();
+}
+function handleGateClick() {
+    const gateBtn = document.getElementById("mwGateBtn");
+    const gateNote = document.getElementById("mwGateNote");
+    if (mwGateStep === 1) {
+        window.open(MW_GATE_LINK, "_blank", "noopener");
+        mwGateStep = 2;
+        gateBtn.disabled = true;
+        gateBtn.textContent = `Please wait ${MW_GATE_WAIT_SECONDS}s...`;
+        gateNote.textContent = "Step 2 of 2: Waiting for you to visit the link. Continue will unlock shortly.";
+        let remaining = MW_GATE_WAIT_SECONDS;
+        const countdown = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+                clearInterval(countdown);
+                gateBtn.disabled = false;
+                gateBtn.textContent = "Continue to Task";
+                gateNote.textContent = "Thanks! Click Continue to start your session.";
+            } else gateBtn.textContent = `Please wait ${remaining}s...`;
+        }, 1000);
+        return;
+    }
+    document.getElementById("mwGateState").style.display = "none";
+    document.getElementById("mwLoadingState").style.display = "block";
+    mwInit();
+}
+async function mwLogVisit() {
+    try { await authFetch(WORKER_URL + "/api/worker/micro-tasks/visit", { method: "POST" }); } catch (err) { console.error(err); }
+}
+async function mwInit() {
+    if (!mwTaskId) { document.getElementById("mwLoadingState").textContent = "No project specified."; return; }
+    mwLogVisit();
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
+        const data = await response.json();
+        if (!response.ok) { document.getElementById("mwLoadingState").textContent = data?.error || "Could not load project."; return; }
+        const task = (data.tasks || []).find(t => String(t.id) === String(mwTaskId));
+        if (!task || task.applicationStatus !== "approved") {
+            document.getElementById("mwLoadingState").style.display = "none";
+            document.getElementById("mwNotApprovedState").style.display = "block";
+            return;
+        }
+        mwPayoutAmount = Number(task.payoutAmount);
+        document.getElementById("mwTitle").textContent = `Project #${task.id} — ${formatMoney(mwPayoutAmount)} per correct code`;
+        document.getElementById("mwLoadingState").style.display = "none";
+        document.getElementById("mwTaskContent").style.display = "block";
+        await mwGetNextChallenge();
+    } catch (err) {
+        console.error(err);
+        document.getElementById("mwLoadingState").textContent = "Unable to connect to the server.";
+    }
+}
+async function mwGetNextChallenge() {
+    const codeDisplay = document.getElementById("mwCodeDisplay");
+    const input = document.getElementById("mwCodeInput");
+    const submitBtn = document.getElementById("mwSubmitBtn");
+    codeDisplay.textContent = "------";
+    input.value = ""; input.disabled = true; submitBtn.disabled = true;
+    try {
+        const response = await authFetch(WORKER_URL + `/api/worker/micro-tasks/challenge?taskId=${encodeURIComponent(mwTaskId)}`);
+        const data = await response.json();
+        if (!response.ok) {
+            document.getElementById("mwFeedbackBox").textContent = data?.error || "Could not load a new code.";
+            document.getElementById("mwFeedbackBox").className = "feedback-box feedback-incorrect";
+            return;
+        }
+        mwChallengeId = data.challengeId;
+        codeDisplay.textContent = data.displayCode;
+        input.disabled = false; submitBtn.disabled = false; input.focus();
+    } catch (err) {
+        console.error(err);
+        document.getElementById("mwFeedbackBox").textContent = "Unable to connect to the server.";
+        document.getElementById("mwFeedbackBox").className = "feedback-box feedback-incorrect";
+    }
+}
+async function submitCode() {
+    const input = document.getElementById("mwCodeInput");
+    const submitBtn = document.getElementById("mwSubmitBtn");
+    const feedbackBox = document.getElementById("mwFeedbackBox");
+    const submittedValue = input.value.trim();
+    if (!submittedValue) { feedbackBox.textContent = "Please type the code shown above."; feedbackBox.className = "feedback-box feedback-incorrect"; return; }
+    if (!mwChallengeId) { feedbackBox.textContent = "No active code. Please wait for a new one to load."; feedbackBox.className = "feedback-box feedback-incorrect"; return; }
+    input.disabled = true; submitBtn.disabled = true;
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks/submit", { method: "POST", body: JSON.stringify({ challengeId: mwChallengeId, submittedValue }) });
+        const data = await response.json();
+        if (!response.ok) {
+            feedbackBox.textContent = data?.error || "Something went wrong. Please try again.";
+            feedbackBox.className = "feedback-box feedback-incorrect";
+            input.disabled = false; submitBtn.disabled = false;
+            return;
+        }
+        mwSessionSubmissions++;
+        if (data.correct) {
+            mwSessionCorrect++;
+            mwSessionEarned += Number(data.earned || 0);
+            feedbackBox.textContent = `✅ Correct! You earned ${formatMoney(data.earned)}`;
+            feedbackBox.className = "feedback-box feedback-correct";
+        } else {
+            feedbackBox.textContent = "❌ Incorrect. Try the next code.";
+            feedbackBox.className = "feedback-box feedback-incorrect";
+        }
+        document.getElementById("mwStatSubmissions").textContent = mwSessionSubmissions;
+        document.getElementById("mwStatCorrect").textContent = mwSessionCorrect;
+        document.getElementById("mwStatEarned").textContent = formatMoney(mwSessionEarned);
+        setTimeout(mwGetNextChallenge, 1200);
+    } catch (err) {
+        console.error(err);
+        feedbackBox.textContent = "Unable to connect to the server.";
+        feedbackBox.className = "feedback-box feedback-incorrect";
+        input.disabled = false; submitBtn.disabled = false;
+    }
+}
+document.getElementById("mwCodeInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); submitCode(); }
+});
+
+/* ==========================================================
+   BONUS TASKS (CPX Research) + CPALEAD — /api/worker/offerwalls
+   ========================================================== */
+let trustedMessageOrigins = [];
+async function loadBonusTasks() {
+    const statusLabel = document.getElementById("bonusStatusLabel");
+    const emptyState = document.getElementById("bonusEmptyState");
+    const frameHolder = document.getElementById("bonusIframeHolder");
+    try {
+        statusLabel.textContent = "Loading…";
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
+        const data = await response.json();
+        if (!response.ok) { statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = escapeHTML(data?.error || "Bonus tasks aren't available right now."); return; }
+        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpxresearch");
+        if (offerwalls.length === 0) { statusLabel.textContent = "None available"; emptyState.style.display = "block"; emptyState.textContent = "No bonus tasks available right now — check back soon."; return; }
+        frameHolder.innerHTML = ""; statusLabel.textContent = "Available"; emptyState.style.display = "none";
+        offerwalls.forEach(ow => {
+            try { trustedMessageOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { return; }
+            const iframe = document.createElement("iframe");
+            iframe.src = ow.iframeUrl; iframe.title = "Bonus Tasks";
+            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+            frameHolder.appendChild(iframe);
+        });
+    } catch (err) { console.error(err); statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = "Unable to connect to the server."; }
+}
+window.addEventListener("message", (event) => {
+    if (trustedMessageOrigins.length && !trustedMessageOrigins.includes(event.origin)) return;
+    let payload = event.data;
+    if (typeof payload === "string") { try { payload = JSON.parse(payload); } catch (e) {} }
+    if (!payload || typeof payload !== "object") return;
+    const status = String(payload.status || payload.type || "").toLowerCase();
+    if (status.includes("complete") || status === "1" || status === "success") {
+        const b = document.getElementById("bonusCompletionBanner");
+        b.textContent = "Nice — that one's in! Check your Earnings page once it's confirmed.";
+        b.style.display = "block";
+        setTimeout(() => { b.style.display = "none"; }, 8000);
+    }
+});
+
+let cpaleadTrustedOrigins = [];
+async function loadCpaleadTasks() {
+    const statusLabel = document.getElementById("cpaleadStatusLabel");
+    const emptyState = document.getElementById("cpaleadEmptyState");
+    const frameHolder = document.getElementById("cpaleadIframeHolder");
+    try {
+        statusLabel.textContent = "Loading…";
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
+        const data = await response.json();
+        if (!response.ok) { statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = escapeHTML(data?.error || "CPAlead tasks aren't available right now."); return; }
+        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpalead");
+        if (offerwalls.length === 0) { statusLabel.textContent = "None available"; emptyState.style.display = "block"; emptyState.textContent = "CPAlead tasks aren't available right now — check back soon."; return; }
+        frameHolder.innerHTML = ""; statusLabel.textContent = "Available"; emptyState.style.display = "none";
+        offerwalls.forEach(ow => {
+            try { cpaleadTrustedOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { return; }
+            const iframe = document.createElement("iframe");
+            iframe.src = ow.iframeUrl; iframe.title = "CPAlead Tasks";
+            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+            frameHolder.appendChild(iframe);
+        });
+    } catch (err) { console.error(err); statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = "Unable to connect to the server."; }
+}
+window.addEventListener("message", (event) => {
+    if (cpaleadTrustedOrigins.length && !cpaleadTrustedOrigins.includes(event.origin)) return;
+    let payload = event.data;
+    if (typeof payload === "string") { try { payload = JSON.parse(payload); } catch (e) {} }
+    if (!payload || typeof payload !== "object") return;
+    const status = String(payload.status || payload.type || payload.event || "").toLowerCase();
+    if (status.includes("complete") || status.includes("credit") || status === "1" || status === "success") {
+        const b = document.getElementById("cpaleadCompletionBanner");
+        b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
+        b.style.display = "block";
+        setTimeout(() => { b.style.display = "none"; }, 8000);
+    }
+});
+
+/* ==========================================================
+   MESSAGES — Support chat (/api/worker/support) +
+   Company threads (script.js helpers: fetchWorkerThreads etc)
+   ========================================================== */
+function renderSupportChat(messages) {
+    const box = document.getElementById("supportChatBox");
+    const msgs = messages || [];
+    if (!msgs.length) { box.innerHTML = `<div class="muted">No messages yet — say hello!</div>`; return; }
+    box.innerHTML = msgs.map(m => `
+        <div class="bubble ${m.sender === "admin" ? "them" : "me"}">
+            <div class="meta">${m.sender === "admin" ? "Admin" : "You"} • ${m.time ? new Date(m.time).toLocaleString() : ""}</div>
+            <div class="txt">${escapeHTML(m.message)}</div>
+        </div>`).join("");
+    box.scrollTop = box.scrollHeight;
+}
+async function loadSupportChat() {
+    const data = await fetchWorkerSupportChat();
+    if (data && data.error) { document.getElementById("supportChatBox").innerHTML = `<div class="muted">Could not load conversation: ${escapeHTML(data.error)}</div>`; return; }
+    renderSupportChat(data.messages);
+}
+async function handleSendSupportMessage() {
+    const textarea = document.getElementById("supportMessage");
+    const statusEl = document.getElementById("supportStatus");
+    const message = textarea.value.trim();
+    if (!message) { statusEl.textContent = "Please type a message first."; statusEl.style.color = "var(--danger)"; return; }
+    statusEl.textContent = "Sending..."; statusEl.style.color = "var(--muted)";
+    let result;
+    try { result = await submitWorkerSupportMessage(message); } catch (err) { result = { error: "Unexpected error. Please try again." }; }
+    if (!result || result.error) { statusEl.textContent = "Failed: " + (result && result.error ? result.error : "Unknown error."); statusEl.style.color = "var(--danger)"; return; }
+    statusEl.textContent = ""; textarea.value = "";
+    renderSupportChat(result.messages);
+}
+setInterval(() => { if (document.getElementById("panel-messages").classList.contains("active")) loadSupportChat(); }, 15000);
+
+/* ---- Company threads (worker <-> company email) ---- */
+let allThreads = [], activeThreadId = null, selectedThreadIds = new Set();
+
+function showAlert(message, opts) {
+    opts = opts || {};
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("alertOverlay");
+        const icon = document.getElementById("alertIcon");
+        const isError = opts.type === "error";
+        document.getElementById("alertTitle").textContent = opts.title || (isError ? "Something went wrong" : "Notice");
+        document.getElementById("alertMessage").textContent = message;
+        icon.textContent = isError ? "⚠️" : "ℹ️";
+        icon.style.background = isError ? "var(--danger-soft)" : "var(--primary-soft)";
+        icon.style.color = isError ? "var(--danger)" : "var(--primary-dark)";
+        document.getElementById("alertCancelBtn").style.display = "none";
+        overlay.classList.add("open");
+        const okBtn = document.getElementById("alertOkBtn");
+        function onOk() { overlay.classList.remove("open"); okBtn.removeEventListener("click", onOk); resolve(true); }
+        okBtn.addEventListener("click", onOk);
+    });
+}
+function showConfirm(message, opts) {
+    opts = opts || {};
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("alertOverlay");
+        const icon = document.getElementById("alertIcon");
+        document.getElementById("alertTitle").textContent = opts.title || "Please confirm";
+        document.getElementById("alertMessage").textContent = message;
+        icon.textContent = "❓"; icon.style.background = "var(--primary-soft)"; icon.style.color = "var(--primary-dark)";
+        const cancelBtn = document.getElementById("alertCancelBtn"), okBtn = document.getElementById("alertOkBtn");
+        cancelBtn.style.display = "inline-block";
+        overlay.classList.add("open");
+        function cleanup(result) { overlay.classList.remove("open"); okBtn.removeEventListener("click", onOk); cancelBtn.removeEventListener("click", onCancel); resolve(result); }
+        function onOk() { cleanup(true); } function onCancel() { cleanup(false); }
+        okBtn.addEventListener("click", onOk); cancelBtn.addEventListener("click", onCancel);
+    });
+}
+
+function threadFlagsKey() { const user = getUser(); return "wmThreadFlags_" + (user ? user.id : "anon"); }
+function loadThreadFlags() { try { return JSON.parse(localStorage.getItem(threadFlagsKey()) || "{}"); } catch { return {}; } }
+function saveThreadFlags(flags) { localStorage.setItem(threadFlagsKey(), JSON.stringify(flags)); }
+function getThreadFlag(id) { const flags = loadThreadFlags(); return flags[id] || { unread: true, important: false }; }
+function setThreadFlag(id, patch) { const flags = loadThreadFlags(); flags[id] = Object.assign(getThreadFlag(id), patch); saveThreadFlags(flags); }
+
+async function initMessagesPage() {
+    const user = getUser();
+    if (user && user.canSendEmail) { document.getElementById("messagesUI").style.display = "block"; document.getElementById("noPermissionSection").style.display = "none"; loadThreadList(); }
+    else { document.getElementById("messagesUI").style.display = "none"; document.getElementById("noPermissionSection").style.display = "block"; }
+}
+async function loadThreadList() {
+    const list = document.getElementById("threadList");
+    try {
+        const data = await fetchWorkerThreads();
+        allThreads = data.threads || [];
+        selectedThreadIds.clear();
+        renderThreadList(); updateBulkUI();
+        const unread = allThreads.filter(t => getThreadFlag(t.id).unread).length;
+        const badge = document.getElementById("msgBadge");
+        if (unread > 0) { badge.style.display = "inline-block"; badge.textContent = unread; } else badge.style.display = "none";
+    } catch (err) { console.error(err); list.innerHTML = `<p class="empty-state">Failed to load.</p>`; }
+}
+function renderThreadList() {
+    const list = document.getElementById("threadList");
+    if (allThreads.length === 0) { list.innerHTML = `<p class="empty-state">No conversations yet.</p>`; return; }
+    const sorted = allThreads.slice().sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+    list.innerHTML = "";
+    sorted.forEach(t => {
+        const flag = getThreadFlag(t.id);
+        const row = document.createElement("div");
+        row.className = "thread-row" + (flag.unread ? " unread" : "");
+        row.innerHTML = `
+            <input type="checkbox" class="wm-row-check" ${selectedThreadIds.has(t.id) ? "checked" : ""}>
+            <span class="thread-star ${flag.important ? "active" : ""}">★</span>
+            <div class="thread-main">
+                <div class="thread-top"><span class="subj">${escapeHTML(t.subject)}</span><span class="time">${new Date(t.last_message_at).toLocaleDateString()}</span></div>
+                <span class="thread-company">${escapeHTML(t.company_email)}</span>
+            </div>`;
+        row.querySelector(".wm-row-check").addEventListener("click", e => e.stopPropagation());
+        row.querySelector(".wm-row-check").addEventListener("change", e => onThreadCheckChange(t.id, e.target.checked));
+        row.querySelector(".thread-star").addEventListener("click", e => { e.stopPropagation(); toggleImportant(t.id); });
+        row.querySelector(".thread-main").addEventListener("click", () => openThreadOverlay(t.id));
+        list.appendChild(row);
+    });
+}
+function onThreadCheckChange(id, checked) { if (checked) selectedThreadIds.add(id); else selectedThreadIds.delete(id); updateBulkUI(); }
+function toggleSelectAllThreads(checked) { selectedThreadIds.clear(); if (checked) allThreads.forEach(t => selectedThreadIds.add(t.id)); renderThreadList(); updateBulkUI(); }
+function updateBulkUI() {
+    const count = selectedThreadIds.size;
+    document.getElementById("wmSelCount").textContent = count > 0 ? `${count} selected` : "";
+    const selectAll = document.getElementById("wmSelectAll");
+    selectAll.checked = allThreads.length > 0 && count === allThreads.length;
+    selectAll.indeterminate = count > 0 && count < allThreads.length;
+}
+function toggleImportant(id) { const flag = getThreadFlag(id); setThreadFlag(id, { important: !flag.important }); renderThreadList(); }
+async function handleBulkDelete() {
+    if (selectedThreadIds.size === 0) { await showAlert("Select at least one conversation first."); return; }
+    if (!(await showConfirm(`Permanently delete ${selectedThreadIds.size} conversation(s)? This cannot be undone.`))) return;
+    const ids = Array.from(selectedThreadIds);
+    for (const id of ids) await deleteWorkerThread(id);
+    if (activeThreadId && ids.includes(activeThreadId)) closeThreadOverlay();
+    await loadThreadList();
+}
+async function handleBulkMarkUnread() { if (selectedThreadIds.size === 0) { await showAlert("Select at least one conversation first."); return; } selectedThreadIds.forEach(id => setThreadFlag(id, { unread: true })); renderThreadList(); }
+async function handleBulkMarkImportant() { if (selectedThreadIds.size === 0) { await showAlert("Select at least one conversation first."); return; } selectedThreadIds.forEach(id => setThreadFlag(id, { important: true })); renderThreadList(); }
+
+function showNewThreadForm() {
+    document.getElementById("newThreadTo").value = ""; document.getElementById("newThreadSubject").value = ""; document.getElementById("newThreadMessage").value = ""; document.getElementById("newThreadStatus").textContent = "";
+    document.getElementById("newThreadOverlay").classList.add("open");
+}
+function closeNewThreadForm() { document.getElementById("newThreadOverlay").classList.remove("open"); }
+async function handleStartThread() {
+    const to = document.getElementById("newThreadTo").value.trim();
+    const subject = document.getElementById("newThreadSubject").value.trim();
+    const message = document.getElementById("newThreadMessage").value.trim();
+    const statusEl = document.getElementById("newThreadStatus");
+    if (!to || !subject || !message) { statusEl.textContent = "Please fill in all fields."; statusEl.style.color = "var(--danger)"; return; }
+    statusEl.textContent = "Sending..."; statusEl.style.color = "var(--muted)";
+    const result = await startWorkerThread(to, subject, message);
+    if (result.error) { statusEl.textContent = "Failed: " + result.error; statusEl.style.color = "var(--danger)"; return; }
+    closeNewThreadForm(); await loadThreadList(); openThreadOverlay(result.threadId);
+}
+async function openThreadOverlay(threadId) {
+    activeThreadId = threadId;
+    setThreadFlag(threadId, { unread: false });
+    const data = await fetchWorkerThreadDetail(threadId);
+    if (!data.thread) { await showAlert(data.error || "Failed to load conversation.", { type: "error" }); return; }
+    document.getElementById("threadOverlaySubject").textContent = data.thread.subject;
+    document.getElementById("threadOverlayMeta").textContent = `To: ${data.thread.company_email}`;
+    const box = document.getElementById("threadOverlayMessages");
+    box.innerHTML = "";
+    data.messages.forEach(m => {
+        const label = m.sender === "worker" ? "You" : m.sender === "admin" ? "Admin" : data.thread.company_email;
+        const cls = m.sender === "company" ? "them" : "me";
+        box.innerHTML += `<div class="bubble ${cls}"><div class="meta">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div><div class="txt">${escapeHTML(m.message)}</div></div>`;
+    });
+    box.scrollTop = box.scrollHeight;
+    const replyInput = document.getElementById("threadOverlayReplyInput");
+    replyInput.value = ""; replyInput.style.height = "auto";
+    document.getElementById("threadOverlay").classList.add("open");
+    renderThreadList();
+}
+function closeThreadOverlay() { document.getElementById("threadOverlay").classList.remove("open"); activeThreadId = null; }
+async function handleDeleteFromOverlay() {
+    if (!activeThreadId) return;
+    if (!(await showConfirm("Permanently delete this conversation? This cannot be undone."))) return;
+    const result = await deleteWorkerThread(activeThreadId);
+    if (result.error) { await showAlert(result.error, { type: "error" }); return; }
+    closeThreadOverlay(); await loadThreadList();
+}
+async function handleReplyThread() {
+    const input = document.getElementById("threadOverlayReplyInput");
+    const message = input.value.trim();
+    if (!message || !activeThreadId) return;
+    const result = await replyWorkerThread(activeThreadId, message);
+    if (result.error) { await showAlert(result.error, { type: "error" }); return; }
+    openThreadOverlay(activeThreadId); loadThreadList();
+}
+(function setupReplyTextarea() {
+    const el = document.getElementById("threadOverlayReplyInput");
+    el.addEventListener("input", () => { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; });
+    el.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) { e.preventDefault(); handleReplyThread(); } });
+})();
+
+/* ==========================================================
+   EARNINGS — /api/worker/earnings-summary, /api/worker/offerwall-earnings,
+   /api/worker/earnings, /api/worker/micro-task-earnings
+   ========================================================== */
+function getCurrentWeekRange() {
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMonday = (day === 0 ? -6 : 1) - day;
+    const start = new Date(now); start.setDate(now.getDate() + diffToMonday); start.setHours(0, 0, 0, 0);
+    const end = new Date(start); end.setDate(start.getDate() + 6);
+    return { start, end };
+}
+function formatDateShort(date) { return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }); }
+function capitalize(str) { if (!str) return ""; return str.charAt(0).toUpperCase() + str.slice(1); }
+
+async function loadEarnings() {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/earnings-summary");
+        const data = await response.json();
+        if (!response.ok) { console.error("Failed to load earnings summary:", data?.error); return; }
+        document.getElementById("totalEarnedAllTime").textContent = formatMoney(data.totalPaid);
+        document.getElementById("weeklyPending").textContent = formatMoney(data.totalPending);
+        const { start, end } = getCurrentWeekRange();
+        document.getElementById("weekRangeLabel").textContent = formatDateShort(start) + " – " + formatDateShort(end);
+        document.getElementById("nextPayoutDate").textContent = "Coming Soon";
+    } catch (err) { console.error(err); }
+}
+
+async function loadEarningsHistory() {
+    const table = document.getElementById("earningsHistoryTable");
+    let rows = [];
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwall-earnings");
+        const data = await response.json();
+        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: "Bonus Task", amount: e.workerAmount, status: e.status })));
+    } catch (err) { console.error(err); }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/earnings");
+        const data = await response.json();
+        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: "Order: " + (e.projectName || e.orderId), amount: e.amount, status: e.status })));
+    } catch (err) { console.error(err); }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/worker/micro-task-earnings");
+        const data = await response.json();
+        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: e.projectName || "Micro Task", amount: e.amount, status: e.status })));
+    } catch (err) { console.error(err); }
+
+    if (rows.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No earnings yet — completed tasks will show up here.</td></tr>`; return; }
+    rows.sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
+    table.innerHTML = "";
+    rows.forEach(r => {
+        table.innerHTML += `<tr><td>${r.date ? r.date.toLocaleDateString() : "-"}</td><td>${escapeHTML(r.source)}</td><td>${formatMoney(r.amount)}</td><td>${statusBadge(capitalize(r.status))}</td></tr>`;
+    });
+}
+
+/* ==========================================================
+   PAYMENTS — /api/worker/payout-method(/send-code,/verify-code)
+   ========================================================== */
+let currentMethod = null, selectedTile = null;
+function maskEmail(email) { if (!email) return ""; const [local, domain] = email.split("@"); if (!domain) return email; const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***"; return visible + "@" + domain; }
+function maskWallet(address) { if (!address) return ""; if (address.length <= 12) return address; return address.slice(0, 6) + "..." + address.slice(-6); }
+function formatTimestamp(iso) { if (!iso) return ""; const d = new Date(iso); if (isNaN(d.getTime())) return ""; return "Last updated " + d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); }
+
+async function loadPayoutMethod() {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method");
+        const data = await res.json();
+        currentMethod = res.ok ? data.method : null;
+    } catch (err) { currentMethod = null; }
+    renderPayoutMethods();
+}
+function renderPayoutMethods() {
+    const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
+    const paypalDisplay = document.getElementById("paypalDisplay"), paypalUpdateBtn = document.getElementById("paypalUpdateBtn");
+    if (linkedMethod === "paypal") { paypalDisplay.textContent = maskEmail(currentMethod.details.email); paypalUpdateBtn.textContent = "Update"; document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt); }
+    else { paypalDisplay.textContent = "Not linked"; paypalUpdateBtn.textContent = "Link PayPal"; document.getElementById("paypalUpdatedAt").textContent = ""; }
+    document.getElementById("paypalLinkedBadge").style.display = linkedMethod === "paypal" ? "inline-block" : "none";
+
+    const cryptoDisplay = document.getElementById("cryptoDisplay"), cryptoUpdateBtn = document.getElementById("cryptoUpdateBtn");
+    if (linkedMethod === "crypto") { cryptoDisplay.textContent = maskWallet(currentMethod.details.wallet); cryptoUpdateBtn.textContent = "Update"; document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt); }
+    else { cryptoDisplay.textContent = "Not linked"; cryptoUpdateBtn.textContent = "Link Wallet"; document.getElementById("cryptoUpdatedAt").textContent = ""; }
+    document.getElementById("cryptoLinkedBadge").style.display = linkedMethod === "crypto" ? "inline-block" : "none";
+
+    selectMethodTile(linkedMethod || selectedTile || "paypal");
+}
+function selectMethodTile(method) {
+    selectedTile = method;
+    document.getElementById("paypalCard").style.display = method === "paypal" ? "block" : "none";
+    document.getElementById("cryptoCard").style.display = method === "crypto" ? "block" : "none";
+    document.getElementById("paypalTile").classList.toggle("active", method === "paypal");
+    document.getElementById("cryptoTile").classList.toggle("active", method === "crypto");
+}
+function startUpdate(method) { document.getElementById(method + "EditPanel").style.display = "block"; document.getElementById(method + "CodePanel").style.display = "none"; document.getElementById(method + "UpdateBtn").style.display = "none"; }
+function cancelUpdate(method) { document.getElementById(method + "EditPanel").style.display = "none"; document.getElementById(method + "CodePanel").style.display = "none"; document.getElementById(method + "UpdateBtn").style.display = "inline-block"; document.getElementById(method + "Input").value = ""; document.getElementById(method + "CodeInput").value = ""; }
+function isValidValue(method, value) { if (!value) return false; if (method === "paypal") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); return /^0x[a-fA-F0-9]{40}$/.test(value); }
+function buildDetails(method, value) { return method === "paypal" ? { email: value } : { wallet: value }; }
+
+async function sendVerificationCode(method) {
+    const value = document.getElementById(method + "Input").value.trim();
+    if (!isValidValue(method, value)) { alert(method === "paypal" ? "Please enter a valid PayPal email address." : "Please enter a valid USDT (ERC-20) wallet address."); return; }
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/send-code", { method: "POST", body: JSON.stringify({ methodType: method, details: buildDetails(method, value) }) });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "Failed to send verification code."); return; }
+        document.getElementById(method + "CodePanel").style.display = "block";
+        document.getElementById(method + "CodeSentNote").textContent = "A 6-digit code was sent to " + maskEmail(data.email) + ". It expires in 10 minutes.";
+    } catch (err) { alert("Failed to send verification code. Please try again."); }
+}
+async function confirmVerificationCode(method) {
+    const enteredCode = document.getElementById(method + "CodeInput").value.trim();
+    if (!enteredCode) { alert("Please enter the 6-digit code."); return; }
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/verify-code", { method: "POST", body: JSON.stringify({ methodType: method, code: enteredCode }) });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "Verification failed."); return; }
+        alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
+        cancelUpdate(method);
+        await loadPayoutMethod();
+        selectMethodTile(method);
+        loadedTabs.delete("overview");
+    } catch (err) { alert("Verification failed. Please try again."); }
+}
+
+/* initial data for overview (loaded immediately since it's the landing tab) */
+renderOverview();
 </script>
 
-
-
-
 </body>
-
 </html>
