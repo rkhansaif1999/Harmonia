@@ -539,7 +539,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
 
-                       <div class="subpanel" data-group="tasks" data-sub="bonus">
+            <div class="subpanel" data-group="tasks" data-sub="bonus">
                 <div class="card">
                     <div class="section-title">
                         <h2>🎁 Bonus Tasks</h2>
@@ -555,7 +555,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
 
-                       <div class="subpanel" data-group="tasks" data-sub="cpalead">
+            <div class="subpanel" data-group="tasks" data-sub="cpalead">
                 <div class="card">
                     <div class="section-title">
                         <h2>🎯 CPAlead Tasks</h2>
@@ -1545,13 +1545,6 @@ window.addEventListener("message", (event) => {
         }
     }
 });
-        if (b) {
-            b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
-            b.style.display = "block";
-            setTimeout(() => { b.style.display = "none"; }, 8000);
-        }
-    }
-});
 
 /* ==========================================================
    MESSAGES
@@ -1584,7 +1577,13 @@ async function handleSendSupportMessage() {
     statusEl.textContent = ""; textarea.value = "";
     renderSupportChat(result.messages);
 }
-setInterval(() => { if (document.getElementById("panel-messages").classList.contains("active")) loadSupportChat(); }, 15000);
+
+// Optimization: Only poll support chat if the page is actually visible to the user.
+setInterval(() => { 
+    if (document.visibilityState === "visible" && document.getElementById("panel-messages").classList.contains("active")) {
+        loadSupportChat(); 
+    }
+}, 15000);
 
 let allThreads = [], activeThreadId = null, selectedThreadIds = new Set();
 
