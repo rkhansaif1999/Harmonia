@@ -814,12 +814,15 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments" };
 const loadedTabs = new Set();
 
-function goTab(tab) {
+function goTab(tab, sub = null) {
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
     document.getElementById("pageTitle").textContent = TAB_TITLES[tab] || "Dashboard";
-    window.location.hash = tab;
+    window.location.hash = sub ? `${tab}/${sub}` : tab;
     ensureTabLoaded(tab);
+    if (sub) {
+        switchSubtab(tab, sub);
+    }
 }
 
 function ensureTabLoaded(tab) {
@@ -835,6 +838,7 @@ function ensureTabLoaded(tab) {
 function switchSubtab(group, sub) {
     document.querySelectorAll(`.subtab-btn[data-group="${group}"]`).forEach(b => b.classList.toggle("active", b.dataset.sub === sub));
     document.querySelectorAll(`.subpanel[data-group="${group}"]`).forEach(p => p.classList.toggle("active", p.dataset.sub === sub));
+    window.location.hash = `${group}/${sub}`;
     if (group === "tasks" && sub === "bonus" && !loadedTabs.has("bonus")) { loadedTabs.add("bonus"); loadBonusTasks(); }
     if (group === "tasks" && sub === "cpalead" && !loadedTabs.has("cpalead")) { loadedTabs.add("cpalead"); loadCpaleadTasks(); }
 }
@@ -848,9 +852,12 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
 });
 
 (function initialRoute() {
-    const hash = (window.location.hash || "").replace("#", "");
+    const rawHash = (window.location.hash || "").replace("#", "");
+    const parts = rawHash.split("/");
+    const tab = parts[0];
+    const sub = parts[1];
     const valid = ["overview", "tasks", "messages", "earnings", "payments"];
-    goTab(valid.includes(hash) ? hash : "overview");
+    goTab(valid.includes(tab) ? tab : "overview", sub);
 })();
 
 /* ---------------- Sidebar user card ---------------- */
