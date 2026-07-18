@@ -909,7 +909,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "💬",
                         text: `You have ${unreadCount} new message${unreadCount > 1 ? "s" : ""} from Support`,
-                        link: "worker-dashboard.html#messages"
+                        link: "worker-support.html"
                     });
                 }
             }
@@ -923,7 +923,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "📋",
                         text: `You have ${assigned.length} new task${assigned.length > 1 ? "s" : ""} assigned`,
-                        link: "worker-dashboard.html#tasks"
+                        link: "worker-tasks.html"
                     });
                 }
                 const needsRevision = (tasksData.tasks || []).filter(t => t.status === "Needs Revision");
@@ -931,7 +931,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "⚠️",
                         text: `${needsRevision.length} task${needsRevision.length > 1 ? "s need" : " needs"} revision`,
-                        link: "worker-dashboard.html#tasks"
+                        link: "worker-tasks.html"
                     });
                 }
             }
@@ -945,7 +945,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "✅",
                         text: `${approvedTasks.length} micro task${approvedTasks.length > 1 ? "s" : ""} approved — ready to work`,
-                        link: "worker-dashboard.html#tasks"
+                        link: "worker-micro-tasks.html"
                     });
                 }
             }
@@ -1185,7 +1185,7 @@ function enhanceTopbar() {
     // Currently just workers (worker-support.html) - the sidebar link
     // was removed from all worker-*.html pages and moved in here.
     const SUPPORT_URL_BY_ROLE = {
-        worker: "worker-dashboard.html#messages",
+        worker: "worker-support.html",
     };
 
     if (user) {

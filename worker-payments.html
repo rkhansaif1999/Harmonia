@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TRQRKZFPY6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments - Harmonia</title>
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Payments - Harmonia">
+  <meta property="og:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta property="og:url" content="https://harmoniaportal.online/worker-payments.html">
+  <meta property="og:site_name" content="Harmonia">
+  <meta property="og:image" content="https://harmoniaportal.online/images/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Payments - Harmonia">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Payments - Harmonia">
+  <meta name="twitter:description" content="Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, and human feedback tasks.">
+  <meta name="twitter:image" content="https://harmoniaportal.online/images/og-image.png">
+
+
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+    <style>
+        .payout-card{
+            padding:22px;
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:18px;
+            background:rgba(255,255,255,.02);
+            margin-bottom:20px;
+        }
+        .payout-row{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:14px;
+            flex-wrap:wrap;
+        }
+        .payout-label{
+            color:#9dadc1;
+            font-size:.85rem;
+            margin-bottom:4px;
+        }
+        .payout-value{
+            font-size:1.05rem;
+            font-weight:700;
+        }
+        .btn-primary{
+            padding:10px 18px;
+            background:#5b6cff;
+            border:none;
+            border-radius:10px;
+            color:white;
+            font-weight:600;
+            cursor:pointer;
+        }
+        .btn-ghost{
+            padding:10px 18px;
+            background:transparent;
+            border:1px solid rgba(255,255,255,.15);
+            border-radius:10px;
+            color:#cfd8e3;
+            font-weight:600;
+            cursor:pointer;
+        }
+        .payout-input{
+            width:100%;
+            padding:12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,.08);
+            background:#111a2e;
+            color:white;
+            box-sizing:border-box;
+            margin-bottom:12px;
+        }
+        .edit-panel{
+            display:none;
+            margin-top:16px;
+            padding-top:16px;
+            border-top:1px solid rgba(255,255,255,.08);
+        }
+        .code-panel{
+            display:none;
+            margin-top:14px;
+        }
+        .note{
+            font-size:.8rem;
+            color:#8a97a8;
+            margin-top:8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="noise"></div>
+
+<script src="script.js?v=4"></script>
+
+<script>
+    protectPage("worker");
+</script>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <h2 class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
+
+        <ul>
+            <li><a href="worker-dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="worker-tasks.html">✅ My Tasks</a></li>
+            <li><a href="worker-messages.html">✉️ Messages</a></li>
+            <li><a href="worker-earnings.html">💰 Earnings</a></li>
+            <li class="active">🏦 Payments</li>
+            <li data-core-team-only style="display:none;"><a href="admin-dashboard.html">🛡️ Admin Panel</a></li>
+            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+        </ul>
+
+    
+        <div class="adsterra-sidebar-banners" style="margin-top:24px;display:flex;flex-direction:column;gap:16px;align-items:center;">
+            <div style="width:160px;max-width:100%;overflow:hidden;">
+                <script>
+                  atOptions = {
+                    'key' : '3489a53651d7a846fe425e478559a485',
+                    'format' : 'iframe',
+                    'height' : 300,
+                    'width' : 160,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
+            </div>
+            <div style="width:160px;max-width:100%;overflow:hidden;">
+                <script>
+                  atOptions = {
+                    'key' : '3489a53651d7a846fe425e478559a485',
+                    'format' : 'iframe',
+                    'height' : 300,
+                    'width' : 160,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+<!-- Ezoic Ad: top_of_page -->
+<script>
+    ezstandalone.cmd.push(function () {
+        ezstandalone.showAds({ location: "top_of_page" });
+    });
+</script>
+
+
+        <header class="topbar">
+            <h1>Payments</h1>
+            <div class="adsterra-header-banners" style="display:flex;gap:12px;flex-wrap:wrap;">
+                <div style="width:468px;max-width:100%;overflow:hidden;">
+                    <script>
+                      atOptions = {
+                        'key' : '05960b6f18812ade9884f4c4e854ecf7',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    </script>
+                    <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
+                </div>
+                <div style="width:468px;max-width:100%;overflow:hidden;">
+                    <script>
+                      atOptions = {
+                        'key' : '05960b6f18812ade9884f4c4e854ecf7',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                      };
+                    </script>
+                    <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
+                </div>
+            </div>
+
+
+            <div class="profile">
+                Worker
+            </div>
+        </header>
+
+        <section style="max-width:780px;width:100%;">
+
+            <p style="color:#9dadc1;margin-bottom:8px;">
+                Choose <strong>one</strong> payout method to receive your earnings. For your security, adding or
+                changing your payout method requires a verification code sent to your registered email.
+            </p>
+            <p class="note" style="margin-bottom:18px;">
+                Only one method can be linked at a time. Selecting the other option below lets you switch —
+                your current method is replaced only after the new one is verified.
+            </p>
+
+            <!-- ================= METHOD SELECTOR ================= -->
+            <div class="payment-methods-grid-2">
+
+                <div id="paypalTile" onclick="selectMethodTile('paypal')"
+                    style="cursor:pointer;padding:16px;border:2px solid rgba(255,255,255,.08);border-radius:16px;transition:.25s;text-align:center;position:relative;">
+                    <span id="paypalLinkedBadge" style="display:none;position:absolute;top:8px;right:8px;background:#3ddc97;color:#0b1220;font-size:.6rem;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:20px;">LINKED</span>
+                    <div style="font-size:2rem;">💙</div>
+                    <h3 style="margin:10px 0 6px;">PayPal</h3>
+                    <p style="margin:0;color:#9dadc1;font-size:.9rem;">Fast & Secure</p>
+                </div>
+
+                <div id="cryptoTile" onclick="selectMethodTile('crypto')"
+                    style="cursor:pointer;padding:16px;border:2px solid rgba(255,255,255,.08);border-radius:16px;transition:.25s;text-align:center;position:relative;">
+                    <span id="cryptoLinkedBadge" style="display:none;position:absolute;top:8px;right:8px;background:#3ddc97;color:#0b1220;font-size:.6rem;font-weight:800;letter-spacing:.03em;padding:3px 8px;border-radius:20px;">LINKED</span>
+                    <div style="font-size:2rem;">🪙</div>
+                    <h3 style="margin:10px 0 6px;">Crypto</h3>
+                    <p style="margin:0;color:#9dadc1;font-size:.9rem;">USDT (ERC-20)</p>
+                </div>
+
+            </div>
+
+            <!-- ================= PAYPAL ================= -->
+            <div class="payout-card" id="paypalCard">
+
+                <div class="payout-row">
+                    <div>
+                        <div class="payout-label">💙 PayPal</div>
+                        <div class="payout-value" id="paypalDisplay">Not linked</div>
+                        <div class="note" id="paypalUpdatedAt"></div>
+                    </div>
+                    <button class="btn-primary" onclick="startUpdate('paypal')" id="paypalUpdateBtn">Link PayPal</button>
+                </div>
+
+                <!-- Step 1: enter new value -->
+                <div class="edit-panel" id="paypalEditPanel">
+                    <label class="payout-label">New PayPal Email</label>
+                    <input type="email" id="paypalInput" class="payout-input" placeholder="you@example.com">
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-primary" onclick="sendVerificationCode('paypal')">Send Verification Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('paypal')">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: enter code -->
+                <div class="code-panel" id="paypalCodePanel">
+                    <p class="note" id="paypalCodeSentNote"></p>
+                    <label class="payout-label">6-Digit Verification Code</label>
+                    <input type="text" id="paypalCodeInput" class="payout-input" maxlength="6" placeholder="000000">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="confirmVerificationCode('paypal')">Confirm & Save</button>
+                        <button class="btn-ghost" onclick="sendVerificationCode('paypal')">Resend Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('paypal')">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= CRYPTO ================= -->
+            <div class="payout-card" id="cryptoCard">
+
+                <div class="payout-row">
+                    <div>
+                        <div class="payout-label">🪙 Crypto — USDT (ERC-20)</div>
+                        <div class="payout-value" id="cryptoDisplay">Not linked</div>
+                        <div class="note" id="cryptoUpdatedAt"></div>
+                    </div>
+                    <button class="btn-primary" onclick="startUpdate('crypto')" id="cryptoUpdateBtn">Link Wallet</button>
+                </div>
+
+                <!-- Step 1: enter new value -->
+                <div class="edit-panel" id="cryptoEditPanel">
+                    <label class="payout-label">New USDT (ERC-20) Wallet Address</label>
+                    <input type="text" id="cryptoInput" class="payout-input" placeholder="0x...">
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-primary" onclick="sendVerificationCode('crypto')">Send Verification Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('crypto')">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: enter code -->
+                <div class="code-panel" id="cryptoCodePanel">
+                    <p class="note" id="cryptoCodeSentNote"></p>
+                    <label class="payout-label">6-Digit Verification Code</label>
+                    <input type="text" id="cryptoCodeInput" class="payout-input" maxlength="6" placeholder="000000">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="confirmVerificationCode('crypto')">Confirm & Save</button>
+                        <button class="btn-ghost" onclick="sendVerificationCode('crypto')">Resend Code</button>
+                        <button class="btn-ghost" onclick="cancelUpdate('crypto')">Cancel</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    
+<!-- Ezoic Ad: bottom_of_page -->
+<script>
+    ezstandalone.cmd.push(function () {
+        ezstandalone.showAds({ location: "bottom_of_page" });
+    });
+</script>
+</main>
+
+</div>
+
+<script>
+
+const user = getUser();
+
+let currentMethod = null; // null or { methodType, details, verified, updatedAt }
+let selectedTile = null;
+
+/* ========================= DISPLAY HELPERS ========================= */
+
+function maskEmail(email) {
+    if (!email) return "";
+    const [local, domain] = email.split("@");
+    if (!domain) return email;
+    const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***";
+    return visible + "@" + domain;
+}
+
+function maskWallet(address) {
+    if (!address) return "";
+    if (address.length <= 12) return address;
+    return address.slice(0, 6) + "..." + address.slice(-6);
+}
+
+function formatTimestamp(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    return "Last updated " + d.toLocaleString(undefined, {
+        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit"
+    });
+}
+
+/* ========================= LOAD CURRENT METHOD ========================= */
+
+async function loadPayoutMethod() {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method");
+        const data = await res.json();
+        currentMethod = res.ok ? data.method : null;
+        if (!res.ok) console.log("Failed to load payout method:", data.error);
+    } catch (err) {
+        console.log("Failed to load payout method:", err);
+        currentMethod = null;
+    }
+    renderPayoutMethods();
+}
+
+function renderPayoutMethods() {
+    const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
+
+    const paypalDisplay = document.getElementById("paypalDisplay");
+    const paypalUpdateBtn = document.getElementById("paypalUpdateBtn");
+    if (linkedMethod === "paypal") {
+        paypalDisplay.textContent = maskEmail(currentMethod.details.email);
+        paypalUpdateBtn.textContent = "Update";
+        document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt);
+    } else {
+        paypalDisplay.textContent = "Not linked";
+        paypalUpdateBtn.textContent = "Link PayPal";
+        document.getElementById("paypalUpdatedAt").textContent = "";
+    }
+    document.getElementById("paypalLinkedBadge").style.display = linkedMethod === "paypal" ? "inline-block" : "none";
+
+    const cryptoDisplay = document.getElementById("cryptoDisplay");
+    const cryptoUpdateBtn = document.getElementById("cryptoUpdateBtn");
+    if (linkedMethod === "crypto") {
+        cryptoDisplay.textContent = maskWallet(currentMethod.details.wallet);
+        cryptoUpdateBtn.textContent = "Update";
+        document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt);
+    } else {
+        cryptoDisplay.textContent = "Not linked";
+        cryptoUpdateBtn.textContent = "Link Wallet";
+        document.getElementById("cryptoUpdatedAt").textContent = "";
+    }
+    document.getElementById("cryptoLinkedBadge").style.display = linkedMethod === "crypto" ? "inline-block" : "none";
+
+    selectMethodTile(linkedMethod || selectedTile || "paypal");
+}
+
+/* ========================= METHOD SELECTOR ========================= */
+
+function selectMethodTile(method) {
+    selectedTile = method;
+
+    document.getElementById("paypalCard").style.display = method === "paypal" ? "block" : "none";
+    document.getElementById("cryptoCard").style.display = method === "crypto" ? "block" : "none";
+
+    const paypalTile = document.getElementById("paypalTile");
+    const cryptoTile = document.getElementById("cryptoTile");
+
+    paypalTile.style.border = method === "paypal" ? "2px solid #5b6cff" : "2px solid rgba(255,255,255,.08)";
+    paypalTile.style.background = method === "paypal" ? "rgba(91,108,255,.08)" : "transparent";
+
+    cryptoTile.style.border = method === "crypto" ? "2px solid #5b6cff" : "2px solid rgba(255,255,255,.08)";
+    cryptoTile.style.background = method === "crypto" ? "rgba(91,108,255,.08)" : "transparent";
+}
+
+/* ========================= EDIT FLOW ========================= */
+
+function startUpdate(method) {
+    document.getElementById(method + "EditPanel").style.display = "block";
+    document.getElementById(method + "CodePanel").style.display = "none";
+    document.getElementById(method + "UpdateBtn").style.display = "none";
+}
+
+function cancelUpdate(method) {
+    document.getElementById(method + "EditPanel").style.display = "none";
+    document.getElementById(method + "CodePanel").style.display = "none";
+    document.getElementById(method + "UpdateBtn").style.display = "inline-block";
+    document.getElementById(method + "Input").value = "";
+    document.getElementById(method + "CodeInput").value = "";
+}
+
+function isValidValue(method, value) {
+    if (!value) return false;
+    if (method === "paypal") {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+    return /^0x[a-fA-F0-9]{10,}$/.test(value) || value.length >= 20;
+}
+
+function buildDetails(method, value) {
+    return method === "paypal" ? { email: value } : { wallet: value };
+}
+
+async function sendVerificationCode(method) {
+    const value = document.getElementById(method + "Input").value.trim();
+
+    if (!isValidValue(method, value)) {
+        alert(method === "paypal"
+            ? "Please enter a valid PayPal email address."
+            : "Please enter a valid USDT (ERC-20) wallet address.");
+        return;
+    }
+
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/send-code", {
+            method: "POST",
+            body: JSON.stringify({ methodType: method, details: buildDetails(method, value) }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error || "Failed to send verification code.");
+            return;
+        }
+
+        document.getElementById(method + "CodePanel").style.display = "block";
+        document.getElementById(method + "CodeSentNote").textContent =
+            "A 6-digit code was sent to " + maskEmail(data.email) + ". It expires in 10 minutes.";
+    } catch (err) {
+        console.log("sendVerificationCode failed:", err);
+        alert("Failed to send verification code. Please try again.");
+    }
+}
+
+async function confirmVerificationCode(method) {
+    const enteredCode = document.getElementById(method + "CodeInput").value.trim();
+
+    if (!enteredCode) {
+        alert("Please enter the 6-digit code.");
+        return;
+    }
+
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/verify-code", {
+            method: "POST",
+            body: JSON.stringify({ methodType: method, code: enteredCode }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.error || "Verification failed.");
+            return;
+        }
+
+        alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
+
+        cancelUpdate(method);
+        await loadPayoutMethod();
+        selectMethodTile(method);
+    } catch (err) {
+        console.log("confirmVerificationCode failed:", err);
+        alert("Verification failed. Please try again.");
+    }
+}
+
+loadPayoutMethod();
+</script>
+
+
+
+
+
+</body>
+
+</html>
