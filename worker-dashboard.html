@@ -1360,8 +1360,51 @@ document.getElementById("mwCodeInput").addEventListener("keydown", function (e) 
 
 /* ==========================================================
    BONUS TASKS (CPX Research) + CPALEAD
+   With ad-blocker detection — if the iframe is blocked by
+   the client (uBlock/AdBlock/Brave Shields/etc.), show the
+   worker a clear message instead of leaving a blank panel.
    ========================================================== */
 let trustedMessageOrigins = [];
+
+function attachIframeLoadGuard(iframe, emptyState, statusLabel, providerLabel) {
+    let loaded = false;
+
+    const timeoutId = setTimeout(() => {
+        if (!loaded) {
+            iframe.style.display = "none";
+            emptyState.style.display = "block";
+            emptyState.innerHTML = `
+                <strong style="color:var(--warning);">⚠️ ${escapeHTML(providerLabel)} can't load</strong><br><br>
+                Your browser or an extension (ad blocker, privacy shield, antivirus) is blocking the task provider.
+                Please disable any ad blockers for <code>harmoniaportal.online</code> and reload this tab.<br><br>
+                <button class="primary" onclick="location.reload()">Reload page</button>
+            `;
+            statusLabel.textContent = "Blocked by browser";
+        }
+    }, 6000);
+
+    iframe.addEventListener("load", () => {
+        loaded = true;
+        clearTimeout(timeoutId);
+        try {
+            const doc = iframe.contentDocument || iframe.contentWindow?.document;
+            if (doc && doc.body && doc.body.children.length === 0) {
+                throw new Error("empty");
+            }
+        } catch (e) {
+            // Cross-origin — load event is the best signal we have.
+        }
+    });
+
+    iframe.addEventListener("error", () => {
+        loaded = false;
+        clearTimeout(timeoutId);
+        iframe.style.display = "none";
+        emptyState.style.display = "block";
+        emptyState.textContent = `${providerLabel} failed to load. Check your connection or ad blocker.`;
+        statusLabel.textContent = "Unavailable";
+    });
+}
 
 async function loadBonusTasks() {
     const statusLabel = document.getElementById("bonusStatusLabel");
@@ -1399,6 +1442,7 @@ async function loadBonusTasks() {
             iframe.title = "Bonus Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
             frameHolder.appendChild(iframe);
+            attachIframeLoadGuard(iframe, emptyState, statusLabel, "CPX Research");
         });
     } catch (err) {
         console.error("loadBonusTasks error:", err);
@@ -1462,6 +1506,7 @@ async function loadCpaleadTasks() {
             iframe.title = "CPAlead Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
             frameHolder.appendChild(iframe);
+            attachIframeLoadGuard(iframe, emptyState, statusLabel, "CPAlead");
         });
     } catch (err) {
         console.error("loadCpaleadTasks error:", err);
@@ -1479,6 +1524,13 @@ window.addEventListener("message", (event) => {
     const status = String(payload.status || payload.type || payload.event || "").toLowerCase();
     if (status.includes("complete") || status.includes("credit") || status === "1" || status === "success") {
         const b = document.getElementById("cpaleadCompletionBanner");
+        if (b) {
+            b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
+            b.style.display = "block";
+            setTimeout(() => { b.style.display = "none"; }, 8000);
+        }
+    }
+});
         if (b) {
             b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
             b.style.display = "block";
