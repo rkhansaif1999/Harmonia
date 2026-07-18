@@ -1,4 +1,3 @@
-
 /*==================================================
 RESET
 ==================================================*/
@@ -40,22 +39,7 @@ ul{
 }
 
 /*==================================================
-PARTICLES (ADDED — from About page)
-CSS-only floating particle effect. This replaces the
-per-page canvas + orb-layer approach. To use on a page,
-just add this markup right after <div class="noise"></div>:
-
-<div class="particles">
-  <div class="particle" style="left:6%;animation-duration:18s;animation-delay:-2s;"></div>
-  <div class="particle" style="left:14%;animation-duration:23s;animation-delay:-8s;"></div>
-  <div class="particle" style="left:24%;animation-duration:20s;animation-delay:-5s;"></div>
-  <div class="particle" style="left:35%;animation-duration:19s;animation-delay:-12s;"></div>
-  <div class="particle" style="left:47%;animation-duration:22s;animation-delay:-6s;"></div>
-  <div class="particle" style="left:58%;animation-duration:18s;animation-delay:-15s;"></div>
-  <div class="particle" style="left:69%;animation-duration:24s;animation-delay:-4s;"></div>
-  <div class="particle" style="left:81%;animation-duration:21s;animation-delay:-10s;"></div>
-  <div class="particle" style="left:92%;animation-duration:26s;animation-delay:-16s;"></div>
-</div>
+PARTICLES
 ==================================================*/
 
 .particles{
@@ -81,28 +65,15 @@ just add this markup right after <div class="noise"></div>:
 }
 
 @keyframes floatSoft{
-    0%{
-        transform:translateY(110vh) translateX(0px) scale(.95);
-        opacity:0;
-    }
-    12%{
-        opacity:.6;
-    }
-    50%{
-        transform:translateY(50vh) translateX(40px) scale(1.25);
-        opacity:.55;
-    }
-    85%{
-        opacity:.4;
-    }
-    100%{
-        transform:translateY(-20vh) translateX(-30px) scale(1);
-        opacity:0;
-    }
+    0%{transform:translateY(110vh) translateX(0px) scale(.95);opacity:0;}
+    12%{opacity:.6;}
+    50%{transform:translateY(50vh) translateX(40px) scale(1.25);opacity:.55;}
+    85%{opacity:.4;}
+    100%{transform:translateY(-20vh) translateX(-30px) scale(1);opacity:0;}
 }
 
 /*==================================================
-AMBIENT GLOW BACKGROUND (site-wide, matches About)
+AMBIENT GLOW BACKGROUND
 ==================================================*/
 
 body::before{
@@ -162,7 +133,7 @@ body::after{
 }
 
 /*==================================================
-SCROLL REVEAL (JS toggles .in-view)
+SCROLL REVEAL
 ==================================================*/
 
 .reveal{
@@ -204,11 +175,7 @@ button:active{
 }
 
 /*==================================================
-BUTTONS (ADDED — from About page)
-Use class="btn btn-primary" / class="btn btn-secondary"
-on <a> or <button> tags going forward. Old .primary /
-.secondary classes below are left in place so existing
-pages don't break until their markup is updated.
+BUTTONS
 ==================================================*/
 
 .btn{
@@ -225,14 +192,12 @@ pages don't break until their markup is updated.
 .btn-primary{
     background:white;
     color:#111827;
-    box-shadow:
-        0 18px 45px rgba(255,255,255,.12);
+    box-shadow:0 18px 45px rgba(255,255,255,.12);
 }
 
 .btn-primary:hover{
     transform:translateY(-6px);
-    box-shadow:
-        0 25px 60px rgba(255,255,255,.18);
+    box-shadow:0 25px 60px rgba(255,255,255,.18);
 }
 
 .btn-secondary{
@@ -303,13 +268,8 @@ NAVBAR
     gap:10px;
 }
 
-.login-box h1 .logo-img{
-    height:1.3em;
-}
-
-.footer-brand h2 .logo-img{
-    height:1.1em;
-}
+.login-box h1 .logo-img{height:1.3em;}
+.footer-brand h2 .logo-img{height:1.1em;}
 
 .nav-links{
     display:flex;
@@ -323,13 +283,8 @@ NAVBAR
     font-size:.95rem;
 }
 
-.nav-links a:hover{
-    color:white;
-}
-
-.nav-links a.current{
-    color:white;
-}
+.nav-links a:hover{color:white;}
+.nav-links a.current{color:white;}
 
 .navbar-toggle{
     display:none;
@@ -346,253 +301,7 @@ NAVBAR
 }
 
 /*==================================================
-DASHBOARD TOPBAR CHROME
-(breadcrumb / page search / notifications / profile menu)
-==================================================*/
-
-.topbar-left{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-}
-
-.breadcrumb{
-    font-size:.76rem;
-    font-weight:600;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-    color:#7688a0;
-}
-
-.breadcrumb span{
-    color:#a9b8cc;
-}
-
-.topbar-right{
-    display:flex;
-    align-items:center;
-    gap:14px;
-}
-
-.topbar-search{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:999px;
-    padding:11px 18px;
-    min-width:210px;
-}
-
-.topbar-search input{
-    background:transparent;
-    border:none;
-    outline:none;
-    color:#fff;
-    font-size:.85rem;
-    width:100%;
-    font-family:'Plus Jakarta Sans',sans-serif;
-}
-
-.topbar-search input::placeholder{
-    color:#7688a0;
-}
-
-.adsterra-header-banners{
-    position:relative;
-    z-index:0;
-    max-width:100%;
-    overflow:hidden;
-}
-
-.adsterra-header-banners iframe{
-    max-width:100% !important;
-    max-height:60px !important;
-}
-
-.adsterra-sidebar-banners{
-    max-width:100%;
-    overflow:hidden;
-}
-
-.adsterra-sidebar-banners iframe{
-    max-width:100% !important;
-}
-
-/* Safety net: no matter which ad network or which page injects an
-   iframe, it can never be wider than the space it's given. Ad
-   networks hard-code pixel widths (300, 468, 728...) on the iframe
-   itself, which ignores our layout unless we override it here. */
-iframe[src*="highperformanceformat.com"],
-iframe[src*="effectivecpmnetwork.com"]{
-    max-width:100% !important;
-}
-
-.notif-wrap,
-.profile-wrap{
-    position:relative;
-}
-
-.notif-bell{
-    width:44px;
-    height:44px;
-    border-radius:999px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.05rem;
-    position:relative;
-    padding:0;
-}
-
-.notif-badge{
-    position:absolute;
-    top:-3px;
-    right:-3px;
-    background:#ff5c7a;
-    color:#fff;
-    font-size:.65rem;
-    font-weight:700;
-    min-width:18px;
-    height:18px;
-    border-radius:999px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0 4px;
-    border:2px solid #050811;
-}
-
-.notif-dropdown,
-.profile-menu{
-    position:absolute;
-    top:calc(100% + 12px);
-    right:0;
-    width:290px;
-    background:rgba(10,14,24,.98);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:18px;
-    backdrop-filter:blur(28px);
-    box-shadow:0 30px 80px rgba(0,0,0,.5);
-    padding:10px;
-    opacity:0;
-    visibility:hidden;
-    transform:translateY(-8px);
-    transition:.22s ease;
-    z-index:220;
-}
-
-.notif-dropdown.open,
-.profile-menu.open{
-    opacity:1;
-    visibility:visible;
-    transform:translateY(0);
-}
-
-.notif-dropdown-title{
-    font-size:.75rem;
-    font-weight:700;
-    color:#7688a0;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    padding:8px 10px;
-}
-
-.notif-item{
-    display:flex;
-    gap:10px;
-    padding:11px 10px;
-    border-radius:12px;
-    font-size:.85rem;
-    color:#c7d2e0;
-}
-
-.notif-item:hover{
-    background:rgba(255,255,255,.05);
-}
-
-.notif-empty{
-    padding:20px 10px;
-    text-align:center;
-    color:#7688a0;
-    font-size:.85rem;
-}
-
-.profile-btn{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(20px);
-    padding:8px 18px 8px 8px;
-    border-radius:999px;
-    font-weight:600;
-    font-size:.9rem;
-    color:#fff;
-}
-
-.profile-avatar{
-    width:32px;
-    height:32px;
-    border-radius:999px;
-    background:linear-gradient(135deg,#7d79ff,#45d7ff);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:.72rem;
-    font-weight:800;
-    color:#050811;
-    flex-shrink:0;
-}
-
-.profile-name{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    line-height:1.25;
-}
-
-.profile-name small{
-    color:#7688a0;
-    font-weight:500;
-    font-size:.72rem;
-    text-transform:capitalize;
-}
-
-.profile-menu a,
-.profile-menu button.menu-item{
-    display:block;
-    width:100%;
-    text-align:left;
-    padding:11px 12px;
-    border-radius:12px;
-    color:#c7d2e0;
-    font-size:.88rem;
-    font-weight:500;
-    background:none;
-    border:none;
-}
-
-.profile-menu a:hover,
-.profile-menu button.menu-item:hover{
-    background:rgba(255,255,255,.06);
-    color:#fff;
-}
-
-.profile-menu hr{
-    border:none;
-    border-top:1px solid rgba(255,255,255,.07);
-    margin:6px 0;
-}
-
-/*==================================================
-LANDING PAGE HERO (legacy — kept so unmodified pages
-don't break; overridden below by the About-page hero
-block wherever both apply to the same page)
+LANDING PAGE HERO (legacy)
 ==================================================*/
 
 .hero{
@@ -669,25 +378,7 @@ block wherever both apply to the same page)
 }
 
 /*==================================================
-PREMIUM HERO (ADDED — from About page)
-This intentionally re-declares .hero, .hero h1, .hero p
-AFTER the legacy block above, so — by normal CSS cascade
-order — this version wins on every page using .hero.
-Use this markup structure going forward:
-
-<section class="hero">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-badge">YOUR EYEBROW TEXT</div>
-      <h1>Heading Text <span>Gradient Part</span></h1>
-      <p>Supporting paragraph text.</p>
-      <div class="hero-buttons">
-        <a href="#" class="btn btn-primary">Primary</a>
-        <a href="#" class="btn btn-secondary">Secondary</a>
-      </div>
-    </div>
-  </div>
-</section>
+PREMIUM HERO
 ==================================================*/
 
 .hero{
@@ -707,9 +398,7 @@ Use this markup structure going forward:
     width:950px;
     height:950px;
     border-radius:50%;
-    background:radial-gradient(circle,
-        rgba(88,110,255,.18),
-        transparent 70%);
+    background:radial-gradient(circle,rgba(88,110,255,.18),transparent 70%);
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
@@ -755,11 +444,7 @@ Use this markup structure going forward:
 }
 
 .hero h1 span{
-    background:linear-gradient(
-        135deg,
-        #8d82ff,
-        #4ad6ff
-    );
+    background:linear-gradient(135deg,#8d82ff,#4ad6ff);
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
@@ -955,9 +640,7 @@ AUTH PAGES (login / signup / admin-login)
     color:#7688a0;
 }
 
-.card textarea{
-    resize:vertical;
-}
+.card textarea{resize:vertical;}
 
 .auth-box select option,
 .card select option{
@@ -965,9 +648,7 @@ AUTH PAGES (login / signup / admin-login)
     color:white;
 }
 
-.full{
-    width:100%;
-}
+.full{width:100%;}
 
 .auth-link{
     margin-top:22px;
@@ -978,14 +659,8 @@ AUTH PAGES (login / signup / admin-login)
     z-index:2;
 }
 
-.auth-link a{
-    color:#78cbff;
-    font-weight:600;
-}
-
-.auth-link a:hover{
-    color:#a9e2ff;
-}
+.auth-link a{color:#78cbff;font-weight:600;}
+.auth-link a:hover{color:#a9e2ff;}
 
 .back{
     display:block;
@@ -998,250 +673,7 @@ AUTH PAGES (login / signup / admin-login)
     z-index:2;
 }
 
-.back:hover{
-    color:#b7c4d6;
-}
-
-/*==================================================
-DASHBOARD SHELL
-==================================================*/
-
-.dashboard{
-    display:flex;
-    min-height:100vh;
-    position:relative;
-}
-
-.sidebar{
-    width:270px;
-    flex-shrink:0;
-    background:rgba(6,10,18,.6);
-    backdrop-filter:blur(24px);
-    padding:32px 22px;
-    border-right:1px solid rgba(255,255,255,.06);
-    position:sticky;
-    top:0;
-    height:100vh;
-    overflow-y:auto;
-}
-
-.sidebar .logo{
-    display:block;
-    margin-bottom:38px;
-    padding-left:8px;
-}
-
-.sidebar ul{
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-}
-
-.sidebar li{
-    padding:13px 16px;
-    border-radius:12px;
-    cursor:default;
-    transition:.25s ease;
-    color:#8ca1b9;
-    font-weight:500;
-    font-size:.95rem;
-    display:flex;
-    align-items:center;
-}
-
-.sidebar li:has(a){
-    padding:0;
-}
-
-.sidebar li a{
-    width:100%;
-    padding:13px 16px;
-    border-radius:12px;
-    color:#b7c4d6;
-    display:block;
-}
-
-.sidebar li:hover,
-.sidebar li a:hover{
-    background:rgba(255,255,255,.05);
-    color:white;
-}
-
-.sidebar .active{
-    background:linear-gradient(135deg,rgba(125,121,255,.22),rgba(69,215,255,.14));
-    border:1px solid rgba(120,203,255,.25);
-    color:white;
-    font-weight:600;
-}
-
-.sidebar .disabled-link{
-    opacity:.4;
-    cursor:not-allowed;
-}
-
-.main{
-    flex:1;
-    padding:44px min(50px,5%);
-    min-width:0;
-}
-
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:44px;
-    flex-wrap:wrap;
-    gap:16px;
-}
-
-.topbar h1{
-    font-size:2rem;
-    font-weight:800;
-    letter-spacing:-1px;
-}
-
-.profile{
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(20px);
-    padding:12px 22px;
-    border-radius:999px;
-    font-weight:600;
-    font-size:.9rem;
-}
-
-/*==================================================
-DASHBOARD STAT CARDS
-==================================================*/
-
-.cards{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:22px;
-    margin-bottom:44px;
-}
-
-.dashboard-card{
-    position:relative;
-    background:rgba(255,255,255,.035);
-    border:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(28px);
-    padding:28px;
-    border-radius:22px;
-    transition:.4s cubic-bezier(.16,1,.3,1);
-    overflow:hidden;
-}
-
-.dashboard-card::before{
-    content:"";
-    position:absolute;
-    top:-80px;
-    right:-80px;
-    width:160px;
-    height:160px;
-    border-radius:50%;
-    background:rgba(88,125,255,.14);
-    filter:blur(55px);
-    transition:.4s;
-}
-
-.dashboard-card:hover{
-    transform:translateY(-7px);
-    border-color:rgba(88,180,255,.35);
-    box-shadow:0 25px 60px rgba(0,0,0,.35);
-}
-
-.dashboard-card:hover::before{
-    transform:scale(1.3);
-}
-
-.dashboard-card h3{
-    color:#9dadc1;
-    font-size:.85rem;
-    font-weight:600;
-    letter-spacing:.5px;
-    text-transform:uppercase;
-    margin-bottom:14px;
-    position:relative;
-    z-index:2;
-}
-
-.dashboard-card h2{
-    font-size:2.1rem;
-    font-weight:800;
-    letter-spacing:-1px;
-    position:relative;
-    z-index:2;
-}
-
-/*==================================================
-RECENT / TABLE PANELS
-==================================================*/
-
-.recent{
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(255,255,255,.07);
-    backdrop-filter:blur(24px);
-    padding:30px;
-    border-radius:24px;
-    margin-bottom:28px;
-    overflow-x:auto;
-}
-
-.recent h2{
-    margin-bottom:22px;
-    font-size:1.3rem;
-    font-weight:700;
-    letter-spacing:-.5px;
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:560px;
-}
-
-th,
-td{
-    text-align:left;
-    padding:16px;
-    border-bottom:1px solid rgba(255,255,255,.07);
-    font-size:.92rem;
-}
-
-th{
-    color:#78cbff;
-    font-weight:700;
-    font-size:.78rem;
-    letter-spacing:1px;
-    text-transform:uppercase;
-}
-
-tr:hover td{
-    background:rgba(255,255,255,.025);
-}
-
-td button{
-    padding:8px 14px;
-    font-size:.8rem;
-    margin:2px 4px 2px 0;
-}
-
-td select{
-    padding:10px 14px;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.04);
-    color:white;
-    font-family:'Plus Jakarta Sans',sans-serif;
-    font-size:.85rem;
-    margin-right:6px;
-}
-
-td select option{
-    background:#0b1220;
-    color:white;
-}
+.back:hover{color:#b7c4d6;}
 
 /*==================================================
 PUBLIC PAGES (PRICING / ABOUT / CONTACT)
@@ -1368,9 +800,7 @@ PUBLIC PAGES (PRICING / ABOUT / CONTACT)
 }
 
 /*==================================================
-ABOUT PAGE (LEGACY WRAPPER — about.html has its own
-premium markup/styles inline; kept here only as a
-graceful fallback for the .about-section class name)
+ABOUT PAGE (LEGACY WRAPPER)
 ==================================================*/
 
 .about-section{
@@ -1401,9 +831,7 @@ CONTACT PAGE
     padding:50px 20px 120px;
 }
 
-.contact-wrap .card{
-    width:100%;
-}
+.contact-wrap .card{width:100%;}
 
 .contact-wrap label,
 .card label{
@@ -1417,12 +845,10 @@ CONTACT PAGE
 }
 
 .contact-wrap label:first-of-type,
-.card label:first-of-type{
-    margin-top:0;
-}
+.card label:first-of-type{margin-top:0;}
 
 /*==================================================
-SECTION TAG (legacy — small badge, kept for fallback)
+SECTION TAG (legacy)
 ==================================================*/
 
 .section-tag{
@@ -1442,17 +868,7 @@ SECTION TAG (legacy — small badge, kept for fallback)
 }
 
 /*==================================================
-PREMIUM SECTION HEADINGS (ADDED — from About page)
-Re-declares .section-tag AFTER the legacy block above,
-so this version wins by cascade. Also adds .section-header
-wrapper classes for consistent section titles site-wide.
-Use this markup pattern for section intros:
-
-<div class="section-header">
-  <div class="section-tag">EYEBROW</div>
-  <h2>Heading <span>Gradient Part</span></h2>
-  <p>Supporting text.</p>
-</div>
+PREMIUM SECTION HEADINGS
 ==================================================*/
 
 .section-header{
@@ -1485,11 +901,7 @@ Use this markup pattern for section intros:
 }
 
 .section-header h2 span{
-    background:linear-gradient(
-        135deg,
-        #8c82ff,
-        #46d8ff
-    );
+    background:linear-gradient(135deg,#8c82ff,#46d8ff);
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
@@ -1504,173 +916,9 @@ Use this markup pattern for section intros:
 }
 
 /*==================================================
-STATUS BADGES (used across dashboard tables)
-==================================================*/
-
-.status{
-    display:inline-flex;
-    align-items:center;
-    padding:6px 14px;
-    border-radius:999px;
-    font-size:.78rem;
-    font-weight:700;
-    letter-spacing:.3px;
-}
-
-.status-pending{ background:rgba(255,196,84,.14); color:#ffc454; }
-.status-active,
-.status-completed,
-.status-approved,
-.status-paid{ background:rgba(88,212,255,.14); color:#58d4ff; }
-.status-suspended,
-.status-rejected,
-.status-needsrevision{ background:rgba(255,99,99,.14); color:#ff8080; }
-.status-assigned,
-.status-inreview,
-.status-inprogress{ background:rgba(157,141,255,.16); color:#b3a5ff; }
-.status-new{ background:rgba(88,212,255,.14); color:#58d4ff; }
-.status-read{ background:rgba(255,255,255,.06); color:#9dadc1; }
-
-/*==================================================
-EMPTY STATE
-==================================================*/
-
-.empty-state{
-    text-align:center;
-    padding:60px 20px;
-    color:#7f8b9b;
-    font-size:.95rem;
-}
-
-/*==================================================
-MOBILE SIDEBAR TOGGLE
-==================================================*/
-
-.sidebar-toggle{
-    display:none;
-    position:fixed;
-    top:18px;
-    left:18px;
-    z-index:200;
-    width:46px;
-    height:46px;
-    border-radius:14px;
-    background:rgba(10,16,28,.85);
-    border:1px solid rgba(255,255,255,.1);
-    backdrop-filter:blur(20px);
-    color:white;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-}
-
-.sidebar-backdrop{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.5);
-    backdrop-filter:blur(4px);
-    z-index:149;
-}
-
-/*==================================================
-RESPONSIVE
-==================================================*/
-
-@media (max-width:1100px){
-    .hero h1{ font-size:3.2rem; }
-    .cards{ grid-template-columns:repeat(2,1fr); }
-    .features{ grid-template-columns:repeat(2,1fr); }
-}
-
-@media (max-width:900px){
-
-    .navbar-toggle{
-        display:flex;
-    }
-
-    .nav-links{
-        position:absolute;
-        top:100%;
-        left:0;
-        right:0;
-        flex-direction:column;
-        align-items:flex-start;
-        gap:2px;
-        background:rgba(6,10,18,.97);
-        backdrop-filter:blur(24px);
-        border-bottom:1px solid rgba(255,255,255,.06);
-        padding:0 6%;
-        max-height:0;
-        overflow:hidden;
-        transition:max-height .35s ease, padding .35s ease;
-    }
-
-    .nav-links.mobile-open{
-        max-height:400px;
-        padding:14px 6% 22px;
-    }
-
-    .nav-links a{
-        width:100%;
-        padding:13px 4px;
-        border-bottom:1px solid rgba(255,255,255,.05);
-    }
-
-    .nav-links a:last-child{
-        border-bottom:none;
-    }
-
-    .topbar-search{
-        display:none;
-    }
-
-    .sidebar-toggle{
-        display:flex;
-    }
-
-    .dashboard{
-        display:block;
-    }
-
-    .sidebar{
-        position:fixed;
-        left:0;
-        top:0;
-        height:100vh;
-        z-index:150;
-        transform:translateX(-100%);
-        transition:.35s ease;
-        width:270px;
-    }
-
-    .sidebar.open{
-        transform:translateX(0);
-    }
-
-    .sidebar-backdrop.open{
-        display:block;
-    }
-
-    .main{
-        padding:90px 20px 40px;
-    }
-
-    .topbar h1{
-        font-size:1.5rem;
-    }
-
-    .hero{
-        min-height:90vh;
-    }
-}
-
-/*==================================================
 CHECKOUT / PAYMENT RESPONSIVE GRIDS
-(these were hard-coded fixed-px inline grids that
-couldn't respond to viewport size — pulled out into
-classes here so they can collapse to 1 column on mobile)
 ==================================================*/
+
 .checkout-summary-grid{
     display:grid;
     grid-template-columns:380px 1fr;
@@ -1699,60 +947,8 @@ classes here so they can collapse to 1 column on mobile)
     align-items:center;
 }
 
-@media (max-width:900px){
-    .checkout-summary-grid{
-        grid-template-columns:1fr;
-    }
-    .checkout-crypto-grid{
-        grid-template-columns:1fr;
-    }
-    .payment-methods-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-}
-
-@media (max-width:480px){
-    .payment-methods-grid,
-    .payment-methods-grid-2{
-        grid-template-columns:1fr;
-    }
-}
-
-@media (max-width:700px){
-    .hero{ padding-top:100px; }
-    .hero h1{ font-size:2.4rem; letter-spacing:-1px; }
-    .features{ grid-template-columns:1fr; }
-    .cards{ grid-template-columns:1fr; }
-    .page-hero h1{ font-size:2.2rem; }
-    .section-header h2{ font-size:2.2rem; }
-    .auth-box, .login-box{ padding:34px 26px; }
-
-    .topbar{
-        align-items:flex-start;
-    }
-
-    .topbar-right{
-        width:100%;
-        justify-content:flex-end;
-    }
-
-    .profile-name{
-        display:none;
-    }
-
-    .profile-btn{
-        padding:8px;
-    }
-
-    .notif-dropdown,
-    .profile-menu{
-        right:-10px;
-        width:min(290px,88vw);
-    }
-}
-
 /*==================================================
-MICRO-TASK PAGE LAYOUT (task card + surrounding ads)
+MICRO-TASK PAGE LAYOUT
 ==================================================*/
 
 .task-layout{
@@ -1777,40 +973,10 @@ MICRO-TASK PAGE LAYOUT (task card + surrounding ads)
     max-width:100%;
 }
 
-@media (max-width:900px){
-    /* On mobile, keep the task card front and center, and pull the
-       side-rail ads in tight right underneath it (as a compact
-       side-by-side row) instead of letting them stack as two tall
-       300px-high blocks far above/below the task - that's what was
-       pushing the CAPTCHA box way down the page. */
-    .task-layout{
-        flex-direction:column;
-        align-items:stretch;
-        gap:16px;
-    }
-
-    .task-center{
-        order:1;
-        width:100%;
-    }
-
-    .task-ads-rail{
-        order:2;
-        width:100%;
-        flex-direction:row;
-        flex-wrap:wrap;
-        justify-content:center;
-        gap:12px;
-    }
-}
-
 /*==================================================
-PASSWORD VISIBILITY TOGGLE (show/hide "eye" button)
-Wraps a password <input> in <div class="password-field">
-so the toggle button can be absolutely positioned inside
-it, vertically centered, without disturbing the input's
-own width:100% / margin used everywhere else.
+PASSWORD VISIBILITY TOGGLE
 ==================================================*/
+
 .password-field{
     position:relative;
     width:100%;
@@ -1848,9 +1014,7 @@ own width:100% / margin used everywhere else.
     transform:translateY(-50%);
 }
 
-.toggle-password:active{
-    transform:translateY(-50%);
-}
+.toggle-password:active{transform:translateY(-50%);}
 
 .toggle-password:focus-visible{
     outline:2px solid rgba(88,180,255,.5);
@@ -1864,6 +1028,87 @@ own width:100% / margin used everywhere else.
     pointer-events:none;
 }
 
-.toggle-password .icon-eye-off{
-    display:none;
+.toggle-password .icon-eye-off{display:none;}
+
+/*==================================================
+RESPONSIVE
+==================================================*/
+
+@media (max-width:1100px){
+    .hero h1{ font-size:3.2rem; }
+    .features{ grid-template-columns:repeat(2,1fr); }
+}
+
+@media (max-width:900px){
+
+    .navbar-toggle{ display:flex; }
+
+    .nav-links{
+        position:absolute;
+        top:100%;
+        left:0;
+        right:0;
+        flex-direction:column;
+        align-items:flex-start;
+        gap:2px;
+        background:rgba(6,10,18,.97);
+        backdrop-filter:blur(24px);
+        border-bottom:1px solid rgba(255,255,255,.06);
+        padding:0 6%;
+        max-height:0;
+        overflow:hidden;
+        transition:max-height .35s ease, padding .35s ease;
+    }
+
+    .nav-links.mobile-open{
+        max-height:400px;
+        padding:14px 6% 22px;
+    }
+
+    .nav-links a{
+        width:100%;
+        padding:13px 4px;
+        border-bottom:1px solid rgba(255,255,255,.05);
+    }
+
+    .nav-links a:last-child{border-bottom:none;}
+
+    .hero{ min-height:90vh; }
+}
+
+@media (max-width:900px){
+    .checkout-summary-grid{ grid-template-columns:1fr; }
+    .checkout-crypto-grid{ grid-template-columns:1fr; }
+    .payment-methods-grid{ grid-template-columns:repeat(2,1fr); }
+
+    .task-layout{
+        flex-direction:column;
+        align-items:stretch;
+        gap:16px;
+    }
+
+    .task-center{ order:1; width:100%; }
+
+    .task-ads-rail{
+        order:2;
+        width:100%;
+        flex-direction:row;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:12px;
+    }
+}
+
+@media (max-width:480px){
+    .payment-methods-grid,
+    .payment-methods-grid-2{ grid-template-columns:1fr; }
+}
+
+@media (max-width:700px){
+    .hero{ padding-top:100px; }
+    .hero h1{ font-size:2.4rem; letter-spacing:-1px; }
+    .features{ grid-template-columns:1fr; }
+    .page-hero h1{ font-size:2.2rem; }
+    .section-header h2{ font-size:2.2rem; }
+    .auth-box, .login-box{ padding:34px 26px; }
 }
