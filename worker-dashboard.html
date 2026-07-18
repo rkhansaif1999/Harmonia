@@ -77,16 +77,14 @@ a{text-decoration:none;color:inherit;}
 button{font-family:inherit;padding:0;border:none;background:transparent;backdrop-filter:none;transition:all .15s ease;}
 button:hover{transform:none;}
 
+/* ---- Disable scroll-reveal animation inside SPA to prevent hidden tabs ---- */
+.reveal{opacity:1 !important;transform:none !important;transition:none !important;}
+
 /* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
 .card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
 .card::before{display:none !important;}
 .card:hover{transform:none !important;border-color:var(--border) !important;box-shadow:var(--shadow) !important;}
 .card h2,.card h3{margin-top:0;color:var(--text);}
-
-/* ---- Reveal-animation override: cards in active panels must stay visible ---- */
-.page-panel.active .card,
-.page-panel.active .stat-card,
-.page-panel.active .recent{opacity:1 !important;transform:none !important;}
 
 /* ---- Layout Architecture: Fixed Sidebar + Scrollable Main ---- */
 .dashboard{display:block;height:100vh;overflow:hidden;background:var(--bg);}
@@ -315,20 +313,45 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--sidebar-bg);border:1px solid var(--sidebar-border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;color:var(--sidebar-text-bright);align-items:center;justify-content:center;}
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:399;}
 
+/* ==========================================================
+   MOBILE OPTIMIZATIONS
+   ========================================================== */
 @media(max-width:980px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .grid-2,.grid-3{grid-template-columns:1fr;}
     
     .sidebar{transform:translateX(-100%);}
     .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.4);}
-    .main{margin-left:0;padding:70px 16px 40px;}
+    .main{margin-left:0;padding:64px 16px 40px;} /* Push main content down to clear floating toggle */
+    .topbar{position:relative;padding-bottom:0;margin-bottom:20px;}
     .topbar-search{display:none;}
+    
+    /* Compact Topbar Right */
+    .profile-name{display:none;}
+    .profile-btn{padding:6px;}
+    .notif-bell{width:38px;height:38px;}
     
     .sidebar-toggle{display:flex;}
     .sidebar-backdrop.open{display:block;}
     .sidebar-desktop-toggle{display:none;}
+    
+    /* Full-screen Modals on Mobile */
+    .overlay{padding:0;}
+    .modal{max-width:100%;width:100%;height:100%;max-height:100%;border-radius:0;padding:16px;}
+    .modal.wide{height:100vh;}
 }
-@media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
+@media(max-width:700px){
+    /* Horizontal swipeable tables */
+    table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+    thead,tbody{display:table;width:100%;}
+}
+@media(max-width:560px){
+    .stat-grid{grid-template-columns:1fr;}
+    .welcome-banner{padding:20px;}
+    .welcome-banner h2{font-size:1.3rem;}
+    .card{padding:16px !important;}
+    .subtab-btn{padding:8px 12px;font-size:.8rem;}
+}
 </style>
 </head>
 
@@ -919,7 +942,7 @@ function renderEarningsChart(rows) {
     for (let i = 0; i <= 4; i++) {
         const y = p.t + (ch / 4) * i;
         const val = displayMax - (displayMax / 4) * i;
-        gridLines += `<line x1="${p.l}" y1="${y.toFixed(1)}" x2="${w - p.r}" y2="${y.toFixed(1)}" stroke="#334155" stroke-width="1" stroke-dasharray="${i === 4 ? '0' : '3,3'}"/>`;
+        gridLines += `<line x1="${p.l}" y1="${y.toFixed(1)}" x2="${w - p.r}" y1="${y.toFixed(1)}" stroke="#334155" stroke-width="1" stroke-dasharray="${i === 4 ? '0' : '3,3'}"/>`;
         gridLines += `<text x="${p.l - 8}" y="${(y + 3).toFixed(1)}" text-anchor="end" fill="#94a3b8" font-size="10" font-family="Plus Jakarta Sans, sans-serif">$${val.toFixed(2)}</text>`;
     }
 
