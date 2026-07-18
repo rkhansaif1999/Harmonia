@@ -80,6 +80,9 @@ button:hover{transform:none;}
 /* ---- Disable scroll-reveal animation inside SPA to prevent hidden tabs ---- */
 .reveal{opacity:1 !important;transform:none !important;transition:none !important;}
 
+/* ---- Hide Global Search Bar on Worker Dashboard ---- */
+.topbar-search { display: none !important; }
+
 /* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
 .card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
 .card::before{display:none !important;}
@@ -157,8 +160,7 @@ body.sidebar-closed .main{margin-left:0;}
 }
 .sidebar-desktop-toggle:hover{background:var(--bg);}
 .topbar-right{display:flex;align-items:center;gap:12px;}
-.topbar-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 14px;color:var(--muted);font-size:.88rem;min-width:220px;}
-.topbar-search input{border:none;outline:none;background:transparent;font-family:inherit;font-size:.88rem;color:var(--text);width:100%;}
+
 .notif-wrap,.profile-wrap{position:relative;}
 .notif-bell{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);cursor:pointer;font-size:1.05rem;position:relative;display:flex;align-items:center;justify-content:center;color:var(--text);}
 .notif-bell:hover{background:var(--bg);}
@@ -324,7 +326,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.4);}
     .main{margin-left:0;padding:64px 16px 40px;} /* Push main content down to clear floating toggle */
     .topbar{position:relative;padding-bottom:0;margin-bottom:20px;}
-    .topbar-search{display:none;}
     
     /* Compact Topbar Right */
     .profile-name{display:none;}
