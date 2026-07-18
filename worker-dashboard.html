@@ -88,14 +88,19 @@ button:hover{transform:none;}
 .page-panel.active .stat-card,
 .page-panel.active .recent{opacity:1 !important;transform:none !important;}
 
-.dashboard{display:flex;min-height:100vh;background:var(--bg);align-items:stretch;}
+/* ---- Layout Architecture: Fixed Sidebar + Scrollable Main ---- */
+.dashboard{display:block;height:100vh;overflow:hidden;background:var(--bg);}
 
-/* ---------- Sidebar (dark) ---------- */
+/* ---------- Sidebar (dark & fixed) ---------- */
 .sidebar{
-    width:260px;flex:0 0 260px;
+    width:260px;
+    position:fixed;left:0;top:0;height:100vh;
     background:linear-gradient(180deg,var(--sidebar-bg) 0%,var(--sidebar-bg-2) 100%) !important;
     border-right:1px solid var(--sidebar-border) !important;
-    padding:24px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
+    padding:24px 18px;display:flex;flex-direction:column;
+    overflow-y:auto;overflow-x:hidden;
+    transition:transform 0.25s ease;
+    z-index:400;
     scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
 }
 .sidebar::-webkit-scrollbar{width:5px;}
@@ -124,12 +129,35 @@ button:hover{transform:none;}
 .sidebar-user-card .rl{font-size:.75rem;color:var(--sidebar-text) !important;text-transform:capitalize;}
 
 /* ---------- Main / topbar ---------- */
-.main{flex:1;min-width:0;padding:22px 30px 50px;background:var(--bg);}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;background:transparent;padding:0;}
+.main{
+    margin-left:260px;
+    height:100vh;
+    overflow-y:auto;
+    padding:22px 30px 50px;
+    background:var(--bg);
+    transition:margin-left 0.25s ease;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
+}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px;}
+
+body.sidebar-closed .sidebar{transform:translateX(-100%);}
+body.sidebar-closed .main{margin-left:0;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;background:transparent;padding:0;position:sticky;top:0;background:var(--bg);z-index:10;padding-bottom:10px;}
 .topbar h1{font-size:1.5rem;margin:0;color:var(--text);}
-.topbar-left{display:flex;flex-direction:column;gap:2px;}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.topbar-title-wrap{display:flex;flex-direction:column;gap:2px;}
 .breadcrumb{font-size:.8rem;color:var(--muted-light);}
 .breadcrumb span{color:var(--muted);}
+.sidebar-desktop-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:42px;height:42px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--border);
+    cursor:pointer;color:var(--text);font-size:1.1rem;padding:0;
+}
+.sidebar-desktop-toggle:hover{background:var(--bg);}
 .topbar-right{display:flex;align-items:center;gap:12px;}
 .topbar-search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 14px;color:var(--muted);font-size:.88rem;min-width:220px;}
 .topbar-search input{border:none;outline:none;background:transparent;font-family:inherit;font-size:.88rem;color:var(--text);width:100%;}
@@ -152,12 +180,12 @@ button:hover{transform:none;}
 .profile-menu a:hover,.profile-menu .menu-item:hover{background:var(--bg);}
 .profile-menu hr{border:none;border-top:1px solid var(--border);margin:6px 0;}
 
-/* ---------- Welcome banner ---------- */
-.welcome-banner{background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);border-radius:var(--radius);padding:28px 30px;margin-bottom:20px;color:#fff;position:relative;overflow:hidden;}
-.welcome-banner::after{content:'';position:absolute;right:-30px;top:-30px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);}
-.welcome-banner::before{content:'';position:absolute;right:40px;bottom:-60px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.04);}
-.welcome-banner h2{margin:0 0 4px;font-size:1.5rem;font-weight:800;color:#fff;position:relative;z-index:1;}
-.welcome-banner p{margin:0;font-size:.9rem;color:rgba(255,255,255,.75);position:relative;z-index:1;}
+/* ---------- Welcome banner (Themed Dark, no gradient) ---------- */
+.welcome-banner{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px 30px;margin-bottom:20px;color:var(--text);position:relative;overflow:hidden;}
+.welcome-banner::after{display:none;}
+.welcome-banner::before{display:none;}
+.welcome-banner h2{margin:0 0 4px;font-size:1.5rem;font-weight:800;color:var(--text);position:relative;z-index:1;}
+.welcome-banner p{margin:0;font-size:.9rem;color:var(--muted);position:relative;z-index:1;}
 
 /* ---------- Cards / stat grid ---------- */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px;}
@@ -283,17 +311,22 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
 .completion-banner{display:none;background:var(--success-soft);color:var(--success);padding:12px 16px;border-radius:12px;font-weight:700;margin-bottom:14px;border:1px solid var(--success);}
 
+/* Mobile Floating Toggle */
 .sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--sidebar-bg);border:1px solid var(--sidebar-border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;color:var(--sidebar-text-bright);align-items:center;justify-content:center;}
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:399;}
+
 @media(max-width:980px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .grid-2,.grid-3{grid-template-columns:1fr;}
-    .sidebar{position:fixed;left:-280px;top:0;height:100vh;z-index:401;transition:left .25s ease;box-shadow:0 0 0 rgba(0,0,0,0);}
-    .sidebar.open{left:0;box-shadow:0 0 60px rgba(0,0,0,.4);}
+    
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.4);}
+    .main{margin-left:0;padding:70px 16px 40px;}
+    .topbar-search{display:none;}
+    
     .sidebar-toggle{display:flex;}
     .sidebar-backdrop.open{display:block;}
-    .main{padding:70px 16px 40px;}
-    .topbar-search{display:none;}
+    .sidebar-desktop-toggle{display:none;}
 }
 @media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
 </style>
@@ -339,13 +372,19 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         </div>
     </aside>
 
-    <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open');document.querySelector('.sidebar-backdrop').classList.toggle('open')">☰</button>
-    <div class="sidebar-backdrop" onclick="document.querySelector('.sidebar').classList.remove('open');this.classList.remove('open')"></div>
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
 
     <main class="main">
 
         <header class="topbar">
-            <h1 id="pageTitle">Dashboard</h1>
+            <div class="topbar-left">
+                <button class="sidebar-desktop-toggle" onclick="toggleSidebar()">☰</button>
+                <div class="topbar-title-wrap">
+                    <div class="breadcrumb">Worker Portal <span>/ Dashboard</span></div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+            </div>
             <div class="profile">Worker</div>
         </header>
 
@@ -715,6 +754,16 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
    HARMONIA WORKER SPA — application logic
    ========================================================== */
 
+/* ---------------- Sidebar Toggle Logic ---------------- */
+function toggleSidebar() {
+    if (window.innerWidth <= 980) {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-backdrop').classList.toggle('open');
+    } else {
+        document.body.classList.toggle('sidebar-closed');
+    }
+}
+
 /* ---------------- Tab routing ---------------- */
 const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments" };
 const loadedTabs = new Set();
@@ -787,8 +836,10 @@ window.addEventListener("hashchange", () => {
 document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     btn.addEventListener("click", () => {
         goTab(btn.dataset.tab);
-        document.querySelector('.sidebar').classList.remove('open');
-        document.querySelector('.sidebar-backdrop').classList.remove('open');
+        if (window.innerWidth <= 980) {
+            document.querySelector('.sidebar').classList.remove('open');
+            document.querySelector('.sidebar-backdrop').classList.remove('open');
+        }
     });
 });
 
