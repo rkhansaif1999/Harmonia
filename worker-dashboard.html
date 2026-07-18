@@ -8,8 +8,8 @@
 <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<style>body{visibility:hidden}</style> <!-- unhidden by protectPage() after a real, server-verified session check -->
-<!-- Google tag (gtag.js) -->
+<style>body{visibility:hidden}</style>
+
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -38,15 +38,13 @@
    HARMONIA WORKER SPA — FULL DARK MODE THEME
    ========================================================== */
 :root{
-    /* Dark Mode Backgrounds & Panels */
-    --bg:#0f172a;          /* Main app background */
-    --panel:#1e293b;       /* Card backgrounds */
-    --border:#334155;      /* Borders */
-    --text:#f8fafc;        /* Main text */
-    --muted:#94a3b8;       /* Muted text */
-    --muted-light:#64748b; /* Light muted text */
-    
-    /* Accents */
+    --bg:#0f172a;
+    --panel:#1e293b;
+    --border:#334155;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --muted-light:#64748b;
+
     --primary:#3b82f6;
     --primary-dark:#2563eb;
     --primary-soft:rgba(59,130,246,.15);
@@ -60,8 +58,7 @@
     --purple-soft:rgba(139,92,246,.15);
     --radius:16px;
     --shadow:0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
-    
-    /* Sidebar specific dark theme */
+
     --sidebar-bg:#0b1120;
     --sidebar-bg-2:#020617;
     --sidebar-text:#94a3b8;
@@ -75,7 +72,21 @@ html,body{background:var(--bg) !important;color:var(--text) !important;}
 body{font-family:'Plus Jakarta Sans',Arial,sans-serif;}
 .noise{display:none;}
 a{text-decoration:none;color:inherit;}
-button{font-family:inherit;}
+
+/* ---- Neutralise global button defaults that clash with dark theme ---- */
+button{font-family:inherit;padding:0;border:none;background:transparent;backdrop-filter:none;transition:all .15s ease;}
+button:hover{transform:none;}
+
+/* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
+.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
+.card::before{display:none !important;}
+.card:hover{transform:none !important;border-color:var(--border) !important;box-shadow:var(--shadow) !important;}
+.card h2,.card h3{margin-top:0;color:var(--text);}
+
+/* ---- Reveal-animation override: cards in active panels must stay visible ---- */
+.page-panel.active .card,
+.page-panel.active .stat-card,
+.page-panel.active .recent{opacity:1 !important;transform:none !important;}
 
 .dashboard{display:flex;min-height:100vh;background:var(--bg);align-items:stretch;}
 
@@ -92,7 +103,7 @@ button{font-family:inherit;}
 .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px;}
 .sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.15);}
 
-.sidebar .logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:var(--sidebar-text-bright) !important;margin:4px 6px 22px;letter-spacing:-.02em;}
+.sidebar .logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:var(--sidebar-text-bright) !important;margin:4px 6px 22px;letter-spacing:-.02em;-webkit-text-fill-color:var(--sidebar-text-bright);}
 .sidebar .logo-img{width:32px;height:32px;border-radius:9px;}
 .sidebar ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
 .side-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--sidebar-label) !important;margin:16px 10px 6px;text-transform:uppercase;}
@@ -102,7 +113,7 @@ button{font-family:inherit;}
     cursor:pointer !important;border:none;background:transparent !important;
     width:100%;text-align:left;transition:all .15s ease;
 }
-.side-item:hover{background:var(--sidebar-hover) !important;color:var(--sidebar-text-bright) !important;}
+.side-item:hover{background:var(--sidebar-hover) !important;color:var(--sidebar-text-bright) !important;transform:none;}
 .side-item.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark)) !important;color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,.35);}
 .side-item .ic{font-size:1.05rem;width:20px;text-align:center;}
 .side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
@@ -124,6 +135,7 @@ button{font-family:inherit;}
 .topbar-search input{border:none;outline:none;background:transparent;font-family:inherit;font-size:.88rem;color:var(--text);width:100%;}
 .notif-wrap,.profile-wrap{position:relative;}
 .notif-bell{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);cursor:pointer;font-size:1.05rem;position:relative;display:flex;align-items:center;justify-content:center;color:var(--text);}
+.notif-bell:hover{background:var(--bg);}
 .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:20px;padding:1px 5px;border:2px solid var(--panel);}
 .notif-dropdown,.profile-menu{display:none;position:absolute;right:0;top:calc(100% + 10px);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);min-width:300px;padding:10px;z-index:400;}
 .notif-dropdown.open,.profile-menu.open{display:block;}
@@ -132,6 +144,7 @@ button{font-family:inherit;}
 .notif-item:hover{background:var(--bg);}
 .notif-empty{padding:14px 8px;color:var(--muted);font-size:.85rem;}
 .profile-btn{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px 12px 6px 6px;cursor:pointer;color:var(--text);}
+.profile-btn:hover{background:var(--bg);}
 .profile-avatar{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;}
 .profile-name{font-size:.85rem;font-weight:700;color:var(--text);display:flex;flex-direction:column;line-height:1.2;text-align:left;}
 .profile-name small{font-weight:500;color:var(--muted);font-size:.72rem;text-transform:capitalize;}
@@ -156,8 +169,6 @@ button{font-family:inherit;}
 .stat-card .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
 .stat-card .sub{font-size:.78rem;color:var(--muted);margin-top:8px;}
 
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);transition:box-shadow .2s ease;}
-.card h2,.card h3{margin-top:0;color:var(--text);}
 .grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;}
 .grid-col{display:flex;flex-direction:column;gap:18px;}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
@@ -165,7 +176,7 @@ button{font-family:inherit;}
 .muted{color:var(--muted);}
 .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
 .section-title h2{margin:0;font-size:1.05rem;color:var(--text);}
-.link-btn{color:var(--primary);font-weight:700;font-size:.85rem;cursor:pointer;background:none;border:none;transition:opacity .15s ease;}
+.link-btn{color:var(--primary);font-weight:700;font-size:.85rem;cursor:pointer;background:none;border:none;padding:0;transition:opacity .15s ease;}
 .link-btn:hover{opacity:.7;}
 
 table{width:100%;border-collapse:collapse;font-size:.88rem;}
@@ -190,11 +201,12 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary)
 label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10px 0 6px;}
 
 .status{display:inline-block;padding:4px 11px;border-radius:20px;font-size:.75rem;font-weight:700;}
-.status-completed,.status-paid,.status-approved{background:var(--success-soft);color:var(--success);}
-.status-pending,.status-underreview,.status-inreview{background:var(--warning-soft);color:var(--warning);}
+.status-completed,.status-paid,.status-approved,.status-active{background:var(--success-soft);color:var(--success);}
+.status-pending,.status-underreview,.status-inreview,.status-new{background:var(--warning-soft);color:var(--warning);}
 .status-assigned,.status-inprogress{background:var(--primary-soft);color:var(--primary);}
 .status-rejected,.status-suspended,.status-needsrevision{background:var(--danger-soft);color:var(--danger);}
 .status-awaitingpayment{background:var(--purple-soft);color:var(--purple);}
+.status-read{background:rgba(255,255,255,.06);color:var(--muted);}
 
 /* ---------- Chart ---------- */
 .chart-container{margin-top:14px;overflow-x:auto;}
@@ -218,7 +230,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .page-panel.active{display:block !important;}
 .subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
 .subtab-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s ease;}
-.subtab-btn:hover{border-color:var(--primary);color:var(--text);}
+.subtab-btn:hover{border-color:var(--primary);color:var(--text);transform:none;}
 .subtab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(59,130,246,.25);}
 .subpanel{display:none;}
 .subpanel.active{display:block !important;}
@@ -229,12 +241,11 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .modal{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.5);color:var(--text);}
 .modal.wide{max-width:720px;height:78vh;display:flex;flex-direction:column;}
 .modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
-.modal h3 {color: var(--text);}
-.modal-close{background:transparent;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;transition:color .15s ease;}
-.modal-close:hover{color:var(--text);}
+.modal h3{color:var(--text);}
+.modal-close{background:transparent !important;border:none !important;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;transition:color .15s ease;padding:0 !important;}
+.modal-close:hover{color:var(--text);transform:none;}
 .reply-status{font-size:.82rem;color:var(--muted);}
 
-/* Facebook-style chat bubbles */
 .chat-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;max-height:380px;min-height:140px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
 .bubble{max-width:80%;padding:10px 14px;border-radius:14px;box-sizing:border-box;}
 .bubble.me{align-self:flex-end;background:var(--primary-soft);border:1px solid var(--primary);}
@@ -242,7 +253,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .bubble .meta{font-size:.72rem;color:var(--muted);margin-bottom:3px;}
 .bubble .txt{color:var(--text);white-space:pre-wrap;word-break:break-word;}
 
-/* thread list */
 .thread-toolbar{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--border);}
 .thread-toolbar button{background:var(--bg);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;cursor:pointer;color:var(--text);}
 .thread-toolbar .spacer{flex:1;}
@@ -257,7 +267,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .thread-top .time{color:var(--muted-light);font-size:.78rem;flex:0 0 auto;}
 .thread-company{color:var(--muted);font-size:.8rem;}
 
-/* micro-task workspace */
 .code-display{font-family:monospace;font-size:2.4rem;letter-spacing:.3em;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0;color:var(--text);}
 .code-input{font-family:monospace;font-size:1.3rem;letter-spacing:.3em;text-align:center;text-transform:uppercase;width:100%;box-sizing:border-box;padding:13px;background:var(--bg);color:var(--text);}
 .feedback-box{text-align:center;font-weight:700;margin:14px 0;min-height:24px;}
@@ -271,19 +280,17 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .method-tile.active{border-color:var(--primary);background:var(--primary-soft);}
 .badge-linked{background:var(--success-soft);color:var(--success);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:8px;}
 
-/* offerwall iframe holder */
 .iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
 .completion-banner{display:none;background:var(--success-soft);color:var(--success);padding:12px 16px;border-radius:12px;font-weight:700;margin-bottom:14px;border:1px solid var(--success);}
 
-/* mobile */
-.sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--sidebar-bg);border:1px solid var(--sidebar-border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;color:var(--sidebar-text-bright);}
+.sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--sidebar-bg);border:1px solid var(--sidebar-border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;color:var(--sidebar-text-bright);align-items:center;justify-content:center;}
 .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:399;}
 @media(max-width:980px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .grid-2,.grid-3{grid-template-columns:1fr;}
     .sidebar{position:fixed;left:-280px;top:0;height:100vh;z-index:401;transition:left .25s ease;box-shadow:0 0 0 rgba(0,0,0,0);}
     .sidebar.open{left:0;box-shadow:0 0 60px rgba(0,0,0,.4);}
-    .sidebar-toggle{display:flex;align-items:center;justify-content:center;}
+    .sidebar-toggle{display:flex;}
     .sidebar-backdrop.open{display:block;}
     .main{padding:70px 16px 40px;}
     .topbar-search{display:none;}
@@ -294,7 +301,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <body>
 
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
 <script>
     protectPage("worker");
 </script>
@@ -330,77 +337,15 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <li><a href="login.html" onclick="logout()" class="side-item"><span class="ic">🚪</span> Logout</a></li>
             </ul>
         </div>
-
-        <div class="adsterra-sidebar-banners" style="margin-top:24px;display:flex;flex-direction:column;gap:16px;align-items:center;">
-            <div style="width:160px;max-width:100%;overflow:hidden;">
-                <script>
-                  atOptions = {
-                    'key' : '3489a53651d7a846fe425e478559a485',
-                    'format' : 'iframe',
-                    'height' : 300,
-                    'width' : 160,
-                    'params' : {}
-                  };
-                </script>
-                <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
-            </div>
-            <div style="width:160px;max-width:100%;overflow:hidden;">
-                <script>
-                  atOptions = {
-                    'key' : '3489a53651d7a846fe425e478559a485',
-                    'format' : 'iframe',
-                    'height' : 300,
-                    'width' : 160,
-                    'params' : {}
-                  };
-                </script>
-                <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
-            </div>
-        </div>
     </aside>
 
-    <!-- Mobile sidebar toggle -->
     <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open');document.querySelector('.sidebar-backdrop').classList.toggle('open')">☰</button>
     <div class="sidebar-backdrop" onclick="document.querySelector('.sidebar').classList.remove('open');this.classList.remove('open')"></div>
 
-    <!-- Main -->
     <main class="main">
-
-<!-- Ezoic Ad: top_of_page -->
-<script>
-    ezstandalone.cmd.push(function () {
-        ezstandalone.showAds({ location: "top_of_page" });
-    });
-</script>
 
         <header class="topbar">
             <h1 id="pageTitle">Dashboard</h1>
-            <div class="adsterra-header-banners" style="display:flex;gap:12px;flex-wrap:wrap;">
-                <div style="width:468px;max-width:100%;overflow:hidden;">
-                    <script>
-                      atOptions = {
-                        'key' : '05960b6f18812ade9884f4c4e854ecf7',
-                        'format' : 'iframe',
-                        'height' : 60,
-                        'width' : 468,
-                        'params' : {}
-                      };
-                    </script>
-                    <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
-                </div>
-                <div style="width:468px;max-width:100%;overflow:hidden;">
-                    <script>
-                      atOptions = {
-                        'key' : '05960b6f18812ade9884f4c4e854ecf7',
-                        'format' : 'iframe',
-                        'height' : 60,
-                        'width' : 468,
-                        'params' : {}
-                      };
-                    </script>
-                    <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
-                </div>
-            </div>
             <div class="profile">Worker</div>
         </header>
 
@@ -443,15 +388,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
 
-            <!-- Ezoic Ad: mid_content -->
-            <script>
-                ezstandalone.cmd.push(function () {
-                    ezstandalone.showAds({ location: "mid_content" });
-                });
-            </script>
-
             <div class="grid-2">
-                <!-- Left column: My Tasks + Earnings Overview -->
                 <div class="grid-col">
                     <div class="card">
                         <div class="section-title"><h2>My Tasks</h2><button class="link-btn" onclick="goTab('tasks')">View all →</button></div>
@@ -472,7 +409,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         <div id="earningsChartContainer" class="chart-container"></div>
                     </div>
                 </div>
-                <!-- Right column: Payout Method + Announcements -->
                 <div class="grid-col">
                     <div class="card">
                         <div class="section-title"><h2>Payout Method</h2><button class="link-btn" onclick="goTab('payments')">Manage →</button></div>
@@ -684,12 +620,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </section>
 
-    <!-- Ezoic Ad: bottom_of_page -->
-    <script>
-        ezstandalone.cmd.push(function () {
-            ezstandalone.showAds({ location: "bottom_of_page" });
-        });
-    </script>
     </main>
 </div>
 
@@ -701,13 +631,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <button class="modal-close" onclick="closeMicroWorkspace()">×</button>
         </div>
         <div style="overflow-y:auto;flex:1;">
-
-            <div style="display:flex;justify-content:center;margin:0 auto 16px;overflow:hidden;">
-                <script>
-                atOptions = { 'key' : '61ea3a77741ed9bda6542f9b1b995e1d', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-                </script>
-                <script src="https://www.highperformanceformat.com/61ea3a77741ed9bda6542f9b1b995e1d/invoke.js"></script>
-            </div>
 
             <div id="mwGateState">
                 <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
@@ -729,25 +652,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
             <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
-
-            <div style="margin:20px auto 0;">
-                <script async="async" data-cfasync="false" src="https://pl30293960.effectivecpmnetwork.com/d9498e35eec000a2f38d2a65dfe20361/invoke.js"></script>
-                <div id="container-d9498e35eec000a2f38d2a65dfe20361"></div>
-            </div>
-            <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:16px;">
-                <div style="width:160px;max-width:100%;overflow:hidden;">
-                    <script>
-                    atOptions = { 'key' : '3489a53651d7a846fe425e478559a485', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
-                </div>
-                <div style="width:160px;max-width:100%;overflow:hidden;">
-                    <script>
-                    atOptions = { 'key' : '3489a53651d7a846fe425e478559a485', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} };
-                    </script>
-                    <script src="https://www.highperformanceformat.com/3489a53651d7a846fe425e478559a485/invoke.js"></script>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -814,26 +718,29 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 /* ---------------- Tab routing ---------------- */
 const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments" };
 const loadedTabs = new Set();
+let isHashRouting = false;
 
 function goTab(tab, sub = null) {
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
     document.getElementById("pageTitle").textContent = TAB_TITLES[tab] || "Dashboard";
-    
+
     ensureTabLoaded(tab);
-    
+
     if (sub) {
         switchSubtab(tab, sub);
     } else {
         const activeSubBtn = document.querySelector(`.subtab-btn[data-group="${tab}"].active`);
         if (activeSubBtn) {
-            switchSubtab(tab, activeSubBtn.dataset.sub);
+            loadSubtabContent(tab, activeSubBtn.dataset.sub);
         } else {
             const firstSubBtn = document.querySelector(`.subtab-btn[data-group="${tab}"]`);
             if (firstSubBtn) {
                 switchSubtab(tab, firstSubBtn.dataset.sub);
             } else {
+                isHashRouting = true;
                 window.location.hash = tab;
+                setTimeout(() => { isHashRouting = false; }, 50);
             }
         }
     }
@@ -849,19 +756,33 @@ function ensureTabLoaded(tab) {
     if (tab === "payments") loadPayoutMethod();
 }
 
+function loadSubtabContent(group, sub) {
+    if (group === "tasks" && sub === "bonus") loadBonusTasks();
+    if (group === "tasks" && sub === "cpalead") loadCpaleadTasks();
+}
+
 function switchSubtab(group, sub) {
     document.querySelectorAll(`.subtab-btn[data-group="${group}"]`).forEach(b => b.classList.toggle("active", b.dataset.sub === sub));
     document.querySelectorAll(`.subpanel[data-group="${group}"]`).forEach(p => p.classList.toggle("active", p.dataset.sub === sub));
+
+    isHashRouting = true;
     window.location.hash = `${group}/${sub}`;
-    
-    // Fix: Force load scripts for sub-tabs directly on click to ensure they execute
-    if (group === "tasks" && sub === "bonus") { 
-        loadBonusTasks(); 
-    }
-    if (group === "tasks" && sub === "cpalead") { 
-        loadCpaleadTasks(); 
-    }
+    setTimeout(() => { isHashRouting = false; }, 50);
+
+    loadSubtabContent(group, sub);
 }
+
+window.addEventListener("hashchange", () => {
+    if (isHashRouting) return;
+    const rawHash = (window.location.hash || "").replace("#", "");
+    const parts = rawHash.split("/");
+    const tab = parts[0];
+    const sub = parts[1] || null;
+    const valid = ["overview", "tasks", "messages", "earnings", "payments"];
+    if (valid.includes(tab)) {
+        goTab(tab, sub);
+    }
+});
 
 document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -875,7 +796,7 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     const rawHash = (window.location.hash || "").replace("#", "");
     const parts = rawHash.split("/");
     const tab = parts[0];
-    const sub = parts[1];
+    const sub = parts[1] || null;
     const valid = ["overview", "tasks", "messages", "earnings", "payments"];
     goTab(valid.includes(tab) ? tab : "overview", sub);
 })();
@@ -892,7 +813,7 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
 })();
 
 /* ==========================================================
-   EARNINGS CHART — SVG line chart for overview
+   EARNINGS CHART
    ========================================================== */
 function renderEarningsChart(rows) {
     const container = document.getElementById('earningsChartContainer');
@@ -1366,27 +1287,52 @@ document.getElementById("mwCodeInput").addEventListener("keydown", function (e) 
    BONUS TASKS (CPX Research) + CPALEAD
    ========================================================== */
 let trustedMessageOrigins = [];
+
 async function loadBonusTasks() {
     const statusLabel = document.getElementById("bonusStatusLabel");
     const emptyState = document.getElementById("bonusEmptyState");
     const frameHolder = document.getElementById("bonusIframeHolder");
+    if (!statusLabel || !frameHolder) return;
+
     try {
         statusLabel.textContent = "Loading…";
+        emptyState.style.display = "none";
+        frameHolder.innerHTML = "";
+
         const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
         const data = await response.json();
-        if (!response.ok) { statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = escapeHTML(data?.error || "Bonus tasks aren't available right now."); return; }
+        if (!response.ok) {
+            statusLabel.textContent = "Unavailable";
+            emptyState.style.display = "block";
+            emptyState.textContent = escapeHTML(data?.error || "Bonus tasks aren't available right now.");
+            return;
+        }
         const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpxresearch");
-        if (offerwalls.length === 0) { statusLabel.textContent = "None available"; emptyState.style.display = "block"; emptyState.textContent = "No bonus tasks available right now — check back soon."; return; }
-        frameHolder.innerHTML = ""; statusLabel.textContent = "Available"; emptyState.style.display = "none";
+        if (offerwalls.length === 0) {
+            statusLabel.textContent = "None available";
+            emptyState.style.display = "block";
+            emptyState.textContent = "No bonus tasks available right now — check back soon.";
+            return;
+        }
+        trustedMessageOrigins = [];
+        statusLabel.textContent = "Available";
+        emptyState.style.display = "none";
         offerwalls.forEach(ow => {
-            try { trustedMessageOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { return; }
+            try { trustedMessageOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { console.warn("Invalid iframe URL:", ow.iframeUrl); return; }
             const iframe = document.createElement("iframe");
-            iframe.src = ow.iframeUrl; iframe.title = "Bonus Tasks";
+            iframe.src = ow.iframeUrl;
+            iframe.title = "Bonus Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
             frameHolder.appendChild(iframe);
         });
-    } catch (err) { console.error(err); statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = "Unable to connect to the server."; }
+    } catch (err) {
+        console.error("loadBonusTasks error:", err);
+        statusLabel.textContent = "Unavailable";
+        emptyState.style.display = "block";
+        emptyState.textContent = "Unable to connect to the server.";
+    }
 }
+
 window.addEventListener("message", (event) => {
     if (trustedMessageOrigins.length && !trustedMessageOrigins.includes(event.origin)) return;
     let payload = event.data;
@@ -1395,34 +1341,61 @@ window.addEventListener("message", (event) => {
     const status = String(payload.status || payload.type || "").toLowerCase();
     if (status.includes("complete") || status === "1" || status === "success") {
         const b = document.getElementById("bonusCompletionBanner");
-        b.textContent = "Nice — that one's in! Check your Earnings page once it's confirmed.";
-        b.style.display = "block";
-        setTimeout(() => { b.style.display = "none"; }, 8000);
+        if (b) {
+            b.textContent = "Nice — that one's in! Check your Earnings page once it's confirmed.";
+            b.style.display = "block";
+            setTimeout(() => { b.style.display = "none"; }, 8000);
+        }
     }
 });
 
 let cpaleadTrustedOrigins = [];
+
 async function loadCpaleadTasks() {
     const statusLabel = document.getElementById("cpaleadStatusLabel");
     const emptyState = document.getElementById("cpaleadEmptyState");
     const frameHolder = document.getElementById("cpaleadIframeHolder");
+    if (!statusLabel || !frameHolder) return;
+
     try {
         statusLabel.textContent = "Loading…";
+        emptyState.style.display = "none";
+        frameHolder.innerHTML = "";
+
         const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
         const data = await response.json();
-        if (!response.ok) { statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = escapeHTML(data?.error || "CPAlead tasks aren't available right now."); return; }
+        if (!response.ok) {
+            statusLabel.textContent = "Unavailable";
+            emptyState.style.display = "block";
+            emptyState.textContent = escapeHTML(data?.error || "CPAlead tasks aren't available right now.");
+            return;
+        }
         const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpalead");
-        if (offerwalls.length === 0) { statusLabel.textContent = "None available"; emptyState.style.display = "block"; emptyState.textContent = "CPAlead tasks aren't available right now — check back soon."; return; }
-        frameHolder.innerHTML = ""; statusLabel.textContent = "Available"; emptyState.style.display = "none";
+        if (offerwalls.length === 0) {
+            statusLabel.textContent = "None available";
+            emptyState.style.display = "block";
+            emptyState.textContent = "CPAlead tasks aren't available right now — check back soon.";
+            return;
+        }
+        cpaleadTrustedOrigins = [];
+        statusLabel.textContent = "Available";
+        emptyState.style.display = "none";
         offerwalls.forEach(ow => {
-            try { cpaleadTrustedOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { return; }
+            try { cpaleadTrustedOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { console.warn("Invalid iframe URL:", ow.iframeUrl); return; }
             const iframe = document.createElement("iframe");
-            iframe.src = ow.iframeUrl; iframe.title = "CPAlead Tasks";
+            iframe.src = ow.iframeUrl;
+            iframe.title = "CPAlead Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
             frameHolder.appendChild(iframe);
         });
-    } catch (err) { console.error(err); statusLabel.textContent = "Unavailable"; emptyState.style.display = "block"; emptyState.textContent = "Unable to connect to the server."; }
+    } catch (err) {
+        console.error("loadCpaleadTasks error:", err);
+        statusLabel.textContent = "Unavailable";
+        emptyState.style.display = "block";
+        emptyState.textContent = "Unable to connect to the server.";
+    }
 }
+
 window.addEventListener("message", (event) => {
     if (cpaleadTrustedOrigins.length && !cpaleadTrustedOrigins.includes(event.origin)) return;
     let payload = event.data;
@@ -1431,9 +1404,11 @@ window.addEventListener("message", (event) => {
     const status = String(payload.status || payload.type || payload.event || "").toLowerCase();
     if (status.includes("complete") || status.includes("credit") || status === "1" || status === "success") {
         const b = document.getElementById("cpaleadCompletionBanner");
-        b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
-        b.style.display = "block";
-        setTimeout(() => { b.style.display = "none"; }, 8000);
+        if (b) {
+            b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
+            b.style.display = "block";
+            setTimeout(() => { b.style.display = "none"; }, 8000);
+        }
     }
 });
 
@@ -1756,8 +1731,6 @@ async function confirmVerificationCode(method) {
         loadedTabs.delete("overview");
     } catch (err) { alert("Verification failed. Please try again."); }
 }
-
-renderOverview();
 </script>
 
 </body>
