@@ -1014,7 +1014,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "💳",
                         text: `${underReview.length} payment${underReview.length > 1 ? "s" : ""} awaiting approval`,
-                        link: "admin-projects.html"
+                        link: "admin-dashboard.html#projects"
                     });
                 }
             }
@@ -1028,7 +1028,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "💬",
                         text: `${unread} unread worker support message${unread > 1 ? "s" : ""}`,
-                        link: "admin-messages.html"
+                        link: "admin-dashboard.html#messages"
                     });
                 }
             }
@@ -1042,7 +1042,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "📩",
                         text: `${unreadContact} unread contact message${unreadContact > 1 ? "s" : ""}`,
-                        link: "admin-messages.html"
+                        link: "admin-dashboard.html#messages"
                     });
                 }
             }
@@ -1056,7 +1056,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "👤",
                         text: `${pendingUsers} user${pendingUsers > 1 ? "s" : ""} pending approval`,
-                        link: "admin-workers.html"
+                        link: "admin-dashboard.html#workers"
                     });
                 }
             }
@@ -1070,7 +1070,7 @@ async function fetchNotifications(user) {
                     notifications.push({
                         icon: "📋",
                         text: `${pendingApps} task application${pendingApps > 1 ? "s" : ""} pending`,
-                        link: "admin-tasks.html"
+                        link: "admin-dashboard.html#tasks"
                     });
                 }
             }
@@ -1178,7 +1178,7 @@ function enhanceTopbar() {
     // settings page today. Other roles will get one later; until then
     // just don't render a dead link for them.
     const SETTINGS_URL_BY_ROLE = {
-        admin: "admin-settings.html",
+        admin: "admin-dashboard.html#settings",
     };
 
     // Roles that get a "Contact Support" item in the profile dropdown.

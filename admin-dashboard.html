@@ -42,6 +42,736 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="style.css">
+<style>
+
+/* ==========================================================
+   HARMONIA WORKER SPA — FULL DARK MODE THEME
+   ========================================================== */
+:root{
+    --bg:#0f172a;
+    --panel:#1e293b;
+    --border:#334155;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --muted-light:#64748b;
+
+    --primary:#3b82f6;
+    --primary-dark:#2563eb;
+    --primary-soft:rgba(59,130,246,.15);
+    --success:#22c55e;
+    --success-soft:rgba(34,197,94,.15);
+    --warning:#f59e0b;
+    --warning-soft:rgba(245,158,11,.15);
+    --danger:#ef4444;
+    --danger-soft:rgba(239,68,68,.15);
+    --purple:#8b5cf6;
+    --purple-soft:rgba(139,92,246,.15);
+    --radius:16px;
+    --shadow:0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
+
+    --sidebar-bg:#0b1120;
+    --sidebar-bg-2:#020617;
+    --sidebar-text:#94a3b8;
+    --sidebar-text-bright:#ffffff;
+    --sidebar-hover:rgba(255,255,255,.05);
+    --sidebar-border:rgba(255,255,255,.06);
+    --sidebar-card:#1e293b;
+    --sidebar-label:rgba(255,255,255,.25);
+}
+html,body{background:var(--bg) !important;color:var(--text) !important;}
+body{font-family:'Plus Jakarta Sans',Arial,sans-serif;}
+.noise{display:none;}
+a{text-decoration:none;color:inherit;}
+
+/* ---- Neutralise global button defaults that clash with dark theme ---- */
+button{font-family:inherit;padding:0;border:none;background:transparent;backdrop-filter:none;transition:all .15s ease;}
+button:hover{transform:none;}
+
+/* ---- Disable scroll-reveal animation inside SPA to prevent hidden tabs ---- */
+.reveal{opacity:1 !important;transform:none !important;transition:none !important;}
+
+/* ---- Hide Global Search Bar on Worker Dashboard ---- */
+.topbar-search { display: none !important; }
+
+/* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
+.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
+.card::before{display:none !important;}
+.card:hover{transform:none !important;border-color:var(--border) !important;box-shadow:var(--shadow) !important;}
+.card h2,.card h3{margin-top:0;color:var(--text);}
+
+/* ---- Layout Architecture: Fixed Sidebar + Scrollable Main ---- */
+.dashboard{display:block;height:100vh;overflow:hidden;background:var(--bg);}
+
+/* ---------- Sidebar (dark & fixed) ---------- */
+.sidebar{
+    width:260px;
+    position:fixed;left:0;top:0;height:100vh;
+    background:linear-gradient(180deg,var(--sidebar-bg) 0%,var(--sidebar-bg-2) 100%) !important;
+    border-right:1px solid var(--sidebar-border) !important;
+    padding:24px 18px;display:flex;flex-direction:column;
+    overflow-y:auto;overflow-x:hidden;
+    transition:transform 0.25s ease;
+    z-index:400;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
+}
+.sidebar::-webkit-scrollbar{width:5px;}
+.sidebar::-webkit-scrollbar-track{background:transparent;}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px;}
+.sidebar::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.15);}
+
+.sidebar .logo{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:800;color:var(--sidebar-text-bright) !important;margin:4px 6px 22px;letter-spacing:-.02em;-webkit-text-fill-color:var(--sidebar-text-bright);}
+.sidebar .logo-img{width:32px;height:32px;border-radius:9px;}
+.sidebar ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;}
+.side-label{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:var(--sidebar-label) !important;margin:16px 10px 6px;text-transform:uppercase;}
+.side-item{
+    display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
+    color:var(--sidebar-text) !important;font-weight:600;font-size:.93rem;
+    cursor:pointer !important;border:none;background:transparent !important;
+    width:100%;text-align:left;transition:all .15s ease;
+}
+.side-item:hover{background:var(--sidebar-hover) !important;color:var(--sidebar-text-bright) !important;transform:none;}
+.side-item.active{background:linear-gradient(135deg,var(--primary),var(--primary-dark)) !important;color:#fff !important;box-shadow:0 4px 14px rgba(59,130,246,.35);}
+.side-item .ic{font-size:1.05rem;width:20px;text-align:center;}
+.side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
+.sidebar-bottom{margin-top:auto;padding-top:16px;}
+.sidebar-user-card{background:var(--sidebar-card) !important;border:1px solid var(--sidebar-border) !important;border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;}
+.sidebar-user-card .av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 auto;}
+.sidebar-user-card .nm{font-weight:700;font-size:.85rem;color:var(--sidebar-text-bright) !important;}
+.sidebar-user-card .rl{font-size:.75rem;color:var(--sidebar-text) !important;text-transform:capitalize;}
+
+/* ---------- Main / topbar ---------- */
+.main{
+    margin-left:260px;
+    height:100vh;
+    overflow-y:auto;
+    padding:22px 30px 50px;
+    background:var(--bg);
+    transition:margin-left 0.25s ease;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
+}
+.main::-webkit-scrollbar{width:5px;}
+.main::-webkit-scrollbar-track{background:transparent;}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px;}
+
+body.sidebar-closed .sidebar{transform:translateX(-100%);}
+body.sidebar-closed .main{margin-left:0;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;background:transparent;padding:0;position:sticky;top:0;background:var(--bg);z-index:10;padding-bottom:10px;}
+.topbar h1{font-size:1.5rem;margin:0;color:var(--text);}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.topbar-title-wrap{display:flex;flex-direction:column;gap:2px;}
+.breadcrumb{font-size:.8rem;color:var(--muted-light);}
+.breadcrumb span{color:var(--muted);}
+.sidebar-desktop-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:42px;height:42px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--border);
+    cursor:pointer;color:var(--text);font-size:1.1rem;padding:0;
+}
+.sidebar-desktop-toggle:hover{background:var(--bg);}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+
+.notif-wrap,.profile-wrap{position:relative;}
+.notif-bell{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);cursor:pointer;font-size:1.05rem;position:relative;display:flex;align-items:center;justify-content:center;color:var(--text);}
+.notif-bell:hover{background:var(--bg);}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:.65rem;font-weight:700;border-radius:20px;padding:1px 5px;border:2px solid var(--panel);}
+.notif-dropdown,.profile-menu{display:none;position:absolute;right:0;top:calc(100% + 10px);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);min-width:300px;padding:10px;z-index:400;}
+.notif-dropdown.open,.profile-menu.open{display:block;}
+.notif-dropdown-title{font-weight:700;font-size:.85rem;padding:6px 8px 10px;color:var(--text);}
+.notif-item{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:10px;font-size:.85rem;color:var(--text);}
+.notif-item:hover{background:var(--bg);}
+.notif-empty{padding:14px 8px;color:var(--muted);font-size:.85rem;}
+.profile-btn{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px 12px 6px 6px;cursor:pointer;color:var(--text);}
+.profile-btn:hover{background:var(--bg);}
+.profile-avatar{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;}
+.profile-name{font-size:.85rem;font-weight:700;color:var(--text);display:flex;flex-direction:column;line-height:1.2;text-align:left;}
+.profile-name small{font-weight:500;color:var(--muted);font-size:.72rem;text-transform:capitalize;}
+.profile-menu a,.profile-menu .menu-item{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:10px;font-size:.86rem;font-weight:600;color:var(--text);border:none;background:transparent;cursor:pointer;}
+.profile-menu a:hover,.profile-menu .menu-item:hover{background:var(--bg);}
+.profile-menu hr{border:none;border-top:1px solid var(--border);margin:6px 0;}
+
+/* ---------- Welcome banner (Themed Dark, no gradient) ---------- */
+.welcome-banner{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px 30px;margin-bottom:20px;color:var(--text);position:relative;overflow:hidden;}
+.welcome-banner::after{display:none;}
+.welcome-banner::before{display:none;}
+.welcome-banner h2{margin:0 0 4px;font-size:1.5rem;font-weight:800;color:var(--text);position:relative;z-index:1;}
+.welcome-banner p{margin:0;font-size:.9rem;color:var(--muted);position:relative;z-index:1;}
+
+/* ---------- Cards / stat grid ---------- */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:20px;}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:transform .15s ease,box-shadow .15s ease;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,.3);}
+.stat-card .top{display:flex;justify-content:space-between;align-items:flex-start;}
+.stat-card .lbl{color:var(--muted);font-size:.85rem;font-weight:600;}
+.stat-card .val{font-size:1.7rem;font-weight:800;margin-top:6px;color:var(--text);}
+.stat-card .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.stat-card .sub{font-size:.78rem;color:var(--muted);margin-top:8px;}
+
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;}
+.grid-col{display:flex;flex-direction:column;gap:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.section-gap{margin-top:20px;}
+.muted{color:var(--muted);}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.section-title h2{margin:0;font-size:1.05rem;color:var(--text);}
+.link-btn{color:var(--primary);font-weight:700;font-size:.85rem;cursor:pointer;background:none;border:none;padding:0;transition:opacity .15s ease;}
+.link-btn:hover{opacity:.7;}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem;}
+thead th{text-align:left;color:var(--muted);font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;padding:0 10px 10px;border-bottom:1px solid var(--border);}
+tbody td{padding:13px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:rgba(255,255,255,.02);}
+.empty-state{text-align:center;color:var(--muted);padding:26px !important;}
+
+button.primary,button.secondary,.btn{
+    border:none;border-radius:10px;padding:9px 16px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s ease;
+}
+button.primary,.btn.primary{background:var(--primary);color:#fff;}
+button.primary:hover{background:var(--primary-dark);box-shadow:0 4px 12px rgba(59,130,246,.3);}
+button.secondary,.btn.secondary{background:var(--bg);color:var(--text);border:1px solid var(--border);}
+button.secondary:hover{background:#172033;}
+button:disabled{opacity:.55;cursor:not-allowed;}
+input,textarea,select{
+    border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:.88rem;color:var(--text);background:var(--bg) !important;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10px 0 6px;}
+
+.status{display:inline-block;padding:4px 11px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.status-completed,.status-paid,.status-approved,.status-active{background:var(--success-soft);color:var(--success);}
+.status-pending,.status-underreview,.status-inreview,.status-new{background:var(--warning-soft);color:var(--warning);}
+.status-assigned,.status-inprogress{background:var(--primary-soft);color:var(--primary);}
+.status-rejected,.status-suspended,.status-needsrevision{background:var(--danger-soft);color:var(--danger);}
+.status-awaitingpayment{background:var(--purple-soft);color:var(--purple);}
+.status-read{background:rgba(255,255,255,.06);color:var(--muted);}
+
+/* ---------- Chart ---------- */
+.chart-container{margin-top:14px;overflow-x:auto;}
+.chart-container svg{width:100%;height:auto;display:block;}
+.chart-summary{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;}
+.chart-summary .total{font-size:1.8rem;font-weight:800;color:var(--text);}
+.chart-summary .label{font-size:.82rem;color:var(--muted);}
+
+/* ---------- Announcements ---------- */
+.announcement-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
+.announcement-item:last-child{border-bottom:none;padding-bottom:0;}
+.announcement-item:first-child{padding-top:0;}
+.ann-icon{width:38px;height:38px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.ann-content{flex:1;min-width:0;}
+.ann-title{font-weight:700;font-size:.88rem;color:var(--text);}
+.ann-preview{font-size:.8rem;color:var(--muted);margin-top:3px;line-height:1.4;}
+.ann-date{font-size:.72rem;color:var(--muted-light);margin-top:5px;}
+
+/* ---------- Tabs ---------- */
+.page-panel{display:none;}
+.page-panel.active{display:block !important;}
+.subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.subtab-btn{background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:11px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s ease;}
+.subtab-btn:hover{border-color:var(--primary);color:var(--text);transform:none;}
+.subtab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(59,130,246,.25);}
+.subpanel{display:none;}
+.subpanel.active{display:block !important;}
+
+/* ---------- Overlays / modals ---------- */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.5);color:var(--text);}
+.modal.wide{max-width:720px;height:78vh;display:flex;flex-direction:column;}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.modal h3{color:var(--text);}
+.modal-close{background:transparent !important;border:none !important;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;transition:color .15s ease;padding:0 !important;}
+.modal-close:hover{color:var(--text);transform:none;}
+.reply-status{font-size:.82rem;color:var(--muted);}
+
+.chat-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;max-height:380px;min-height:140px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
+.bubble{max-width:80%;padding:10px 14px;border-radius:14px;box-sizing:border-box;}
+.bubble.me{align-self:flex-end;background:var(--primary-soft);border:1px solid var(--primary);}
+.bubble.them{align-self:flex-start;background:var(--panel);border:1px solid var(--border);}
+.bubble .meta{font-size:.72rem;color:var(--muted);margin-bottom:3px;}
+.bubble .txt{color:var(--text);white-space:pre-wrap;word-break:break-word;}
+
+.thread-toolbar{display:flex;align-items:center;gap:10px;padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--border);}
+.thread-toolbar button{background:var(--bg);border:1px solid var(--border);border-radius:9px;width:34px;height:34px;cursor:pointer;color:var(--text);}
+.thread-toolbar .spacer{flex:1;}
+.thread-row{display:flex;align-items:center;gap:12px;padding:13px 8px;border-bottom:1px solid var(--border);cursor:pointer;}
+.thread-row:hover{background:var(--bg);}
+.thread-row.unread .subj{font-weight:800;}
+.thread-star{color:#475569;cursor:pointer;}
+.thread-star.active{color:#f5b301;}
+.thread-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.thread-top{display:flex;justify-content:space-between;gap:10px;}
+.thread-top .subj{color:var(--text);font-size:.9rem;}
+.thread-top .time{color:var(--muted-light);font-size:.78rem;flex:0 0 auto;}
+.thread-company{color:var(--muted);font-size:.8rem;}
+
+.code-display{font-family:monospace;font-size:2.4rem;letter-spacing:.3em;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:20px;margin:18px 0;color:var(--text);}
+.code-input{font-family:monospace;font-size:1.3rem;letter-spacing:.3em;text-align:center;text-transform:uppercase;width:100%;box-sizing:border-box;padding:13px;background:var(--bg);color:var(--text);}
+.feedback-box{text-align:center;font-weight:700;margin:14px 0;min-height:24px;}
+.feedback-correct{color:var(--success);}
+.feedback-incorrect{color:var(--danger);}
+.session-stats{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:.85rem;}
+.gate-btn{width:100%;padding:15px;font-size:1rem;}
+
+.method-tile{border:2px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;flex:1;transition:border-color .15s ease,background .15s ease;background:var(--bg);}
+.method-tile:hover{border-color:var(--muted);}
+.method-tile.active{border-color:var(--primary);background:var(--primary-soft);}
+.badge-linked{background:var(--success-soft);color:var(--success);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:8px;}
+
+.iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
+.completion-banner{display:none;background:var(--success-soft);color:var(--success);padding:12px 16px;border-radius:12px;font-weight:700;margin-bottom:14px;border:1px solid var(--success);}
+
+/* Mobile Floating Toggle */
+.sidebar-toggle{display:none;position:fixed;top:16px;left:16px;z-index:500;width:42px;height:42px;border-radius:12px;background:var(--sidebar-bg);border:1px solid var(--sidebar-border);box-shadow:var(--shadow);font-size:1.1rem;cursor:pointer;color:var(--sidebar-text-bright);align-items:center;justify-content:center;}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:399;}
+
+/* ==========================================================
+   MOBILE OPTIMIZATIONS
+   ========================================================== */
+@media(max-width:980px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);box-shadow:0 0 60px rgba(0,0,0,.4);}
+    .main{margin-left:0;padding:64px 16px 40px;} /* Push main content down to clear floating toggle */
+    .topbar{position:relative;padding-bottom:0;margin-bottom:20px;}
+    
+    /* Compact Topbar Right */
+    .profile-name{display:none;}
+    .profile-btn{padding:6px;}
+    .notif-bell{width:38px;height:38px;}
+    
+    .sidebar-toggle{display:flex;}
+    .sidebar-backdrop.open{display:block;}
+    .sidebar-desktop-toggle{display:none;}
+    
+    /* Full-screen Modals on Mobile */
+    .overlay{padding:0;}
+    .modal{max-width:100%;width:100%;height:100%;max-height:100%;border-radius:0;padding:16px;}
+    .modal.wide{height:100vh;}
+}
+@media(max-width:700px){
+    /* Horizontal swipeable tables */
+    table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+    thead,tbody{display:table;width:100%;}
+}
+@media(max-width:560px){
+    .stat-grid{grid-template-columns:1fr;}
+    .welcome-banner{padding:20px;}
+    .welcome-banner h2{font-size:1.3rem;}
+    .card{padding:16px !important;}
+    .subtab-btn{padding:8px 12px;font-size:.8rem;}
+}
+
+
+/* ---- Compatibility shims: old admin pages used .cards/.dashboard-card/.recent
+   instead of the worker-SPA's .stat-grid/.stat-card. Rather than rewrite every
+   extracted panel, we re-skin the old class names with the same design tokens
+   so everything matches the worker-dashboard look exactly. ---- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-bottom:20px;}
+.dashboard-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.dashboard-card h3{margin:0;color:var(--muted);font-size:.82rem;font-weight:600;text-transform:none;}
+.dashboard-card h2{margin:8px 0 0;font-size:1.7rem;font-weight:800;color:var(--text);}
+.recent{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-top:20px;box-shadow:var(--shadow);}
+.recent h2{margin:0 0 14px;font-size:1.05rem;color:var(--text);}
+.detail-btn{border:1px solid var(--border);background:var(--bg);color:var(--text);border-radius:10px;padding:9px 16px;font-weight:700;font-size:.85rem;cursor:pointer;}
+.detail-btn:hover{border-color:var(--primary);}
+</style>
+<style>
+    .filter-btn{
+        padding:8px 16px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,.15);
+        background:transparent;
+        color:#cfd8e3;
+        font-weight:600;
+        cursor:pointer;
+        font-size:.85rem;
+    }
+    .filter-btn.active{
+        background:#5b6cff;
+        border-color:#5b6cff;
+        color:white;
+    }
+    .details-btn{
+        padding:8px 16px;
+        border-radius:10px;
+        border:1px solid rgba(255,255,255,.15);
+        background:rgba(91,108,255,.15);
+        color:#cfd8e3;
+        font-weight:600;
+        cursor:pointer;
+        font-size:.85rem;
+    }
+    .details-btn.open{
+        background:#5b6cff;
+        border-color:#5b6cff;
+        color:#fff;
+    }
+    .details-panel td{
+        background:rgba(255,255,255,.03);
+        padding:18px 22px;
+    }
+    .details-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:16px;
+        margin-bottom:14px;
+    }
+    .details-grid .label{
+        font-size:.72rem;
+        opacity:.55;
+        text-transform:uppercase;
+        letter-spacing:.05em;
+        margin-bottom:4px;
+    }
+    .details-actions{
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+        padding-top:12px;
+        border-top:1px solid rgba(255,255,255,.08);
+    }
+</style>
+<style>
+        .msg-row { cursor: pointer; transition: background 0.15s ease; }
+        .msg-row td { vertical-align: top; }
+        .msg-row:hover { background: rgba(255,255,255,0.04); }
+
+        .msg-expanded td {
+            padding: 0;
+            border: none;
+        }
+
+        .expanded-content {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 4px 0 18px 0;
+            padding: 22px 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        .expanded-content .block-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #7fa8ff;
+            margin: 0 0 8px 0;
+        }
+
+        .expanded-content .full-message {
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 0;
+            color: #e8ecf5;
+            line-height: 1.55;
+        }
+
+        .expanded-content .full-message.reply-block {
+            border-left: 3px solid #7fa8ff;
+        }
+
+        .expanded-content textarea {
+            font-family: inherit;
+            font-size: 14px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            resize: vertical;
+            box-sizing: border-box;
+            background: rgba(255,255,255,0.03);
+            color: #e8ecf5;
+            line-height: 1.5;
+        }
+        .expanded-content textarea:focus {
+            outline: none;
+            border-color: #7fa8ff;
+            background: rgba(255,255,255,0.05);
+        }
+        .expanded-content textarea::placeholder {
+            color: rgba(232,236,245,0.4);
+        }
+
+        .expanded-content .reply-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .expanded-content button {
+            align-self: flex-start;
+            cursor: pointer;
+            background: #3a6df0;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .expanded-content button:hover {
+            background: #5081ff;
+        }
+        .expanded-content button:active {
+            transform: scale(0.98);
+        }
+
+        .reply-status {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ---- collapsible message cards (same pattern as admin-analytics.html project cards) ---- */
+        .msg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 6px;
+        }
+        .msg-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: border-color .15s ease, background .15s ease;
+        }
+        .msg-card:hover {
+            border-color: #5b6cff;
+        }
+        .msg-card.expanded {
+            grid-column: 1 / -1;
+            border-color: #5b6cff;
+            background: rgba(91,108,255,.06);
+        }
+        .msg-card-summary {
+            cursor: pointer;
+        }
+        .msg-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+        .msg-card .msg-card-sub {
+            color: #9dadc1;
+            font-size: .85rem;
+            margin-bottom: 12px;
+        }
+        .msg-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            color: #cfd8e3;
+            margin-top: 4px;
+        }
+        .msg-card .stat-row span:last-child {
+            font-weight: 700;
+            color: #fff;
+        }
+        .msg-expand-hint {
+            margin-top: 10px;
+            font-size: .78rem;
+            color: #6d7cff;
+            font-weight: 600;
+        }
+        .msg-card-panel {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            overflow-x: auto;
+        }
+    </style>
+<style>
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 6px;
+        }
+        .project-card {
+            background: rgba(255,255,255,.04);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: border-color .15s ease, background .15s ease;
+            text-align: left;
+        }
+        .project-card:hover {
+            border-color: #5b6cff;
+        }
+        .project-card.expanded {
+            grid-column: 1 / -1;
+            border-color: #5b6cff;
+            background: rgba(91,108,255,.06);
+        }
+        .project-card-summary {
+            cursor: pointer;
+        }
+        .project-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+        }
+        .project-card .rate {
+            color: #9dadc1;
+            font-size: .85rem;
+            margin-bottom: 12px;
+        }
+        .project-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: .82rem;
+            color: #cfd8e3;
+            margin-top: 4px;
+        }
+        .project-card .stat-row span:last-child {
+            font-weight: 700;
+            color: #fff;
+        }
+        .expand-hint {
+            margin-top: 10px;
+            font-size: .78rem;
+            color: #6d7cff;
+            font-weight: 600;
+        }
+        .hold-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: .68rem;
+            font-weight: 700;
+            background: rgba(255,140,60,.18);
+            color: #ffb066;
+        }
+        .active-badge {
+            font-size: .68rem;
+            color: #7dffb2;
+            opacity: .85;
+        }
+
+        /* ---- expandable panel ---- */
+        .project-card-panel {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,.08);
+        }
+        .worker-search-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.04);
+            color: #fff;
+            font-size: .85rem;
+            margin-bottom: 10px;
+        }
+        .worker-search-input:focus {
+            outline: none;
+            border-color: #5b6cff;
+        }
+        .list-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #7d8aa3;
+            margin-bottom: 8px;
+        }
+        .worker-mini-row {
+            padding: 9px 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background .12s ease;
+        }
+        .worker-mini-row:hover {
+            background: rgba(255,255,255,.05);
+        }
+        .worker-mini-row .top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .worker-mini-row .name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worker-mini-row .email {
+            font-size: .72rem;
+            color: #8d9bb3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .worker-mini-row .total {
+            font-size: .82rem;
+            font-weight: 700;
+            color: #7dffb2;
+            white-space: nowrap;
+        }
+        .worker-action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: rgba(255,255,255,.03);
+            border-radius: 8px;
+        }
+        .worker-action-row button {
+            font-size: .78rem;
+            padding: 6px 12px;
+        }
+        .empty-mini {
+            font-size: .8rem;
+            color: #7d8aa3;
+            padding: 10px 2px;
+        }
+
+        /* ---- module tabs (mirrors worker Task Center) ---- */
+        .analytics-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+        .analytics-tab-btn {
+            background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.08);
+            color: #9dadc1;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: .92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s ease;
+            font-family: inherit;
+        }
+        .analytics-tab-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,.18);
+        }
+        .analytics-tab-btn.active {
+            background: rgba(2,197,154,.12);
+            border-color: rgba(2,197,154,.35);
+            color: #02c59a;
+        }
+        .analytics-panel { display: none; }
+        .analytics-panel.active { display: block; }
+    </style>
 </head>
 
 <body>
@@ -51,83 +781,84 @@
 <script src="script.js?v=4"></script>
 
 <script>
-    protectPage("admin", { permission: "dashboard" });
+    protectPage("admin");
 </script>
 
 <div class="dashboard">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
-
         <h2 class="logo"><img src="images/logo.png" alt="Harmonia" class="logo-img">Harmonia</h2>
 
         <ul>
-            <li class="active">📊 Dashboard</li>
-            <li data-permission="workers"><a href="admin-workers.html">👥 Workers</a></li>
-            <li data-permission="clients"><a href="admin-clients.html">🏢 Clients</a></li>
-            <li data-permission="projects"><a href="admin-projects.html">📂 Projects</a></li>
-            <li data-permission="tasks"><a href="admin-tasks.html">📋 Tasks</a></li>
-            <li data-permission="offerwalls"><a href="admin-offerwalls.html">🎯 Offerwalls</a></li>
-            <li data-permission="messages"><a href="admin-messages.html">✉️ Messages</a></li>
-            <li data-permission="workers"><a href="admin-workers.html">💰 Payments</a></li>
-            <li data-permission="analytics"><a href="admin-analytics.html">📈 Analytics</a></li>
-            <li data-permission="settings"><a href="admin-settings.html">⚙ Settings</a></li>
-            <li data-core-team-only style="display:none;"><a href="worker-dashboard.html#tasks">🧩 My Tasks</a></li>
-            <li data-core-team-only style="display:none;"><a href="worker-dashboard.html#earnings">💵 My Earnings</a></li>
-            <li><a href="login.html" onclick="logout()">🚪 Logout</a></li>
+            <li><button class="side-item active" data-tab="dashboard"><span class="ic">📊</span> Dashboard</button></li>
+            <li data-permission="workers"><button class="side-item" data-tab="workers"><span class="ic">👥</span> Workers</button></li>
+            <li data-permission="clients"><button class="side-item" data-tab="clients"><span class="ic">🏢</span> Clients</button></li>
+            <li data-permission="projects"><button class="side-item" data-tab="projects"><span class="ic">📂</span> Projects</button></li>
+            <li data-permission="tasks"><button class="side-item" data-tab="tasks"><span class="ic">📋</span> Tasks</button></li>
+            <li data-permission="offerwalls"><button class="side-item" data-tab="offerwalls"><span class="ic">🎯</span> Offerwalls</button></li>
+            <li data-permission="workers"><button class="side-item" data-tab="workers"><span class="ic">💰</span> Payments</button></li>
+            <li data-permission="messages"><button class="side-item" data-tab="messages"><span class="ic">✉️</span> Messages</button></li>
+            <li data-permission="analytics"><button class="side-item" data-tab="analytics"><span class="ic">📈</span> Analytics</button></li>
+            <li data-permission="settings"><button class="side-item" data-tab="settings"><span class="ic">⚙</span> Settings</button></li>
         </ul>
 
+        <div class="side-label" data-core-team-only style="display:none;">Worker Access</div>
+        <ul data-core-team-only style="display:none;">
+            <li><a href="worker-dashboard.html#tasks" class="side-item"><span class="ic">🧩</span> My Tasks</a></li>
+            <li><a href="worker-dashboard.html#earnings" class="side-item"><span class="ic">💵</span> My Earnings</a></li>
+        </ul>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-user-card">
+                <div class="av" id="sideAvatar">A</div>
+                <div>
+                    <div class="nm" id="sideName">Administrator</div>
+                    <div class="rl" id="sideRole">admin</div>
+                </div>
+            </div>
+            <ul style="margin-top:10px;">
+                <li><a href="login.html" onclick="logout()" class="side-item"><span class="ic">🚪</span> Logout</a></li>
+            </ul>
+        </div>
     </aside>
 
-    <!-- Main -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
     <main class="main">
 
         <header class="topbar">
-
-            <h1>Admin Dashboard</h1>
-
-            <div class="adsterra-header-banners" style="display:flex;gap:12px;flex-wrap:wrap;max-height:60px;overflow:hidden;">
-                <div style="width:468px;max-width:100%;height:60px;overflow:hidden;position:relative;">
-                    <script>
-                      atOptions = {
-                        'key' : '05960b6f18812ade9884f4c4e854ecf7',
-                        'format' : 'iframe',
-                        'height' : 60,
-                        'width' : 468,
-                        'params' : {}
-                      };
-                    </script>
-                    <script src="https://www.highperformanceformat.com/05960b6f18812ade9884f4c4e854ecf7/invoke.js"></script>
+            <div class="topbar-left">
+                <button class="sidebar-desktop-toggle" onclick="toggleSidebar()">☰</button>
+                <div class="topbar-title-wrap">
+                    <div class="breadcrumb">Admin Portal <span id="breadcrumbTab">/ Dashboard</span></div>
+                    <h1 id="pageTitle">Dashboard</h1>
                 </div>
             </div>
-
-
-            <div class="profile">
-                Administrator
-            </div>
-
+            <div class="profile">Administrator</div>
         </header>
+        <section class="page-panel active" id="panel-dashboard">
+
 
         <section class="cards">
 
             <div class="dashboard-card" data-permission="workers">
                 <h3>Total Workers</h3>
-                <h2 id="totalWorkers">0</h2>
+                <h2 id="dbTotalWorkers">0</h2>
             </div>
 
             <div class="dashboard-card" data-permission="clients">
                 <h3>Total Clients</h3>
-                <h2 id="totalClients">0</h2>
+                <h2 id="dbTotalClients">0</h2>
             </div>
 
             <div class="dashboard-card" data-permission="projects">
                 <h3>Total Projects</h3>
-                <h2 id="totalProjects">0</h2>
+                <h2 id="dbTotalProjects">0</h2>
             </div>
 
             <div class="dashboard-card" data-permission="projects">
                 <h3>Pending Projects</h3>
-                <h2 id="pendingProjects">0</h2>
+                <h2 id="dbPendingProjects">0</h2>
             </div>
 
         </section>
@@ -155,12 +886,928 @@
 
         </section>
 
+    
+        </section>
+
+        <section class="page-panel" id="panel-workers" data-permission="workers">
+
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Workers</h3>
+                <h2 id="totalWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Active</h3>
+                <h2 id="activeWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Suspended</h3>
+                <h2 id="suspendedWorkers">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Rejected</h3>
+                <h2 id="rejectedWorkers">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+           <h2>Registered Workers</h2>
+            <input type="text" id="workerSearchInput" placeholder="🔍 Search by name or email..." style="width:100%;max-width:400px;box-sizing:border-box;margin-bottom:14px;" oninput="handleWorkerSearch(this.value)">
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <button class="filter-btn active" data-filter="all" onclick="setPayoutFilter('all')">All</button>
+    <button class="filter-btn" data-filter="unpaid" onclick="setPayoutFilter('unpaid')">Unpaid</button>
+    <button class="filter-btn" data-filter="paidThisWeek" onclick="setPayoutFilter('paidThisWeek')">Paid This Week</button>
+    <button class="filter-btn" data-filter="noMethod" onclick="setPayoutFilter('noMethod')">No Payout Method</button>
+</div>
+
+            <table>
+
+                <thead>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Country</th>
+        <th>Status</th>
+        <th>Details</th>
+    </tr>
+</thead>
+
+                <tbody id="workerTable">
+                    <tr><td colspan="5" style="opacity:.6;">Loading workers...</td></tr>
+                </tbody>
+
+            </table>
+
+            <div style="text-align:center;margin-top:14px;">
+                <button id="workerShowMoreBtn" onclick="showMoreWorkers()" style="display:none;">Show More</button>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Reviewers (QA Team)</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reviewerTable">
+                    <tr><td colspan="4" style="opacity:.6;">Loading reviewers...</td></tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <section class="recent" id="coreTeamSection" data-admin-only>
+
+            <h2>Core Team Access</h2>
+            <p style="opacity:.65;font-size:.85rem;margin-top:-6px;margin-bottom:14px;">
+                Core Team members can log in through the Admin option, but only see the admin tabs you tick for them below.
+                They keep their full Worker access (tasks, earnings, payouts) either way.
+            </p>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Permissions</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="coreTeamTable">
+                    <tr><td colspan="4" style="opacity:.6;">Loading Core Team...</td></tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-clients" data-permission="clients">
+
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Clients</h3>
+                <h2 id="totalClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Active Clients</h3>
+                <h2 id="activeClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Suspended Clients</h3>
+                <h2 id="suspendedClients">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Projects (All Clients)</h3>
+                <h2 id="totalClientProjects">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Registered Clients</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Projects</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="clientTable">
+                    <tr><td colspan="6" style="opacity:.6;">Loading clients...</td></tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-projects" data-permission="projects">
+
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Orders</h3>
+                <h2 id="totalProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Paid</h3>
+                <h2 id="activeProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Completed</h3>
+                <h2 id="completedProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Payment</h3>
+                <h2 id="pendingProjects">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Orders & Projects Pipeline</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Reviews</th>
+                        <th>Created</th>
+                        <th>Payment Proof</th>
+                        <th>Assigned Worker</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="projectsTable">
+                    <tr><td colspan="8" style="opacity:.6;">Loading orders...</td></tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-tasks" data-permission="tasks">
+
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Projects</h3>
+                <h2 id="mtTotalProjects">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Applications</h3>
+                <h2 id="totalApplications">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Workers Currently Approved</h3>
+                <h2 id="totalApproved">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Applications</h3>
+                <h2 id="totalPending">0</h2>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Create New Project</h2>
+
+            <div class="card" style="max-width:420px;">
+                <label>Payout Amount per Correct Code (USD)</label>
+                <input type="number" id="newPayoutAmount" min="0.01" step="0.01" placeholder="e.g. 0.05">
+                <button class="primary" onclick="handleCreateTask()" style="margin-top:15px;">Create Project</button>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Existing Projects</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project ID</th>
+                        <th>Payout</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Approved (Working)</th>
+                        <th>Rejected</th>
+                        <th>Pending</th>
+                        <th>Submissions</th>
+                        <th>Correct</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="mtProjectsTable">
+                    <tr><td colspan="11" class="empty-state">Loading projects...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Pending Applications</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Email</th>
+                        <th>Project ID</th>
+                        <th>Payout</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTable">
+                    <tr><td colspan="6" class="empty-state">Loading applications...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-offerwalls" data-permission="offerwalls">
+
+
+        <p style="color:#9dadc1;font-size:.9rem;margin-top:-10px;">
+            Manage third-party task networks embedded in worker task tabs. Multiple providers run
+            simultaneously — each active provider gets its own dedicated tab on the worker's
+            <a href="worker-dashboard.html#tasks" style="color:#58d4ff;" target="_blank">My Tasks</a> page
+            (CPX Research → "Bonus Tasks" tab, CPAlead → "CPAlead" tab). Workers never see
+            the network's real name — only Harmonia branding.
+        </p>
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Active Providers</h3>
+                <h2 id="totalActiveProviders">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Earnings</h3>
+                <h2 id="totalPendingEarnings">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Paid Out (All Time)</h3>
+                <h2 id="totalPaidEarnings">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Reversed</h3>
+                <h2 id="totalReversedEarnings">$0.00</h2>
+            </div>
+
+        </section>
+
+        <!-- =====================================================
+             CPALEAD QUICK SETUP
+             Pre-filled card so admin doesn't need to look up
+             keys/secrets — just paste the iframe URL and save.
+             ===================================================== -->
+        <section class="recent">
+
+           <h2>🎁 CPAlead Quick Setup</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Fill in your postback secret below and click <strong>Activate CPAlead</strong>. The iframe URL
+                is already pre-filled from your CPAlead wall (slug: mpc3b). CPAlead appears on its own
+                dedicated tab on the worker's
+                <a href="worker-dashboard.html#tasks" style="color:#02c59a;" target="_blank">My Tasks</a> page — it does
+                not show up on the "Bonus Tasks" tab, which is CPX Research only.
+            </p>
+
+            <div class="card" style="max-width:580px;">
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+                    <div>
+                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Worker Tab Label</label>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;">🎁 CPAlead</div>
+                    </div>
+                    <div>
+                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Provider Key (fixed)</label>
+                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;font-family:monospace;">cpalead</div>
+                    </div>
+                </div>
+
+                <label>Postback Password <span style="color:#9dadc1;font-weight:400;">(set this in CPAlead → Postback → Configuration, must match exactly)</span></label>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
+                    <input type="text" id="cplSecret"
+                        style="flex:1;font-family:monospace;font-size:.85rem;"
+                        placeholder="Choose a password and set it in CPAlead too">
+                </div>
+
+                <label>Postback URL <span style="color:#9dadc1;font-weight:400;">(paste this into CPAlead's Postback → Configuration page)</span></label>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
+                    <code id="cplPostbackDisplay" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#9dadc1;word-break:break-all;display:block;">
+                        https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}
+                    </code>
+                    <button class="detail-btn" onclick="copyCpaleadPostback()" style="white-space:nowrap;align-self:flex-start;margin-top:4px;">Copy</button>
+                </div>
+
+                <label>Iframe URL <span style="color:#9dadc1;font-weight:400;">(from CPAlead → Tools → Offerwall → Get Code — must contain <code style="font-size:.8rem;">{USER_ID}</code>)</span></label>
+                <input type="text" id="cplIframeUrl" style="margin-top:6px;"
+                    value="https://www.cdnnd.com/wall/mpc3b?subid={USER_ID}">
+                <p style="color:#9dadc1;font-size:.78rem;margin-top:6px;">
+                    Pre-filled using your current wall's Direct Link. If you ever recreate the wall and get a new
+                    slug, update this field with the new URL and keep the <code>{USER_ID}</code> placeholder.
+                </p>
+
+                <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
+                    <button class="primary" onclick="handleCpaleadSetup()">✅ Activate CPAlead</button>
+                    <button class="detail-btn" onclick="handleCpaleadDeactivate()">⏸ Deactivate</button>
+                </div>
+                <p id="cplSetupMsg" style="margin-top:10px;font-size:.85rem;display:none;"></p>
+            </div>
+
+        </section>
+
+        <!-- =====================================================
+             GENERIC ADD PROVIDER (for future networks)
+             ===================================================== -->
+        <section class="recent">
+
+            <h2>Add Other Provider</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                For future task networks beyond CPX Research and CPAlead. The provider key must match
+                an adapter registered in <code style="font-size:.8rem;">worker.js</code>.
+            </p>
+
+            <div class="card" style="max-width:520px;">
+                <label>Provider Key <span style="color:#9dadc1;font-weight:400;">(e.g. cpxresearch — must match the adapter key in the backend)</span></label>
+                <input type="text" id="newProviderKey" placeholder="cpxresearch">
+
+                <label>Display Name <span style="color:#9dadc1;font-weight:400;">(admin-only, workers never see this)</span></label>
+                <input type="text" id="newDisplayName" placeholder="CPX Research">
+
+                <label>Iframe URL Template <span style="color:#9dadc1;font-weight:400;">(use {USER_ID} as the placeholder)</span></label>
+                <input type="text" id="newIframeTemplate" placeholder="https://offers.cpx-research.com/index.php?app_id=34390&ext_user_id={USER_ID}">
+
+                <label>Postback Secret <span style="color:#9dadc1;font-weight:400;">(the network's security hash — used to verify postbacks, never shown again after saving)</span></label>
+                <input type="text" id="newPostbackSecret" placeholder="Security hash from provider dashboard">
+
+                <button class="primary" onclick="handleCreateProvider()" style="margin-top:15px;">Add Provider</button>
+            </div>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Configured Providers</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Provider Key</th>
+                        <th>Display Name</th>
+                        <th>Status</th>
+                        <th>Postback URL</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="providersTable">
+                    <tr><td colspan="5" class="empty-state">Loading providers...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <section class="recent">
+
+            <h2>Bonus Task Earnings</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Read-only view for reconciliation. Actual payouts to workers happen from the unified
+                <a href="admin-dashboard.html#workers" style="color:#58d4ff;">Payments</a> view, same as reviews and micro-tasks.
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Worker</th>
+                        <th>Provider</th>
+                        <th>Transaction ID</th>
+                        <th>Amount (USD, full)</th>
+                        <th>Worker Share</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="earningsTable">
+                    <tr><td colspan="7" class="empty-state">Loading earnings...</td></tr>
+                </tbody>
+            </table>
+
+        </section>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-messages" data-permission="messages">
+
+       <section class="recent">
+            <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+
+                <div class="card" style="flex:1;min-width:320px;max-width:520px;">
+                    <h3 style="margin-top:0;">📢 Send Announcement</h3>
+
+                    <label>Send to</label>
+                    <select id="announceAudience" style="width:100%;margin-bottom:12px;">
+                        <option value="workers">All Workers</option>
+                        <option value="clients">All Clients</option>
+                    </select>
+
+                    <label>Subject</label>
+                    <input type="text" id="announceSubject" placeholder="e.g. Scheduled maintenance this weekend" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                    <label>Message</label>
+                    <textarea id="announceMessage" rows="5" placeholder="Type your announcement here..." style="width:100%;box-sizing:border-box;"></textarea>
+
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                        <button class="primary" onclick="handleSendAnnouncement()">📢 Send Announcement</button>
+                        <span class="reply-status" id="announceStatus"></span>
+                    </div>
+                </div>
+
+                <div class="card" style="flex:1;min-width:320px;max-width:520px;">
+                    <h3 style="margin-top:0;">📧 Send Email</h3>
+
+                    <label>To (email address)</label>
+                    <input type="email" id="directEmailTo" placeholder="e.g. company@example.com" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                    <label>Subject</label>
+                    <input type="text" id="directEmailSubject" placeholder="Subject" style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+
+                    <label>Message</label>
+                    <textarea id="directEmailMessage" rows="5" placeholder="Type your message here..." style="width:100%;box-sizing:border-box;"></textarea>
+
+                    <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                        <button class="primary" onclick="handleSendDirectEmail()">📧 Send Email</button>
+                        <span class="reply-status" id="directEmailStatus"></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="recent">
+            <h2>Messages</h2>
+            <div class="msg-grid" id="msgCardsGrid">
+
+                <!-- Inbox card -->
+                <div class="msg-card" id="msgCard-inbox">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('inbox')">
+                        <h3>📥 Inbox</h3>
+                        <div class="msg-card-sub">Public contact form submissions</div>
+                        <div class="stat-row"><span>Total messages</span><span id="inboxCountTotal">0</span></div>
+                        <div class="stat-row"><span>Unread</span><span id="inboxCountUnread">0</span></div>
+                        <div class="msg-expand-hint" id="inboxExpandHint">&#9662; Click to view messages</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-inbox" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Worker Support card (live chat, not one-way email) -->
+                <div class="msg-card" id="msgCard-support">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('support')">
+                        <h3>&#127911; Worker Support</h3>
+                        <div class="msg-card-sub">Live chat between workers and admin</div>
+                        <div class="stat-row"><span>Conversations</span><span id="supportCountTotal">0</span></div>
+                        <div class="stat-row"><span>Unread</span><span id="supportCountUnread">0</span></div>
+                        <div class="msg-expand-hint" id="supportExpandHint">&#9662; Click to view messages</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-support" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Worker</th>
+                                    <th>Email</th>
+                                    <th>Last Message</th>
+                                    <th>Last Activity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supportChatsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Worker Conversations card -->
+                <div class="msg-card" id="msgCard-conversations">
+                    <div class="msg-card-summary" onclick="toggleMsgSection('conversations')">
+                        <h3>&#128172; Worker Conversations</h3>
+                        <div class="msg-card-sub">Worker &rarr; company email threads</div>
+                        <div class="stat-row"><span>Workers with threads</span><span id="convoCountWorkers">0</span></div>
+                        <div class="stat-row"><span>Total threads</span><span id="convoCountThreads">0</span></div>
+                        <div class="msg-expand-hint" id="conversationsExpandHint">&#9662; Click to view conversations</div>
+                    </div>
+                    <div class="msg-card-panel" id="msgPanel-conversations" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Worker</th>
+                                    <th>Email</th>
+                                    <th>Conversations</th>
+                                    <th>Last Activity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminThreadsTable">
+                                <tr><td colspan="5" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div id="workerConvOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9998;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:640px;width:92%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="workerConvOverlayName" style="margin:0;color:#fff;"></h3>
+                        <p id="workerConvOverlayEmail" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <button onclick="closeWorkerConvOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                </div>
+                <div style="overflow-y:auto;flex:1;margin-top:14px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Company Email</th>
+                                <th>Subject</th>
+                                <th>Last Activity</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workerConvTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="supportChatOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="supportChatOverlayName" style="margin:0;color:#fff;"></h3>
+                        <p id="supportChatOverlayEmail" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <button onclick="closeSupportChatOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                </div>
+                <div id="supportChatOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="supportChatOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:200px;overflow-y:auto;font-family:inherit;"></textarea>
+                    <button class="primary" onclick="submitSupportChatReply()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+            <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                    <div>
+                        <h3 id="threadOverlaySubject" style="margin:0;color:#fff;"></h3>
+                        <p id="threadOverlayMeta" style="color:#9dadc1;font-size:.85rem;margin:4px 0 0 0;"></p>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <button onclick="handleDeleteAdminThread(currentThreadId)" title="Delete conversation" style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#e8ecf5;border-radius:8px;padding:6px 10px;cursor:pointer;">🗑</button>
+                        <button onclick="closeThreadOverlay()" style="background:transparent;border:none;color:#9dadc1;font-size:1.4rem;cursor:pointer;">×</button>
+                    </div>
+                </div>
+                <div id="threadOverlayMessages" style="overflow-y:auto;overflow-x:hidden;flex:1;margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+                <div style="display:flex;gap:10px;align-items:flex-end;">
+                    <textarea id="threadOverlayReplyInput" placeholder="Type a reply... (Enter to send, Shift+Enter for a new line)" rows="2" style="flex:1;box-sizing:border-box;resize:vertical;max-height:200px;overflow-y:auto;font-family:inherit;"></textarea>
+                    <button class="primary" onclick="submitAdminThreadReply()">Send</button>
+                </div>
+            </div>
+        </div>
+    
+        </section>
+
+        <section class="page-panel" id="panel-analytics" data-permission="analytics">
+
+
+        <div class="analytics-tabs">
+            <button class="analytics-tab-btn active" data-tab="microtasks" onclick="switchAnalyticsTab('microtasks')">🧩 Micro Tasks</button>
+            <button class="analytics-tab-btn" data-tab="offerwalls" onclick="switchAnalyticsTab('offerwalls')">🎯 Offerwalls</button>
+        </div>
+
+        <!-- ============ MICRO TASKS PANEL ============ -->
+        <div class="analytics-panel active" id="analytics-panel-microtasks">
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Total Tasks Page Visits</h3>
+                <h2 id="totalVisits">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Submissions</h3>
+                <h2 id="totalSubmissions">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Correct</h3>
+                <h2 id="totalCorrect">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Paid Out</h3>
+                <h2 id="totalPaidOut">$0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="recent" id="projectListView" style="margin-top:25px;">
+
+            <h2>Projects</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Click a project to search for a worker or see the top earners.
+            </p>
+
+            <div class="project-grid" id="projectGrid">
+                <p class="empty-state">Loading projects...</p>
+            </div>
+
+        </section>
+
+        </div>
+
+        <!-- ============ OFFERWALLS PANEL ============ -->
+        <div class="analytics-panel" id="analytics-panel-offerwalls">
+
+        <section class="cards">
+
+            <div class="dashboard-card">
+                <h3>Active Providers</h3>
+                <h2 id="owTotalActiveProviders">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Completions</h3>
+                <h2 id="owTotalCompletions">0</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Payout</h3>
+                <h2 id="owTotalPending">$0.00</h2>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total Paid Out</h3>
+                <h2 id="owTotalPaidOut">$0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="recent" id="providerListView" style="margin-top:25px;">
+
+            <h2>Providers</h2>
+            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
+                Click a provider to search for a worker or see the top earners. Manage keys, iframe URLs, and
+                enable/disable from the <a href="admin-dashboard.html#offerwalls" style="color:#58d4ff;">Offerwalls</a> page.
+            </p>
+
+            <div class="project-grid" id="providerGrid">
+                <p class="empty-state">Loading providers...</p>
+            </div>
+
+        </section>
+
+        </div>
+
+    
+        </section>
+
+        <section class="page-panel" id="panel-settings" data-permission="settings">
+
+        <section class="recent">
+            <h2>Platform Settings</h2>
+            <div class="card">
+                <label>Platform Name</label>
+                <input type="text" id="platformName">
+                <label>Default Price Per Review (USD)</label>
+                <input type="number" id="pricePerReview" min="0" step="0.01">
+                <label>Worker Auto-Approval</label>
+                <select id="autoApproval">
+                    <option value="enabled">Enabled</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+                <label>Support Email</label>
+                <input type="email" id="supportEmail">
+                <label>Reviewer Layer</label>
+                <select id="reviewerEnabled">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+                <label>Reviewer Share (%)</label>
+                <input type="number" id="reviewerSharePercent" min="0" max="100">
+                <label>Bonus Task Worker Share (%) <span style="color:#9dadc1;font-weight:400;">(worker's cut of the real USD the offerwall network pays out)</span></label>
+                <input type="number" id="offerwallWorkerSharePercent" min="0" max="100">
+                <button class="primary" onclick="handleSaveSettings()" style="margin-top:15px;">Save Settings</button>
+            </div>
+        </section>
+    
+        </section>
     </main>
 
 </div>
 
 <script>
+/* ==========================================================
+   HARMONIA ADMIN SPA — routing / shell logic
+   (same pattern as worker-dashboard.html's tab router)
+   ========================================================== */
 
+function toggleSidebar() {
+    if (window.innerWidth <= 980) {
+        document.querySelector('.sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-backdrop').classList.toggle('open');
+    } else {
+        document.body.classList.toggle('sidebar-closed');
+    }
+}
+
+const ADMIN_TAB_TITLES = {
+    dashboard: "Dashboard", workers: "Workers", clients: "Clients", projects: "Projects",
+    tasks: "Tasks", offerwalls: "Offerwalls", messages: "Messages", analytics: "Analytics", settings: "Settings"
+};
+const ADMIN_VALID_TABS = Object.keys(ADMIN_TAB_TITLES);
+const loadedAdminTabs = new Set();
+let isAdminHashRouting = false;
+
+// A tab is "allowed" for the current user unless a Core Team member has
+// had its nav item hidden by applyCoreTeamRestrictions() (no permission
+// for that tab). Real admins always see everything. The backend enforces
+// the actual permission check on every API call regardless - this is
+// just so a Core Team member can't land on a blank tab in the UI.
+function isAdminTabAllowed(tab) {
+    const navBtn = document.querySelector(`.side-item[data-tab="${tab}"]`);
+    if (!navBtn) return true;
+    return navBtn.style.display !== "none";
+}
+
+function goAdminTab(tab) {
+    if (!ADMIN_VALID_TABS.includes(tab)) tab = "dashboard";
+
+    if (!isAdminTabAllowed(tab)) {
+        alert("You don't have permission to access this page.");
+        tab = "dashboard";
+    }
+
+    document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+    document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
+    document.getElementById("pageTitle").textContent = ADMIN_TAB_TITLES[tab] || "Dashboard";
+    const crumb = document.getElementById("breadcrumbTab");
+    if (crumb) crumb.textContent = "/ " + (ADMIN_TAB_TITLES[tab] || "Dashboard");
+
+    ensureAdminTabLoaded(tab);
+
+    isAdminHashRouting = true;
+    window.location.hash = tab;
+    setTimeout(() => { isAdminHashRouting = false; }, 50);
+
+    if (window.innerWidth <= 980) {
+        document.querySelector('.sidebar').classList.remove('open');
+        document.querySelector('.sidebar-backdrop').classList.remove('open');
+    }
+}
+
+function ensureAdminTabLoaded(tab) {
+    if (loadedAdminTabs.has(tab)) return;
+    loadedAdminTabs.add(tab);
+    const initFn = window["__admin_init_" + tab];
+    if (typeof initFn === "function") initFn();
+}
+
+window.addEventListener("hashchange", () => {
+    if (isAdminHashRouting) return;
+    const tab = (window.location.hash || "").replace("#", "");
+    if (ADMIN_VALID_TABS.includes(tab)) goAdminTab(tab);
+});
+
+document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
+    btn.addEventListener("click", () => goAdminTab(btn.dataset.tab));
+});
+
+(function initialAdminRoute() {
+    const tab = (window.location.hash || "").replace("#", "");
+    goAdminTab(ADMIN_VALID_TABS.includes(tab) ? tab : "dashboard");
+})();
+
+/* ---------------- Sidebar user card ---------------- */
+(function paintAdminSidebarUser() {
+    const user = getUser();
+    if (!user) return;
+    const initials = (user.fullName || user.role || "A").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    const av = document.getElementById("sideAvatar");
+    const nm = document.getElementById("sideName");
+    const rl = document.getElementById("sideRole");
+    if (av) av.textContent = initials;
+    if (nm) nm.textContent = user.fullName || "Administrator";
+    if (rl) rl.textContent = user.role;
+})();
+</script>
+
+<script>
+(function() {
 async function loadDashboard() {
     try {
        const [usersRes, ordersRes] = await Promise.all([
@@ -177,19 +1824,19 @@ async function loadDashboard() {
         const users = usersData.users || [];
         const orders = ordersData.orders || [];
 
-        document.getElementById("totalWorkers").textContent =
+        document.getElementById("dbTotalWorkers").textContent =
             users.filter(u => u.role === "worker").length;
 
-        document.getElementById("totalClients").textContent =
+        document.getElementById("dbTotalClients").textContent =
             users.filter(u => u.role === "client").length;
 
-        document.getElementById("totalProjects").textContent = orders.length;
+        document.getElementById("dbTotalProjects").textContent = orders.length;
 
         const pending = orders.filter(o =>
             o.status === "Awaiting Payment" || o.status === "Under Review"
         ).length;
 
-        document.getElementById("pendingProjects").textContent = pending;
+        document.getElementById("dbPendingProjects").textContent = pending;
 
         const table = document.getElementById("recentProjects");
         table.innerHTML = "";
@@ -214,8 +1861,3034 @@ async function loadDashboard() {
     }
 }
 
-loadDashboard();
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.loadDashboard = loadDashboard;
 
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_dashboard = function() { loadDashboard(); };
+})();
+</script>
+
+<script>
+(function() {
+// All worker/reviewer data now comes from the real backend (D1) via the
+// Worker API, not localStorage. Status values from the backend are
+// lowercase: "approved", "suspended", "rejected".
+//
+// Payout method + earnings data comes from a second endpoint
+// (/api/admin/payouts) and is merged in by userId when rendering,
+// so a worker's linked payout method and pending/paid totals show
+// right in this same table instead of a separate page.
+
+let allUsers = [];
+let allPayouts = [];
+let currentPayoutFilter = "all";
+let expandedRows = new Set();
+    let workerVisibleCount = 10;
+let workerSearchTerm = "";
+
+function handleWorkerSearch(value) {
+    workerSearchTerm = value.trim().toLowerCase();
+    workerVisibleCount = 10;
+    renderWorkers();
+}
+
+function showMoreWorkers() {
+    workerVisibleCount += 10;
+    renderWorkers();
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// Core Team management (granting/editing admin-tab permissions) is
+// admin-only - a Core Team member viewing this same page (if given the
+// "workers" tab) never sees these controls, even though the page itself
+// is reachable to them.
+function isRealAdmin() {
+    const user = getUser();
+    return !!user && user.role === "admin";
+}
+
+const CORE_TEAM_PERMISSION_LABELS = {
+    dashboard: "📊 Dashboard",
+    workers: "👥 Workers & Payments",
+    clients: "🏢 Clients",
+    projects: "📂 Projects",
+    tasks: "📋 Tasks",
+    offerwalls: "🎯 Offerwalls",
+    messages: "✉️ Messages",
+    analytics: "📈 Analytics",
+    settings: "⚙ Settings",
+};
+
+function maskEmail(email) {
+    if (!email) return "";
+    const [local, domain] = email.split("@");
+    if (!domain) return email;
+    const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***";
+    return visible + "@" + domain;
+}
+
+function maskWallet(address) {
+    if (!address) return "";
+    if (address.length <= 12) return address;
+    return address.slice(0, 6) + "..." + address.slice(-6);
+}
+
+
+function toggleDetails(id) {
+    if (expandedRows.has(id)) expandedRows.delete(id);
+    else expandedRows.add(id);
+    renderWorkers();
+}
+
+async function fetchAllUsers() {
+    const response = await authFetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load users");
+    }
+
+    return data.users || [];
+}
+
+async function fetchAllPayouts() {
+    const response = await authFetch(WORKER_URL + "/api/admin/payouts");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load payout data");
+    }
+
+    return data.payouts || [];
+}
+
+// =========================================================
+// UNIFIED EARNINGS BREAKDOWN (per worker, inside Details panel)
+// -----------------------------------------------------------
+// Reuses endpoints already live elsewhere in the admin (Task
+// Analytics + Offerwalls pages) rather than adding new routes.
+// Order Task / client-project earnings don't have a per-worker
+// itemized endpoint yet, so they're folded into a single "Other
+// Tasks" line computed as (aggregate total from /api/admin/payouts)
+// minus (sum of the itemized sources below) - this keeps the
+// breakdown always reconciling with the totals already shown,
+// instead of silently dropping a source we can't itemize yet.
+// =========================================================
+
+let allMicroTaskBreakdown = [];
+let allOfferwallEarnings = [];
+let allOfferwallProviders = [];
+
+async function fetchMicroTaskBreakdown() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/earnings-breakdown");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load micro-task earnings");
+    return data.breakdown || [];
+}
+
+async function fetchOfferwallEarnings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load offerwall earnings");
+    return data.earnings || [];
+}
+
+async function fetchOfferwallProviders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load offerwall providers");
+    return data.providers || [];
+}
+
+function offerwallDisplayName(providerKey) {
+    const p = allOfferwallProviders.find(p => p.providerKey === providerKey);
+    return p ? p.displayName : providerKey;
+}
+
+// Returns [{ source, pending, paid }] for one worker, plus a
+// reconciling "Other Tasks" row so the sum always matches the
+// worker's real pending/paid totals from /api/admin/payouts.
+function earningsBreakdownFor(worker, payout) {
+    const rows = [];
+
+    // ---- Micro Tasks: one row per project this worker has earned on ----
+    const microRows = allMicroTaskBreakdown.filter(r => r.user_id === worker.id);
+    const microByProject = {};
+    microRows.forEach(r => {
+        const key = "Micro Task #" + r.micro_task_id;
+        if (!microByProject[key]) microByProject[key] = { source: key, pending: 0, paid: 0 };
+        microByProject[key].pending += Number(r.pending_earned || 0);
+        microByProject[key].paid += Number(r.paid_earned || 0);
+    });
+    Object.values(microByProject).forEach(r => rows.push(r));
+
+    // ---- Bonus Tasks: one row per offerwall provider ----
+    const owRows = allOfferwallEarnings.filter(e =>
+        (e.userId && e.userId === worker.id) ||
+        (!e.userId && e.workerEmail && worker.email && e.workerEmail.toLowerCase() === worker.email.toLowerCase())
+    );
+    const owByProvider = {};
+    owRows.forEach(e => {
+        const key = offerwallDisplayName(e.providerKey) + " (Bonus Task)";
+        if (!owByProvider[key]) owByProvider[key] = { source: key, pending: 0, paid: 0 };
+        const amt = Number(e.workerAmount || 0);
+        if (e.status === "paid") owByProvider[key].paid += amt;
+        else if (e.status === "pending") owByProvider[key].pending += amt;
+    });
+    Object.values(owByProvider).forEach(r => rows.push(r));
+
+    // ---- Reconcile against the real totals from /api/admin/payouts ----
+    const knownPending = rows.reduce((s, r) => s + r.pending, 0);
+    const knownPaid = rows.reduce((s, r) => s + r.paid, 0);
+    const totalPending = payout ? Number(payout.pendingAmount || 0) : 0;
+    const totalPaid = payout ? Number(payout.paidAmount || 0) : 0;
+    const otherPending = totalPending - knownPending;
+    const otherPaid = totalPaid - knownPaid;
+
+    // Only show "Other Tasks" if there's actually an unaccounted amount -
+    // avoids a confusing "$0.00" row for workers with no order tasks.
+    if (Math.abs(otherPending) > 0.005 || Math.abs(otherPaid) > 0.005) {
+        rows.push({ source: "Other Tasks (Order Tasks, etc.)", pending: otherPending, paid: otherPaid });
+    }
+
+    return rows;
+}
+
+async function updateStatus(id, status) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update status.");
+        return false;
+    }
+
+    return true;
+}
+
+async function updateRole(id, role) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, role })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update role.");
+        return false;
+    }
+
+    return true;
+}
+
+async function markPaid(userId, name) {
+    if (!confirm(`Mark all pending earnings for ${name} as paid?\n\nOnly do this AFTER you've actually sent the money via their linked payout method — this just logs it, it doesn't send anything.`)) return;
+
+    const response = await authFetch(WORKER_URL + "/api/admin/payouts/mark-paid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to mark as paid.");
+        return;
+    }
+
+    await loadAndRenderAll();
+}
+
+function setPayoutFilter(filter) {
+    currentPayoutFilter = filter;
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.filter === filter);
+    });
+    renderWorkers();
+}
+
+function payoutMethodCell(payout) {
+    if (!payout || !payout.methodType || !payout.methodVerified) {
+        return `<span style="opacity:.6;">Not linked</span>`;
+    }
+    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto";
+    const detail = payout.methodType === "paypal"
+        ? maskEmail(payout.methodDetails && payout.methodDetails.email)
+        : maskWallet(payout.methodDetails && payout.methodDetails.wallet);
+    return `${label}<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(detail)}</span>`;
+}
+
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(() => { btn.textContent = original; }, 1500);
+    });
+}
+
+// Same as payoutMethodCell but shows the FULL, unmasked value (with a
+// Copy button) - used only inside the expanded Details panel, where the
+// admin actually needs the complete address/email to send payment.
+function fullPayoutMethodCell(payout) {
+    if (!payout || !payout.methodType || !payout.methodVerified) {
+        return `<span style="opacity:.6;">Not linked</span>`;
+    }
+    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto (USDT · ERC-20)";
+    const fullValue = payout.methodType === "paypal"
+        ? (payout.methodDetails && payout.methodDetails.email) || ""
+        : (payout.methodDetails && payout.methodDetails.wallet) || "";
+    const safeValue = escapeHTML(fullValue).replace(/'/g, "\\'");
+    return `
+        ${label}<br>
+        <span style="opacity:.85;font-size:.85rem;word-break:break-all;">${escapeHTML(fullValue)}</span>
+        <button style="margin-left:8px;" onclick="copyToClipboard('${safeValue}', this)">Copy</button>
+    `;
+}
+
+function renderWorkers(){
+
+    const table = document.getElementById("workerTable");
+    const workers = allUsers.filter(u => u.role === "worker");
+
+    const payoutsByUserId = {};
+    allPayouts.forEach(p => { payoutsByUserId[p.userId] = p; });
+
+    let active = 0;
+    let suspended = 0;
+    let rejected = 0;
+
+    workers.forEach(worker => {
+        if (worker.status === "approved") active++;
+        if (worker.status === "suspended") suspended++;
+        if (worker.status === "rejected") rejected++;
+    });
+
+   let visibleWorkers = workers.filter(worker => {
+        const payout = payoutsByUserId[worker.id];
+        if (currentPayoutFilter === "unpaid") return payout && payout.pendingAmount > 0;
+        if (currentPayoutFilter === "paidThisWeek") return payout && payout.paidThisWeek > 0;
+        if (currentPayoutFilter === "noMethod") return !payout || !payout.methodVerified;
+        return true;
+    });
+
+    if (workerSearchTerm) {
+        visibleWorkers = visibleWorkers.filter(worker =>
+            worker.full_name.toLowerCase().includes(workerSearchTerm) ||
+            worker.email.toLowerCase().includes(workerSearchTerm)
+        );
+    }
+
+    const totalMatching = visibleWorkers.length;
+    visibleWorkers = visibleWorkers.slice(0, workerVisibleCount);
+
+    const showMoreBtn = document.getElementById("workerShowMoreBtn");
+    showMoreBtn.style.display = totalMatching > workerVisibleCount ? "inline-block" : "none";
+
+    table.innerHTML = "";
+
+    if (visibleWorkers.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">No workers match this filter</td></tr>`;
+    }
+
+    visibleWorkers.forEach(worker => {
+        const payout = payoutsByUserId[worker.id];
+        const isOpen = expandedRows.has(worker.id);
+
+        let statusActions = "";
+        if(worker.status === "suspended" || worker.status === "rejected"){
+            statusActions = `<button onclick="changeStatus(${worker.id},'approved')">Reactivate</button>`;
+        } else {
+            statusActions = `
+                <button onclick="changeStatus(${worker.id},'suspended')">Suspend</button>
+                <button onclick="changeStatus(${worker.id},'rejected')">Reject</button>
+            `;
+        }
+
+        const pendingAmount = payout ? payout.pendingAmount : 0;
+        const paidAmount = payout ? payout.paidAmount : 0;
+        const safeName = escapeHTML(worker.full_name).replace(/'/g, "\\'");
+
+        const payoutAction = pendingAmount > 0
+            ? `<button onclick="markPaid(${worker.id}, '${safeName}')">Mark Paid</button>`
+            : `<span style="opacity:.5;">No pending balance</span>`;
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(worker.full_name)}</td>
+                <td>${escapeHTML(worker.email)}</td>
+                <td>${escapeHTML(worker.country)}</td>
+                <td>${statusBadge(capitalize(worker.status))}</td>
+                <td><button class="details-btn${isOpen ? ' open' : ''}" onclick="toggleDetails(${worker.id})">${isOpen ? 'Hide' : 'Details'}</button></td>
+            </tr>
+        `;
+
+        if (isOpen) {
+            const breakdown = earningsBreakdownFor(worker, payout);
+            const breakdownRows = breakdown.length === 0
+                ? `<tr><td colspan="3" class="empty-state">No earnings yet</td></tr>`
+                : breakdown.map(r => `
+                    <tr>
+                        <td>${escapeHTML(r.source)}</td>
+                        <td>${formatMoney(r.pending)}</td>
+                        <td>${formatMoney(r.paid)}</td>
+                    </tr>
+                `).join("");
+
+            table.innerHTML += `
+                <tr class="details-panel">
+                    <td colspan="5">
+                        <div class="details-grid">
+                            <div>
+                                <div class="label">Payout Method</div>
+                                <div>${fullPayoutMethodCell(payout)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Pending</div>
+                                <div>${formatMoney(pendingAmount)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Paid</div>
+                                <div>${formatMoney(paidAmount)}</div>
+                            </div>
+                            <div>
+                                <div class="label">Payout Action</div>
+                                <div>${payoutAction}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:6px;margin-bottom:14px;">
+                            <div class="label" style="margin-bottom:8px;">Earnings Breakdown &mdash; every task type, one place</div>
+                            <table style="min-width:0;">
+                                <thead>
+                                    <tr>
+                                        <th>Source</th>
+                                        <th>Pending</th>
+                                        <th>Paid</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${breakdownRows}
+                                </tbody>
+                            </table>
+                        </div>
+                      <div class="details-actions">
+                            ${statusActions}
+                            ${isRealAdmin() ? `<button onclick="moveToReviewer(${worker.id})">Make Reviewer</button>` : ''}
+                            <button onclick="toggleEmailPermission(${worker.id}, ${worker.can_send_email ? 'false' : 'true'})">${worker.can_send_email ? '🚫 Revoke Email Access' : '📧 Grant Email Access'}</button>
+                            ${isRealAdmin() ? `<button onclick="openCoreTeamModal(${worker.id}, '${safeName}', [])">🧩 Make Core Team</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+    });
+
+    document.getElementById("totalWorkers").textContent = workers.length;
+    document.getElementById("activeWorkers").textContent = active;
+    document.getElementById("suspendedWorkers").textContent = suspended;
+    document.getElementById("rejectedWorkers").textContent = rejected;
+
+    renderReviewers();
+    renderCoreTeam();
+}
+
+// =========================================================
+// CORE TEAM (limited-admin) access
+// =========================================================
+
+async function grantCoreTeam(id, permissions) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/core-team", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, permissions })
+    });
+    let data = {};
+    try {
+        data = await response.json();
+    } catch {
+        alert("Server error (status " + response.status + "). Check the Worker logs.");
+        return false;
+    }
+    if (!response.ok) {
+        alert(data.error || "Failed to grant Core Team access.");
+        return false;
+    }
+    return true;
+}
+
+async function revokeCoreTeamAccess(id, name) {
+    if (!confirm(`Remove Core Team access for ${name}? They'll go back to being a regular Worker (their worker history, tasks and earnings stay untouched).`)) return;
+
+    const response = await authFetch(WORKER_URL + "/api/admin/users/core-team/revoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to revoke Core Team access.");
+        return;
+    }
+    loadAndRenderAll();
+}
+
+function renderCoreTeam() {
+    const section = document.getElementById("coreTeamSection");
+    if (!section) return;
+
+    // Non-admins never even fetch other core_team accounts (the backend
+    // filters them out of /api/admin/users entirely) - this is just a
+    // belt-and-suspenders hide for the section itself.
+    if (!isRealAdmin()) {
+        section.style.display = "none";
+        return;
+    }
+
+    const table = document.getElementById("coreTeamTable");
+    const members = allUsers.filter(u => u.role === "core_team");
+
+    if (members.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No Core Team members yet — use "Make Core Team" on any worker above</td></tr>`;
+        return;
+    }
+
+    table.innerHTML = "";
+    members.forEach(member => {
+        const perms = member.permissions || [];
+        const badges = perms.length
+            ? perms.map(p => `<span class="status status-approved" style="margin:2px;">${CORE_TEAM_PERMISSION_LABELS[p] || p}</span>`).join(" ")
+            : `<span style="opacity:.5;">No tabs granted yet</span>`;
+        const safeName = escapeHTML(member.full_name).replace(/'/g, "\\'");
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(member.full_name)}</td>
+                <td>${escapeHTML(member.email)}</td>
+                <td>${badges}</td>
+                <td style="white-space:nowrap;">
+                    <button onclick='openCoreTeamModal(${member.id}, "${safeName}", ${JSON.stringify(perms)})'>Edit Permissions</button>
+                    <button onclick="revokeCoreTeamAccess(${member.id}, '${safeName}')">Revert to Worker</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function openCoreTeamModal(userId, userName, currentPermissions) {
+    document.getElementById("coreTeamModalName").textContent = userName;
+    document.getElementById("coreTeamModal").dataset.userId = userId;
+
+    document.querySelectorAll("#coreTeamPermissionList input[type=checkbox]").forEach(cb => {
+        cb.checked = currentPermissions.includes(cb.value);
+    });
+
+    document.getElementById("coreTeamOverlay").style.display = "flex";
+}
+
+function closeCoreTeamModal() {
+    document.getElementById("coreTeamOverlay").style.display = "none";
+}
+
+async function saveCoreTeamModal() {
+    const userId = document.getElementById("coreTeamModal").dataset.userId;
+    const permissions = Array.from(document.querySelectorAll("#coreTeamPermissionList input[type=checkbox]:checked"))
+        .map(cb => cb.value);
+
+    const ok = await grantCoreTeam(Number(userId), permissions);
+    closeCoreTeamModal();
+    if (ok) loadAndRenderAll();
+}
+
+async function loadAndRenderAll() {
+    const table = document.getElementById("workerTable");
+
+    // Core data: if this fails, there's nothing to show.
+    try {
+        [allUsers, allPayouts] = await Promise.all([fetchAllUsers(), fetchAllPayouts()]);
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="5" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
+    // Earnings-breakdown data: nice-to-have inside the Details panel.
+    // If any of these fail, the worker table still renders fine -
+    // the breakdown for that source just falls back to "Other Tasks".
+    try {
+        [allMicroTaskBreakdown, allOfferwallEarnings, allOfferwallProviders] = await Promise.all([
+            fetchMicroTaskBreakdown(),
+            fetchOfferwallEarnings(),
+            fetchOfferwallProviders()
+        ]);
+    } catch (err) {
+        console.error("Could not load earnings breakdown data:", err);
+        allMicroTaskBreakdown = [];
+        allOfferwallEarnings = [];
+        allOfferwallProviders = [];
+    }
+
+    renderWorkers();
+}
+
+async function changeStatus(id, status){
+    const ok = await updateStatus(id, status);
+    if (ok) loadAndRenderAll();
+}
+
+async function moveToReviewer(id){
+    if(!confirm("Promote this worker to Reviewer (QA role)?")) return;
+    const ok = await updateRole(id, "reviewer");
+    if (ok) loadAndRenderAll();
+}
+
+   async function toggleEmailPermission(id, allow){
+    const msg = allow
+        ? "Give this worker permission to message companies from their dashboard?"
+        : "Revoke this worker's messaging permission?";
+    if (!(await showConfirm(msg))) return;
+    const ok = await updateEmailPermission(id, allow);
+    if (ok) loadAndRenderAll();
+}
+
+function renderReviewers(){
+    const reviewers = allUsers.filter(u => u.role === "reviewer");
+    const table = document.getElementById("reviewerTable");
+    table.innerHTML = "";
+
+    if (reviewers.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="empty-state">No reviewers yet</td></tr>`;
+        return;
+    }
+
+    reviewers.forEach(r => {
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(r.full_name)}</td>
+                <td>${escapeHTML(r.email)}</td>
+                <td>${escapeHTML(r.country)}</td>
+                <td><button onclick="demoteToWorker(${r.id})">Back to Worker</button></td>
+            </tr>
+        `;
+    });
+}
+
+async function demoteToWorker(id){
+    if(!confirm("Move this reviewer back to a regular Worker role?")) return;
+    const ok = await updateRole(id, "worker");
+    if (ok) loadAndRenderAll();
+}
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("confirmOverlay");
+        document.getElementById("confirmMessage").textContent = message;
+        overlay.style.display = "flex";
+
+        const okBtn = document.getElementById("confirmOkBtn");
+        const cancelBtn = document.getElementById("confirmCancelBtn");
+
+        function cleanup(result) {
+            overlay.style.display = "none";
+            okBtn.removeEventListener("click", onOk);
+            cancelBtn.removeEventListener("click", onCancel);
+            resolve(result);
+        }
+        function onOk() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+
+        okBtn.addEventListener("click", onOk);
+        cancelBtn.addEventListener("click", onCancel);
+    });
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.capitalize = capitalize;
+    window.changeStatus = changeStatus;
+    window.closeCoreTeamModal = closeCoreTeamModal;
+    window.copyToClipboard = copyToClipboard;
+    window.demoteToWorker = demoteToWorker;
+    window.earningsBreakdownFor = earningsBreakdownFor;
+    window.fetchAllPayouts = fetchAllPayouts;
+    window.fetchAllUsers = fetchAllUsers;
+    window.fetchMicroTaskBreakdown = fetchMicroTaskBreakdown;
+    window.fetchOfferwallEarnings = fetchOfferwallEarnings;
+    window.fetchOfferwallProviders = fetchOfferwallProviders;
+    window.fullPayoutMethodCell = fullPayoutMethodCell;
+    window.grantCoreTeam = grantCoreTeam;
+    window.handleWorkerSearch = handleWorkerSearch;
+    window.isRealAdmin = isRealAdmin;
+    window.loadAndRenderAll = loadAndRenderAll;
+    window.markPaid = markPaid;
+    window.maskEmail = maskEmail;
+    window.maskWallet = maskWallet;
+    window.moveToReviewer = moveToReviewer;
+    window.offerwallDisplayName = offerwallDisplayName;
+    window.openCoreTeamModal = openCoreTeamModal;
+    window.payoutMethodCell = payoutMethodCell;
+    window.renderCoreTeam = renderCoreTeam;
+    window.renderReviewers = renderReviewers;
+    window.renderWorkers = renderWorkers;
+    window.revokeCoreTeamAccess = revokeCoreTeamAccess;
+    window.saveCoreTeamModal = saveCoreTeamModal;
+    window.setPayoutFilter = setPayoutFilter;
+    window.showConfirm = showConfirm;
+    window.showMoreWorkers = showMoreWorkers;
+    window.toggleDetails = toggleDetails;
+    window.updateRole = updateRole;
+    window.toggleEmailPermission = toggleEmailPermission;
+    window.updateStatus = updateStatus;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_workers = function() { loadAndRenderAll(); };
+})();
+</script>
+
+<script>
+(function() {
+// Client data now comes from the real backend (D1) via the Worker API,
+// not localStorage. Status values from the backend are lowercase:
+// "approved", "suspended", "rejected".
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+async function fetchAllUsers() {
+    const response = await authFetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Failed to load users");
+    }
+
+    return data.users || [];
+}
+
+async function updateStatus(id, status) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update status.");
+        return false;
+    }
+
+    return true;
+}
+
+async function fetchOrders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
+
+async function renderClients(){
+
+    const table = document.getElementById("clientTable");
+
+    let clients, orders;
+    try {
+        const [allUsers, allOrders] = await Promise.all([fetchAllUsers(), fetchOrders()]);
+        clients = allUsers.filter(u => u.role === "client");
+        orders = allOrders;
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="6" style="color:#ff8080;">Could not load clients: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
+    table.innerHTML = "";
+
+    if (clients.length === 0) {
+        table.innerHTML = `<tr><td colspan="6" class="empty-state">No clients registered yet</td></tr>`;
+    }
+
+    let active = 0;
+    let suspended = 0;
+
+    clients.forEach(client => {
+
+        if(client.status === "approved") active++;
+        if(client.status === "suspended") suspended++;
+
+        const myProjects = orders.filter(o => o.client_id == client.id).length;
+
+        let actions = "";
+
+        if(client.status === "suspended" || client.status === "rejected"){
+            actions = `<button onclick="changeClientStatus(${client.id},'approved')">Reactivate</button>`;
+        } else {
+            actions = `<button onclick="changeClientStatus(${client.id},'suspended')">Suspend</button>`;
+        }
+
+        table.innerHTML += `
+            <tr>
+                <td>${escapeHTML(client.full_name)}</td>
+                <td>${escapeHTML(client.email)}</td>
+                <td>${escapeHTML(client.country)}</td>
+                <td>${myProjects}</td>
+                <td>${statusBadge(capitalize(client.status))}</td>
+                <td>${actions}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalClients").textContent = clients.length;
+    document.getElementById("activeClients").textContent = active;
+    document.getElementById("suspendedClients").textContent = suspended;
+    document.getElementById("totalClientProjects").textContent = orders.length;
+}
+
+async function changeClientStatus(id, status){
+    const ok = await updateStatus(id, status);
+    if (ok) renderClients();
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.capitalize = capitalize;
+    window.changeClientStatus = changeClientStatus;
+    window.fetchAllUsers = fetchAllUsers;
+    window.fetchOrders = fetchOrders;
+    window.renderClients = renderClients;
+    window.updateStatus = updateStatus;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_clients = function() { renderClients(); };
+})();
+</script>
+
+<script>
+(function() {
+/* =========================
+   DATA SOURCE (now D1, via Worker API)
+   ========================= */
+
+const table = document.getElementById("projectsTable");
+
+async function fetchOrders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load orders");
+    return data.orders || [];
+}
+
+async function fetchWorkers() {
+    const response = await authFetch(WORKER_URL + "/api/admin/users");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load workers");
+    return (data.users || []).filter(u => u.role === "worker" && u.status === "approved");
+}
+
+function normalizeOrder(o) {
+    return {
+        orderId: o.order_id || "HM-UNKNOWN",
+        projectName: o.project_name || "Untitled Project",
+        category: o.category || "General",
+        reviews: o.reviews || 0,
+        status: o.status || "Awaiting Payment",
+        assignedTo: o.assigned_to || null,
+        hasPaymentProof: !!o.has_payment_proof,
+        submittedAt: o.submitted_at || null,
+        createdAt: o.created_at || new Date().toISOString()
+    };
+}
+
+/* =========================
+   SAFE DATE FORMAT
+   ========================= */
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleString();
+}
+
+/* =========================
+   SUPPORT CHAT RENDER
+   ========================= */
+
+function renderSupportChat(chat){
+
+    if(!chat || chat.length===0){
+        return `<div style="opacity:.6;">No conversation yet.</div>`;
+    }
+
+    return chat.map(msg=>`
+        <div style="
+            margin-bottom:12px;
+            padding:10px;
+            border-radius:8px;
+            background:${
+                msg.sender==="admin"
+                ?"rgba(91,108,255,.18)"
+                :"rgba(255,255,255,.05)"
+            };
+        ">
+            <strong>${msg.sender==="admin" ? "Administrator" : "Client"}</strong>
+            <div style="margin-top:6px;white-space:pre-wrap;">${escapeHTML(msg.message)}</div>
+            <small style="opacity:.6;">${formatDate(msg.time)}</small>
+        </div>
+    `).join("");
+}
+
+/* =========================
+   MAIN RENDER ENGINE
+   ========================= */
+
+async function renderProjects() {
+
+    let orders, workers;
+
+    try {
+        const [rawOrders, rawWorkers] = await Promise.all([fetchOrders(), fetchWorkers()]);
+        orders = rawOrders.map(normalizeOrder);
+        workers = rawWorkers;
+    } catch (err) {
+        table.innerHTML = `<tr><td colspan="8" style="color:#ff8080;">Could not load orders: ${escapeHTML(err.message)}</td></tr>`;
+        return;
+    }
+
+    let total = 0;
+    let paid = 0;
+    let completed = 0;
+    let pending = 0;
+
+    table.innerHTML = "";
+
+    if (orders.length === 0) {
+        table.innerHTML = `<tr><td colspan="8" class="empty-state">No orders yet</td></tr>`;
+    }
+
+    orders.forEach(o => {
+
+        total++;
+
+        if (o.status === "Paid") paid++;
+        if (o.status === "Completed") completed++;
+        if (o.status === "Awaiting Payment" || o.status === "Under Review") pending++;
+
+        table.innerHTML += `
+            <tr>
+                <td>
+                    ${escapeHTML(o.projectName || "-")}<br>
+                    <small style="opacity:.6">ID: ${escapeHTML(o.orderId)}</small>
+                </td>
+
+                <td>${escapeHTML(o.category || "-")}</td>
+
+                <td>${statusBadge(o.status)}</td>
+
+                <td>${o.reviews}</td>
+
+                <td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
+
+               <td>
+                    ${o.hasPaymentProof
+                        ? `<span>✔ Submitted</span>`
+                        : "Not Submitted"}
+                </td>
+
+                <td>
+                    ${o.assignedTo
+                        ? (workers.find(w => w.id == o.assignedTo)?.full_name || "Unknown")
+                        : "Not Assigned"}
+                </td>
+
+                <td>
+                    <button onclick="toggleProjectDetails('${escapeHTML(o.orderId)}')">View Details</button>
+
+                    ${o.status === "Awaiting Payment" || o.status === "Under Review" ? `
+                        <button onclick="approvePayment('${escapeHTML(o.orderId)}')">Approve Payment</button>
+                    ` : ""}
+
+                    ${o.status === "Paid" ? `
+                        <select onchange="assignWorkerToOrder('${escapeHTML(o.orderId)}', this.value)">
+                            <option value="">Assign Worker</option>
+                            ${workers.map(w => `
+                                <option value="${w.id}">${escapeHTML(w.full_name)}</option>
+                            `).join("")}
+                        </select>
+                    ` : ""}
+
+                    ${o.status === "Assigned" ? `
+                        <button onclick="markCompleted('${escapeHTML(o.orderId)}')">Mark Completed</button>
+                    ` : ""}
+                </td>
+            </tr>
+
+           <!-- DETAILS ROW: content is loaded on demand, not upfront -->
+            <tr id="details-${escapeHTML(o.orderId)}" style="display:none;">
+                <td colspan="8" style="background:rgba(255,255,255,0.03);padding:12px;">
+                    <div id="details-content-${escapeHTML(o.orderId)}" style="display:grid;gap:6px;font-size:.9rem;">
+                        Loading details...
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalProjects").textContent = total;
+    document.getElementById("activeProjects").textContent = paid;
+    document.getElementById("completedProjects").textContent = completed;
+    document.getElementById("pendingProjects").textContent = pending;
+}
+
+/* =========================
+   TOGGLE DETAILS
+   ========================= */
+
+const loadedOrderDetails = {};
+
+async function fetchOrderDetail(orderId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/detail?orderId=" + encodeURIComponent(orderId));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load order details");
+    return data.order;
+}
+
+function renderOrderDetailContent(order) {
+    return `
+        <div><strong>Order ID:</strong> ${escapeHTML(order.order_id)}</div>
+        <div><strong>Status:</strong> ${escapeHTML(order.status)}</div>
+        <div><strong>Created:</strong> ${formatDate(order.created_at)}</div>
+        <div>
+            <strong>Payment Proof:</strong>
+            ${order.payment_proof ? `
+                <br><br>
+                <a href="${escapeHTML(order.payment_proof)}" target="_blank">View Uploaded Receipt</a>
+                <br><br>
+                <img src="${escapeHTML(order.payment_proof)}" style="max-width:220px;border-radius:10px;border:1px solid rgba(255,255,255,.08);">
+            ` : "Not submitted"}
+        </div>
+        <div><strong>Submitted At:</strong> ${formatDate(order.submitted_at)}</div>
+
+        <hr style="margin:18px 0;border-color:rgba(255,255,255,.08);">
+
+        <h3 style="margin-bottom:12px;">💬 Order Conversation</h3>
+
+        <div id="chat-${escapeHTML(order.order_id)}"
+             style="background:rgba(255,255,255,.03);
+                    border:1px solid rgba(255,255,255,.08);
+                    border-radius:10px;
+                    padding:12px;
+                    max-height:250px;
+                    overflow-y:auto;
+                    margin-bottom:12px;">
+            ${renderSupportChat(order.supportChat)}
+        </div>
+
+        <textarea
+            id="reply-${escapeHTML(order.order_id)}"
+            placeholder="Reply to the client..."
+            style="width:100%;
+                   height:90px;
+                   border-radius:8px;
+                   padding:10px;
+                   background:#111827;
+                   color:white;
+                   border:1px solid rgba(255,255,255,.08);
+                   resize:vertical;"></textarea>
+
+        <div style="margin-top:10px;">
+            <button onclick="sendAdminReply('${escapeHTML(order.order_id)}')">Send Reply</button>
+        </div>
+    `;
+}
+
+async function toggleProjectDetails(orderId) {
+    const row = document.getElementById("details-" + orderId);
+    if (!row) return;
+
+    const isHidden = row.style.display === "none" || row.style.display === "";
+
+    if (isHidden && !loadedOrderDetails[orderId]) {
+        const content = document.getElementById("details-content-" + orderId);
+        try {
+            const order = await fetchOrderDetail(orderId);
+            loadedOrderDetails[orderId] = true;
+            content.innerHTML = renderOrderDetailContent(order);
+        } catch (err) {
+            content.innerHTML = `<div style="color:#ff8080;">Could not load details: ${escapeHTML(err.message)}</div>`;
+        }
+    }
+
+    row.style.display = isHidden ? "table-row" : "none";
+}
+
+/* =========================
+   ADMIN SUPPORT REPLY
+   ========================= */
+
+async function sendAdminReply(orderId) {
+
+    const textarea = document.getElementById("reply-" + orderId);
+    if (!textarea) {
+        alert("Reply box not found.");
+        return;
+    }
+
+    const message = textarea.value.trim();
+    if (!message) {
+        alert("Please enter a reply.");
+        return;
+    }
+
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, message })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to send reply.");
+        return;
+    }
+
+    // Only refresh this one order's details (proof + chat), not the whole list.
+    const content = document.getElementById("details-content-" + orderId);
+    try {
+        const order = await fetchOrderDetail(orderId);
+        content.innerHTML = renderOrderDetailContent(order);
+    } catch (err) {
+        content.innerHTML = `<div style="color:#ff8080;">Could not reload conversation: ${escapeHTML(err.message)}</div>`;
+    }
+}
+
+/* =========================
+   ACTIONS (now hit the real backend)
+   ========================= */
+
+async function approvePayment(orderId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/approve-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to approve payment.");
+        return;
+    }
+    renderProjects();
+}
+
+async function assignWorkerToOrder(orderId, workerId) {
+    if (!workerId) return;
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, workerId })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to assign worker.");
+        return;
+    }
+    renderProjects();
+}
+
+async function markCompleted(orderId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/orders/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        alert(data.error || "Failed to mark completed.");
+        return;
+    }
+    renderProjects();
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.approvePayment = approvePayment;
+    window.assignWorkerToOrder = assignWorkerToOrder;
+    window.fetchOrderDetail = fetchOrderDetail;
+    window.fetchOrders = fetchOrders;
+    window.fetchWorkers = fetchWorkers;
+    window.formatDate = formatDate;
+    window.markCompleted = markCompleted;
+    window.normalizeOrder = normalizeOrder;
+    window.renderOrderDetailContent = renderOrderDetailContent;
+    window.renderProjects = renderProjects;
+    window.renderSupportChat = renderSupportChat;
+    window.sendAdminReply = sendAdminReply;
+    window.toggleProjectDetails = toggleProjectDetails;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_projects = function() { renderProjects(); };
+})();
+</script>
+
+<script>
+(function() {
+/* =========================
+   DATA FETCH
+   ========================= */
+
+async function fetchProjects() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load projects");
+    return data.tasks || [];
+}
+
+async function fetchApplications() {
+    const response = await authFetch(WORKER_URL + "/api/admin/task-applications");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load applications");
+    return data.applications || [];
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleString();
+}
+
+function formatCurrency(amount) {
+    const n = Number(amount) || 0;
+    // Values under $0.01 were rounding down to "$0.00" with toFixed(2).
+    // Show 4 decimals only when needed so sub-cent rates are visible.
+    if (n > 0 && n < 0.01) return "$" + n.toFixed(4);
+    return "$" + n.toFixed(2);
+}
+
+/* =========================
+   RENDER
+   ========================= */
+
+async function renderAll() {
+    const projectsTable = document.getElementById("mtProjectsTable");
+    const applicationsTable = document.getElementById("applicationsTable");
+
+    let projects, applications;
+
+    try {
+        [projects, applications] = await Promise.all([fetchProjects(), fetchApplications()]);
+    } catch (err) {
+        projectsTable.innerHTML = `<tr><td colspan="11" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        applicationsTable.innerHTML = "";
+        return;
+    }
+
+    /* ---- Cards ---- */
+    const totalApplied = projects.reduce((sum, p) => sum + Number(p.total_applied || 0), 0);
+    const totalApproved = projects.reduce((sum, p) => sum + Number(p.total_approved || 0), 0);
+    const totalPending = projects.reduce((sum, p) => sum + Number(p.total_pending || 0), 0);
+
+    document.getElementById("mtTotalProjects").textContent = projects.length;
+    document.getElementById("totalApplications").textContent = totalApplied;
+    document.getElementById("totalApproved").textContent = totalApproved;
+    document.getElementById("totalPending").textContent = totalPending;
+
+    /* ---- Projects table ---- */
+    projectsTable.innerHTML = "";
+
+    if (projects.length === 0) {
+        projectsTable.innerHTML = `<tr><td colspan="11" class="empty-state">No projects created yet</td></tr>`;
+    }
+
+    projects.forEach(p => {
+        projectsTable.innerHTML += `
+            <tr>
+                <td>#${p.id}</td>
+                <td id="payout-${p.id}">${formatCurrency(p.payout_amount)}</td>
+                <td>${statusBadge(capitalize(p.status))}</td>
+                <td>${p.total_applied || 0}</td>
+                <td>${p.total_approved || 0}</td>
+                <td>${p.total_rejected || 0}</td>
+                <td>${p.total_pending || 0}</td>
+                <td>${p.total_submissions || 0}</td>
+                <td>${p.total_correct || 0}</td>
+                <td>${formatDate(p.created_at)}</td>
+                <td><button onclick="handleEditRate(${p.id}, ${Number(p.payout_amount)})">Edit Rate</button></td>
+            </tr>
+        `;
+    });
+
+    /* ---- Pending applications table ---- */
+    const pending = applications.filter(a => a.status === "pending");
+
+    applicationsTable.innerHTML = "";
+
+    if (pending.length === 0) {
+        applicationsTable.innerHTML = `<tr><td colspan="6" class="empty-state">No pending applications</td></tr>`;
+    }
+
+    pending.forEach(a => {
+        applicationsTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(a.full_name)}</td>
+                <td>${escapeHTML(a.email)}</td>
+                <td>#${a.micro_task_id}</td>
+                <td>${formatCurrency(a.payout_amount)}</td>
+                <td>${formatDate(a.created_at)}</td>
+                <td>
+                    <button onclick="decideApplication(${a.id}, 'approved')">Approve</button>
+                    <button onclick="decideApplication(${a.id}, 'rejected')">Reject</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* =========================
+   ACTIONS
+   ========================= */
+
+async function handleCreateTask() {
+    const input = document.getElementById("newPayoutAmount");
+    const amount = Number(input.value);
+
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid payout amount.");
+        return;
+    }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payoutAmount: amount })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to create project.");
+            return;
+        }
+
+        input.value = "";
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+let editRateProjectId = null;
+
+function handleEditRate(projectId, currentAmount) {
+    editRateProjectId = projectId;
+    document.getElementById("editRateInfo").innerHTML = `<strong>Project:</strong> #${projectId}`;
+    document.getElementById("editRateInput").value = currentAmount;
+    document.getElementById("editRateModal").style.display = "flex";
+    document.getElementById("editRateInput").focus();
+}
+
+function closeEditRate() {
+    document.getElementById("editRateModal").style.display = "none";
+    editRateProjectId = null;
+}
+
+async function confirmEditRate() {
+    const input = document.getElementById("editRateInput");
+    const amount = Number(input.value);
+
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid payout amount.");
+        return;
+    }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/update-rate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: editRateProjectId, payoutAmount: amount })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update pay rate.");
+            return;
+        }
+
+        closeEditRate();
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+async function decideApplication(applicationId, decision) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/task-applications/decide", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ applicationId, decision })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update application.");
+            return;
+        }
+
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.capitalize = capitalize;
+    window.closeEditRate = closeEditRate;
+    window.confirmEditRate = confirmEditRate;
+    window.decideApplication = decideApplication;
+    window.fetchApplications = fetchApplications;
+    window.fetchProjects = fetchProjects;
+    window.formatCurrency = formatCurrency;
+    window.formatDate = formatDate;
+    window.handleCreateTask = handleCreateTask;
+    window.handleEditRate = handleEditRate;
+    window.renderAll = renderAll;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_tasks = function() { renderAll(); };
+})();
+</script>
+
+<script>
+(function() {
+/* =========================================================
+   DATA FETCH
+   ========================================================= */
+
+async function fetchProviders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load providers");
+    return data.providers || [];
+}
+
+async function fetchEarnings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load earnings");
+    return data.earnings || [];
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleString();
+}
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+async function renderAll() {
+    const providersTable = document.getElementById("providersTable");
+    const earningsTable = document.getElementById("earningsTable");
+
+    let providers, earnings;
+
+    try {
+        [providers, earnings] = await Promise.all([fetchProviders(), fetchEarnings()]);
+    } catch (err) {
+        providersTable.innerHTML = `<tr><td colspan="5" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
+        earningsTable.innerHTML = "";
+        return;
+    }
+
+    /* ---- Cards ---- */
+    document.getElementById("totalActiveProviders").textContent =
+        providers.filter(p => p.status === "active").length;
+
+    const totalPending = earnings.filter(e => e.status === "pending").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+    const totalPaid = earnings.filter(e => e.status === "paid").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+    const totalReversed = earnings.filter(e => e.status === "reversed").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+
+    document.getElementById("totalPendingEarnings").textContent = formatMoney(totalPending);
+    document.getElementById("totalPaidEarnings").textContent = formatMoney(totalPaid);
+    document.getElementById("totalReversedEarnings").textContent = formatMoney(totalReversed);
+
+    /* ---- Providers table ---- */
+    providersTable.innerHTML = "";
+
+    if (providers.length === 0) {
+        providersTable.innerHTML = `<tr><td colspan="5" class="empty-state">No providers configured yet</td></tr>`;
+    }
+
+    providers.forEach(p => {
+        const postbackUrl = `${WORKER_URL}/api/offerwalls/postback/${p.providerKey}`;
+        providersTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(p.providerKey)}</td>
+                <td>${escapeHTML(p.displayName)}</td>
+                <td>${statusBadge(capitalize(p.status))}</td>
+                <td>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <code style="font-size:.75rem;color:#9dadc1;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(postbackUrl)}</code>
+                        <button class="detail-btn" onclick="copyPostbackUrl('${escapeHTML(postbackUrl)}')">Copy</button>
+                    </div>
+                </td>
+                <td>
+                    <button onclick="handleEditProvider('${escapeHTML(p.providerKey)}')">Edit</button>
+                    <button onclick="handleToggleStatus('${escapeHTML(p.providerKey)}', '${p.status === "active" ? "inactive" : "active"}')">${p.status === "active" ? "Deactivate" : "Activate"}</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    /* ---- Earnings table ---- */
+    earningsTable.innerHTML = "";
+
+    if (earnings.length === 0) {
+        earningsTable.innerHTML = `<tr><td colspan="7" class="empty-state">No bonus task earnings yet</td></tr>`;
+    }
+
+    earnings.forEach(e => {
+        earningsTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(e.workerEmail || e.userId)}</td>
+                <td>${escapeHTML(e.providerKey)}</td>
+                <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
+                <td>${formatMoney(e.amountUsd)}</td>
+                <td>${formatMoney(e.workerAmount)}</td>
+                <td>${statusBadge(capitalize(e.status))}</td>
+                <td>${formatDate(e.createdAt)}</td>
+            </tr>
+        `;
+    });
+}
+
+function copyPostbackUrl(url) {
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Postback URL copied. Paste this into the provider's \"Main Postback URL\" field.");
+    }).catch(() => {
+        prompt("Copy this postback URL:", url);
+    });
+}
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+async function handleCreateProvider() {
+    const providerKey = document.getElementById("newProviderKey").value.trim();
+    const displayName = document.getElementById("newDisplayName").value.trim();
+    const iframeUrlTemplate = document.getElementById("newIframeTemplate").value.trim();
+    const postbackSecret = document.getElementById("newPostbackSecret").value.trim();
+
+    if (!providerKey || !displayName || !iframeUrlTemplate || !postbackSecret) {
+        alert("Please fill in every field before adding a provider.");
+        return;
+    }
+
+    if (!iframeUrlTemplate.includes("{USER_ID}")) {
+        alert('The iframe URL template must include the literal "{USER_ID}" placeholder.');
+        return;
+    }
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ providerKey, displayName, iframeUrlTemplate, postbackSecret })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to add provider.");
+            return;
+        }
+
+        document.getElementById("newProviderKey").value = "";
+        document.getElementById("newDisplayName").value = "";
+        document.getElementById("newIframeTemplate").value = "";
+        document.getElementById("newPostbackSecret").value = "";
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+let editProviderKey = null;
+
+function handleEditProvider(providerKey) {
+    editProviderKey = providerKey;
+    document.getElementById("editProviderInfo").innerHTML = `<strong>Provider:</strong> ${escapeHTML(providerKey)}`;
+    document.getElementById("editDisplayName").value = "";
+    document.getElementById("editIframeTemplate").value = "";
+    document.getElementById("editPostbackSecret").value = "";
+    document.getElementById("editProviderModal").style.display = "flex";
+}
+
+function closeEditProvider() {
+    document.getElementById("editProviderModal").style.display = "none";
+    editProviderKey = null;
+}
+
+async function confirmEditProvider() {
+    const displayName = document.getElementById("editDisplayName").value.trim();
+    const iframeUrlTemplate = document.getElementById("editIframeTemplate").value.trim();
+    const postbackSecret = document.getElementById("editPostbackSecret").value.trim();
+
+    // Leave a field blank to keep its current saved value - this way the
+    // postback secret doesn't have to be re-pasted (or re-displayed) just
+    // to edit the display name, and isn't shown back to the admin as plaintext.
+    const body = { providerKey: editProviderKey };
+    if (displayName) body.displayName = displayName;
+    if (iframeUrlTemplate) body.iframeUrlTemplate = iframeUrlTemplate;
+    if (postbackSecret) body.postbackSecret = postbackSecret;
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update provider.");
+            return;
+        }
+
+        closeEditProvider();
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+async function handleToggleStatus(providerKey, newStatus) {
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ providerKey, status: newStatus })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Failed to update provider status.");
+            return;
+        }
+
+        await renderAll();
+
+    } catch (err) {
+        alert("Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
+
+
+/* =========================================================
+   CPALEAD QUICK SETUP HELPERS
+   ========================================================= */
+
+function copyCpaleadPostback() {
+    const url = "https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}";
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Postback URL copied! Paste it into CPAlead's Postback → Configuration page.");
+    }).catch(() => {
+        prompt("Copy this postback URL:", url);
+    });
+}
+
+async function handleCpaleadSetup() {
+    const iframeUrl    = document.getElementById("cplIframeUrl").value.trim();
+    const secret       = document.getElementById("cplSecret").value.trim();
+    const msg          = document.getElementById("cplSetupMsg");
+
+    if (!iframeUrl) {
+        msg.textContent = "⚠️ Please enter the iframe URL from your CPAlead wall.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+    if (!iframeUrl.includes("{USER_ID}")) {
+        msg.textContent = "⚠️ The iframe URL must include the {USER_ID} placeholder exactly as shown.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+    if (!secret) {
+        msg.textContent = "⚠️ Please enter the postback password you set in CPAlead.";
+        msg.style.color = "#f87171";
+        msg.style.display = "block";
+        return;
+    }
+
+    msg.textContent = "Saving…";
+    msg.style.color = "#9dadc1";
+    msg.style.display = "block";
+
+    try {
+        let response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                providerKey: "cpalead",
+                displayName: "CPAlead",
+                iframeUrlTemplate: iframeUrl,
+                postbackSecret: secret,
+            })
+        });
+
+        if (!response.ok) {
+            const createData = await response.json();
+            if ((createData.error || "").toLowerCase().includes("already exist") || response.status === 400) {
+                response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        providerKey: "cpalead",
+                        displayName: "CPAlead",
+                        iframeUrlTemplate: iframeUrl,
+                        postbackSecret: secret,
+                        status: "active",
+                    })
+                });
+                const updateData = await response.json();
+                if (!response.ok) {
+                    msg.textContent = "❌ " + (updateData.error || "Failed to update CPAlead.");
+                    msg.style.color = "#f87171";
+                    return;
+                }
+            } else {
+                msg.textContent = "❌ " + (createData.error || "Failed to activate CPAlead.");
+                msg.style.color = "#f87171";
+                return;
+            }
+        }
+
+        msg.textContent = "✅ CPAlead activated! Workers will now see it on their own CPAlead tab.";
+        msg.style.color = "#02c59a";
+        await renderAll();
+
+    } catch (err) {
+        msg.textContent = "❌ Unable to connect to the server.";
+        msg.style.color = "#f87171";
+        console.error(err);
+    }
+}
+
+async function handleCpaleadDeactivate() {
+    if (!confirm("Deactivate CPAlead? It will disappear from workers' CPAlead tab until you activate it again.")) return;
+
+    const msg = document.getElementById("cplSetupMsg");
+    msg.textContent = "Deactivating…";
+    msg.style.color = "#9dadc1";
+    msg.style.display = "block";
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ providerKey: "cpalead", status: "inactive" })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            msg.textContent = "❌ " + (data.error || "Failed to deactivate.");
+            msg.style.color = "#f87171";
+            return;
+        }
+
+        msg.textContent = "⏸ CPAlead deactivated. Workers will no longer see it.";
+        msg.style.color = "#9dadc1";
+        await renderAll();
+
+    } catch (err) {
+        msg.textContent = "❌ Unable to connect to the server.";
+        msg.style.color = "#f87171";
+        console.error(err);
+    }
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.capitalize = capitalize;
+    window.closeEditProvider = closeEditProvider;
+    window.confirmEditProvider = confirmEditProvider;
+    window.copyCpaleadPostback = copyCpaleadPostback;
+    window.copyPostbackUrl = copyPostbackUrl;
+    window.fetchEarnings = fetchEarnings;
+    window.fetchProviders = fetchProviders;
+    window.formatDate = formatDate;
+    window.handleCpaleadDeactivate = handleCpaleadDeactivate;
+    window.handleCpaleadSetup = handleCpaleadSetup;
+    window.handleCreateProvider = handleCreateProvider;
+    window.handleEditProvider = handleEditProvider;
+    window.handleToggleStatus = handleToggleStatus;
+    window.renderAll = renderAll;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_offerwalls = function() { renderAll(); };
+})();
+</script>
+
+<script>
+(function() {
+// Keeps track of which message rows are currently expanded
+let expandedIds = new Set();
+
+// Which top-level message card (if any) is currently expanded. Only one
+// is open at a time - same accordion-style behavior as the project
+// cards on admin-analytics.html, so no table data renders/opens until
+// the person actually clicks a card.
+let expandedMsgSection = null; // 'inbox' | 'support' | 'conversations' | null
+
+function toggleMsgSection(section){
+    expandedMsgSection = (expandedMsgSection === section) ? null : section;
+
+    ["inbox", "support", "conversations"].forEach(name => {
+        const card = document.getElementById(`msgCard-${name}`);
+        const panel = document.getElementById(`msgPanel-${name}`);
+        const hint = document.getElementById(`${name}ExpandHint`);
+        const isOpen = expandedMsgSection === name;
+
+        card.classList.toggle("expanded", isOpen);
+        panel.style.display = isOpen ? "block" : "none";
+        if (hint) {
+            hint.innerHTML = isOpen
+                ? "&#9652; Hide"
+                : (name === "conversations" ? "&#9662; Click to view conversations" : "&#9662; Click to view messages");
+        }
+    });
+}
+
+// Renders the public Inbox table (contact form submissions). Worker
+// Support now lives in its own live chat system, not contact_messages.
+async function renderMessages(){
+    const data = await getContactMessages();
+    const inboxMessages = (data.messages || []).slice().reverse();
+    const isUnread = m => m.status !== "read" && m.status !== "replied";
+
+    document.getElementById("inboxCountTotal").textContent = inboxMessages.length;
+    document.getElementById("inboxCountUnread").textContent = inboxMessages.filter(isUnread).length;
+
+    renderMessageTable("messagesTable", inboxMessages, 7, true);
+}
+
+function renderMessageTable(tbodyId, messages, colspan, showTypeColumn){
+    const table = document.getElementById(tbodyId);
+    table.innerHTML = "";
+    if (messages.length === 0) {
+        table.innerHTML = `<tr><td colspan="${colspan}" class="empty-state">No messages yet</td></tr>`;
+        return;
+    }
+    messages.forEach(m => {
+        const isExpanded = expandedIds.has(m.id);
+
+        table.innerHTML += `
+            <tr class="msg-row" onclick="toggleExpand(${m.id})">
+                <td>${escapeHTML(m.name)}</td>
+                <td>${escapeHTML(m.email)}</td>
+                ${showTypeColumn ? `<td>${escapeHTML(m.type)}</td>` : ""}
+                <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(m.message)}">${escapeHTML(m.message)}</td>
+                <td>${m.created_at || ""}</td>
+                <td>${statusBadge(m.status)}</td>
+                <td><button type="button" onclick="event.stopPropagation(); deleteMsg(${m.id})">🗑 Delete</button></td>
+            </tr>
+        `;
+
+        if (isExpanded) {
+            table.innerHTML += `
+                <tr class="msg-expanded" onclick="event.stopPropagation()">
+                    <td colspan="${colspan}">
+                        <div class="expanded-content">
+                            <div>
+                                <p class="block-label">Full message</p>
+                                <p class="full-message">${escapeHTML(m.message)}</p>
+                            </div>
+                            ${m.admin_reply ? `
+                                <div>
+                                    <p class="block-label">Previous reply · ${m.replied_at || ""}</p>
+                                    <p class="full-message reply-block">${escapeHTML(m.admin_reply)}</p>
+                                </div>
+                            ` : ""}
+                            <div>
+                                <p class="block-label">Reply to ${escapeHTML(m.name)}</p>
+                                <textarea id="reply-${m.id}" rows="4" style="width:100%;" placeholder="Type your reply here..."></textarea>
+                            </div>
+                            <div class="reply-actions">
+                                <button type="button" onclick="sendReply(${m.id})">📤 Send Reply</button>
+                                <span class="reply-status" id="reply-status-${m.id}"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    });
+}
+
+function toggleExpand(id){
+    if (expandedIds.has(id)) {
+        expandedIds.delete(id);
+    } else {
+        expandedIds.add(id);
+        // Mark as read in the background, don't re-render again from this call
+        markRead(id, false);
+    }
+    renderMessages();
+}
+
+async function markRead(id, shouldRerender = true){
+    await authFetch(WORKER_URL + "/api/admin/contact-messages/read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    if (shouldRerender) renderMessages();
+}
+
+async function sendReply(id){
+    const textarea = document.getElementById(`reply-${id}`);
+    const statusEl = document.getElementById(`reply-status-${id}`);
+    const message = textarea.value.trim();
+
+    if (!message) {
+        statusEl.textContent = "Please type a reply first.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    try {
+        const res = await authFetch(WORKER_URL + "/api/admin/contact-messages/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, message })
+        });
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            statusEl.textContent = "Failed to send: " + (result.error || res.status);
+            statusEl.style.color = "#c0392b";
+            return;
+        }
+
+        statusEl.textContent = "Reply sent ✔";
+        statusEl.style.color = "#2e7d32";
+        setTimeout(renderMessages, 700);
+    } catch (err) {
+        statusEl.textContent = "Failed to send: " + err.message;
+        statusEl.style.color = "#c0392b";
+    }
+}
+
+async function deleteMsg(id){
+    if (!confirm("Delete this message?")) return;
+    expandedIds.delete(id);
+    await deleteMessage(id);
+    renderMessages();
+}
+
+async function handleSendAnnouncement() {
+    const audience = document.getElementById("announceAudience").value;
+    const subject = document.getElementById("announceSubject").value.trim();
+    const message = document.getElementById("announceMessage").value.trim();
+    const statusEl = document.getElementById("announceStatus");
+
+    if (!subject || !message) {
+        statusEl.textContent = "Please fill in both subject and message.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    const label = audience === "workers" ? "all workers" : "all clients";
+    if (!(await showConfirm(`Send this announcement to ${label}?`))) return;
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await sendAnnouncement(audience, subject, message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    if (result._timedOut) {
+        // Emails went out fine but the Worker hit Cloudflare's 30-second
+        // timeout before it could send back a success response. Not an
+        // error — just means the list is large enough that sending takes
+        // longer than the timeout allows. All emails that were queued
+        // before the cutoff are already delivered.
+        statusEl.textContent = "✔ Emails sent — all recipients who were queued before the server timeout have received it. Check your Resend dashboard to confirm delivery.";
+        statusEl.style.color = "#b8860b";
+        document.getElementById("announceSubject").value = "";
+        document.getElementById("announceMessage").value = "";
+        return;
+    }
+
+    statusEl.textContent = `Sent to ${result.sentCount} of ${result.recipientCount} ${label} ✔`;
+    statusEl.style.color = "#2e7d32";
+    document.getElementById("announceSubject").value = "";
+    document.getElementById("announceMessage").value = "";
+}
+async function handleSendDirectEmail() {
+    const to = document.getElementById("directEmailTo").value.trim();
+    const subject = document.getElementById("directEmailSubject").value.trim();
+    const message = document.getElementById("directEmailMessage").value.trim();
+    const statusEl = document.getElementById("directEmailStatus");
+
+    if (!to || !subject || !message) {
+        statusEl.textContent = "Please fill in recipient, subject, and message.";
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    if (!(await showConfirm(`Send this email to ${to}?`))) return;
+
+    statusEl.textContent = "Sending...";
+    statusEl.style.color = "#888";
+
+    const result = await sendDirectEmail(to, subject, message);
+
+    if (result.error) {
+        statusEl.textContent = "Failed: " + result.error;
+        statusEl.style.color = "#c0392b";
+        return;
+    }
+
+    statusEl.textContent = "Email sent ✔";
+    statusEl.style.color = "#2e7d32";
+    document.getElementById("directEmailTo").value = "";
+    document.getElementById("directEmailSubject").value = "";
+    document.getElementById("directEmailMessage").value = "";
+}
+
+function showConfirm(message) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById("confirmOverlay");
+        document.getElementById("confirmMessage").textContent = message;
+        overlay.style.display = "flex";
+
+        const okBtn = document.getElementById("confirmOkBtn");
+        const cancelBtn = document.getElementById("confirmCancelBtn");
+
+        function cleanup(result) {
+            overlay.style.display = "none";
+            okBtn.removeEventListener("click", onOk);
+            cancelBtn.removeEventListener("click", onCancel);
+            resolve(result);
+        }
+        function onOk() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+
+        okBtn.addEventListener("click", onOk);
+        cancelBtn.addEventListener("click", onCancel);
+    });
+}
+
+// ------------------------------------------------------------
+// Worker Conversations (threaded worker <-> company messages)
+// ------------------------------------------------------------
+
+let currentThreadId = null;
+let allAdminThreads = [];
+let currentWorkerId = null;
+
+async function loadAdminThreads() {
+    const table = document.getElementById("adminThreadsTable");
+    try {
+        const data = await fetchAdminThreads();
+        allAdminThreads = data.threads || [];
+        document.getElementById("convoCountThreads").textContent = allAdminThreads.length;
+        document.getElementById("convoCountWorkers").textContent =
+            new Set(allAdminThreads.map(t => t.worker_id)).size;
+
+        if (allAdminThreads.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
+            return;
+        }
+
+        // Group individual threads into one row per worker.
+        const byWorker = new Map();
+        allAdminThreads.forEach(t => {
+            if (!byWorker.has(t.worker_id)) {
+                byWorker.set(t.worker_id, {
+                    worker_id: t.worker_id,
+                    worker_name: t.worker_name,
+                    worker_email: t.worker_email,
+                    threads: [],
+                    lastActivity: t.last_message_at,
+                });
+            }
+            const group = byWorker.get(t.worker_id);
+            group.threads.push(t);
+            if (new Date(t.last_message_at) > new Date(group.lastActivity)) {
+                group.lastActivity = t.last_message_at;
+            }
+        });
+
+        const workers = Array.from(byWorker.values())
+            .sort((a, b) => new Date(b.lastActivity) - new Date(a.lastActivity));
+
+        table.innerHTML = "";
+        workers.forEach(w => {
+            table.innerHTML += `
+                <tr class="msg-row" onclick="openWorkerConversations(${w.worker_id})">
+                    <td>${escapeHTML(w.worker_name)}</td>
+                    <td>${escapeHTML(w.worker_email)}</td>
+                    <td>${w.threads.length}</td>
+                    <td>${new Date(w.lastActivity).toLocaleString()}</td>
+                    <td><button onclick="event.stopPropagation(); openWorkerConversations(${w.worker_id})">View</button></td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">Failed to load.</td></tr>`;
+    }
+}
+
+function openWorkerConversations(workerId) {
+    currentWorkerId = workerId;
+    const threads = allAdminThreads
+        .filter(t => t.worker_id === workerId)
+        .sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+
+    if (threads.length === 0) return;
+
+    document.getElementById("workerConvOverlayName").textContent = threads[0].worker_name;
+    document.getElementById("workerConvOverlayEmail").textContent = threads[0].worker_email;
+
+    const body = document.getElementById("workerConvTable");
+    body.innerHTML = "";
+    threads.forEach(t => {
+        body.innerHTML += `
+            <tr>
+                <td>${escapeHTML(t.company_email)}</td>
+                <td>${escapeHTML(t.subject)}</td>
+                <td>${new Date(t.last_message_at).toLocaleString()}</td>
+                <td style="white-space:nowrap;">
+                    <button onclick="openThreadOverlay(${t.id})">View</button>
+                    <button onclick="handleDeleteAdminThread(${t.id})" style="margin-left:6px;background:#c0392b;">🗑 Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("workerConvOverlay").style.display = "flex";
+}
+
+function closeWorkerConvOverlay() {
+    document.getElementById("workerConvOverlay").style.display = "none";
+    currentWorkerId = null;
+}
+
+async function handleDeleteAdminThread(threadId) {
+    if (!threadId) return;
+    if (!(await showConfirm("Permanently delete this conversation? This cannot be undone."))) return;
+
+    const result = await deleteAdminThread(threadId);
+    if (result.error) { alert(result.error); return; }
+
+    const workerId = currentWorkerId;
+    if (currentThreadId === threadId) closeThreadOverlay();
+
+    await loadAdminThreads();
+
+    if (workerId !== null) {
+        const stillHasThreads = allAdminThreads.some(t => t.worker_id === workerId);
+        if (stillHasThreads) {
+            openWorkerConversations(workerId);
+        } else {
+            closeWorkerConvOverlay();
+        }
+    }
+}
+
+async function openThreadOverlay(threadId) {
+    currentThreadId = threadId;
+    const data = await fetchAdminThreadDetail(threadId);
+    if (!data.thread) { alert(data.error || "Failed to load conversation."); return; }
+
+    document.getElementById("threadOverlaySubject").textContent = data.thread.subject;
+    document.getElementById("threadOverlayMeta").textContent =
+        `${data.thread.worker_name} → ${data.thread.company_email}`;
+
+    const box = document.getElementById("threadOverlayMessages");
+    box.innerHTML = "";
+    data.messages.forEach(m => {
+        const label = m.sender === "worker" ? data.thread.worker_name
+                    : m.sender === "admin" ? "Admin"
+                    : data.thread.company_email;
+        const align = m.sender === "company" ? "flex-start" : "flex-end";
+        const bg = m.sender === "company" ? "rgba(255,255,255,.06)" : "#587dff22";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;min-width:0;background:${bg};padding:10px 14px;border-radius:12px;box-sizing:border-box;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${escapeHTML(label)} • ${new Date(m.created_at).toLocaleString()}</div>
+                <div style="color:#fff;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+
+    const replyInput = document.getElementById("threadOverlayReplyInput");
+    replyInput.value = "";
+    replyInput.style.height = "auto";
+    document.getElementById("threadOverlay").style.display = "flex";
+}
+
+function closeThreadOverlay() {
+    document.getElementById("threadOverlay").style.display = "none";
+    currentThreadId = null;
+}
+
+async function submitAdminThreadReply() {
+    const input = document.getElementById("threadOverlayReplyInput");
+    const message = input.value.trim();
+    if (!message || !currentThreadId) return;
+
+    const result = await replyAdminThread(currentThreadId, message);
+    if (result.error) { alert(result.error); return; }
+
+    openThreadOverlay(currentThreadId);
+    await loadAdminThreads();
+    if (currentWorkerId !== null) {
+        openWorkerConversations(currentWorkerId);
+    }
+}
+
+// Enter sends the reply; Shift+Enter or Ctrl+Enter inserts a new line.
+// The textarea also grows with content (up to its max-height, after
+// which it scrolls vertically instead of the old horizontal overflow).
+(function setupReplyTextarea() {
+    const el = document.getElementById("threadOverlayReplyInput");
+    el.addEventListener("input", () => {
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+    });
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            submitAdminThreadReply();
+        }
+        // Shift+Enter / Ctrl+Enter fall through to the textarea's default
+        // behavior, which inserts a newline.
+    });
+})();
+
+// ------------------------------------------------------------
+// Worker Support (live chat between a worker and admin)
+// ------------------------------------------------------------
+
+let allSupportChats = [];
+let currentSupportUserId = null;
+
+async function loadWorkerSupportChats() {
+    const table = document.getElementById("supportChatsTable");
+    try {
+        const data = await fetchAdminWorkerSupportChats();
+        if (data.error) throw new Error(data.error);
+
+        allSupportChats = data.chats || [];
+        document.getElementById("supportCountTotal").textContent = allSupportChats.length;
+        document.getElementById("supportCountUnread").textContent =
+            allSupportChats.filter(c => c.admin_unread).length;
+
+        if (allSupportChats.length === 0) {
+            table.innerHTML = `<tr><td colspan="5" class="empty-state">No conversations yet.</td></tr>`;
+            return;
+        }
+
+        table.innerHTML = "";
+        allSupportChats.forEach(c => {
+            table.innerHTML += `
+                <tr class="msg-row" onclick="openSupportChatOverlay(${c.user_id})">
+                    <td>${escapeHTML(c.full_name)} ${c.admin_unread ? '<span style="color:#5b6cff;">●</span>' : ""}</td>
+                    <td>${escapeHTML(c.email)}</td>
+                    <td style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(c.last_message || "")}">${escapeHTML(c.last_message || "")}</td>
+                    <td>${c.updated_at ? new Date(c.updated_at).toLocaleString() : ""}</td>
+                    <td><button onclick="event.stopPropagation(); openSupportChatOverlay(${c.user_id})">View</button></td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        console.error(err);
+        table.innerHTML = `<tr><td colspan="5" class="empty-state">Failed to load.</td></tr>`;
+    }
+}
+
+async function openSupportChatOverlay(userId) {
+    currentSupportUserId = userId;
+    const data = await fetchAdminWorkerSupportDetail(userId);
+    if (data.error) { alert(data.error); return; }
+
+    const meta = allSupportChats.find(c => c.user_id === userId) || {};
+    document.getElementById("supportChatOverlayName").textContent = meta.full_name || "Worker";
+    document.getElementById("supportChatOverlayEmail").textContent = meta.email || "";
+
+    const box = document.getElementById("supportChatOverlayMessages");
+    box.innerHTML = "";
+    (data.messages || []).forEach(m => {
+        const align = m.sender === "admin" ? "flex-end" : "flex-start";
+        const bg = m.sender === "admin" ? "#587dff22" : "rgba(255,255,255,.06)";
+        box.innerHTML += `
+            <div style="align-self:${align};max-width:80%;min-width:0;background:${bg};padding:10px 14px;border-radius:12px;box-sizing:border-box;">
+                <div style="font-size:.75rem;color:#9dadc1;margin-bottom:4px;">${m.sender === "admin" ? "Admin" : escapeHTML(meta.full_name || "Worker")} • ${m.time ? new Date(m.time).toLocaleString() : ""}</div>
+                <div style="color:#fff;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;">${escapeHTML(m.message)}</div>
+            </div>
+        `;
+    });
+    box.scrollTop = box.scrollHeight;
+
+    const replyInput = document.getElementById("supportChatOverlayReplyInput");
+    replyInput.value = "";
+    replyInput.style.height = "auto";
+    document.getElementById("supportChatOverlay").style.display = "flex";
+
+    await loadWorkerSupportChats();
+}
+
+function closeSupportChatOverlay() {
+    document.getElementById("supportChatOverlay").style.display = "none";
+    currentSupportUserId = null;
+}
+
+async function submitSupportChatReply() {
+    const input = document.getElementById("supportChatOverlayReplyInput");
+    const message = input.value.trim();
+    if (!message || currentSupportUserId === null) return;
+
+    const result = await replyAdminWorkerSupport(currentSupportUserId, message);
+    if (result.error) { alert(result.error); return; }
+
+    openSupportChatOverlay(currentSupportUserId);
+}
+
+(function setupSupportReplyTextarea() {
+    const el = document.getElementById("supportChatOverlayReplyInput");
+    el.addEventListener("input", () => {
+        el.style.height = "auto";
+        el.style.height = el.scrollHeight + "px";
+    });
+    el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey) {
+            e.preventDefault();
+            submitSupportChatReply();
+        }
+    });
+})();
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.closeSupportChatOverlay = closeSupportChatOverlay;
+    window.closeThreadOverlay = closeThreadOverlay;
+    window.closeWorkerConvOverlay = closeWorkerConvOverlay;
+    window.deleteMsg = deleteMsg;
+    window.handleDeleteAdminThread = handleDeleteAdminThread;
+    window.handleSendAnnouncement = handleSendAnnouncement;
+    window.handleSendDirectEmail = handleSendDirectEmail;
+    window.loadAdminThreads = loadAdminThreads;
+    window.loadWorkerSupportChats = loadWorkerSupportChats;
+    window.markRead = markRead;
+    window.openSupportChatOverlay = openSupportChatOverlay;
+    window.openThreadOverlay = openThreadOverlay;
+    window.openWorkerConversations = openWorkerConversations;
+    window.renderMessageTable = renderMessageTable;
+    window.renderMessages = renderMessages;
+    window.sendReply = sendReply;
+    window.showConfirm = showConfirm;
+    window.submitAdminThreadReply = submitAdminThreadReply;
+    window.submitSupportChatReply = submitSupportChatReply;
+    window.toggleExpand = toggleExpand;
+    window.toggleMsgSection = toggleMsgSection;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_messages = function() { renderMessages(); loadAdminThreads(); loadWorkerSupportChats(); };
+})();
+</script>
+
+<script>
+(function() {
+function switchAnalyticsTab(tab) {
+    document.querySelectorAll(".analytics-tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+    document.querySelectorAll(".analytics-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === "analytics-panel-" + tab);
+    });
+
+    if (tab === "offerwalls") {
+        renderOfferwallAll();
+    }
+}
+
+
+
+/* =========================
+   DATA FETCH
+   ========================= */
+
+async function fetchStats() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/stats");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load stats");
+    return data;
+}
+
+async function fetchProjects() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load projects");
+    return data.tasks || [];
+}
+
+async function fetchBreakdown() {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/earnings-breakdown");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load earnings breakdown");
+    return data.breakdown || [];
+}
+
+async function setTaskHold(userId, hold) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/task-hold", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId, hold })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to update hold status");
+    return data;
+}
+
+/* =========================
+   STATE
+   ========================= */
+
+let allProjects = [];
+let allBreakdown = [];
+let expandedProjectId = null;   // which project card is currently open
+let openWorkerRowId = null;     // which worker row inside that panel is showing the hold button
+
+/* =========================
+   RENDER: top stat cards
+   ========================= */
+
+async function renderTopStats() {
+    try {
+        const stats = await fetchStats();
+        document.getElementById("totalVisits").textContent = stats.totalVisits || 0;
+        document.getElementById("totalSubmissions").textContent = stats.totalSubmissions || 0;
+        document.getElementById("totalCorrect").textContent = stats.totalCorrect || 0;
+        document.getElementById("totalPaidOut").textContent = "$" + Number(stats.totalEarned || 0).toFixed(2);
+    } catch (err) {
+        console.error("Could not load stats:", err);
+    }
+}
+
+/* =========================
+   RENDER: project cards
+   ========================= */
+
+function capitalize(s) {
+    if (!s) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function workersEarningCount(projectId) {
+    return allBreakdown.filter(r => r.micro_task_id === projectId).length;
+}
+
+function renderProjectGrid() {
+    const grid = document.getElementById("projectGrid");
+    grid.innerHTML = "";
+
+    if (allProjects.length === 0) {
+        grid.innerHTML = `<p class="empty-state">No projects created yet</p>`;
+        return;
+    }
+
+    allProjects.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "project-card" + (expandedProjectId === p.id ? " expanded" : "");
+        card.id = "card-" + p.id;
+
+        card.innerHTML = `
+            <div class="project-card-summary" onclick="toggleProjectExpand(${p.id})">
+                <h3>Project #${p.id}</h3>
+                <div class="rate">$${Number(p.payout_amount).toFixed(2)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
+                <div class="stat-row"><span>Workers earning</span><span>${workersEarningCount(p.id)}</span></div>
+                <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
+                <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
+                <div class="expand-hint">${expandedProjectId === p.id ? "▴ Hide workers" : "▾ Find a worker / view top earners"}</div>
+            </div>
+            <div class="project-card-panel" id="panel-${p.id}" style="display:${expandedProjectId === p.id ? "block" : "none"};">
+                <input
+                    type="text"
+                    class="worker-search-input"
+                    placeholder="Search by email..."
+                    oninput="handleAnalyticsWorkerSearch(${p.id}, this.value)"
+                >
+                <div class="list-label" id="listLabel-${p.id}">Top 5 earners</div>
+                <div id="workerList-${p.id}"></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    if (expandedProjectId !== null) {
+        renderWorkerList(expandedProjectId, "");
+    }
+}
+
+/* =========================
+   EXPAND / COLLAPSE
+   ========================= */
+
+function toggleProjectExpand(projectId) {
+    openWorkerRowId = null;
+
+    if (expandedProjectId === projectId) {
+        expandedProjectId = null;
+    } else {
+        expandedProjectId = projectId;
+    }
+
+    renderProjectGrid();
+}
+
+/* =========================
+   SEARCH / TOP 5
+   ========================= */
+
+function totalEarnedFor(row) {
+    return Number(row.pending_earned || 0) + Number(row.paid_earned || 0);
+}
+
+function handleAnalyticsWorkerSearch(projectId, query) {
+    renderWorkerList(projectId, query);
+}
+
+function renderWorkerList(projectId, query) {
+    const listEl = document.getElementById("workerList-" + projectId);
+    const labelEl = document.getElementById("listLabel-" + projectId);
+    if (!listEl) return;
+
+    const term = query.trim().toLowerCase();
+    const projectRows = allBreakdown.filter(r => r.micro_task_id === projectId);
+
+    let rows;
+    if (term === "") {
+        labelEl.textContent = "Top 5 earners";
+        rows = [...projectRows]
+            .sort((a, b) => totalEarnedFor(b) - totalEarnedFor(a))
+            .slice(0, 5);
+    } else {
+        labelEl.textContent = "Search results";
+        rows = projectRows.filter(r => (r.email || "").toLowerCase().includes(term));
+    }
+
+    listEl.innerHTML = "";
+
+    if (rows.length === 0) {
+        listEl.innerHTML = `<div class="empty-mini">${term === "" ? "No workers on this project yet." : "No worker found with that email."}</div>`;
+        return;
+    }
+
+    rows.forEach(row => {
+        const isHeld = !!row.task_hold;
+        const total = totalEarnedFor(row);
+        const rowKey = projectId + "-" + row.user_id;
+
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+            <div class="worker-mini-row" onclick="toggleWorkerRow('${rowKey}')">
+                <div class="top-line">
+                    <div style="min-width:0;">
+                        <div class="name">${escapeHTML(row.full_name)}</div>
+                        <div class="email">${escapeHTML(row.email)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="total">$${total.toFixed(2)}</div>
+                        <div>${isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>'}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="action-${rowKey}"></div>
+        `;
+        listEl.appendChild(wrap);
+
+        if (openWorkerRowId === rowKey) {
+            renderWorkerAction(rowKey, row);
+        }
+    });
+}
+
+function toggleWorkerRow(rowKey) {
+    openWorkerRowId = (openWorkerRowId === rowKey) ? null : rowKey;
+    const [projectIdStr] = rowKey.split("-");
+    const projectId = Number(projectIdStr);
+    const input = document.querySelector(`#panel-${projectId} .worker-search-input`);
+    renderWorkerList(projectId, input ? input.value : "");
+}
+
+function renderWorkerAction(rowKey, row) {
+    const actionEl = document.getElementById("action-" + rowKey);
+    if (!actionEl) return;
+
+    const isHeld = !!row.task_hold;
+
+    actionEl.innerHTML = `
+        <div class="worker-action-row">
+            <span style="font-size:.78rem;color:#9dadc1;">${isHeld ? "This worker can't apply for new tasks." : "This worker can apply for new tasks."}</span>
+            <button onclick="event.stopPropagation(); toggleHold(${row.user_id}, ${isHeld ? "false" : "true"})">
+                ${isHeld ? "Remove Hold" : "Hold from New Tasks"}
+            </button>
+        </div>
+    `;
+}
+
+/* =========================
+   HOLD ACTION
+   ========================= */
+
+async function toggleHold(userId, hold) {
+    const verb = hold
+        ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)"
+        : "remove this worker's hold";
+    if (!confirm(`Are you sure you want to ${verb}?`)) return;
+
+    try {
+        await setTaskHold(userId, hold);
+        allBreakdown = allBreakdown.map(r => r.user_id === userId ? { ...r, task_hold: hold ? 1 : 0 } : r);
+
+        if (expandedProjectId !== null) {
+            const input = document.querySelector(`#panel-${expandedProjectId} .worker-search-input`);
+            renderWorkerList(expandedProjectId, input ? input.value : "");
+        }
+    } catch (err) {
+        alert(err.message || "Failed to update hold status.");
+    }
+}
+
+/* =========================
+   INIT
+   ========================= */
+
+async function renderAll() {
+    renderTopStats();
+
+    const grid = document.getElementById("projectGrid");
+
+    try {
+        [allProjects, allBreakdown] = await Promise.all([fetchProjects(), fetchBreakdown()]);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</p>`;
+        return;
+    }
+
+    renderProjectGrid();
+}
+
+
+
+/* =========================================================
+   OFFERWALL ANALYTICS
+   -----------------------------------------------------------
+   Reuses the same provider + earnings endpoints already live in
+   admin-offerwalls.html - no new backend routes needed. "Provider"
+   here plays the same role "Project" plays for Micro Tasks: one
+   card per provider, expandable into a searchable worker list with
+   top earners, same interaction pattern as the Micro Tasks tab.
+
+   NOTE: the Hold action renders using userId/fullName/taskHold
+   fields on each earnings row. /api/admin/offerwall-earnings now
+   returns those (worker.js joins users on u.full_name/u.task_hold
+   and maps them to fullName/taskHold), so this list picks them up
+   with no frontend changes needed, same as the Bonus Task row in
+   Earnings History on the worker side.
+   ========================================================= */
+
+let offerwallDataLoaded = false;
+let owProviders = [];
+let owEarnings = [];
+let expandedProviderKey = null;
+let openOwWorkerRowId = null;
+
+async function fetchOwProviders() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load providers");
+    return data.providers || [];
+}
+
+async function fetchOwEarnings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load earnings");
+    return data.earnings || [];
+}
+
+function owEarningsFor(providerKey) {
+    return owEarnings.filter(e => e.providerKey === providerKey);
+}
+
+function owWorkersEarningCount(providerKey) {
+    const seen = new Set();
+    owEarningsFor(providerKey).forEach(e => seen.add(e.userId || e.workerEmail));
+    return seen.size;
+}
+
+async function renderOfferwallTopStats() {
+    document.getElementById("owTotalActiveProviders").textContent =
+        owProviders.filter(p => p.status === "active").length;
+
+    document.getElementById("owTotalCompletions").textContent = owEarnings.length;
+
+    const pending = owEarnings.filter(e => e.status === "pending").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
+    const paid = owEarnings.filter(e => e.status === "paid").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
+
+    document.getElementById("owTotalPending").textContent = formatMoney(pending);
+    document.getElementById("owTotalPaidOut").textContent = formatMoney(paid);
+}
+
+function renderProviderGrid() {
+    const grid = document.getElementById("providerGrid");
+    grid.innerHTML = "";
+
+    if (owProviders.length === 0) {
+        grid.innerHTML = `<p class="empty-state">No providers configured yet — add one from the Offerwalls page.</p>`;
+        return;
+    }
+
+    owProviders.forEach(p => {
+        const rows = owEarningsFor(p.providerKey);
+        const submissions = rows.length;
+        const paidCount = rows.filter(r => r.status === "paid").length;
+
+        const card = document.createElement("div");
+        card.className = "project-card" + (expandedProviderKey === p.providerKey ? " expanded" : "");
+        card.id = "ow-card-" + p.providerKey;
+
+        card.innerHTML = `
+            <div class="project-card-summary" onclick="toggleProviderExpand('${escapeHTML(p.providerKey)}')">
+                <h3>${escapeHTML(p.displayName)}</h3>
+                <div class="rate">${statusBadge(capitalize(p.status))}</div>
+                <div class="stat-row"><span>Workers earning</span><span>${owWorkersEarningCount(p.providerKey)}</span></div>
+                <div class="stat-row"><span>Completions</span><span>${submissions}</span></div>
+                <div class="stat-row"><span>Paid</span><span>${paidCount}</span></div>
+                <div class="expand-hint">${expandedProviderKey === p.providerKey ? "▴ Hide workers" : "▾ Find a worker / view top earners"}</div>
+            </div>
+            <div class="project-card-panel" id="ow-panel-${p.providerKey}" style="display:${expandedProviderKey === p.providerKey ? "block" : "none"};">
+                <input
+                    type="text"
+                    class="worker-search-input"
+                    placeholder="Search by email..."
+                    oninput="handleOwWorkerSearch('${escapeHTML(p.providerKey)}', this.value)"
+                >
+                <div class="list-label" id="ow-listLabel-${p.providerKey}">Top 5 earners</div>
+                <div id="ow-workerList-${p.providerKey}"></div>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    if (expandedProviderKey !== null) {
+        renderOwWorkerList(expandedProviderKey, "");
+    }
+}
+
+function toggleProviderExpand(providerKey) {
+    openOwWorkerRowId = null;
+    expandedProviderKey = (expandedProviderKey === providerKey) ? null : providerKey;
+    renderProviderGrid();
+}
+
+function owTotalEarnedFor(row) {
+    // "paid"/"pending" is all we know for certain from the earnings feed;
+    // anything not explicitly paid counts as pending, same convention as
+    // the Micro Tasks pending/paid split above.
+    return Number(row.workerAmount || 0);
+}
+
+function handleOwWorkerSearch(providerKey, query) {
+    renderOwWorkerList(providerKey, query);
+}
+
+function renderOwWorkerList(providerKey, query) {
+    const listEl = document.getElementById("ow-workerList-" + providerKey);
+    const labelEl = document.getElementById("ow-listLabel-" + providerKey);
+    if (!listEl) return;
+
+    const term = query.trim().toLowerCase();
+    const providerRows = owEarningsFor(providerKey);
+
+    // Group by worker so one worker's multiple completions become one row,
+    // same "one row per worker" shape as the Micro Tasks list.
+    const byWorker = new Map();
+    providerRows.forEach(r => {
+        const key = r.userId || r.workerEmail;
+        if (!byWorker.has(key)) {
+            byWorker.set(key, {
+                userId: r.userId,
+                email: r.workerEmail || "",
+                fullName: r.fullName || r.workerEmail || "Worker",
+                taskHold: r.taskHold,
+                total: 0,
+                count: 0
+            });
+        }
+        const entry = byWorker.get(key);
+        entry.total += owTotalEarnedFor(r);
+        entry.count += 1;
+    });
+
+    let rows = Array.from(byWorker.values());
+
+    if (term === "") {
+        labelEl.textContent = "Top 5 earners";
+        rows = rows.sort((a, b) => b.total - a.total).slice(0, 5);
+    } else {
+        labelEl.textContent = "Search results";
+        rows = rows.filter(r => r.email.toLowerCase().includes(term));
+    }
+
+    listEl.innerHTML = "";
+
+    if (rows.length === 0) {
+        listEl.innerHTML = `<div class="empty-mini">${term === "" ? "No workers on this provider yet." : "No worker found with that email."}</div>`;
+        return;
+    }
+
+    rows.forEach(row => {
+        const isHeld = !!row.taskHold;
+        const rowKey = providerKey + "-" + (row.userId || row.email);
+
+        const wrap = document.createElement("div");
+        wrap.innerHTML = `
+            <div class="worker-mini-row" onclick="toggleOwWorkerRow('${escapeHTML(rowKey)}', '${escapeHTML(providerKey)}')">
+                <div class="top-line">
+                    <div style="min-width:0;">
+                        <div class="name">${escapeHTML(row.fullName)}</div>
+                        <div class="email">${escapeHTML(row.email)}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="total">$${row.total.toFixed(2)}</div>
+                        <div>${row.userId ? (isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>') : ""}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="ow-action-${rowKey}"></div>
+        `;
+        listEl.appendChild(wrap);
+
+        if (openOwWorkerRowId === rowKey) {
+            renderOwWorkerAction(rowKey, row);
+        }
+    });
+}
+
+function toggleOwWorkerRow(rowKey, providerKey) {
+    openOwWorkerRowId = (openOwWorkerRowId === rowKey) ? null : rowKey;
+    const input = document.querySelector(`#ow-panel-${providerKey} .worker-search-input`);
+    renderOwWorkerList(providerKey, input ? input.value : "");
+}
+
+function renderOwWorkerAction(rowKey, row) {
+    const actionEl = document.getElementById("ow-action-" + rowKey);
+    if (!actionEl) return;
+
+    // Without a confirmed userId on the earnings row we can't safely wire
+    // the Hold action - degrade gracefully instead of guessing an ID.
+    if (!row.userId) {
+        actionEl.innerHTML = "";
+        return;
+    }
+
+    const isHeld = !!row.taskHold;
+
+    actionEl.innerHTML = `
+        <div class="worker-action-row">
+            <span style="font-size:.78rem;color:#9dadc1;">${isHeld ? "This worker can't apply for new tasks." : "This worker can apply for new tasks."}</span>
+            <button onclick="event.stopPropagation(); toggleOwHold(${row.userId}, ${isHeld ? "false" : "true"})">
+                ${isHeld ? "Remove Hold" : "Hold from New Tasks"}
+            </button>
+        </div>
+    `;
+}
+
+async function toggleOwHold(userId, hold) {
+    const verb = hold
+        ? "place this worker on hold (they'll keep current tasks but can't apply for new ones)"
+        : "remove this worker's hold";
+    if (!confirm(`Are you sure you want to ${verb}?`)) return;
+
+    try {
+        await setTaskHold(userId, hold);
+        owEarnings = owEarnings.map(r => r.userId === userId ? { ...r, taskHold: hold } : r);
+
+        if (expandedProviderKey !== null) {
+            const input = document.querySelector(`#ow-panel-${expandedProviderKey} .worker-search-input`);
+            renderOwWorkerList(expandedProviderKey, input ? input.value : "");
+        }
+    } catch (err) {
+        alert(err.message || "Failed to update hold status.");
+    }
+}
+
+async function renderOfferwallAll() {
+    renderOfferwallTopStats();
+
+    const grid = document.getElementById("providerGrid");
+
+    try {
+        [owProviders, owEarnings] = await Promise.all([fetchOwProviders(), fetchOwEarnings()]);
+    } catch (err) {
+        grid.innerHTML = `<p style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</p>`;
+        return;
+    }
+
+    renderOfferwallTopStats();
+    renderProviderGrid();
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.capitalize = capitalize;
+    window.fetchBreakdown = fetchBreakdown;
+    window.fetchOwEarnings = fetchOwEarnings;
+    window.fetchOwProviders = fetchOwProviders;
+    window.fetchProjects = fetchProjects;
+    window.fetchStats = fetchStats;
+    window.handleAnalyticsWorkerSearch = handleAnalyticsWorkerSearch;
+    window.handleOwWorkerSearch = handleOwWorkerSearch;
+    window.owEarningsFor = owEarningsFor;
+    window.owTotalEarnedFor = owTotalEarnedFor;
+    window.owWorkersEarningCount = owWorkersEarningCount;
+    window.renderAll = renderAll;
+    window.renderOfferwallAll = renderOfferwallAll;
+    window.renderOfferwallTopStats = renderOfferwallTopStats;
+    window.renderOwWorkerAction = renderOwWorkerAction;
+    window.renderOwWorkerList = renderOwWorkerList;
+    window.renderProjectGrid = renderProjectGrid;
+    window.renderProviderGrid = renderProviderGrid;
+    window.renderTopStats = renderTopStats;
+    window.renderWorkerAction = renderWorkerAction;
+    window.renderWorkerList = renderWorkerList;
+    window.setTaskHold = setTaskHold;
+    window.switchAnalyticsTab = switchAnalyticsTab;
+    window.toggleHold = toggleHold;
+    window.toggleOwHold = toggleOwHold;
+    window.toggleOwWorkerRow = toggleOwWorkerRow;
+    window.toggleProjectExpand = toggleProjectExpand;
+    window.toggleProviderExpand = toggleProviderExpand;
+    window.toggleWorkerRow = toggleWorkerRow;
+    window.totalEarnedFor = totalEarnedFor;
+    window.workersEarningCount = workersEarningCount;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_analytics = function() { renderAll(); };
+})();
+</script>
+
+<script>
+(function() {
+// Settings now come from the real backend (D1) via the Worker API,
+// not localStorage — so pricing/config is consistent across devices
+// and browsers instead of being per-browser.
+
+async function fetchSettings() {
+    const response = await authFetch(WORKER_URL + "/api/admin/settings");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load settings");
+    return data.settings;
+}
+
+async function loadSettings() {
+    try {
+        const settings = await fetchSettings();
+        document.getElementById("platformName").value = settings.platformName;
+        document.getElementById("pricePerReview").value = settings.pricePerReview;
+        document.getElementById("autoApproval").value = settings.autoApproval;
+        document.getElementById("supportEmail").value = settings.supportEmail;
+        document.getElementById("reviewerEnabled").value = String(settings.reviewerEnabled);
+        document.getElementById("reviewerSharePercent").value = settings.reviewerSharePercent;
+        // Defaults to 50 (50/50 split) if the backend hasn't been migrated
+        // with this field yet, rather than showing a blank/NaN input.
+        document.getElementById("offerwallWorkerSharePercent").value =
+            settings.offerwallWorkerSharePercent ?? 50;
+    } catch (err) {
+        alert("Could not load settings: " + err.message);
+    }
+}
+
+async function handleSaveSettings() {
+    const settings = {
+        platformName: document.getElementById("platformName").value.trim(),
+        pricePerReview: Number(document.getElementById("pricePerReview").value),
+        autoApproval: document.getElementById("autoApproval").value,
+        supportEmail: document.getElementById("supportEmail").value.trim(),
+        reviewerEnabled: document.getElementById("reviewerEnabled").value === "true",
+        reviewerSharePercent: Number(document.getElementById("reviewerSharePercent").value),
+        offerwallWorkerSharePercent: Number(document.getElementById("offerwallWorkerSharePercent").value)
+    };
+
+    try {
+        const response = await authFetch(WORKER_URL + "/api/admin/settings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(settings)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to save settings");
+        }
+
+        alert("Settings saved successfully!");
+    } catch (err) {
+        alert("Could not save settings: " + err.message);
+    }
+}
+
+    // ---- expose functions referenced by inline HTML handlers ----
+    window.fetchSettings = fetchSettings;
+    window.handleSaveSettings = handleSaveSettings;
+    window.loadSettings = loadSettings;
+
+    // ---- lazy init, called the first time this tab is opened ----
+    window.__admin_init_settings = function() { loadSettings(); };
+})();
 </script>
 
 </body>
