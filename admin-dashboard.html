@@ -1772,9 +1772,15 @@ function goAdminTab(tab) {
 
 function ensureAdminTabLoaded(tab) {
     if (loadedAdminTabs.has(tab)) return;
-    loadedAdminTabs.add(tab);
+    
     const initFn = window["__admin_init_" + tab];
-    if (typeof initFn === "function") initFn();
+    if (typeof initFn === "function") {
+        loadedAdminTabs.add(tab);
+        initFn();
+    } else {
+        // Retry on the next microtask if the IIFE hasn't registered it yet
+        setTimeout(() => ensureAdminTabLoaded(tab), 0);
+    }
 }
 
 window.addEventListener("hashchange", () => {
