@@ -1741,6 +1741,9 @@ let isAdminHashRouting = false;
 function isAdminTabAllowed(tab) {
     const navBtn = document.querySelector(`.side-item[data-tab="${tab}"]`);
     if (!navBtn) return true;
+    // Check the parent <li> too, since applyCoreTeamRestrictions() hides the <li>
+    const li = navBtn.closest("li");
+    if (li && li.style.display === "none") return false;
     return navBtn.style.display !== "none";
 }
 
