@@ -3640,9 +3640,9 @@ let openWorkerRowId = null;     // which worker row inside that panel is showing
 async function renderTopStats() {
     try {
         const stats = await fetchStats();
-        document.getElementById("totalVisits").textContent = stats.totalVisits || 0;
         document.getElementById("totalSubmissions").textContent = stats.totalSubmissions || 0;
         document.getElementById("totalCorrect").textContent = stats.totalCorrect || 0;
+        document.getElementById("totalPendingPayout").textContent = "$" + Number(stats.totalPending || 0).toFixed(2);
         document.getElementById("totalPaidOut").textContent = "$" + Number(stats.totalEarned || 0).toFixed(2);
     } catch (err) {
         console.error("Could not load stats:", err);
