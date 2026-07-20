@@ -782,7 +782,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <div class="noise"></div>
 
-<script src="script.js?v=20260720"></script>
+<script src="script.js?v=20260721"></script>
 
 <script>
     protectPage("admin");
@@ -1530,6 +1530,20 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         <section class="page-panel" id="panel-settings" data-permission="settings">
 
         <section class="recent">
+            <h2>Discord</h2>
+            <div class="card">
+                <p class="muted" style="margin-top:-6px;">Link your Discord account to join the community server. Your role here updates automatically to match your role in Discord.</p>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:16px;">
+                    <div>
+                        <div class="nm" id="discordStatusLabel">Not linked</div>
+                        <div class="muted" style="font-size:.85rem;" id="discordRoleLabel"></div>
+                    </div>
+                    <button class="primary" id="discordLinkBtn" onclick="linkDiscord()">🔗 Link Discord</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="recent">
             <h2>Platform Settings</h2>
             <div class="card">
                 <label>Platform Name</label>
@@ -1566,6 +1580,11 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
    HARMONIA ADMIN SPA — routing / shell logic
    (same pattern as worker-dashboard.html's tab router)
    ========================================================== */
+
+/* ---------------- Discord linking (placeholder — OAuth flow to be wired next) ---------------- */
+function linkDiscord() {
+    alert("Discord linking is coming soon!");
+}
 
 function toggleSidebar() {
     if (window.innerWidth <= 980) {

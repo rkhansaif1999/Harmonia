@@ -362,7 +362,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <body>
 
-<script src="script.js?v=20260720"></script>
+<script src="script.js?v=20260721"></script>
 <script>
     protectPage("worker");
 </script>
@@ -394,6 +394,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
             <ul style="margin-top:10px;">
+                <li><button class="side-item" data-tab="settings"><span class="ic">⚙️</span> Settings</button></li>
                 <li><a href="login.html" onclick="logout()" class="side-item"><span class="ic">🚪</span> Logout</a></li>
             </ul>
         </div>
@@ -664,6 +665,22 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </section>
 
+        <!-- ================= SETTINGS ================= -->
+        <section class="page-panel" id="panel-settings">
+            <div class="card">
+                <h2>Discord</h2>
+                <p class="muted" style="margin-top:-6px;">Link your Discord account to join the community server. Your role here updates automatically to match your role in Discord.</p>
+
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:16px;">
+                    <div>
+                        <div class="nm" id="discordStatusLabel">Not linked</div>
+                        <div class="muted" style="font-size:.85rem;" id="discordRoleLabel"></div>
+                    </div>
+                    <button class="primary" id="discordLinkBtn" onclick="linkDiscord()">🔗 Link Discord</button>
+                </div>
+            </div>
+        </section>
+
     </main>
 </div>
 
@@ -770,9 +787,14 @@ function toggleSidebar() {
 }
 
 /* ---------------- Tab routing ---------------- */
-const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments" };
+const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments", settings: "Settings" };
 const loadedTabs = new Set();
 let isHashRouting = false;
+
+/* ---------------- Discord linking (placeholder — OAuth flow to be wired next) ---------------- */
+function linkDiscord() {
+    alert("Discord linking is coming soon!");
+}
 
 function goTab(tab, sub = null) {
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
@@ -831,7 +853,7 @@ window.addEventListener("hashchange", () => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
-    const valid = ["overview", "tasks", "messages", "earnings"];
+    const valid = ["overview", "tasks", "messages", "earnings", "settings"];
     if (valid.includes(tab)) {
         goTab(tab, sub);
     }
@@ -852,7 +874,7 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
-    const valid = ["overview", "tasks", "messages", "earnings"];
+    const valid = ["overview", "tasks", "messages", "earnings", "settings"];
     goTab(valid.includes(tab) ? tab : "overview", sub);
 })();
 

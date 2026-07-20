@@ -1100,6 +1100,7 @@ function enhanceTopbar() {
     // just don't render a dead link for them.
     const SETTINGS_URL_BY_ROLE = {
         admin: "admin-dashboard.html#settings",
+        worker: "worker-dashboard.html#settings",
     };
 
     // Roles that get a "Contact Support" item in the profile dropdown.
