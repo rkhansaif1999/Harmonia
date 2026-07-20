@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linking Discord...</title>
+    <script src="script.js?v=20260721"></script>
+    <style>body{font-family:sans-serif;text-align:center;padding:50px;background:#0f172a;color:#fff;}</style>
+</head>
+<body>
+    <h2>Linking your Discord account...</h2>
+    <p>Please wait.</p>
+    <script>
+        (async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            
+            if (code) {
+                try {
+                    const res = await authFetch(WORKER_URL + "/api/discord/link", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ code: code })
+                    });
+                    
+                    if (res.ok) {
+                        window.location.href = "/worker-dashboard.html#settings";
+                    } else {
+                        document.body.innerHTML = "<h2>Failed to link Discord.</h2><p>Please go back to the dashboard and try again.</p>";
+                    }
+                } catch (err) {
+                    document.body.innerHTML = "<h2>Error linking Discord.</h2>";
+                }
+            } else {
+                window.location.href = "/worker-dashboard.html";
+            }
+        })();
+    </script>
+</body>
+</html>
