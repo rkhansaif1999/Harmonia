@@ -285,12 +285,6 @@ Forgot password?
 <div class="label">Admin</div>
 </div>
 
-<div class="role-card" tabindex="0" onclick="selectRole('client',this)">
-<span class="check">✓</span>
-<span class="icon">🏢</span>
-<div class="label">Client</div>
-</div>
-
 <div class="role-card" tabindex="0" onclick="selectRole('worker',this)">
 <span class="check">✓</span>
 <span class="icon">👤</span>
@@ -336,9 +330,7 @@ Don't have an account?
         switch (existing.role) {
             case "admin": window.location.href = "admin-dashboard.html"; break;
             case "core_team": window.location.href = "admin-dashboard.html"; break;
-            case "client": window.location.href = "client-dashboard.html"; break;
             case "worker": window.location.href = "worker-dashboard.html"; break;
-            case "reviewer": window.location.href = "reviewer-dashboard.html"; break;
         }
     });
 })();
@@ -372,9 +364,7 @@ function selectRole(role, element){
 const ROLE_DASHBOARD = {
     admin: "admin-dashboard.html",
     core_team: "admin-dashboard.html",
-    client: "client-dashboard.html",
-    worker: "worker-dashboard.html",
-    reviewer: "reviewer-dashboard.html"
+    worker: "worker-dashboard.html"
 };
 
 // Core Team is an admin-tier role (limited to whichever tabs they were

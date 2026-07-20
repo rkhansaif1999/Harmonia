@@ -437,13 +437,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
                 <div class="stat-card">
                     <div class="top">
-                        <div><div class="lbl">Assigned Tasks</div><div class="val" id="ovTasks">0</div></div>
-                        <div class="ic" style="background:var(--primary-soft);color:var(--primary);">📋</div>
-                    </div>
-                    <div class="sub">Client review projects</div>
-                </div>
-                <div class="stat-card">
-                    <div class="top">
                         <div><div class="lbl">Active Micro Tasks</div><div class="val" id="ovMicro">0</div></div>
                         <div class="ic" style="background:var(--purple-soft);color:var(--purple);">⚡</div>
                     </div>
@@ -453,13 +446,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
             <div class="grid-2">
                 <div class="grid-col">
-                    <div class="card">
-                        <div class="section-title"><h2>My Tasks</h2><button class="link-btn" onclick="goTab('tasks')">View all →</button></div>
-                        <table>
-                            <thead><tr><th>Project</th><th>Category</th><th>Reviews</th><th>Status</th><th>Action</th></tr></thead>
-                            <tbody id="ovTaskTable"><tr><td colspan="5" class="empty-state">Loading…</td></tr></tbody>
-                        </table>
-                    </div>
                     <div class="card">
                         <div class="section-title">
                             <h2>Earnings Overview</h2>
@@ -505,23 +491,12 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         <!-- ================= TASKS ================= -->
         <section class="page-panel" id="panel-tasks">
             <div class="subtabs">
-                <button class="subtab-btn active" data-group="tasks" data-sub="orders" onclick="switchSubtab('tasks','orders')">✅ My Tasks</button>
-                <button class="subtab-btn" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
+                <button class="subtab-btn active" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
                 <button class="subtab-btn" data-group="tasks" data-sub="bonus" onclick="switchSubtab('tasks','bonus')">🎁 Bonus Tasks</button>
                 <button class="subtab-btn" data-group="tasks" data-sub="cpalead" onclick="switchSubtab('tasks','cpalead')">🎯 CPAlead Tasks</button>
             </div>
 
-            <div class="subpanel active" data-group="tasks" data-sub="orders">
-                <div class="card">
-                    <h2>My Assigned Tasks</h2>
-                    <table>
-                        <thead><tr><th>Project</th><th>Category</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody id="taskTable"><tr><td colspan="4" class="empty-state">Loading tasks…</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="subpanel" data-group="tasks" data-sub="micro">
+            <div class="subpanel active" data-group="tasks" data-sub="micro">
                 <div class="card">
                     <h2>Approved — Ready to Work</h2>
                     <table>
@@ -837,7 +812,7 @@ function ensureTabLoaded(tab) {
     if (loadedTabs.has(tab)) return;
     loadedTabs.add(tab);
     if (tab === "overview") renderOverview();
-    if (tab === "tasks") { fetchTasks(); loadApprovedMicroTasks(); loadMicroTasksToApply(); }
+    if (tab === "tasks") { loadApprovedMicroTasks(); loadMicroTasksToApply(); }
     if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
     if (tab === "earnings") { loadEarnings(); loadEarningsHistory(); }
     if (tab === "payments") loadPayoutMethod();
@@ -1043,13 +1018,7 @@ function microTaskStatusLabel(status) {
 }
 
 async function renderOverview() {
-    let tasks = [], microTasks = [], summary = { totalPending: 0, totalPaid: 0 };
-
-    try {
-        const r = await authFetch(WORKER_URL + "/api/worker/tasks");
-        const d = await r.json();
-        if (r.ok) tasks = d.tasks || [];
-    } catch (err) { console.error(err); }
+    let microTasks = [], summary = { totalPending: 0, totalPaid: 0 };
 
     try {
         const r = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
@@ -1068,21 +1037,7 @@ async function renderOverview() {
 
     document.getElementById("ovPending").textContent = formatMoney(summary.totalPending || 0);
     document.getElementById("ovPaid").textContent = formatMoney(summary.totalPaid || 0);
-    document.getElementById("ovTasks").textContent = tasks.length;
     document.getElementById("ovMicro").textContent = approvedMicro.length;
-
-    const taskTable = document.getElementById("ovTaskTable");
-    taskTable.innerHTML = "";
-    tasks.slice(0, 6).forEach(task => {
-        taskTable.innerHTML += `<tr>
-            <td>${escapeHTML(task.project_name)}</td>
-            <td>${escapeHTML(task.category)}</td>
-            <td>${task.reviews}</td>
-            <td>${statusBadge(task.status)}</td>
-            <td>${task.status === "Completed" ? "✅" : task.status === "In Review" ? "⏳" : `<button class="secondary" onclick="goTab('tasks')">Open</button>`}</td>
-        </tr>`;
-    });
-    if (tasks.length === 0) taskTable.innerHTML = `<tr><td colspan="5" class="empty-state">No tasks assigned to you yet</td></tr>`;
 
     const microTable = document.getElementById("ovMicroTable");
     microTable.innerHTML = "";
@@ -1105,13 +1060,11 @@ async function renderOverview() {
 
     let chartRows = [];
     try {
-        const [r1, r2, r3] = await Promise.all([
+        const [r1, r3] = await Promise.all([
             authFetch(WORKER_URL + "/api/worker/offerwall-earnings").catch(() => null),
-            authFetch(WORKER_URL + "/api/worker/earnings").catch(() => null),
             authFetch(WORKER_URL + "/api/worker/micro-task-earnings").catch(() => null)
         ]);
         if (r1 && r1.ok) { const d = await r1.json(); (d.earnings || []).forEach(e => chartRows.push({ date: e.createdAt ? new Date(e.createdAt) : null, amount: e.workerAmount })); }
-        if (r2 && r2.ok) { const d = await r2.json(); (d.earnings || []).forEach(e => chartRows.push({ date: e.createdAt ? new Date(e.createdAt) : null, amount: e.amount })); }
         if (r3 && r3.ok) { const d = await r3.json(); (d.earnings || []).forEach(e => chartRows.push({ date: e.createdAt ? new Date(e.createdAt) : null, amount: e.amount })); }
     } catch (err) { console.error(err); }
 
@@ -1128,59 +1081,6 @@ async function applyMicroTask(microTaskId) {
         loadMicroTasksToApply();
     } catch (err) { alert("Unable to connect to the server."); console.error(err); }
 }
-
-/* ==========================================================
-   TASKS
-   ========================================================== */
-async function fetchTasks() {
-    const table = document.getElementById("taskTable");
-    try {
-        const response = await authFetch(WORKER_URL + "/api/worker/tasks");
-        let data;
-        try { data = await response.json(); } catch (e) { table.innerHTML = `<tr><td colspan="4" class="empty-state">Server returned an invalid response.</td></tr>`; return; }
-        if (!response.ok) { table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load tasks.")}</td></tr>`; return; }
-        renderTasks(data.tasks || []);
-    } catch (err) {
-        console.error(err);
-        table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
-    }
-}
-
-function renderTasks(tasks) {
-    const table = document.getElementById("taskTable");
-    table.innerHTML = "";
-    if (tasks.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No tasks assigned yet</td></tr>`; return; }
-
-    tasks.forEach(task => {
-        let actionButtons = "";
-        if (task.status === "Needs Revision") actionButtons = `<button class="secondary" onclick="resubmit('${task.order_id}')">Resubmit</button>`;
-        else if (task.status === "Completed") actionButtons = "✅ Done";
-        else if (task.status === "In Review") actionButtons = "⏳ Awaiting review";
-        else if (task.status === "In Progress") actionButtons = `<button class="secondary" onclick="submitTask('${task.order_id}')">Submit</button>`;
-        else actionButtons = `<button class="secondary" onclick="startTask('${task.order_id}')">Start</button> <button class="secondary" onclick="submitTask('${task.order_id}')">Submit</button>`;
-
-        table.innerHTML += `<tr>
-            <td>${escapeHTML(task.project_name)}</td>
-            <td>${escapeHTML(task.category)}</td>
-            <td>${statusBadge(task.status)}${task.status === "Needs Revision" && task.rejection_reason ? `<div class="muted" style="font-size:.78rem;margin-top:6px;">— ${escapeHTML(task.rejection_reason)}</div>` : ""}</td>
-            <td>${actionButtons}</td>
-        </tr>`;
-    });
-}
-
-async function callTaskAction(path, orderId) {
-    try {
-        const response = await authFetch(WORKER_URL + path, { method: "POST", body: JSON.stringify({ orderId }) });
-        let data;
-        try { data = await response.json(); } catch (e) { alert("Server returned an invalid response."); return; }
-        if (!response.ok) { alert(data?.error || "Something went wrong. Please try again."); return; }
-        await fetchTasks();
-        loadedTabs.delete("overview");
-    } catch (err) { alert("Unable to connect to the server."); console.error(err); }
-}
-function startTask(orderId) { callTaskAction("/api/worker/tasks/start", orderId); }
-function submitTask(orderId) { callTaskAction("/api/worker/tasks/submit", orderId); }
-function resubmit(orderId) { callTaskAction("/api/worker/tasks/submit", orderId); }
 
 function formatPayRate(amount) {
     const n = Number(amount) || 0;
@@ -1782,12 +1682,6 @@ async function loadEarningsHistory() {
         const response = await authFetch(WORKER_URL + "/api/worker/offerwall-earnings");
         const data = await response.json();
         if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: "Bonus Task", amount: e.workerAmount, status: e.status })));
-    } catch (err) { console.error(err); }
-
-    try {
-        const response = await authFetch(WORKER_URL + "/api/worker/earnings");
-        const data = await response.json();
-        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: "Order: " + (e.projectName || e.orderId), amount: e.amount, status: e.status })));
     } catch (err) { console.error(err); }
 
     try {

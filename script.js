@@ -319,9 +319,7 @@ async function loginUser(event) {
         switch (data.user.role) {
             case "admin":    window.location.href = "admin-dashboard.html";    break;
             case "core_team":window.location.href = "admin-dashboard.html";    break;
-            case "client":   window.location.href = "client-dashboard.html";   break;
             case "worker":   window.location.href = "worker-dashboard.html";   break;
-            case "reviewer": window.location.href = "reviewer-dashboard.html"; break;
             default:         alert("Unknown account role.");
         }
 
@@ -432,16 +430,6 @@ if (role && !roleSatisfies(role, verifiedUser.role)) {
 
     if (verifiedUser.role === "worker") {
         window.location.href = "worker-dashboard.html";
-        return;
-    }
-
-    if (verifiedUser.role === "client") {
-        window.location.href = "client-dashboard.html";
-        return;
-    }
-
-    if (verifiedUser.role === "reviewer") {
-        window.location.href = "reviewer-dashboard.html";
         return;
     }
 
@@ -951,74 +939,7 @@ async function fetchNotifications(user) {
             }
         }
 
-        if (user.role === "client") {
-            const ordersRes = await authFetch(WORKER_URL + "/api/orders");
-            if (ordersRes.ok) {
-                const ordersData = await ordersRes.json();
-                const orders = ordersData.orders || [];
-
-                const completed = orders.filter(o => o.status === "Completed");
-                if (completed.length > 0) {
-                    notifications.push({
-                        icon: "🎉",
-                        text: `${completed.length} project${completed.length > 1 ? "s" : ""} completed`,
-                        link: "client-dashboard.html"
-                    });
-                }
-
-                const needsPayment = orders.filter(o => o.status === "Awaiting Payment");
-                if (needsPayment.length > 0) {
-                    notifications.push({
-                        icon: "💳",
-                        text: `${needsPayment.length} order${needsPayment.length > 1 ? "s" : ""} awaiting payment`,
-                        link: "client-dashboard.html"
-                    });
-                }
-
-                // Admin replies in support chat
-                orders.forEach(o => {
-                    const chat = o.supportChat || [];
-                    if (chat.length > 0 && chat[chat.length - 1].sender === "admin") {
-                        notifications.push({
-                            icon: "💬",
-                            text: `New reply on project "${o.project_name}"`,
-                            link: "client-dashboard.html"
-                        });
-                    }
-                });
-            }
-        }
-
-        if (user.role === "reviewer") {
-            const queueRes = await authFetch(WORKER_URL + "/api/reviewer/queue");
-            if (queueRes.ok) {
-                const queueData = await queueRes.json();
-                const pending = (queueData.queue || []).length;
-                if (pending > 0) {
-                    notifications.push({
-                        icon: "🔍",
-                        text: `${pending} order${pending > 1 ? "s" : ""} waiting for review`,
-                        link: "reviewer-dashboard.html"
-                    });
-                }
-            }
-        }
-
         if (user.role === "admin" || user.role === "core_team") {
-            // Pending payment approvals
-            const ordersRes = await authFetch(WORKER_URL + "/api/admin/orders");
-            if (ordersRes.ok) {
-                const ordersData = await ordersRes.json();
-                const underReview = (ordersData.orders || []).filter(o => o.status === "Under Review");
-                if (underReview.length > 0) {
-                    notifications.push({
-                        icon: "💳",
-                        text: `${underReview.length} payment${underReview.length > 1 ? "s" : ""} awaiting approval`,
-                        link: "admin-dashboard.html#projects"
-                    });
-                }
-            }
-
             // Unread worker support messages
             const supportRes = await authFetch(WORKER_URL + "/api/admin/worker-support");
             if (supportRes.ok) {
