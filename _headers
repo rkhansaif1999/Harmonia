@@ -1,0 +1,15 @@
+# Cache-Busting headers for Netlify / Cloudflare Pages
+# HTML pages: never cache, always fetch the latest version from the server
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Versioned static assets (style.css?v=..., script.js?v=...) can be cached
+# long-term because the ?v= query string changes whenever you update them
+/style.css
+  Cache-Control: no-cache, must-revalidate
+
+/script.js
+  Cache-Control: no-cache, must-revalidate
