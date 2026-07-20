@@ -1590,7 +1590,7 @@ function linkDiscord() {
 
 async function checkDiscordStatus() {
     try {
-        const res = await authFetch(WORKER_URL + "/api/discord/status");
+        const res = await authFetch(WORKER_URL + "/api/discord/status", { method: "POST" });
         const data = await res.json();
         
         const statusLabel = document.getElementById("discordStatusLabel");
