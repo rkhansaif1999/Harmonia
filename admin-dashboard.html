@@ -1583,7 +1583,32 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 /* ---------------- Discord linking (placeholder — OAuth flow to be wired next) ---------------- */
 function linkDiscord() {
-    alert("Discord linking is coming soon!");
+    const clientId = "152875846822650510";
+    const redirectUri = encodeURIComponent("https://harmoniaportal.online/discord-callback.html");
+    window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
+}
+
+async function checkDiscordStatus() {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/discord/status");
+        const data = await res.json();
+        
+        const statusLabel = document.getElementById("discordStatusLabel");
+        const roleLabel = document.getElementById("discordRoleLabel");
+        const linkBtn = document.getElementById("discordLinkBtn");
+
+        if (data.linked) {
+            statusLabel.textContent = "Discord Linked ✓";
+            roleLabel.textContent = `Discord Role: ${data.role || 'Member'}`;
+            linkBtn.textContent = "✓ Linked";
+            linkBtn.disabled = true;
+        } else {
+            statusLabel.textContent = "Not linked";
+            roleLabel.textContent = "";
+        }
+    } catch (err) {
+        console.error("Discord status check failed", err);
+    }
 }
 
 function toggleSidebar() {
@@ -4246,7 +4271,7 @@ async function handleSaveSettings() {
     window.loadSettings = loadSettings;
 
     // ---- lazy init, called the first time this tab is opened ----
-    window.__admin_init_settings = function() { loadSettings(); };
+    window.__admin_init_settings = function() { loadSettings(); checkDiscordStatus(); };
 })();
 </script>
 
