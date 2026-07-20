@@ -1595,6 +1595,7 @@ async function checkDiscordStatus() {
     try {
         const res = await authFetch(WORKER_URL + "/api/discord/status");
         const data = await res.json();
+              console.log("Discord status response:", data);
         
         const statusLabel = document.getElementById("discordStatusLabel");
         const roleLabel = document.getElementById("discordRoleLabel");
