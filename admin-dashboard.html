@@ -1583,7 +1583,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 /* ---------------- Discord linking (placeholder — OAuth flow to be wired next) ---------------- */
 function linkDiscord() {
-    const clientId = "152875846822650510";
+    const clientId = "1528758468226580510";
     const redirectUri = encodeURIComponent("https://harmoniaportal.online/discord-callback.html");
     window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
 }
