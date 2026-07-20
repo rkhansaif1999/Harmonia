@@ -793,7 +793,32 @@ let isHashRouting = false;
 
 /* ---------------- Discord linking (placeholder — OAuth flow to be wired next) ---------------- */
 function linkDiscord() {
-    alert("Discord linking is coming soon!");
+    const clientId = "152875846822650510";
+    const redirectUri = encodeURIComponent("https://harmoniaportal.online/discord-callback.html");
+    window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify`;
+}
+
+async function checkDiscordStatus() {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/discord/status");
+        const data = await res.json();
+        
+        const statusLabel = document.getElementById("discordStatusLabel");
+        const roleLabel = document.getElementById("discordRoleLabel");
+        const linkBtn = document.getElementById("discordLinkBtn");
+
+        if (data.linked) {
+            statusLabel.textContent = "Discord Linked ✓";
+            roleLabel.textContent = `Discord Role: ${data.role || 'Member'}`;
+            linkBtn.textContent = "✓ Linked";
+            linkBtn.disabled = true;
+        } else {
+            statusLabel.textContent = "Not linked";
+            roleLabel.textContent = "";
+        }
+    } catch (err) {
+        console.error("Discord status check failed", err);
+    }
 }
 
 function goTab(tab, sub = null) {
@@ -829,6 +854,7 @@ function ensureTabLoaded(tab) {
     if (tab === "tasks") { loadApprovedMicroTasks(); loadMicroTasksToApply(); }
     if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
     if (tab === "earnings") { loadEarnings(); loadPayoutMethod(); }
+    if (tab === "settings") { checkDiscordStatus(); }
 }
 
 function loadSubtabContent(group, sub) {
