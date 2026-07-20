@@ -8,11 +8,12 @@
 </head>
 <body>
     <h2>Linking your Discord account...</h2>
-    <p>Please wait.</p>
+    <p id="statusMsg">Please wait.</p>
     <script>
         (async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
+            const statusMsg = document.getElementById('statusMsg');
             
             if (code) {
                 try {
@@ -23,12 +24,20 @@
                     });
                     
                     if (res.ok) {
-                        window.location.href = "/worker-dashboard.html#settings";
+                        // Check user role to redirect to the correct dashboard
+                        const user = getUser();
+                        if (user && user.role === 'admin') {
+                            window.location.href = "/admin-dashboard.html#settings";
+                        } else {
+                            window.location.href = "/worker-dashboard.html#settings";
+                        }
                     } else {
-                        document.body.innerHTML = "<h2>Failed to link Discord.</h2><p>Please go back to the dashboard and try again.</p>";
+                        const errorData = await res.json().catch(() => ({}));
+                        console.error("Backend Error Details:", errorData);
+                        statusMsg.innerHTML = `<strong style="color:#ef4444;">Failed to link Discord.</strong><br><br>Server says: ${errorData.error || 'Unknown error'}<br><br>Please go back to the dashboard and try again.`;
                     }
                 } catch (err) {
-                    document.body.innerHTML = "<h2>Error linking Discord.</h2>";
+                    statusMsg.innerHTML = `<strong style="color:#ef4444;">Error linking Discord.</strong><br>${err.message}`;
                 }
             } else {
                 window.location.href = "/worker-dashboard.html";
