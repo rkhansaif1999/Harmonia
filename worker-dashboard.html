@@ -373,8 +373,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <li><button class="side-item active" data-tab="overview"><span class="ic">🏠</span> Dashboard</button></li>
             <li><button class="side-item" data-tab="tasks"><span class="ic">✅</span> My Tasks</button></li>
             <li><button class="side-item" data-tab="messages"><span class="ic">✉️</span> Messages <span class="side-badge" id="msgBadge" style="display:none;"></span></button></li>
-            <li><button class="side-item" data-tab="earnings"><span class="ic">💰</span> Earnings</button></li>
-            <li><button class="side-item" data-tab="payments"><span class="ic">🏦</span> Payments</button></li>
+            <li><button class="side-item" data-tab="earnings"><span class="ic">💰</span> Earnings & Payments</button></li>
         </ul>
 
         <div class="side-label" data-core-team-only style="display:none;">Admin</div>
@@ -460,7 +459,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
                 <div class="grid-col">
                     <div class="card">
-                        <div class="section-title"><h2>Payout Method</h2><button class="link-btn" onclick="goTab('payments')">Manage →</button></div>
+                        <div class="section-title"><h2>Payout Method</h2><button class="link-btn" onclick="goTab('earnings')">Manage →</button></div>
                         <div id="ovPayoutStatus" class="muted">Loading…</div>
                         <div class="section-gap" style="border-top:1px solid var(--border);padding-top:14px;">
                             <div class="section-title" style="margin-bottom:8px;"><h3 style="font-size:.95rem;margin:0;">Quick Links</h3></div>
@@ -588,7 +587,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </section>
 
-        <!-- ================= EARNINGS ================= -->
+        <!-- ================= EARNINGS & PAYMENTS ================= -->
         <section class="page-panel" id="panel-earnings">
             <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
                 <div class="stat-card">
@@ -607,17 +606,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
 
             <div class="card section-gap">
-                <h2>Earnings History</h2>
-                <table>
-                    <thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>Status</th></tr></thead>
-                    <tbody id="earningsHistoryTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- ================= PAYMENTS ================= -->
-        <section class="page-panel" id="panel-payments">
-            <div class="card">
                 <h2>Payout Method</h2>
                 <p class="muted" style="margin-top:-6px;">Choose how you'd like to receive payouts. Changing your method requires a verification code sent to your account email.</p>
 
@@ -814,8 +802,7 @@ function ensureTabLoaded(tab) {
     if (tab === "overview") renderOverview();
     if (tab === "tasks") { loadApprovedMicroTasks(); loadMicroTasksToApply(); }
     if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
-    if (tab === "earnings") { loadEarnings(); loadEarningsHistory(); }
-    if (tab === "payments") loadPayoutMethod();
+    if (tab === "earnings") { loadEarnings(); loadPayoutMethod(); }
 }
 
 function loadSubtabContent(group, sub) {
@@ -840,7 +827,7 @@ window.addEventListener("hashchange", () => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
-    const valid = ["overview", "tasks", "messages", "earnings", "payments"];
+    const valid = ["overview", "tasks", "messages", "earnings"];
     if (valid.includes(tab)) {
         goTab(tab, sub);
     }
@@ -861,7 +848,7 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
-    const valid = ["overview", "tasks", "messages", "earnings", "payments"];
+    const valid = ["overview", "tasks", "messages", "earnings"];
     goTab(valid.includes(tab) ? tab : "overview", sub);
 })();
 
@@ -1674,29 +1661,7 @@ async function loadEarnings() {
     } catch (err) { console.error(err); }
 }
 
-async function loadEarningsHistory() {
-    const table = document.getElementById("earningsHistoryTable");
-    let rows = [];
-
-    try {
-        const response = await authFetch(WORKER_URL + "/api/worker/offerwall-earnings");
-        const data = await response.json();
-        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: "Bonus Task", amount: e.workerAmount, status: e.status })));
-    } catch (err) { console.error(err); }
-
-    try {
-        const response = await authFetch(WORKER_URL + "/api/worker/micro-task-earnings");
-        const data = await response.json();
-        if (response.ok) rows.push(...(data.earnings || []).map(e => ({ date: e.createdAt ? new Date(e.createdAt) : null, source: e.projectName || "Micro Task", amount: e.amount, status: e.status })));
-    } catch (err) { console.error(err); }
-
-    if (rows.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No earnings yet — completed tasks will show up here.</td></tr>`; return; }
-    rows.sort((a, b) => (b.date?.getTime() || 0) - (a.date?.getTime() || 0));
-    table.innerHTML = "";
-    rows.forEach(r => {
-        table.innerHTML += `<tr><td>${r.date ? r.date.toLocaleDateString() : "-"}</td><td>${escapeHTML(r.source)}</td><td>${formatMoney(r.amount)}</td><td>${statusBadge(capitalize(r.status))}</td></tr>`;
-    });
-}
+// Earnings History table function removed to merge Payments & Earnings tabs into one clean view.
 
 /* ==========================================================
    PAYMENTS
