@@ -24,13 +24,10 @@
                     });
                     
                     if (res.ok) {
-                        // Check user role to redirect to the correct dashboard
-                        const user = getUser();
-                        if (user && user.role === 'admin') {
-                            window.location.href = "/admin-dashboard.html#settings";
-                        } else {
-                            window.location.href = "/worker-dashboard.html#settings";
-                        }
+                        // Send them back to the exact dashboard they came from
+                        const returnUrl = localStorage.getItem('discord_return_url') || '/worker-dashboard.html#settings';
+                        localStorage.removeItem('discord_return_url'); // Clean up
+                        window.location.href = returnUrl;
                     } else {
                         const errorData = await res.json().catch(() => ({}));
                         console.error("Backend Error Details:", errorData);
