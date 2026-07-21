@@ -3956,15 +3956,33 @@ function owWorkersEarningCount(providerKey) {
     return seen.size;
 }
 
+async function fetchOwStats() {
+    const response = await authFetch(WORKER_URL + "/api/admin/offerwalls/stats");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to load offerwall stats");
+    return data;
+}
+
 async function renderOfferwallTopStats() {
+    try {
+        const stats = await fetchOwStats();
+        document.getElementById("owTotalActiveProviders").textContent = stats.activeProviders || 0;
+        document.getElementById("owTotalEarnings").textContent = formatMoney(stats.totalEarnings || 0);
+        document.getElementById("owTotalPending").textContent = formatMoney(stats.totalPending || 0);
+        document.getElementById("owTotalPaidOut").textContent = formatMoney(stats.totalPaid || 0);
+        return;
+    } catch (err) {
+        console.error("Could not load offerwall stats, falling back:", err);
+    }
+
     document.getElementById("owTotalActiveProviders").textContent =
         owProviders.filter(p => p.status === "active").length;
 
-    document.getElementById("owTotalCompletions").textContent = owEarnings.length;
-
     const pending = owEarnings.filter(e => e.status === "pending").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
     const paid = owEarnings.filter(e => e.status === "paid").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
+    const total = owEarnings.filter(e => e.status !== "reversed").reduce((s, e) => s + Number(e.workerAmount || 0), 0);
 
+    document.getElementById("owTotalEarnings").textContent = formatMoney(total);
     document.getElementById("owTotalPending").textContent = formatMoney(pending);
     document.getElementById("owTotalPaidOut").textContent = formatMoney(paid);
 }
