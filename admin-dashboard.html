@@ -3998,8 +3998,16 @@ function renderProviderGrid() {
 
     owProviders.forEach(p => {
         const rows = owEarningsFor(p.providerKey);
-        const submissions = rows.length;
-        const paidCount = rows.filter(r => r.status === "paid").length;
+
+        const totalEarnings = rows
+            .filter(r => r.status !== "reversed")
+            .reduce((s, r) => s + Number(r.workerAmount || 0), 0);
+        const pendingAmount = rows
+            .filter(r => r.status === "pending")
+            .reduce((s, r) => s + Number(r.workerAmount || 0), 0);
+        const paidAmount = rows
+            .filter(r => r.status === "paid")
+            .reduce((s, r) => s + Number(r.workerAmount || 0), 0);
 
         const card = document.createElement("div");
         card.className = "project-card" + (expandedProviderKey === p.providerKey ? " expanded" : "");
@@ -4009,9 +4017,10 @@ function renderProviderGrid() {
             <div class="project-card-summary" onclick="toggleProviderExpand('${escapeHTML(p.providerKey)}')">
                 <h3>${escapeHTML(p.displayName)}</h3>
                 <div class="rate">${statusBadge(capitalize(p.status))}</div>
+                <div class="stat-row"><span>Total Earnings</span><span>${formatMoney(totalEarnings)}</span></div>
+                <div class="stat-row"><span>Pending</span><span>${formatMoney(pendingAmount)}</span></div>
+                <div class="stat-row"><span>Paid</span><span>${formatMoney(paidAmount)}</span></div>
                 <div class="stat-row"><span>Workers earning</span><span>${owWorkersEarningCount(p.providerKey)}</span></div>
-                <div class="stat-row"><span>Completions</span><span>${submissions}</span></div>
-                <div class="stat-row"><span>Paid</span><span>${paidCount}</span></div>
                 <div class="expand-hint">${expandedProviderKey === p.providerKey ? "▴ Hide workers" : "▾ Find a worker / view top earners"}</div>
             </div>
             <div class="project-card-panel" id="ow-panel-${p.providerKey}" style="display:${expandedProviderKey === p.providerKey ? "block" : "none"};">
