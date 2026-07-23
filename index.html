@@ -162,6 +162,80 @@ grid-template-columns:repeat(2,1fr);
 grid-template-columns:1fr;
 }
 }
+
+/* VISION / OUR STORY ACCORDION */
+.vision-section{padding:40px 0 60px;}
+.vision-intro{
+max-width:760px;
+margin:0 auto 50px;
+text-align:center;
+font-size:1.05rem;
+line-height:1.85;
+color:#9aa9bb;
+}
+.vision-accordion{
+max-width:820px;
+margin:0 auto;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+.vision-item{
+background:rgba(255,255,255,.035);
+border:1px solid rgba(255,255,255,.08);
+backdrop-filter:blur(28px);
+border-radius:18px;
+overflow:hidden;
+transition:border-color .3s;
+}
+.vision-item[open]{border-color:rgba(88,180,255,.35);}
+.vision-item summary{
+list-style:none;
+cursor:pointer;
+padding:22px 26px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:16px;
+font-weight:700;
+font-size:1.02rem;
+letter-spacing:-.2px;
+}
+.vision-item summary::-webkit-details-marker{display:none;}
+.vision-item summary .vq-teaser{
+display:block;
+font-weight:400;
+font-size:.9rem;
+color:#8b9bb0;
+margin-top:6px;
+letter-spacing:0;
+}
+.vision-item summary .vq-icon{
+flex:none;
+width:30px;
+height:30px;
+border-radius:50%;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.1rem;
+transition:transform .3s;
+color:#73caff;
+}
+.vision-item[open] summary .vq-icon{transform:rotate(45deg);}
+.vision-item .vq-body{
+padding:0 26px 26px;
+color:#9dadc1;
+line-height:1.85;
+font-size:.98rem;
+}
+.vision-cta{
+text-align:center;
+margin-top:44px;
+}
+.vision-cta a{color:#62d4ff;font-weight:600;}
 </style>
 </head>
 
@@ -189,6 +263,7 @@ grid-template-columns:1fr;
 
   <div class="nav-links">
     <a href="index.html" class="current">Home</a>
+    <a href="how-it-works.html">How It Works</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
     <a href="login.html">Login</a>
@@ -317,6 +392,130 @@ grid-template-columns:1fr;
     </div>
   </section>
 
+  <!-- OUR VISION / STORY -->
+  <section class="vision-section">
+    <div class="container">
+
+      <div class="section-header">
+        <div class="section-tag">OUR PURPOSE</div>
+        <h2>More Than a Platform. <span>A Vision That Outlives Us.</span></h2>
+      </div>
+
+      <p class="vision-intro">
+        Human life is short — whether we live sixty years or ninety, our time is limited.
+        That's why everything we build at Harmonia is measured against one question:
+        does this genuinely improve the life of someone who trusts us? Here's the thinking behind what we're building.
+      </p>
+
+      <div class="vision-accordion">
+
+        <details class="vision-item">
+          <summary>
+            <span>Why Harmonia Exists
+              <span class="vq-teaser">Talent has no nationality. Dedication has no borders.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            Around the world, millions of talented people face the same invisible barrier — not because
+            they lack intelligence or dedication, but simply because of where they were born. Many skilled
+            individuals live in countries where opportunities are limited, wages are unfair, or international
+            payment systems don't reach them. We believe a person's birthplace should never determine the
+            value of their contribution. Harmonia exists to help close that gap — not only by connecting
+            workers with projects, but by helping create a world where opportunity becomes more accessible,
+            transparent, and fairly distributed.
+          </div>
+        </details>
+
+        <details class="vision-item">
+          <summary>
+            <span>A Different Definition of Success
+              <span class="vq-teaser">Revenue is a tool. It is not the destination.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            Most companies begin by asking, "How can we make more money?" We begin with a different question:
+            "How can we create the greatest positive impact while building something sustainable?" Revenue
+            matters — servers, developers, and support all require resources — but it's a tool, not the goal.
+            Every decision we make is measured against one principle: does this improve the lives of the
+            people who trust Harmonia? If yes, we move forward. If no, we reconsider.
+          </div>
+        </details>
+
+        <details class="vision-item">
+          <summary>
+            <span>The Story Behind Harmonia
+              <span class="vq-teaser">The problem was never technology. It was inequality.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            We spent years watching talented, hardworking people remain trapped by circumstances they never
+            chose — rejected because international payment systems didn't support their region, or paid a
+            fraction of what others earned for identical work. At the same time, AI was creating enormous
+            demand for human-generated training data: images labeled, responses evaluated, language models
+            reviewed. Ironically, many people capable of doing that work remained excluded from it. That
+            contradiction is what inspired Harmonia — one platform, one opportunity, one person helping another.
+          </div>
+        </details>
+
+        <details class="vision-item">
+          <summary>
+            <span>Honesty Before Growth
+              <span class="vq-teaser">We refuse to build Harmonia on exaggerated promises.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            The internet is full of promises of instant success and effortless income. We don't build that
+            way. There may be times when tasks are limited or features are still under development — instead
+            of hiding that, we choose transparency, because trust grows when people know they're hearing the
+            truth. Our goal isn't to attract the largest number of users as fast as possible. It's to build a
+            community that believes in the same values: that lasting success comes from consistency, not shortcuts.
+          </div>
+        </details>
+
+        <details class="vision-item">
+          <summary>
+            <span>Advertising With Purpose
+              <span class="vq-teaser">We reinvest in our community — we don't extract from it.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            Most platforms treat advertising purely as profit. We see it differently. As Harmonia grows,
+            advertising revenue helps fund secure infrastructure, continued development, and expanded
+            opportunities for the people who make this platform possible — our workers. Without workers,
+            there are no completed projects and no improving AI. So we don't view advertising as a way to
+            extract value from our community; we see it as a resource we reinvest back into it.
+          </div>
+        </details>
+
+        <details class="vision-item">
+          <summary>
+            <span>The Legacy We Hope to Leave
+              <span class="vq-teaser">True success is measured by what keeps helping others.</span>
+            </span>
+            <span class="vq-icon">+</span>
+          </summary>
+          <div class="vq-body">
+            One day, every founder, developer, worker, and client will eventually move on — that's the nature
+            of life. What remains is what we built together. Our hope is that Harmonia keeps creating
+            opportunities long after the people who started it are gone: helping students learn, families
+            earn, and businesses build more responsible AI. If future generations use Harmonia without ever
+            knowing who created it, but still benefit from what it provides, we'll have accomplished something
+            meaningful.
+          </div>
+        </details>
+
+      </div>
+
+      <p class="vision-cta">Want the full story? <a href="about.html">Read more about Harmonia →</a></p>
+
+    </div>
+  </section>
+
 </main>
 
 <!-- SCRIPT.JS (required for mobile nav toggle — was missing before) -->
@@ -337,6 +536,7 @@ We're creating a future where talented people and innovative businesses grow tog
 
 <div class="footer-links">
 <h4>Company</h4>
+<a href="how-it-works.html">How It Works</a>
 <a href="about.html">About</a>
 <a href="contact.html">Contact</a>
 <a href="login.html">Login</a>
