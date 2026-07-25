@@ -313,6 +313,27 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .badge-linked{background:var(--success-soft);color:var(--success);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:8px;}
 
 .iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
+
+/* ---------- Bonus Tasks: tips + scenario quiz gate ---------- */
+.tip-cat{margin-bottom:16px;}
+.tip-cat h4{margin:0 0 8px;font-size:.82rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--primary);}
+.tip-cat ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
+.tip-cat li{display:flex;gap:9px;font-size:.86rem;line-height:1.5;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:9px 12px;}
+.tip-cat li span.dot{flex-shrink:0;width:6px;height:6px;border-radius:50%;background:var(--primary);margin-top:7px;}
+.quiz-progress{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.quiz-progress-track{flex:1;height:5px;border-radius:4px;background:var(--border);overflow:hidden;}
+.quiz-progress-fill{height:100%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:4px;transition:width .25s ease;}
+.quiz-progress-count{font-size:.78rem;color:var(--muted);font-weight:700;white-space:nowrap;}
+.quiz-tag{font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--warning);margin:0 0 8px;}
+.quiz-scenario{font-size:.98rem;line-height:1.6;color:var(--text);margin:0 0 16px;}
+.quiz-option{display:flex;width:100%;text-align:left;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:.88rem;font-family:inherit;cursor:pointer;margin-bottom:8px;transition:all .15s ease;}
+.quiz-option:hover:not(:disabled){border-color:var(--primary);background:var(--primary-soft);}
+.quiz-option:disabled{cursor:default;}
+.quiz-option.correct{border-color:var(--success);background:var(--success-soft);}
+.quiz-option.incorrect{border-color:var(--danger);background:var(--danger-soft);}
+.quiz-explain{display:flex;gap:10px;margin-top:6px;padding:12px 14px;border-radius:10px;font-size:.85rem;line-height:1.55;}
+.quiz-explain.ok{background:var(--success-soft);border:1px solid var(--success);color:var(--text);}
+.quiz-explain.bad{background:var(--danger-soft);border:1px solid var(--danger);color:var(--text);}
 .completion-banner{display:none;background:var(--success-soft);color:var(--success);padding:12px 16px;border-radius:12px;font-weight:700;margin-bottom:14px;border:1px solid var(--success);}
 
 /* Mobile Floating Toggle */
@@ -521,7 +542,10 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <div class="card">
                     <div class="section-title">
                         <h2>🎁 Bonus Tasks</h2>
-                        <span class="muted" id="bonusStatusLabel">Loading…</span>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <span class="muted" id="bonusStatusLabel">Loading…</span>
+                            <button class="secondary" id="bonusTipsBtn" style="padding:6px 12px;font-size:.78rem;white-space:nowrap;" onclick="openBonusGate(false)">📘 Tips &amp; Guidelines</button>
+                        </div>
                     </div>
                     <p class="muted" style="font-size:.82rem;margin:-6px 0 14px;">
                         Tip: if tasks don't appear, disable any ad blocker or privacy shield
@@ -741,6 +765,21 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     </div>
 </div>
 
+<!-- ============= Bonus Tasks — Tips & Scenario Quiz Gate ============= -->
+<div class="overlay" id="bonusGateOverlay">
+    <div class="modal wide" style="display:flex;flex-direction:column;">
+        <div class="modal-head">
+            <div>
+                <h3 style="margin:0;">🎁 Before you start — Bonus Tasks</h3>
+                <p class="muted" id="bonusGateSubtitle" style="font-size:.85rem;margin:4px 0 0 0;">Read the guidelines, then a 10-question scenario quiz.</p>
+            </div>
+            <button class="modal-close" id="bonusGateCloseBtn" onclick="closeBonusGate()">×</button>
+        </div>
+
+        <div id="bonusGateBody" style="flex:1;overflow-y:auto;min-height:0;"></div>
+    </div>
+</div>
+
 <!-- ============= Themed alert / confirm ============= -->
 <div class="overlay" id="alertOverlay">
     <div class="modal" style="text-align:center;">
@@ -845,7 +884,10 @@ function ensureTabLoaded(tab) {
 }
 
 function loadSubtabContent(group, sub) {
-    if (group === "tasks" && sub === "bonus") loadBonusTasks();
+    if (group === "tasks" && sub === "bonus") {
+        if (!hasCompletedBonusGate()) openBonusGate(true);
+        else loadBonusTasks();
+    }
 }
 
 function switchSubtab(group, sub) {
@@ -1389,6 +1431,160 @@ async function loadBonusTasks() {
         emptyState.style.display = "block";
         emptyState.textContent = "Unable to connect to the server.";
     }
+}
+
+/* ==========================================================
+   BONUS TASKS GATE — tips + scenario quiz
+   Shown once per browser before the CPX offerwall is loaded.
+   Reachable afterward via the "Tips & Guidelines" button.
+   ========================================================== */
+const BONUS_GATE_KEY = "harmonia_bonus_gate_completed_v1";
+
+const TIP_CATEGORIES = [
+    { title: "Browser & technical setup", items: [
+        "Never use a VPN or proxy — it's an instant screen-out.",
+        "Use Chrome, Edge, or Safari. Brave, Tor, and DuckDuckGo block the tracking surveys rely on.",
+        "Don't use Incognito or Private mode — it blocks the cookies that track your progress.",
+        "Keep the Harmonia tab and the survey open the whole time. Closing it disconnects the tracker.",
+        "Disable ad-blockers for this tab.",
+        "Use a stable connection — a drop mid-survey times you out.",
+        "Prefer a desktop or laptop — fewer routing glitches than mobile.",
+        "Screened out of everything lately? Clear your cache and cookies."
+    ]},
+    { title: "Speed & pacing", items: [
+        "Don't rush and don't lag — there's a hidden time window on both ends.",
+        "Don't leave the tab idle. Inactivity times the survey out.",
+        "Let videos and ads play all the way through before clicking next."
+    ]},
+    { title: "Answering & consistency", items: [
+        "Write down the age, gender, and zip code you signed up with — surveys re-ask them to catch mismatches.",
+        "Watch for trap questions like \"select strongly disagree to continue.\"",
+        "Don't straight-line grid answers — vary your ratings so they look genuine.",
+        "Keep expert professions (marketing, IT, journalism) general when they're not the focus of the study.",
+        "Asked if you work for a competitor brand? The safe answer is no, unless it's true.",
+        "Recognize major brands when asked. \"I don't know\" can end the survey.",
+        "Keep your job, income, and household info current."
+    ]},
+    { title: "What to avoid", items: [
+        "Never use the browser's Back button — only the survey's own Next/Previous.",
+        "Don't run more than one survey in different tabs at once.",
+        "Don't force an answer just to fit a survey you clearly don't match.",
+        "Screened out? Click \"find another survey\" right away — it happens to everyone."
+    ]}
+];
+
+const QUIZ_QUESTIONS = [
+    { text: "You normally browse with a VPN on for privacy. You're about to start a bonus survey. What do you do?",
+      options: ["Leave it on — it's just privacy", "Turn it off before starting", "Switch to a server closer to your city"],
+      correct: 1, explain: "CPX detects VPNs and proxies and screens you out instantly, no exceptions." },
+    { text: "8 minutes into a survey, a question suddenly says: \"To continue, select 'Strongly Disagree' below.\"",
+      options: ["Pick whatever answer feels right", "Select exactly what it asks", "Close the tab and start a new survey"],
+      correct: 1, explain: "Attention checks test if you're reading, not your opinion. Miss one and you're screened out instantly." },
+    { text: "Halfway through, the survey asks for your age and zip code again — you already gave these at sign-up.",
+      options: ["Answer from memory, close enough", "Match the note you wrote down at sign-up", "Skip the question"],
+      correct: 1, explain: "These repeat questions exist to catch bots and inconsistent respondents. Any mismatch ends the survey." },
+    { text: "A grid asks you to rate 10 statements 1–5, and you feel mostly neutral about all of them.",
+      options: ["Select 3 for every row to save time", "Give each one real thought and vary your ratings", "Pick the highest rating across the board"],
+      correct: 1, explain: "Identical answers down a column (\"straight-lining\") is a classic bot pattern surveys are built to catch." },
+    { text: "A screener asks what industry you work in. You work in marketing.",
+      options: ["State your exact job title and department", "Keep it general if it's not the focus of the study", "Refuse to answer"],
+      correct: 1, explain: "Surveys often screen out high-knowledge professions like marketing, IT, or journalism because it skews results." },
+    { text: "A soda brand survey asks: \"Does anyone in your household work for Coca-Cola or Pepsi?\"",
+      options: ["Answer honestly even if unsure", "Answer no, unless it's actually true", "Answer yes to seem informed"],
+      correct: 1, explain: "Unless it's genuinely true, the expected answer is no — companies don't want competitors' employees skewing feedback." },
+    { text: "You want to fix an answer from the previous survey page.",
+      options: ["Click your browser's Back button", "Use the survey's own Previous button", "Refresh the page and start over"],
+      correct: 1, explain: "The browser's Back button breaks the tracking link CPX uses to credit your account." },
+    { text: "You want to earn faster, so you open two bonus surveys in separate tabs at once.",
+      options: ["Good idea, more surveys means more money", "Stick to one active survey at a time", "It's fine if they're from different providers"],
+      correct: 1, explain: "Running parallel sessions creates conflicting tracking data, and both surveys are likely to fail." },
+    { text: "A branded video plays mid-survey and you're in a hurry.",
+      options: ["Skip ahead to the next question", "Let it play all the way through", "Mute it and click through immediately"],
+      correct: 1, explain: "Skipping or rushing past required video content can freeze the survey or flag your session." },
+    { text: "You just got screened out after 5 minutes on a survey.",
+      options: ["Give up on bonus tasks for the day", "Click \"find another survey\" right away", "Retake the exact same survey immediately"],
+      correct: 1, explain: "Screen-outs are normal, not a penalty. CPX will usually route you to a better-matched survey right away." }
+];
+
+let gateMandatory = false, gateStep = "tips", gateQIndex = 0, gateScore = 0, gateAnswered = false;
+
+function hasCompletedBonusGate() {
+    try { return localStorage.getItem(BONUS_GATE_KEY) === "1"; } catch (e) { return false; }
+}
+
+function openBonusGate(mandatory) {
+    gateMandatory = mandatory; gateStep = "tips"; gateQIndex = 0; gateScore = 0; gateAnswered = false;
+    document.getElementById("bonusGateCloseBtn").style.display = mandatory ? "none" : "block";
+    document.getElementById("bonusGateSubtitle").textContent = mandatory
+        ? "Quick read, then a 10-question scenario quiz — one time only."
+        : "Guidelines and scenario quiz, any time you want a refresher.";
+    renderGateTips();
+    document.getElementById("bonusGateOverlay").classList.add("open");
+}
+function closeBonusGate() {
+    if (gateMandatory && gateStep !== "done") return;
+    document.getElementById("bonusGateOverlay").classList.remove("open");
+}
+function renderGateTips() {
+    gateStep = "tips";
+    document.getElementById("bonusGateBody").innerHTML = TIP_CATEGORIES.map(cat => `
+        <div class="tip-cat">
+            <h4>${escapeHTML(cat.title)}</h4>
+            <ul>${cat.items.map(t => `<li><span class="dot"></span>${escapeHTML(t)}</li>`).join("")}</ul>
+        </div>`).join("") +
+        `<button class="primary gate-btn" onclick="startGateQuiz()">I've read this — start the quiz →</button>`;
+}
+function startGateQuiz() { gateStep = "quiz"; gateQIndex = 0; gateScore = 0; renderGateQuestion(); }
+function renderGateQuestion() {
+    gateAnswered = false;
+    const q = QUIZ_QUESTIONS[gateQIndex];
+    document.getElementById("bonusGateBody").innerHTML = `
+        <div class="quiz-progress">
+            <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:${Math.round((gateQIndex / QUIZ_QUESTIONS.length) * 100)}%;"></div></div>
+            <span class="quiz-progress-count">${gateQIndex + 1} / ${QUIZ_QUESTIONS.length}</span>
+        </div>
+        <p class="quiz-tag">Scenario</p>
+        <p class="quiz-scenario">${escapeHTML(q.text)}</p>
+        <div id="quizOptions">${q.options.map((opt, i) => `<button class="quiz-option" onclick="selectGateAnswer(${i})">${escapeHTML(opt)}</button>`).join("")}</div>
+        <div id="quizExplain"></div>
+        <button class="primary gate-btn" id="quizNextBtn" style="display:none;margin-top:10px;" onclick="nextGateQuestion()">Next →</button>`;
+}
+function selectGateAnswer(i) {
+    if (gateAnswered) return;
+    gateAnswered = true;
+    const q = QUIZ_QUESTIONS[gateQIndex];
+    const correct = i === q.correct;
+    if (correct) gateScore++;
+    document.querySelectorAll("#quizOptions .quiz-option").forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.correct) btn.classList.add("correct");
+        else if (idx === i) btn.classList.add("incorrect");
+    });
+    document.getElementById("quizExplain").innerHTML = `<div class="quiz-explain ${correct ? "ok" : "bad"}">${correct ? "✅" : "❌"} ${escapeHTML(q.explain)}</div>`;
+    const nextBtn = document.getElementById("quizNextBtn");
+    nextBtn.style.display = "block";
+    nextBtn.textContent = gateQIndex === QUIZ_QUESTIONS.length - 1 ? "See results →" : "Next →";
+}
+function nextGateQuestion() {
+    gateQIndex++;
+    if (gateQIndex >= QUIZ_QUESTIONS.length) renderGateComplete();
+    else renderGateQuestion();
+}
+function renderGateComplete() {
+    gateStep = "done";
+    document.getElementById("bonusGateCloseBtn").style.display = "block";
+    document.getElementById("bonusGateBody").innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+            <div style="font-size:2.4rem;margin-bottom:8px;">🎉</div>
+            <h3 style="margin:0 0 6px;">You scored ${gateScore} / ${QUIZ_QUESTIONS.length}</h3>
+            <p class="muted" style="margin:0 0 22px;">Keep these in mind and you'll avoid most avoidable screen-outs.</p>
+            <button class="primary gate-btn" onclick="finishBonusGate()">Enter Bonus Tasks →</button>
+        </div>`;
+}
+function finishBonusGate() {
+    try { localStorage.setItem(BONUS_GATE_KEY, "1"); } catch (e) {}
+    document.getElementById("bonusGateOverlay").classList.remove("open");
+    loadBonusTasks();
 }
 
 window.addEventListener("message", (event) => {
