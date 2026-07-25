@@ -1066,7 +1066,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             Manage third-party task networks embedded in worker task tabs. Multiple providers run
             simultaneously — each active provider gets its own dedicated tab on the worker's
             <a href="worker-dashboard.html#tasks" style="color:#58d4ff;" target="_blank">My Tasks</a> page
-            (CPX Research → "Bonus Tasks" tab, CPAlead → "CPAlead" tab). Workers never see
+            (e.g. CPX Research → "Bonus Tasks" tab). Workers never see
             the network's real name — only Harmonia branding.
         </p>
 
@@ -1095,74 +1095,13 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         </section>
 
         <!-- =====================================================
-             CPALEAD QUICK SETUP
-             Pre-filled card so admin doesn't need to look up
-             keys/secrets — just paste the iframe URL and save.
-             ===================================================== -->
-        <section class="recent">
-
-           <h2>🎁 CPAlead Quick Setup</h2>
-            <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                Fill in your postback secret below and click <strong>Activate CPAlead</strong>. The iframe URL
-                is already pre-filled from your CPAlead wall (slug: mpc3b). CPAlead appears on its own
-                dedicated tab on the worker's
-                <a href="worker-dashboard.html#tasks" style="color:#02c59a;" target="_blank">My Tasks</a> page — it does
-                not show up on the "Bonus Tasks" tab, which is CPX Research only.
-            </p>
-
-            <div class="card" style="max-width:580px;">
-
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
-                    <div>
-                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Worker Tab Label</label>
-                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;">🎁 CPAlead</div>
-                    </div>
-                    <div>
-                        <label style="font-size:.8rem;color:#9dadc1;display:block;margin-bottom:4px;">Provider Key (fixed)</label>
-                        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.9rem;color:#e2e8f0;font-family:monospace;">cpalead</div>
-                    </div>
-                </div>
-
-                <label>Postback Password <span style="color:#9dadc1;font-weight:400;">(set this in CPAlead → Postback → Configuration, must match exactly)</span></label>
-                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
-                    <input type="text" id="cplSecret"
-                        style="flex:1;font-family:monospace;font-size:.85rem;"
-                        placeholder="Choose a password and set it in CPAlead too">
-                </div>
-
-                <label>Postback URL <span style="color:#9dadc1;font-weight:400;">(paste this into CPAlead's Postback → Configuration page)</span></label>
-                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;margin-bottom:14px;">
-                    <code id="cplPostbackDisplay" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;font-size:.75rem;color:#9dadc1;word-break:break-all;display:block;">
-                        https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}
-                    </code>
-                    <button class="detail-btn" onclick="copyCpaleadPostback()" style="white-space:nowrap;align-self:flex-start;margin-top:4px;">Copy</button>
-                </div>
-
-                <label>Iframe URL <span style="color:#9dadc1;font-weight:400;">(from CPAlead → Tools → Offerwall → Get Code — must contain <code style="font-size:.8rem;">{USER_ID}</code>)</span></label>
-                <input type="text" id="cplIframeUrl" style="margin-top:6px;"
-                    value="https://www.cdnnd.com/wall/mpc3b?subid={USER_ID}">
-                <p style="color:#9dadc1;font-size:.78rem;margin-top:6px;">
-                    Pre-filled using your current wall's Direct Link. If you ever recreate the wall and get a new
-                    slug, update this field with the new URL and keep the <code>{USER_ID}</code> placeholder.
-                </p>
-
-                <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;">
-                    <button class="primary" onclick="handleCpaleadSetup()">✅ Activate CPAlead</button>
-                    <button class="detail-btn" onclick="handleCpaleadDeactivate()">⏸ Deactivate</button>
-                </div>
-                <p id="cplSetupMsg" style="margin-top:10px;font-size:.85rem;display:none;"></p>
-            </div>
-
-        </section>
-
-        <!-- =====================================================
              GENERIC ADD PROVIDER (for future networks)
              ===================================================== -->
         <section class="recent">
 
             <h2>Add Other Provider</h2>
             <p style="color:#9dadc1;font-size:.9rem;margin-top:-6px;margin-bottom:16px;">
-                For future task networks beyond CPX Research and CPAlead. The provider key must match
+                For future task networks beyond CPX Research. The provider key must match
                 an adapter registered in <code style="font-size:.8rem;">worker.js</code>.
             </p>
 
@@ -2902,141 +2841,14 @@ async function handleToggleStatus(providerKey, newStatus) {
 
 
 
-/* =========================================================
-   CPALEAD QUICK SETUP HELPERS
-   ========================================================= */
-
-function copyCpaleadPostback() {
-    const url = "https://round-tree-9996.rkhansaif1999.workers.dev/api/offerwalls/postback/cpalead?subid={subid}&lead_id={lead_id}&campaign_id={campaign_id}&campaign_name={campaign_name}&payout={payout}&password={password}";
-    navigator.clipboard.writeText(url).then(() => {
-        alert("Postback URL copied! Paste it into CPAlead's Postback → Configuration page.");
-    }).catch(() => {
-        prompt("Copy this postback URL:", url);
-    });
-}
-
-async function handleCpaleadSetup() {
-    const iframeUrl    = document.getElementById("cplIframeUrl").value.trim();
-    const secret       = document.getElementById("cplSecret").value.trim();
-    const msg          = document.getElementById("cplSetupMsg");
-
-    if (!iframeUrl) {
-        msg.textContent = "⚠️ Please enter the iframe URL from your CPAlead wall.";
-        msg.style.color = "#f87171";
-        msg.style.display = "block";
-        return;
-    }
-    if (!iframeUrl.includes("{USER_ID}")) {
-        msg.textContent = "⚠️ The iframe URL must include the {USER_ID} placeholder exactly as shown.";
-        msg.style.color = "#f87171";
-        msg.style.display = "block";
-        return;
-    }
-    if (!secret) {
-        msg.textContent = "⚠️ Please enter the postback password you set in CPAlead.";
-        msg.style.color = "#f87171";
-        msg.style.display = "block";
-        return;
-    }
-
-    msg.textContent = "Saving…";
-    msg.style.color = "#9dadc1";
-    msg.style.display = "block";
-
-    try {
-        let response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                providerKey: "cpalead",
-                displayName: "CPAlead",
-                iframeUrlTemplate: iframeUrl,
-                postbackSecret: secret,
-            })
-        });
-
-        if (!response.ok) {
-            const createData = await response.json();
-            if ((createData.error || "").toLowerCase().includes("already exist") || response.status === 400) {
-                response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        providerKey: "cpalead",
-                        displayName: "CPAlead",
-                        iframeUrlTemplate: iframeUrl,
-                        postbackSecret: secret,
-                        status: "active",
-                    })
-                });
-                const updateData = await response.json();
-                if (!response.ok) {
-                    msg.textContent = "❌ " + (updateData.error || "Failed to update CPAlead.");
-                    msg.style.color = "#f87171";
-                    return;
-                }
-            } else {
-                msg.textContent = "❌ " + (createData.error || "Failed to activate CPAlead.");
-                msg.style.color = "#f87171";
-                return;
-            }
-        }
-
-        msg.textContent = "✅ CPAlead activated! Workers will now see it on their own CPAlead tab.";
-        msg.style.color = "#02c59a";
-        await renderAll();
-
-    } catch (err) {
-        msg.textContent = "❌ Unable to connect to the server.";
-        msg.style.color = "#f87171";
-        console.error(err);
-    }
-}
-
-async function handleCpaleadDeactivate() {
-    if (!confirm("Deactivate CPAlead? It will disappear from workers' CPAlead tab until you activate it again.")) return;
-
-    const msg = document.getElementById("cplSetupMsg");
-    msg.textContent = "Deactivating…";
-    msg.style.color = "#9dadc1";
-    msg.style.display = "block";
-
-    try {
-        const response = await authFetch(WORKER_URL + "/api/admin/offerwall-providers/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ providerKey: "cpalead", status: "inactive" })
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            msg.textContent = "❌ " + (data.error || "Failed to deactivate.");
-            msg.style.color = "#f87171";
-            return;
-        }
-
-        msg.textContent = "⏸ CPAlead deactivated. Workers will no longer see it.";
-        msg.style.color = "#9dadc1";
-        await renderAll();
-
-    } catch (err) {
-        msg.textContent = "❌ Unable to connect to the server.";
-        msg.style.color = "#f87171";
-        console.error(err);
-    }
-}
-
     // ---- expose functions referenced by inline HTML handlers ----
     window.capitalize = capitalize;
     window.closeEditProvider = closeEditProvider;
     window.confirmEditProvider = confirmEditProvider;
-    window.copyCpaleadPostback = copyCpaleadPostback;
     window.copyPostbackUrl = copyPostbackUrl;
     window.fetchEarnings = fetchEarnings;
     window.fetchProviders = fetchProviders;
     window.formatDate = formatDate;
-    window.handleCpaleadDeactivate = handleCpaleadDeactivate;
-    window.handleCpaleadSetup = handleCpaleadSetup;
     window.handleCreateProvider = handleCreateProvider;
     window.handleEditProvider = handleEditProvider;
     window.handleToggleStatus = handleToggleStatus;

@@ -497,7 +497,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="subtabs">
                 <button class="subtab-btn active" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
                 <button class="subtab-btn" data-group="tasks" data-sub="bonus" onclick="switchSubtab('tasks','bonus')">🎁 Bonus Tasks</button>
-                <button class="subtab-btn" data-group="tasks" data-sub="cpalead" onclick="switchSubtab('tasks','cpalead')">🎯 CPAlead Tasks</button>
             </div>
 
             <div class="subpanel active" data-group="tasks" data-sub="micro">
@@ -531,22 +530,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <div class="completion-banner" id="bonusCompletionBanner"></div>
                     <p class="muted empty-state" id="bonusEmptyState" style="display:none;"></p>
                     <div class="iframe-holder" id="bonusIframeHolder"></div>
-                </div>
-            </div>
-
-            <div class="subpanel" data-group="tasks" data-sub="cpalead">
-                <div class="card">
-                    <div class="section-title">
-                        <h2>🎯 CPAlead Tasks</h2>
-                        <span class="muted" id="cpaleadStatusLabel">Loading…</span>
-                    </div>
-                    <p class="muted" style="font-size:.82rem;margin:-6px 0 14px;">
-                        Tip: if tasks don't appear, disable any ad blocker or privacy shield
-                        for this site — they often block offerwall providers.
-                    </p>
-                    <div class="completion-banner" id="cpaleadCompletionBanner"></div>
-                    <p class="muted empty-state" id="cpaleadEmptyState" style="display:none;"></p>
-                    <div class="iframe-holder" id="cpaleadIframeHolder"></div>
                 </div>
             </div>
         </section>
@@ -863,7 +846,6 @@ function ensureTabLoaded(tab) {
 
 function loadSubtabContent(group, sub) {
     if (group === "tasks" && sub === "bonus") loadBonusTasks();
-    if (group === "tasks" && sub === "cpalead") loadCpaleadTasks();
 }
 
 function switchSubtab(group, sub) {
@@ -1316,7 +1298,7 @@ document.getElementById("mwCodeInput").addEventListener("keydown", function (e) 
 });
 
 /* ==========================================================
-   BONUS TASKS (CPX Research) + CPALEAD
+   BONUS TASKS (CPX Research)
    With ad-blocker detection — if the iframe is blocked by
    the client (uBlock/AdBlock/Brave Shields/etc.), show the
    worker a clear message instead of leaving a blank panel.
@@ -1419,70 +1401,6 @@ window.addEventListener("message", (event) => {
         const b = document.getElementById("bonusCompletionBanner");
         if (b) {
             b.textContent = "Nice — that one's in! Check your Earnings page once it's confirmed.";
-            b.style.display = "block";
-            setTimeout(() => { b.style.display = "none"; }, 8000);
-        }
-    }
-});
-
-let cpaleadTrustedOrigins = [];
-
-async function loadCpaleadTasks() {
-    const statusLabel = document.getElementById("cpaleadStatusLabel");
-    const emptyState = document.getElementById("cpaleadEmptyState");
-    const frameHolder = document.getElementById("cpaleadIframeHolder");
-    if (!statusLabel || !frameHolder) return;
-
-    try {
-        statusLabel.textContent = "Loading…";
-        emptyState.style.display = "none";
-        frameHolder.innerHTML = "";
-
-        const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
-        const data = await response.json();
-        if (!response.ok) {
-            statusLabel.textContent = "Unavailable";
-            emptyState.style.display = "block";
-            emptyState.textContent = escapeHTML(data?.error || "CPAlead tasks aren't available right now.");
-            return;
-        }
-        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "cpalead");
-        if (offerwalls.length === 0) {
-            statusLabel.textContent = "None available";
-            emptyState.style.display = "block";
-            emptyState.textContent = "CPAlead tasks aren't available right now — check back soon.";
-            return;
-        }
-        cpaleadTrustedOrigins = [];
-        statusLabel.textContent = "Available";
-        emptyState.style.display = "none";
-        offerwalls.forEach(ow => {
-            try { cpaleadTrustedOrigins.push(new URL(ow.iframeUrl).origin); } catch (e) { console.warn("Invalid iframe URL:", ow.iframeUrl); return; }
-            const iframe = document.createElement("iframe");
-            iframe.src = ow.iframeUrl;
-            iframe.title = "CPAlead Tasks";
-            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
-            frameHolder.appendChild(iframe);
-            attachIframeLoadGuard(iframe, emptyState, statusLabel, "CPAlead");
-        });
-    } catch (err) {
-        console.error("loadCpaleadTasks error:", err);
-        statusLabel.textContent = "Unavailable";
-        emptyState.style.display = "block";
-        emptyState.textContent = "Unable to connect to the server.";
-    }
-}
-
-window.addEventListener("message", (event) => {
-    if (cpaleadTrustedOrigins.length && !cpaleadTrustedOrigins.includes(event.origin)) return;
-    let payload = event.data;
-    if (typeof payload === "string") { try { payload = JSON.parse(payload); } catch (e) {} }
-    if (!payload || typeof payload !== "object") return;
-    const status = String(payload.status || payload.type || payload.event || "").toLowerCase();
-    if (status.includes("complete") || status.includes("credit") || status === "1" || status === "success") {
-        const b = document.getElementById("cpaleadCompletionBanner");
-        if (b) {
-            b.textContent = "Nice — task completed! Check your Earnings page once it's confirmed.";
             b.style.display = "block";
             setTimeout(() => { b.style.display = "none"; }, 8000);
         }
