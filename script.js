@@ -28,14 +28,13 @@ function escapeHTML(str) {
 }
 // =========================
 // UI HELPER: MONEY FORMATTING
-// Normal amounts show 2 decimals. Sub-cent amounts (e.g. $0.003 per
-// micro-task) expand to up to 4 decimals instead of rounding to "$0.00".
+// Always shows 6 decimal places (e.g. "$0.000000") so sub-cent
+// earnings from micro-tasks and offerwall tasks are never rounded
+// away to "$0.00" -- every fraction of a cent counts and is visible.
 // =========================
 function formatMoney(amount) {
     const n = Number(amount) || 0;
-    if (n === 0) return "$0.00";
-    if (Math.abs(n) >= 0.01) return "$" + n.toFixed(2);
-    return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+    return "$" + n.toFixed(6);
 }
 
 // =========================

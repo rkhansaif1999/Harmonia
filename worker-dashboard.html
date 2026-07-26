@@ -448,14 +448,14 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="stat-grid">
                 <div class="stat-card">
                     <div class="top">
-                        <div><div class="lbl">Pending Earnings</div><div class="val" id="ovPending">$0.00</div></div>
+                        <div><div class="lbl">Pending Earnings</div><div class="val" id="ovPending">$0.000000</div></div>
                         <div class="ic" style="background:var(--warning-soft);color:var(--warning);">⏳</div>
                     </div>
                     <div class="sub">Awaiting payout</div>
                 </div>
                 <div class="stat-card">
                     <div class="top">
-                        <div><div class="lbl">Total Paid</div><div class="val" id="ovPaid">$0.00</div></div>
+                        <div><div class="lbl">Total Paid</div><div class="val" id="ovPaid">$0.000000</div></div>
                         <div class="ic" style="background:var(--success-soft);color:var(--success);">💵</div>
                     </div>
                     <div class="sub">All-time payouts received</div>
@@ -477,7 +477,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                             <button class="link-btn" onclick="goTab('earnings')">Details →</button>
                         </div>
                         <div class="chart-summary">
-                            <span class="total" id="chartTotalEarned">$0.00</span>
+                            <span class="total" id="chartTotalEarned">$0.000000</span>
                             <span class="label">Total earnings (last 30 days)</span>
                         </div>
                         <div id="earningsChartContainer" class="chart-container"></div>
@@ -518,7 +518,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="subtabs">
                 <button class="subtab-btn active" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
                 <button class="subtab-btn" data-group="tasks" data-sub="bonus" onclick="switchSubtab('tasks','bonus')">🎁 Bonus Tasks</button>
-                <button class="subtab-btn" data-group="tasks" data-sub="offerwallme" onclick="switchSubtab('tasks','offerwallme')">🏷️ Offerwall.me</button>
+                <button class="subtab-btn" data-group="tasks" data-sub="offerwallme" onclick="switchSubtab('tasks','offerwallme')">🏷️ Offerwall</button>
             </div>
 
             <div class="subpanel active" data-group="tasks" data-sub="micro">
@@ -561,7 +561,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="subpanel" data-group="tasks" data-sub="offerwallme">
                 <div class="card">
                     <div class="section-title">
-                        <h2>🏷️ Offerwall.me</h2>
+                        <h2>🏷️ Offerwall</h2>
                         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                             <span class="muted" id="offerwallmeStatusLabel">Loading…</span>
                         </div>
@@ -622,11 +622,11 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
                 <div class="stat-card">
                     <div class="lbl">Total Earned (all time)</div>
-                    <div class="val" id="totalEarnedAllTime">$0.00</div>
+                    <div class="val" id="totalEarnedAllTime">$0.000000</div>
                 </div>
                 <div class="stat-card">
                     <div class="lbl">Pending Payout</div>
-                    <div class="val" id="weeklyPending">$0.00</div>
+                    <div class="val" id="weeklyPending">$0.000000</div>
                     <div class="sub" id="weekRangeLabel"></div>
                 </div>
                 <div class="stat-card">
@@ -734,7 +734,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <div class="session-stats">
                     <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
                     <span>Correct: <strong id="mwStatCorrect">0</strong></span>
-                    <span>Earned this session: <strong id="mwStatEarned">$0.00</strong></span>
+                    <span>Earned this session: <strong id="mwStatEarned">$0.000000</strong></span>
                 </div>
             </div>
             <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
@@ -1172,9 +1172,7 @@ async function applyMicroTask(microTaskId) {
 
 function formatPayRate(amount) {
     const n = Number(amount) || 0;
-    if (n === 0) return "$0.00";
-    if (Math.abs(n) >= 0.01) return "$" + n.toFixed(2);
-    return "$" + n.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+    return "$" + n.toFixed(6);
 }
 
 async function loadApprovedMicroTasks() {
@@ -1455,7 +1453,7 @@ async function loadBonusTasks() {
 }
 
 /* ==========================================================
-   OFFERWALL.ME
+   OFFERWALL
    Same ad-blocker detection pattern as CPX Research.
    ========================================================== */
 let offerwallMeLoaded = false;
@@ -1479,7 +1477,7 @@ async function loadOfferwallMe() {
         if (!response.ok) {
             statusLabel.textContent = "Unavailable";
             emptyState.style.display = "block";
-            emptyState.textContent = escapeHTML(data?.error || "Offerwall.me isn't available right now.");
+            emptyState.textContent = escapeHTML(data?.error || "Offerwall isn't available right now.");
             return;
         }
 
@@ -1487,7 +1485,7 @@ async function loadOfferwallMe() {
         if (offerwalls.length === 0) {
             statusLabel.textContent = "None available";
             emptyState.style.display = "block";
-            emptyState.textContent = "Offerwall.me isn't active right now — check back soon.";
+            emptyState.textContent = "Offerwall isn't active right now — check back soon.";
             return;
         }
 
@@ -1497,10 +1495,10 @@ async function loadOfferwallMe() {
         offerwalls.forEach(ow => {
             const iframe = document.createElement("iframe");
             iframe.src = ow.iframeUrl;
-            iframe.title = "Offerwall.me Tasks";
+            iframe.title = "Offerwall Tasks";
             iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
             frameHolder.appendChild(iframe);
-            attachIframeLoadGuard(iframe, emptyState, statusLabel, "Offerwall.me");
+            attachIframeLoadGuard(iframe, emptyState, statusLabel, "Offerwall");
         });
 
         offerwallMeLoaded = true;

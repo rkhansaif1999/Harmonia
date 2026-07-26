@@ -1079,17 +1079,17 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
             <div class="dashboard-card">
                 <h3>Pending Earnings</h3>
-                <h2 id="totalPendingEarnings">$0.00</h2>
+                <h2 id="totalPendingEarnings">$0.000000</h2>
             </div>
 
             <div class="dashboard-card">
                 <h3>Paid Out (All Time)</h3>
-                <h2 id="totalPaidEarnings">$0.00</h2>
+                <h2 id="totalPaidEarnings">$0.000000</h2>
             </div>
 
             <div class="dashboard-card">
                 <h3>Reversed</h3>
-                <h2 id="totalReversedEarnings">$0.00</h2>
+                <h2 id="totalReversedEarnings">$0.000000</h2>
             </div>
 
         </section>
@@ -1396,12 +1396,12 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
             <div class="dashboard-card">
                 <h3>Pending Payout</h3>
-                <h2 id="totalPendingPayout">$0.00</h2>
+                <h2 id="totalPendingPayout">$0.000000</h2>
             </div>
 
             <div class="dashboard-card">
                 <h3>Total Paid Out</h3>
-                <h2 id="totalPaidOut">$0.00</h2>
+                <h2 id="totalPaidOut">$0.000000</h2>
             </div>
 
         </section>
@@ -1433,17 +1433,17 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
             <div class="dashboard-card">
                 <h3>Total Earnings</h3>
-                <h2 id="owTotalEarnings">$0.00</h2>
+                <h2 id="owTotalEarnings">$0.000000</h2>
             </div>
 
             <div class="dashboard-card">
                 <h3>Pending Payout</h3>
-                <h2 id="owTotalPending">$0.00</h2>
+                <h2 id="owTotalPending">$0.000000</h2>
             </div>
 
             <div class="dashboard-card">
                 <h3>Total Paid Out</h3>
-                <h2 id="owTotalPaidOut">$0.00</h2>
+                <h2 id="owTotalPaidOut">$0.000000</h2>
             </div>
 
         </section>
@@ -2393,10 +2393,7 @@ function formatDate(dateStr) {
 
 function formatCurrency(amount) {
     const n = Number(amount) || 0;
-    // Values under $0.01 were rounding down to "$0.00" with toFixed(2).
-    // Show 4 decimals only when needed so sub-cent rates are visible.
-    if (n > 0 && n < 0.01) return "$" + n.toFixed(4);
-    return "$" + n.toFixed(2);
+    return "$" + n.toFixed(6);
 }
 
 /* =========================
@@ -3509,8 +3506,8 @@ async function renderTopStats() {
         const stats = await fetchStats();
         document.getElementById("totalSubmissions").textContent = stats.totalSubmissions || 0;
         document.getElementById("totalCorrect").textContent = stats.totalCorrect || 0;
-        document.getElementById("totalPendingPayout").textContent = "$" + Number(stats.totalPending || 0).toFixed(2);
-        document.getElementById("totalPaidOut").textContent = "$" + Number(stats.totalEarned || 0).toFixed(2);
+        document.getElementById("totalPendingPayout").textContent = formatCurrency(stats.totalPending || 0);
+        document.getElementById("totalPaidOut").textContent = formatCurrency(stats.totalEarned || 0);
     } catch (err) {
         console.error("Could not load stats:", err);
     }
@@ -3546,7 +3543,7 @@ function renderProjectGrid() {
         card.innerHTML = `
             <div class="project-card-summary" onclick="toggleProjectExpand(${p.id})">
                 <h3>Project #${p.id}</h3>
-                <div class="rate">$${Number(p.payout_amount).toFixed(2)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
+                <div class="rate">${formatCurrency(p.payout_amount)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
                 <div class="stat-row"><span>Workers earning</span><span>${workersEarningCount(p.id)}</span></div>
                 <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
                 <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
@@ -3639,7 +3636,7 @@ function renderWorkerList(projectId, query) {
                         <div class="email">${escapeHTML(row.email)}</div>
                     </div>
                     <div style="text-align:right;">
-                        <div class="total">$${total.toFixed(2)}</div>
+                        <div class="total">${formatCurrency(total)}</div>
                         <div>${isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>'}</div>
                     </div>
                 </div>
@@ -3930,7 +3927,7 @@ function renderOwWorkerList(providerKey, query) {
                         <div class="email">${escapeHTML(row.email)}</div>
                     </div>
                     <div style="text-align:right;">
-                        <div class="total">$${row.total.toFixed(2)}</div>
+                        <div class="total">${formatCurrency(row.total)}</div>
                         <div>${row.userId ? (isHeld ? '<span class="hold-badge">On Hold</span>' : '<span class="active-badge">Active</span>') : ""}</div>
                     </div>
                 </div>
