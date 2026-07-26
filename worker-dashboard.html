@@ -518,6 +518,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <div class="subtabs">
                 <button class="subtab-btn active" data-group="tasks" data-sub="micro" onclick="switchSubtab('tasks','micro')">⚡ Micro Tasks</button>
                 <button class="subtab-btn" data-group="tasks" data-sub="bonus" onclick="switchSubtab('tasks','bonus')">🎁 Bonus Tasks</button>
+                <button class="subtab-btn" data-group="tasks" data-sub="offerwallme" onclick="switchSubtab('tasks','offerwallme')">🏷️ Offerwall.me</button>
             </div>
 
             <div class="subpanel active" data-group="tasks" data-sub="micro">
@@ -554,6 +555,23 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <div class="completion-banner" id="bonusCompletionBanner"></div>
                     <p class="muted empty-state" id="bonusEmptyState" style="display:none;"></p>
                     <div class="iframe-holder" id="bonusIframeHolder"></div>
+                </div>
+            </div>
+
+            <div class="subpanel" data-group="tasks" data-sub="offerwallme">
+                <div class="card">
+                    <div class="section-title">
+                        <h2>🏷️ Offerwall.me</h2>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <span class="muted" id="offerwallmeStatusLabel">Loading…</span>
+                        </div>
+                    </div>
+                    <p class="muted" style="font-size:.82rem;margin:-6px 0 14px;">
+                        Tip: if tasks don't appear, disable any ad blocker or privacy shield
+                        for this site — they often block offerwall providers.
+                    </p>
+                    <p class="muted empty-state" id="offerwallmeEmptyState" style="display:none;"></p>
+                    <div class="iframe-holder" id="offerwallmeIframeHolder"></div>
                 </div>
             </div>
         </section>
@@ -887,6 +905,9 @@ function loadSubtabContent(group, sub) {
     if (group === "tasks" && sub === "bonus") {
         if (!hasCompletedBonusGate()) openBonusGate(true);
         else loadBonusTasks();
+    }
+    if (group === "tasks" && sub === "offerwallme") {
+        loadOfferwallMe();
     }
 }
 
@@ -1427,6 +1448,64 @@ async function loadBonusTasks() {
         });
     } catch (err) {
         console.error("loadBonusTasks error:", err);
+        statusLabel.textContent = "Unavailable";
+        emptyState.style.display = "block";
+        emptyState.textContent = "Unable to connect to the server.";
+    }
+}
+
+/* ==========================================================
+   OFFERWALL.ME
+   Same ad-blocker detection pattern as CPX Research.
+   ========================================================== */
+let offerwallMeLoaded = false;
+
+async function loadOfferwallMe() {
+    const statusLabel = document.getElementById("offerwallmeStatusLabel");
+    const emptyState = document.getElementById("offerwallmeEmptyState");
+    const frameHolder = document.getElementById("offerwallmeIframeHolder");
+    if (!statusLabel || !frameHolder) return;
+
+    // Only build the iframe once per session — switching tabs won't reload it.
+    if (offerwallMeLoaded) return;
+
+    try {
+        statusLabel.textContent = "Loading…";
+        emptyState.style.display = "none";
+        frameHolder.innerHTML = "";
+
+        const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
+        const data = await response.json();
+        if (!response.ok) {
+            statusLabel.textContent = "Unavailable";
+            emptyState.style.display = "block";
+            emptyState.textContent = escapeHTML(data?.error || "Offerwall.me isn't available right now.");
+            return;
+        }
+
+        const offerwalls = (data.offerwalls || []).filter(ow => ow.providerKey === "offerwallme");
+        if (offerwalls.length === 0) {
+            statusLabel.textContent = "None available";
+            emptyState.style.display = "block";
+            emptyState.textContent = "Offerwall.me isn't active right now — check back soon.";
+            return;
+        }
+
+        statusLabel.textContent = "Available";
+        emptyState.style.display = "none";
+
+        offerwalls.forEach(ow => {
+            const iframe = document.createElement("iframe");
+            iframe.src = ow.iframeUrl;
+            iframe.title = "Offerwall.me Tasks";
+            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+            frameHolder.appendChild(iframe);
+            attachIframeLoadGuard(iframe, emptyState, statusLabel, "Offerwall.me");
+        });
+
+        offerwallMeLoaded = true;
+    } catch (err) {
+        console.error("loadOfferwallMe error:", err);
         statusLabel.textContent = "Unavailable";
         emptyState.style.display = "block";
         emptyState.textContent = "Unable to connect to the server.";
