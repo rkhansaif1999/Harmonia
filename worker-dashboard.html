@@ -490,7 +490,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         <div class="section-gap" style="border-top:1px solid var(--border);padding-top:14px;">
                             <div class="section-title" style="margin-bottom:8px;"><h3 style="font-size:.95rem;margin:0;">Quick Links</h3></div>
                             <div style="display:flex;flex-direction:column;gap:8px;">
-                                <a href="help-center.html" class="btn secondary" style="text-align:left;">📘 Task Guidelines</a>
+                                <button class="btn secondary" style="text-align:left;" onclick="openGuidelinesHub()">📘 Task Guidelines</button>
                                 <button class="btn secondary" style="text-align:left;" onclick="goTab('messages');switchSubtab('messages','support')">🎧 Contact Support</button>
                             </div>
                         </div>
@@ -564,6 +564,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         <h2>🏷️ Offerwall</h2>
                         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                             <span class="muted" id="offerwallmeStatusLabel">Loading…</span>
+                            <button class="secondary" id="offerwallTipsBtn" style="padding:6px 12px;font-size:.78rem;white-space:nowrap;" onclick="openOfferwallGate(false)">📘 Guidelines &amp; Quiz</button>
                         </div>
                     </div>
                     <p class="muted" style="font-size:.82rem;margin:-6px 0 14px;">
@@ -798,6 +799,57 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     </div>
 </div>
 
+<!-- ============= Offerwall Gate — Guidelines + 20-Question Quiz ============= -->
+<div class="overlay" id="offerwallGateOverlay">
+    <div class="modal wide" style="display:flex;flex-direction:column;">
+        <div class="modal-head">
+            <div>
+                <h3 style="margin:0;">🏷️ Offerwall — Read before you start</h3>
+                <p class="muted" id="offerwallGateSubtitle" style="font-size:.85rem;margin:4px 0 0 0;">Guidelines then a 20-question quiz — score 17 or more to unlock the Offerwall.</p>
+            </div>
+            <button class="modal-close" id="offerwallGateCloseBtn" onclick="closeOfferwallGate()">×</button>
+        </div>
+        <div id="offerwallGateBody" style="flex:1;overflow-y:auto;min-height:0;"></div>
+    </div>
+</div>
+
+<!-- ============= Unified Task Guidelines Hub ============= -->
+<div class="overlay" id="guidelinesHubOverlay">
+    <div class="modal wide" style="display:flex;flex-direction:column;">
+        <div class="modal-head">
+            <div>
+                <h3 style="margin:0;">📘 Task Guidelines</h3>
+                <p class="muted" style="font-size:.85rem;margin:4px 0 0 0;">Select a task type to view its guidelines and quiz.</p>
+            </div>
+            <button class="modal-close" onclick="closeGuidelinesHub()">×</button>
+        </div>
+        <div style="flex:1;overflow-y:auto;min-height:0;padding:4px 0;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div class="card" style="cursor:pointer;border:1px solid var(--border);transition:border-color .15s;" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="closeGuidelinesHub();openBonusGate(false);">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div style="font-size:2rem;line-height:1;">🎁</div>
+                        <div>
+                            <strong style="font-size:1rem;">Bonus Tasks (CPX Research)</strong>
+                            <p class="muted" style="margin:4px 0 0;font-size:.85rem;">Survey tips, anti-screen-out tactics, and a 10-question scenario quiz.</p>
+                        </div>
+                        <div style="margin-left:auto;color:var(--muted);font-size:1.2rem;">›</div>
+                    </div>
+                </div>
+                <div class="card" style="cursor:pointer;border:1px solid var(--border);transition:border-color .15s;" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="closeGuidelinesHub();openOfferwallGate(false);">
+                    <div style="display:flex;align-items:center;gap:14px;">
+                        <div style="font-size:2rem;line-height:1;">🏷️</div>
+                        <div>
+                            <strong style="font-size:1rem;">Offerwall</strong>
+                            <p class="muted" style="margin:4px 0 0;font-size:.85rem;">How offers work, best practices, tracking rules, and a 20-question certification quiz.</p>
+                        </div>
+                        <div style="margin-left:auto;color:var(--muted);font-size:1.2rem;">›</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ============= Themed alert / confirm ============= -->
 <div class="overlay" id="alertOverlay">
     <div class="modal" style="text-align:center;">
@@ -907,7 +959,8 @@ function loadSubtabContent(group, sub) {
         else loadBonusTasks();
     }
     if (group === "tasks" && sub === "offerwallme") {
-        loadOfferwallMe();
+        if (!hasCompletedOfferwallGate()) openOfferwallGate(true);
+        else loadOfferwallMe();
     }
 }
 
@@ -1508,6 +1561,241 @@ async function loadOfferwallMe() {
         emptyState.style.display = "block";
         emptyState.textContent = "Unable to connect to the server.";
     }
+}
+
+/* ==========================================================
+   GUIDELINES HUB — entry point from "Task Guidelines" quick link
+   ========================================================== */
+function openGuidelinesHub() {
+    document.getElementById("guidelinesHubOverlay").classList.add("open");
+}
+function closeGuidelinesHub() {
+    document.getElementById("guidelinesHubOverlay").classList.remove("open");
+}
+
+/* ==========================================================
+   OFFERWALL GATE — guidelines + 20-question certification quiz
+   Shown once per browser before the Offerwall iframe is loaded.
+   Reachable afterward via the "Guidelines & Quiz" button.
+   ========================================================== */
+const OFFERWALL_GATE_KEY = "harmonia_offerwall_gate_completed_v1";
+
+const OFFERWALL_TIP_CATEGORIES = [
+    { title: "Getting started — one-time setup", items: [
+        "You only need to create an Offerwall account once. After that, just log in whenever you use it.",
+        "Register using your real email address and verify it when prompted.",
+        "Your Offerwall account is separate from your Harmonia account.",
+        "Depending on your country you may need email, CAPTCHA, or phone verification before offers appear."
+    ]},
+    { title: "Before starting any offer", items: [
+        "Read every offer completely — requirements, estimated time, country availability, and reward timeline.",
+        "Disable any VPN or proxy. Detection is automatic and will cause the reward to be denied.",
+        "Enable cookies and disable ad blockers. Most advertisers use cookies to track your progress.",
+        "Don't use Incognito or Private mode — it blocks tracking.",
+        "Always install apps by clicking the link inside the Offerwall — never search for the app manually first.",
+        "Use a stable internet connection. Switching from Wi-Fi to mobile data mid-offer can break tracking."
+    ]},
+    { title: "During an offer", items: [
+        "Stay on the same browser and the same device from start to finish.",
+        "Finish offers in one session whenever possible — waiting hours before completing can invalidate tracking.",
+        "Don't clear browser data or cookies while an offer is in progress.",
+        "For shortlinks: wait for every countdown timer to finish. Don't refresh or press Back.",
+        "For shortlinks: scroll slowly when instructed — some advertisers verify you actually viewed the page.",
+        "For shortlinks: if a new tab opens, keep both tabs open unless you're told otherwise.",
+        "For game offers: read every milestone before starting — many pay in stages as you progress.",
+        "For surveys: answer honestly and consistently. Inconsistent answers will disqualify you automatically."
+    ]},
+    { title: "What to avoid — these will get your reward denied", items: [
+        "Never use a VPN, proxy, or fake GPS.",
+        "Never use fake or temporary email addresses.",
+        "Never complete an offer you've already done on another platform — advertisers only reward once.",
+        "Never create more than one Offerwall account.",
+        "Never use auto-clickers, browser scripts, emulators, or virtual machines.",
+        "Never run multiple shortlinks at the same time.",
+        "Never change devices or browsers mid-offer."
+    ]},
+    { title: "Rewards and support", items: [
+        "Many offers reward within minutes; high-value offers can take up to 30 days. Each offer shows its own timeline.",
+        "Rewards flow from the advertiser → Offerwall → Harmonia. If the advertiser rejects your completion, no reward is issued.",
+        "Keep screenshots and confirmation emails for high-value offers — they're useful if you need support.",
+        "If a reward is missing after the stated period: check requirements, then contact Harmonia Support with the offer name, completion date, and any proof."
+    ]}
+];
+
+const OFFERWALL_QUIZ_QUESTIONS = [
+    { text: "How many Offerwall accounts are you allowed to create?",
+      options: ["As many as you need", "One account only", "One per device", "Two — mobile and desktop"],
+      correct: 1, explain: "Each person must have only one Offerwall account. Multiple accounts lead to permanent bans and lost rewards." },
+    { text: "What should you do before installing an app for a mobile offer?",
+      options: ["Search for it on the app store directly", "Install it first, then find the offer", "Click the install link inside the Offerwall first", "Ask support for the link"],
+      correct: 2, explain: "Always click the install link inside the Offerwall. Installing the app before clicking the offer link means the advertiser can't track your install." },
+    { text: "A shortlink countdown shows 15 seconds remaining. What do you do?",
+      options: ["Refresh to speed it up", "Close and reopen the tab", "Wait for the full 15 seconds", "Open a second shortlink in parallel"],
+      correct: 2, explain: "Refreshing, closing, or going back during a countdown breaks tracking. Always wait for the full timer." },
+    { text: "Which will most likely cause a reward to be denied?",
+      options: ["Using a stable Wi-Fi connection", "Having cookies enabled", "Completing the offer with a VPN active", "Reading requirements before starting"],
+      correct: 2, explain: "VPNs are detected automatically by advertisers and will result in your reward being denied every time." },
+    { text: "You completed the same game offer on another rewards platform last week. Can you earn here too?",
+      options: ["Yes, each platform is independent", "No — most advertisers only reward a completion once", "Only if more than 7 days have passed", "Yes, on a different device"],
+      correct: 1, explain: "Most offers can only be completed once across all platforms. The advertiser's system detects and rejects duplicate completions." },
+    { text: "What is the correct order in which rewards reach your Harmonia balance?",
+      options: ["Harmonia approves → Advertiser confirms → Offerwall processes", "Advertiser confirms → Offerwall processes → Harmonia credits your account", "You report → Harmonia verifies → Reward issued", "Offerwall credits → Harmonia reviews → Advertiser confirms"],
+      correct: 1, explain: "The advertiser verifies the completion first. Only after that does Offerwall confirm it to Harmonia, which then credits your balance." },
+    { text: "A survey asks for your age. You are 32. What do you enter?",
+      options: ["An age that makes you eligible for more surveys", "32 — your actual age", "Round up to the nearest decade", "Leave it blank"],
+      correct: 1, explain: "Always provide real, accurate information. Surveys re-ask demographic questions to catch inconsistencies, and any mismatch disqualifies you." },
+    { text: "You're halfway through a shortlink task and accidentally close the browser. What's the best next step?",
+      options: ["Contact support immediately", "Start the task again from the beginning", "Wait 24 hours and retry", "Open the last URL from browser history"],
+      correct: 1, explain: "Progress is often not saved if the session breaks. Starting over from the beginning gives you the best chance of completing the task correctly." },
+    { text: "Which browser setting must be ON for offer tracking to work?",
+      options: ["Incognito / Private mode", "Cookies", "A VPN", "An ad blocker"],
+      correct: 1, explain: "Cookies are how advertisers track your progress. Disabling them means your completion can never be verified and your reward won't be issued." },
+    { text: "A game offer pays at Level 5, Level 15, and Level 30. You reach Level 5 and stop. What happens?",
+      options: ["You receive all three rewards immediately", "You receive only the Level 5 reward", "You forfeit all rewards", "The offer auto-completes the rest"],
+      correct: 1, explain: "Stage-based game offers pay each milestone separately. Stopping early means you only earn the milestones you actually reached." },
+    { text: "An offer says rewards can take up to 30 days. After 3 days, nothing has appeared. What should you do?",
+      options: ["Contact support right away", "Wait for the stated period, then check requirements before contacting support", "Complete the offer again", "Create a new account and retry"],
+      correct: 1, explain: "The stated waiting period exists because advertiser verification can take time. Contacting support before that window closes is premature." },
+    { text: "You switch from Wi-Fi to mobile data halfway through an offer. What risk does this create?",
+      options: ["None — the reward will still arrive", "The advertiser may not be able to track your progress", "You'll receive a reduced reward", "The offer restarts automatically"],
+      correct: 1, explain: "Changing your network mid-offer can appear as a new session or device to the advertiser's tracking system, breaking the completion record." },
+    { text: "A shortlink page says 'Scroll to the bottom to continue.' You rapidly scroll down and back up. What might happen?",
+      options: ["The task completes faster", "The advertiser may not verify that you actually viewed the page", "A bonus reward is triggered", "Nothing — scrolling speed doesn't matter"],
+      correct: 1, explain: "Some advertisers use scroll-depth tracking to verify genuine page views. Rapid scrolling can fail this check and prevent your reward." },
+    { text: "Which of the following is a legitimate reason an offer appears unavailable to you?",
+      options: ["You haven't completed enough surveys yet", "The advertiser isn't targeting your country", "You need to upgrade your Harmonia plan", "Your device is too old"],
+      correct: 1, explain: "Country availability is set by the advertiser. Offers simply don't appear for regions they're not targeting. This is normal and can't be changed." },
+    { text: "A shortlink opens a new tab unexpectedly. What should you do?",
+      options: ["Close the new tab immediately", "Keep both tabs open and return to the original task page", "Treat the task as complete", "Report it as a bug"],
+      correct: 1, explain: "Many shortlink providers open new tabs as part of the completion flow. Closing them prematurely can break the sequence and prevent your reward." },
+    { text: "What information should you provide to support for a missing reward?",
+      options: ["Your Offerwall password", "The offer name, completion date, and screenshots or confirmation emails", "Only your Harmonia username", "Just the reward amount"],
+      correct: 1, explain: "Support needs enough detail to investigate with the advertiser. Offer name, date, and proof of completion are the minimum needed." },
+    { text: "The fraud system can detect which of the following?",
+      options: ["Your browser bookmarks", "VPN usage, duplicate accounts, emulators, and automated clicking", "Whether you read the guidelines", "Your device's battery level"],
+      correct: 1, explain: "The fraud protection system actively monitors for VPNs, multiple accounts, emulators, fake GPS, virtual machines, and auto-clickers." },
+    { text: "Which habit most effectively maximizes Offerwall earnings?",
+      options: ["Start many offers at once", "Only do shortlinks since they're fast", "Check for new offers daily and finish one before starting another", "Only attempt offers that pay within minutes"],
+      correct: 2, explain: "High-value milestone offers earn far more over time than quick shortlinks. Checking daily and focusing on one offer at a time keeps tracking clean." },
+    { text: "An offer requires personal information like your name and phone number. What should you provide?",
+      options: ["Fake details to protect your privacy", "A temporary phone number", "Real, accurate information", "Someone else's information if yours doesn't qualify"],
+      correct: 2, explain: "Fake information is detected and will cause your reward to be denied. Use real information — or don't start offers that require details you're not comfortable sharing." },
+    { text: "Which statement about rewards and country availability is correct?",
+      options: ["All offers are available globally", "Harmonia manually decides which offers you see", "Different users and countries may see different offers and rewards — this is normal", "Offers unlock after completing 10 tasks"],
+      correct: 2, explain: "Advertisers target specific regions. Different users and countries see different offers and reward amounts. This is normal and is set by advertisers, not Harmonia." }
+];
+
+let owGateMandatory = false, owGateStep = "tips", owGateQIndex = 0, owGateScore = 0, owGateAnswered = false;
+
+function hasCompletedOfferwallGate() {
+    try { return localStorage.getItem(OFFERWALL_GATE_KEY) === "1"; } catch (e) { return false; }
+}
+
+function openOfferwallGate(mandatory) {
+    owGateMandatory = mandatory;
+    owGateStep = "tips";
+    owGateQIndex = 0;
+    owGateScore = 0;
+    owGateAnswered = false;
+    document.getElementById("offerwallGateCloseBtn").style.display = mandatory ? "none" : "block";
+    document.getElementById("offerwallGateSubtitle").textContent = mandatory
+        ? "Read the guidelines, then pass a 20-question quiz to unlock the Offerwall."
+        : "Guidelines and certification quiz — any time you want a refresher.";
+    renderOfferwallGateTips();
+    document.getElementById("offerwallGateOverlay").classList.add("open");
+}
+
+function closeOfferwallGate() {
+    if (owGateMandatory && owGateStep !== "done") return;
+    document.getElementById("offerwallGateOverlay").classList.remove("open");
+}
+
+function renderOfferwallGateTips() {
+    owGateStep = "tips";
+    document.getElementById("offerwallGateBody").innerHTML =
+        OFFERWALL_TIP_CATEGORIES.map(cat => `
+            <div class="tip-cat">
+                <h4>${escapeHTML(cat.title)}</h4>
+                <ul>${cat.items.map(t => `<li><span class="dot"></span>${escapeHTML(t)}</li>`).join("")}</ul>
+            </div>`).join("") +
+        `<button class="primary gate-btn" onclick="startOfferwallQuiz()">I've read this — start the quiz →</button>`;
+}
+
+function startOfferwallQuiz() {
+    owGateStep = "quiz";
+    owGateQIndex = 0;
+    owGateScore = 0;
+    renderOfferwallGateQuestion();
+}
+
+function renderOfferwallGateQuestion() {
+    owGateAnswered = false;
+    const q = OFFERWALL_QUIZ_QUESTIONS[owGateQIndex];
+    document.getElementById("offerwallGateBody").innerHTML = `
+        <div class="quiz-progress">
+            <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:${Math.round((owGateQIndex / OFFERWALL_QUIZ_QUESTIONS.length) * 100)}%;"></div></div>
+            <span class="quiz-progress-count">${owGateQIndex + 1} / ${OFFERWALL_QUIZ_QUESTIONS.length}</span>
+        </div>
+        <p class="quiz-tag">Question</p>
+        <p class="quiz-scenario">${escapeHTML(q.text)}</p>
+        <div id="owQuizOptions">${q.options.map((opt, i) => `<button class="quiz-option" onclick="selectOwGateAnswer(${i})">${escapeHTML(opt)}</button>`).join("")}</div>
+        <div id="owQuizExplain"></div>
+        <button class="primary gate-btn" id="owQuizNextBtn" style="display:none;margin-top:10px;" onclick="nextOwGateQuestion()">Next →</button>`;
+}
+
+function selectOwGateAnswer(i) {
+    if (owGateAnswered) return;
+    owGateAnswered = true;
+    const q = OFFERWALL_QUIZ_QUESTIONS[owGateQIndex];
+    const correct = i === q.correct;
+    if (correct) owGateScore++;
+    document.querySelectorAll("#owQuizOptions .quiz-option").forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === q.correct) btn.classList.add("correct");
+        else if (idx === i) btn.classList.add("incorrect");
+    });
+    document.getElementById("owQuizExplain").innerHTML = `<div class="quiz-explain ${correct ? "ok" : "bad"}">${correct ? "✅" : "❌"} ${escapeHTML(q.explain)}</div>`;
+    const nextBtn = document.getElementById("owQuizNextBtn");
+    nextBtn.style.display = "block";
+    nextBtn.textContent = owGateQIndex === OFFERWALL_QUIZ_QUESTIONS.length - 1 ? "See results →" : "Next →";
+}
+
+function nextOwGateQuestion() {
+    owGateQIndex++;
+    if (owGateQIndex >= OFFERWALL_QUIZ_QUESTIONS.length) renderOfferwallGateComplete();
+    else renderOfferwallGateQuestion();
+}
+
+function renderOfferwallGateComplete() {
+    owGateStep = "done";
+    const passed = owGateScore >= 17;
+    document.getElementById("offerwallGateCloseBtn").style.display = "block";
+    document.getElementById("offerwallGateBody").innerHTML = `
+        <div style="text-align:center;padding:20px 0;">
+            <div style="font-size:2.4rem;margin-bottom:8px;">${passed ? "🎉" : "📖"}</div>
+            <h3 style="margin:0 0 6px;">You scored ${owGateScore} / ${OFFERWALL_QUIZ_QUESTIONS.length}</h3>
+            ${passed
+                ? `<p class="muted" style="margin:0 0 22px;">Great work — you're certified to use the Offerwall.</p>
+                   <button class="primary gate-btn" onclick="finishOfferwallGate()">Enter Offerwall →</button>`
+                : `<p class="muted" style="margin:0 0 8px;">The pass mark is <strong>17 out of 20</strong>. Review the guidelines and try again.</p>
+                   <p class="muted" style="font-size:.82rem;margin:0 0 22px;">Tip: scroll back up in the guidelines before retaking.</p>
+                   <button class="primary gate-btn" onclick="retakeOfferwallQuiz()">Retake quiz →</button>`
+            }
+        </div>`;
+}
+
+function retakeOfferwallQuiz() {
+    owGateStep = "tips";
+    owGateQIndex = 0;
+    owGateScore = 0;
+    owGateAnswered = false;
+    renderOfferwallGateTips();
+}
+
+function finishOfferwallGate() {
+    try { localStorage.setItem(OFFERWALL_GATE_KEY, "1"); } catch (e) {}
+    document.getElementById("offerwallGateOverlay").classList.remove("open");
+    loadOfferwallMe();
 }
 
 /* ==========================================================
