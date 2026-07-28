@@ -1892,7 +1892,11 @@ function closeBonusGate() {
 }
 function renderGateTips() {
     gateStep = "tips";
-    document.getElementById("bonusGateBody").innerHTML = TIP_CATEGORIES.map(cat => `
+    document.getElementById("bonusGateBody").innerHTML =
+        `<div style="text-align:right;margin-bottom:14px;">
+            <button class="secondary" style="padding:6px 12px;font-size:.78rem;" onclick="finishBonusGate()">✓ I've already done this before — skip →</button>
+        </div>` +
+        TIP_CATEGORIES.map(cat => `
         <div class="tip-cat">
             <h4>${escapeHTML(cat.title)}</h4>
             <ul>${cat.items.map(t => `<li><span class="dot"></span>${escapeHTML(t)}</li>`).join("")}</ul>
