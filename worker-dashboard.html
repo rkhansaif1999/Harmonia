@@ -1713,6 +1713,9 @@ function closeOfferwallGate() {
 function renderOfferwallGateTips() {
     owGateStep = "tips";
     document.getElementById("offerwallGateBody").innerHTML =
+        `<div style="text-align:right;margin-bottom:14px;">
+            <button class="secondary" style="padding:6px 12px;font-size:.78rem;" onclick="finishOfferwallGate()">✓ I've already done this before — skip →</button>
+        </div>` +
         OFFERWALL_TIP_CATEGORIES.map(cat => `
             <div class="tip-cat">
                 <h4>${escapeHTML(cat.title)}</h4>
