@@ -3530,6 +3530,28 @@ async function setTaskHold(userId, hold) {
     return data;
 }
 
+async function setProjectHold(projectId) {
+    const response = await authFetch(WORKER_URL + "/api/admin/micro-tasks/toggle-hold", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: projectId })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Failed to update project hold status");
+    return data;
+}
+
+async function handleToggleProjectHold(projectId, event) {
+    if (event) event.stopPropagation();
+    try {
+        await setProjectHold(projectId);
+        await renderAll();
+    } catch (err) {
+        alert(err.message || "Unable to connect to the server.");
+        console.error(err);
+    }
+}
+
 /* =========================
    STATE
    ========================= */
@@ -3586,6 +3608,7 @@ function renderProjectGrid() {
             <div class="project-card-summary" onclick="toggleProjectExpand(${p.id})">
                 <h3>Project #${p.id}</h3>
                 <div class="rate">${formatCurrency(p.payout_amount)} per correct code &middot; ${statusBadge(capitalize(p.status))}</div>
+                <button onclick="handleToggleProjectHold(${p.id}, event)" style="margin:8px 0;">${p.status === "paused" ? "▶ Resume Task" : "⏸ Hold Task"}</button>
                 <div class="stat-row"><span>Workers earning</span><span>${workersEarningCount(p.id)}</span></div>
                 <div class="stat-row"><span>Submissions</span><span>${p.total_submissions || 0}</span></div>
                 <div class="stat-row"><span>Correct</span><span>${p.total_correct || 0}</span></div>
