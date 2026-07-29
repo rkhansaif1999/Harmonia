@@ -4088,5 +4088,27 @@ enableDragScroll(document.getElementById("coreTeamScroll"));
 
 </script>
 
+<script>
+(async function () {
+  const OTP_WORKER_URL = "https://round-tree-9996.rkhansaif1999.workers.dev";
+  try {
+    const res = await fetch(OTP_WORKER_URL + "/api/discord/member-count");
+    if (!res.ok) return;
+
+    const data = await res.json();
+    if (!data.memberCount) return;
+
+    const formatted = data.memberCount.toLocaleString() + "+";
+    const el1 = document.getElementById("discordMemberCount");
+    const el2 = document.getElementById("discordMemberCountLeader");
+    if (el1) el1.textContent = formatted;
+    if (el2) el2.textContent = formatted;
+  } catch (err) {
+    // Fetch failed - just keep the static "1000+" fallback already in the HTML.
+    console.log("Discord member count fetch failed:", err);
+  }
+})();
+</script>
+
 </body>
 </html>
