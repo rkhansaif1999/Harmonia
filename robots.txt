@@ -13,7 +13,7 @@ Allow: /reset-password.html
 Allow: /terms.html
 Allow: /privacy-policy.html
 Allow: /cookie-policy.html
-Allow: /refund-policy.html
+Allow: /payments-billing.html
 Allow: /how-it-works.html
 Allow: /faq.html
 Allow: /help-center.html
