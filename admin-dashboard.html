@@ -1152,6 +1152,8 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <a href="admin-dashboard.html#workers" style="color:#58d4ff;">Payments</a> view, same as reviews and micro-tasks.
             </p>
 
+            <input type="text" id="offerwallEarningsSearch" placeholder="🔍 Search by worker name or email..." style="width:100%;max-width:400px;box-sizing:border-box;margin-bottom:14px;" oninput="handleOfferwallEarningsSearch(this.value)">
+
             <table>
                 <thead>
                     <tr>
@@ -2388,7 +2390,13 @@ async function fetchApplications() {
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleString();
+    // SQLite CURRENT_TIMESTAMP stores UTC as "YYYY-MM-DD HH:MM:SS" with no
+    // timezone marker. Without a "Z" suffix, JS parses it as local time,
+    // causing the mismatched times you were seeing. Append "Z" so JS treats
+    // it as UTC, then toLocaleString() converts it to the admin's own
+    // timezone automatically.
+    const normalized = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T") + "Z";
+    return new Date(normalized).toLocaleString();
 }
 
 function formatCurrency(amount) {
@@ -2634,6 +2642,47 @@ function capitalize(s) {
    RENDER
    ========================================================= */
 
+let allOfferwallEarnings = [];
+let offerwallEarningsSearchTerm = "";
+
+function handleOfferwallEarningsSearch(value) {
+    offerwallEarningsSearchTerm = value.trim().toLowerCase();
+    renderOfferwallEarningsTable();
+}
+
+function renderOfferwallEarningsTable() {
+    const earningsTable = document.getElementById("earningsTable");
+    let earnings = allOfferwallEarnings;
+
+    if (offerwallEarningsSearchTerm) {
+        earnings = earnings.filter(e =>
+            (e.workerEmail || "").toLowerCase().includes(offerwallEarningsSearchTerm) ||
+            (e.fullName || "").toLowerCase().includes(offerwallEarningsSearchTerm)
+        );
+    }
+
+    earningsTable.innerHTML = "";
+
+    if (earnings.length === 0) {
+        earningsTable.innerHTML = `<tr><td colspan="7" class="empty-state">${offerwallEarningsSearchTerm ? "No earnings match your search" : "No bonus task earnings yet"}</td></tr>`;
+        return;
+    }
+
+    earnings.forEach(e => {
+        earningsTable.innerHTML += `
+            <tr>
+                <td>${escapeHTML(e.fullName || "")}${e.workerEmail ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(e.workerEmail)}</span>` : (e.userId ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(String(e.userId))}</span>` : "")}</td>
+                <td>${escapeHTML(e.providerKey)}</td>
+                <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
+                <td>${formatMoney(e.amountUsd)}</td>
+                <td>${formatMoney(e.workerAmount)}</td>
+                <td>${statusBadge(capitalize(e.status))}</td>
+                <td>${formatDate(e.createdAt)}</td>
+            </tr>
+        `;
+    });
+}
+
 async function renderAll() {
     const providersTable = document.getElementById("providersTable");
     const earningsTable = document.getElementById("earningsTable");
@@ -2647,6 +2696,8 @@ async function renderAll() {
         earningsTable.innerHTML = "";
         return;
     }
+
+    allOfferwallEarnings = earnings;
 
     /* ---- Cards ---- */
     document.getElementById("totalActiveProviders").textContent =
@@ -2689,25 +2740,7 @@ async function renderAll() {
     });
 
     /* ---- Earnings table ---- */
-    earningsTable.innerHTML = "";
-
-    if (earnings.length === 0) {
-        earningsTable.innerHTML = `<tr><td colspan="7" class="empty-state">No bonus task earnings yet</td></tr>`;
-    }
-
-    earnings.forEach(e => {
-        earningsTable.innerHTML += `
-            <tr>
-                <td>${escapeHTML(e.workerEmail || e.userId)}</td>
-                <td>${escapeHTML(e.providerKey)}</td>
-                <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
-                <td>${formatMoney(e.amountUsd)}</td>
-                <td>${formatMoney(e.workerAmount)}</td>
-                <td>${statusBadge(capitalize(e.status))}</td>
-                <td>${formatDate(e.createdAt)}</td>
-            </tr>
-        `;
-    });
+    renderOfferwallEarningsTable();
 }
 
 function copyPostbackUrl(url) {
@@ -2848,6 +2881,7 @@ async function handleToggleStatus(providerKey, newStatus) {
     window.formatDate = formatDate;
     window.handleCreateProvider = handleCreateProvider;
     window.handleEditProvider = handleEditProvider;
+    window.handleOfferwallEarningsSearch = handleOfferwallEarningsSearch;
     window.handleToggleStatus = handleToggleStatus;
     window.renderAll = renderAll;
 
