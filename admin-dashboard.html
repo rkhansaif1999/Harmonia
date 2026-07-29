@@ -1160,6 +1160,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         <th>Worker</th>
                         <th>Provider</th>
                         <th>Transaction ID</th>
+                        <th>Offer Type</th>
                         <th>Amount (USD, full)</th>
                         <th>Worker Share</th>
                         <th>Status</th>
@@ -1167,7 +1168,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     </tr>
                 </thead>
                 <tbody id="earningsTable">
-                    <tr><td colspan="7" class="empty-state">Loading earnings...</td></tr>
+                    <tr><td colspan="8" class="empty-state">Loading earnings...</td></tr>
                 </tbody>
             </table>
 
@@ -2664,7 +2665,7 @@ function renderOfferwallEarningsTable() {
     earningsTable.innerHTML = "";
 
     if (earnings.length === 0) {
-        earningsTable.innerHTML = `<tr><td colspan="7" class="empty-state">${offerwallEarningsSearchTerm ? "No earnings match your search" : "No bonus task earnings yet"}</td></tr>`;
+        earningsTable.innerHTML = `<tr><td colspan="8" class="empty-state">${offerwallEarningsSearchTerm ? "No earnings match your search" : "No bonus task earnings yet"}</td></tr>`;
         return;
     }
 
@@ -2674,6 +2675,7 @@ function renderOfferwallEarningsTable() {
                 <td>${escapeHTML(e.fullName || "")}${e.workerEmail ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(e.workerEmail)}</span>` : (e.userId ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(String(e.userId))}</span>` : "")}</td>
                 <td>${escapeHTML(e.providerKey)}</td>
                 <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
+                <td>${escapeHTML(e.offerName || "-")}</td>
                 <td>${formatMoney(e.amountUsd)}</td>
                 <td>${formatMoney(e.workerAmount)}</td>
                 <td>${statusBadge(capitalize(e.status))}</td>
