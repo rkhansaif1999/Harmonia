@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Help Center | Harmonia — Support for Earning Online with AI</title>
-<meta name="description" content="Get help with your Harmonia account, AI data annotation tasks, payments, and everything you need to earn online and work online with confidence.">
+<meta name="description" content="Get help with your Harmonia account, AI data annotation tasks, micro-tasks, crypto payouts, and everything you need to earn online and work online with confidence.">
 <link rel="canonical" href="https://harmoniaportal.online/help-center.html">
 
 <meta property="og:type" content="website">
@@ -331,6 +331,34 @@
   .faq-answer-inner ul { margin: 8px 0; padding-left: 20px; }
   .faq-answer-inner li { margin-bottom: 6px; }
 
+  /* Deep Dive Box (New) */
+  .deep-dive {
+    border: 1px solid var(--accent);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    background: rgba(98, 212, 255, 0.05);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .deep-dive h3 {
+    color: var(--accent);
+    margin-top: 0;
+  }
+
+  /* Alert Box (New) */
+  .alert-box {
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    border-left: 4px solid rgba(255, 100, 100, 0.8);
+    border-radius: var(--radius);
+    background: rgba(255, 100, 100, 0.05);
+    padding: 20px;
+    margin: 24px 0;
+  }
+  .alert-box h3 {
+    color: rgba(255, 100, 100, 0.9);
+    margin-top: 0;
+  }
+
   /* Discord callout */
   .callout {
     border: 1px solid var(--border);
@@ -572,8 +600,8 @@ grid-template-columns:1fr;
   <h1>Help Center</h1>
   <p class="subtitle">Find answers, solve problems, and get the most out of Harmonia.</p>
   <div class="intro">
-    <p>Welcome to the Harmonia Help Center—your central resource for understanding how our platform works, finding solutions to common issues, and learning how to use Harmonia with confidence.</p>
-    <p>Whether you're joining for the first time, managing projects, or looking for guidance, we're here to help.</p>
+    <p>Welcome to the Harmonia Help Center—your central resource for understanding how our B2B AI workforce platform works, finding solutions to common issues, and learning how to use Harmonia with confidence.</p>
+    <p>Whether you're joining for the first time, managing AI annotation projects, or looking for guidance on crypto payouts, we're here to help.</p>
   </div>
 </header>
 
@@ -581,20 +609,15 @@ grid-template-columns:1fr;
 
   <nav class="toc" aria-label="Quick navigation">
     <a href="#welcome">Welcome</a>
-    <a href="#what-youll-find">What You'll Find Here</a>
     <a href="#getting-started">Getting Started</a>
-    <a href="#finding-what-you-need">Finding What You Need</a>
-    <a href="#common-reasons">Common Reasons People Visit</a>
-    <a href="#tips">Tips for the Best Experience</a>
-    <a href="#account-management">Account Management</a>
-    <a href="#account-security">Keeping Your Account Secure</a>
-    <a href="#account-issues">Common Account Issues</a>
-    <a href="#projects">Understanding Opportunities</a>
-    <a href="#payments">Understanding Payments</a>
+    <a href="#account-security">Account & Security</a>
+    <a href="#tasks">AI Tasks & Annotation</a>
+    <a href="#micro-tasks">Micro-Tasks & Codes</a>
+    <a href="#offerwalls">Offerwalls (Bonus Tasks)</a>
+    <a href="#payments">Payments & Payouts</a>
     <a href="#troubleshooting">Troubleshooting</a>
     <a href="#support">Contacting Support</a>
-    <a href="#discord">Join Our Discord</a>
-    <a href="#resource-directory">Quick Resource Directory</a>
+    <a href="#glossary">Glossary</a>
     <a href="#commitment">Our Commitment</a>
   </nav>
 
@@ -604,137 +627,83 @@ grid-template-columns:1fr;
   <div class="text-block" id="welcome">
     <h2>Welcome</h2>
     <p>Every journey starts with a question.</p>
-    <p>How do I create an account? How do I find opportunities? Why isn't something working? Where can I get help?</p>
-    <p>The Harmonia Help Center has been created to answer these questions through clear, practical guidance that helps both contributors and businesses use the platform successfully.</p>
+    <p>How do I create an account? How do I find AI annotation tasks? Why isn't my crypto payout processing? Where can I get help?</p>
+    <p>The Harmonia Help Center has been created to answer these questions through clear, practical guidance that helps both contributors and businesses use the platform successfully. Because Harmonia operates as a Business-to-Business (B2B) AI workforce platform, understanding how our specific systems work is key to maximizing your earnings and ensuring data quality for our clients.</p>
     <p>As Harmonia continues to grow, this Help Center will continue expanding alongside it.</p>
-  </div>
-
-  <div class="text-block" id="what-youll-find">
-    <h2>What You'll Find Here</h2>
-    <p>The Help Center brings together important information from across the platform in one convenient place.</p>
-    <p>Here you'll find guidance on:</p>
-    <ul class="checklist">
-      <li>Creating and managing your account</li>
-      <li>Understanding platform features</li>
-      <li>Finding and completing projects</li>
-      <li>Managing payments</li>
-      <li>Security and account protection</li>
-      <li>Troubleshooting common issues</li>
-      <li>Platform policies</li>
-      <li>Contacting support</li>
-    </ul>
-    <p>Our goal is to help you solve problems quickly so you can spend more time focusing on meaningful opportunities.</p>
   </div>
 
   <div class="text-block" id="getting-started">
     <h2>Getting Started with Harmonia</h2>
-    <p>If you're new to Harmonia, getting started is simple.</p>
+    <p>If you're new to Harmonia, getting started is simple. Follow these exact steps to begin your journey as an independent contributor.</p>
     <div class="steps">
       <div class="step">
         <span class="step-num">1</span>
         <div class="step-content">
           <h3>Create Your Account</h3>
-          <p>Register using a valid email address and create a secure password. After registration, verify your email address to activate your account.</p>
+          <p>Register using a valid email address and create a secure password. After registration, you must verify your email address via our 6-digit OTP (One-Time Password) system to activate your account. This prevents bots and fraudulent registrations.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">2</span>
         <div class="step-content">
           <h3>Complete Your Profile</h3>
-          <p>Providing accurate account information helps improve your experience and may be required for certain features or project opportunities. Always keep your information current.</p>
+          <p>Providing accurate account information (like your country and language skills) helps our algorithm match you with AI annotation projects that fit your demographics. Always keep your information current.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">3</span>
         <div class="step-content">
-          <h3>Explore the Platform</h3>
-          <p>Once your account is ready, you can explore the features available to your account, browse opportunities, and become familiar with the platform's tools and resources. Different account types may have access to different features depending on their role.</p>
+          <h3>Explore the Dashboard</h3>
+          <p>Once your account is ready, explore the features available to your account. Browse available Micro-Tasks, AI Annotation projects, and Offerwall bonus tasks. Familiarize yourself with the interface and quality guidelines.</p>
         </div>
       </div>
       <div class="step">
         <span class="step-num">4</span>
         <div class="step-content">
+          <h3>Set Up Your Payout Method</h3>
+          <p>Before you can withdraw earnings, you must link and verify your payout method. Harmonia supports PayPal and Cryptocurrency (USDT ERC-20). You will need to verify this method via OTP to ensure funds are sent to the correct place.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">5</span>
+        <div class="step-content">
           <h3>Follow Platform Guidelines</h3>
-          <p>Before participating in projects, we encourage every member to read the relevant policies and instructions. Understanding platform expectations helps create a better experience for both contributors and businesses.</p>
+          <p>Before participating in projects, read our policies. Understand that using VPNs, bots, or AI to complete tasks is strictly prohibited and will result in permanent suspension. Understanding platform expectations helps create a better experience for everyone.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="text-block" id="finding-what-you-need">
-    <h2>Finding What You Need</h2>
-    <p>To make information easier to access, Harmonia's documentation is organized into dedicated sections.</p>
-    <div class="directory-grid">
-      <div class="directory-card">
-        <span class="emoji">📖</span>
-        <h3>How Harmonia Works</h3>
-        <p>Learn how the platform operates from start to finish.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">❓</span>
-        <h3>Frequently Asked Questions</h3>
-        <p>Find answers to the questions we receive most often.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">🛡</span>
-        <h3>Trust &amp; Safety</h3>
-        <p>Understand how Harmonia promotes security, fairness, and responsible platform use.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">🔒</span>
-        <h3>Privacy Policy</h3>
-        <p>Learn how information is collected, used, and protected.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">⚖</span>
-        <h3>Terms of Service</h3>
-        <p>Review the rules and responsibilities that apply when using Harmonia.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">📄</span>
-        <h3>Disclaimer</h3>
-        <p>Understand important information regarding platform availability, third-party services, and general use.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="text-block" id="common-reasons">
-    <h2>Common Reasons People Visit the Help Center</h2>
-    <p>Many visitors come here to learn how to:</p>
-    <ul>
-      <li>Create an account.</li>
-      <li>Reset their password.</li>
-      <li>Verify their email.</li>
-      <li>Find available opportunities.</li>
-      <li>Understand project requirements.</li>
-      <li>Learn about payments.</li>
-      <li>Troubleshoot technical issues.</li>
-      <li>Contact support.</li>
-      <li>Review platform policies.</li>
+  <div class="text-block">
+    <h2>What You'll Find Here</h2>
+    <p>The Help Center brings together important information from across the platform in one convenient place.</p>
+    <p>Here you'll find guidance on:</p>
+    <ul class="checklist">
+      <li>Creating and managing your account securely</li>
+      <li>Understanding AI data annotation and RLHF tasks</li>
+      <li>How Micro-Tasks and Challenge Codes work</li>
+      <li>Maximizing earnings with Offerwall bonus tasks</li>
+      <li>Managing PayPal and Crypto (USDT) payouts</li>
+      <li>Troubleshooting common technical issues</li>
+      <li>Platform policies, anti-fraud rules, and community guidelines</li>
+      <li>Contacting support efficiently</li>
     </ul>
-    <p>If you're looking for any of these topics, you're in the right place.</p>
-  </div>
-
-  <div class="text-block" id="tips">
-    <h2>Tips for Getting the Best Experience</h2>
-    <p>A few simple habits can make your experience smoother.</p>
-    <h3>Keep your account information accurate.</h3>
-    <p>This helps ensure that important notifications and account-related information reach you successfully.</p>
-    <h3>Read project instructions carefully.</h3>
-    <p>Every project may have different objectives and requirements. Taking a few moments to review the instructions can improve your overall experience.</p>
-    <h3>Keep your browser updated.</h3>
-    <p>Modern browsers provide better security, performance, and compatibility with Harmonia.</p>
-    <h3>Use a secure internet connection.</h3>
-    <p>Protecting your account begins with safe browsing practices. Avoid signing in from untrusted public devices whenever possible.</p>
-    <h3>Check announcements regularly.</h3>
-    <p>Important updates, platform improvements, and community news may be shared through Harmonia's official communication channels.</p>
+    <p>Our goal is to help you solve problems quickly so you can spend more time focusing on meaningful opportunities.</p>
   </div>
 
   <div class="text-block">
-    <h2>Need Assistance?</h2>
-    <p>If you cannot find the information you're looking for, don't worry.</p>
-    <p>Our support team is available to help with questions related to your account, technical issues, platform functionality, and other general concerns.</p>
-    <p>Before contacting support, we recommend reviewing the relevant Help Center article, as many common questions can be answered immediately.</p>
+    <h2>Tips for Getting the Best Experience</h2>
+    <p>A few simple habits can make your experience smoother and ensure you maintain a high-quality score.</p>
+    <h3>Keep your account information accurate.</h3>
+    <p>This helps ensure that important notifications and account-related information reach you successfully. Do not use fake names or fake locations.</p>
+    <h3>Read project instructions carefully.</h3>
+    <p>Every AI annotation project may have different objectives and formatting requirements. Taking a few moments to review the instructions can prevent task rejections and protect your quality score.</p>
+    <h3>Keep your browser updated.</h3>
+    <p>Modern browsers (like Chrome, Edge, or Firefox) provide better security, performance, and compatibility with Harmonia's complex annotation tools.</p>
+    <h3>Use a secure, VPN-free internet connection.</h3>
+    <p>Protecting your account begins with safe browsing practices. Avoid signing in from untrusted public devices. Never use a VPN to change your location, as our anti-fraud system will detect it and suspend your account.</p>
+    <h3>Check announcements regularly.</h3>
+    <p>Important updates, platform improvements, and community news may be shared through Harmonia's official communication channels and Discord.</p>
   </div>
 
   <div class="closing-block">
@@ -743,18 +712,17 @@ grid-template-columns:1fr;
     <p>It also provides guidance.</p>
     <p>The Harmonia Help Center exists because we believe every member deserves access to clear information, practical resources, and reliable support.</p>
     <p>Helping our community succeed is just as important as building the technology that powers the platform.</p>
-    <p>As Harmonia continues to evolve, this Help Center will grow alongside it—making knowledge easier to access and helping every member move forward with confidence.</p>
     <p class="signoff">Welcome to Harmonia.<br>Knowledge builds confidence. Confidence builds opportunity.</p>
   </div>
 
   <!-- ===================== CHAPTER 2 ===================== -->
-  <p class="chapter-title" id="chapter-2">Chapter 2 — Account Management &amp; Access</p>
+  <p class="chapter-title" id="chapter-2">Chapter 2 — Account Management &amp; Security</p>
 
   <div class="text-block" id="account-management">
     <h2>Your Harmonia Account</h2>
     <p>Your Harmonia account is your gateway to the platform.</p>
-    <p>It allows you to access available features, manage your profile, participate in opportunities, and communicate with the platform where applicable.</p>
-    <p>Keeping your account secure and up to date helps ensure the best possible experience.</p>
+    <p>It allows you to access available features, manage your profile, participate in AI annotation opportunities, and communicate with the platform where applicable.</p>
+    <p>Keeping your account secure and up to date helps ensure the best possible experience and prevents fraudulent access.</p>
   </div>
 
   <div class="text-block">
@@ -763,38 +731,36 @@ grid-template-columns:1fr;
     <ul>
       <li>Register using a valid email address.</li>
       <li>Create a strong password.</li>
-      <li>Verify your email address.</li>
-      <li>Complete any required profile information.</li>
+      <li>Verify your email address using the 6-digit OTP code sent to you.</li>
+      <li>Complete any required profile information (country, language, etc.).</li>
       <li>Sign in and explore the platform.</li>
     </ul>
     <p>Providing accurate information during registration helps reduce account issues and supports a smoother experience.</p>
   </div>
 
   <div class="text-block">
-    <h2>Email Verification</h2>
+    <h2>Email Verification & OTP</h2>
     <p>Email verification helps confirm that the email address belongs to you.</p>
-    <p>It also improves account security and allows us to send important notifications related to your account.</p>
+    <p>It also improves account security and allows us to send important notifications related to your account. Harmonia uses a secure One-Time Password (OTP) system for email verification and password resets.</p>
     <p>If you haven't received your verification email:</p>
     <ul>
       <li>Check your Spam or Junk folder.</li>
       <li>Wait a few minutes and refresh your inbox.</li>
       <li>Confirm that you entered the correct email address.</li>
       <li>Request a new verification email if the option is available.</li>
+      <li>Ensure your email provider is not blocking emails from Harmonia.</li>
     </ul>
     <p>If the issue continues, our support team will be happy to assist.</p>
   </div>
 
   <div class="text-block">
-    <h2>Signing In</h2>
-    <p>To access Harmonia, simply enter your registered email address and password on the login page.</p>
-    <p>For the best experience:</p>
-    <ul>
-      <li>Double-check your email address.</li>
-      <li>Ensure your password is entered correctly.</li>
-      <li>Make sure Caps Lock is turned off if using a keyboard.</li>
-      <li>Use the latest version of your web browser.</li>
-    </ul>
-    <p>If you still cannot sign in, follow the password recovery process or contact support.</p>
+    <h2>How Login Sessions Work (Local Storage)</h2>
+    <div class="deep-dive">
+      <h3>Deep Dive: Local Storage vs Cookies</h3>
+      <p>Unlike older platforms that use tracking cookies, Harmonia uses a modern, secure technology called <strong>Local Storage</strong> combined with encrypted session tokens to keep you logged in.</p>
+      <p>When you log in, we generate a secure token and store it directly in your browser. This token is strictly used for identity verification. It is never used for cross-site tracking, behavioral advertising, or sold to third parties.</p>
+      <p>If you clear your browser's Local Storage or cache, you will be immediately logged out of Harmonia and will need to sign back in.</p>
+    </div>
   </div>
 
   <div class="text-block">
@@ -804,39 +770,39 @@ grid-template-columns:1fr;
     <ul>
       <li>Choose a unique password.</li>
       <li>Avoid using passwords you've used on other websites.</li>
-      <li>Store your password safely.</li>
+      <li>Store your password safely (e.g., in a password manager).</li>
       <li>Never share your login credentials with anyone.</li>
     </ul>
-    <p>A strong password is one of the simplest ways to protect your account.</p>
-  </div>
-
-  <div class="text-block">
-    <h2>Updating Your Account Information</h2>
-    <p>Keeping your account information current helps ensure smooth communication and accurate account management.</p>
-    <p>Depending on available platform features, you may be able to update information such as:</p>
-    <ul>
-      <li>Your display name.</li>
-      <li>Contact details.</li>
-      <li>Password.</li>
-      <li>Notification preferences.</li>
-      <li>Other profile information.</li>
-    </ul>
-    <p>Some changes may require additional verification for security purposes.</p>
+    <p>A strong password is one of the simplest ways to protect your account from unauthorized access.</p>
   </div>
 
   <div class="text-block" id="account-security">
     <h2>Keeping Your Account Secure</h2>
-    <p>Security is a shared responsibility.</p>
+    <p>Security is a shared responsibility. While Harmonia employs enterprise-grade Cloudflare security, you must also do your part.</p>
     <p>We recommend following these best practices:</p>
     <ul class="checklist">
       <li>Use a strong, unique password.</li>
-      <li>Verify your email address.</li>
-      <li>Never share your account credentials.</li>
+      <li>Verify your email address immediately upon registration.</li>
+      <li>Never share your account credentials or session tokens.</li>
       <li>Avoid signing in on untrusted public devices.</li>
       <li>Sign out after using shared computers.</li>
       <li>Report suspicious activity immediately.</li>
+      <li>Do not click on suspicious links in emails or Discord claiming to be Harmonia.</li>
     </ul>
-    <p>Small security habits make a big difference.</p>
+    <p>Small security habits make a big difference in protecting your earnings.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Linking Your Discord Account</h2>
+    <p>Harmonia integrates directly with Discord for community support and role synchronization. Linking your Discord account allows you to join our official server and automatically receive roles based on your Harmonia account status.</p>
+    <p>To link your account:</p>
+    <ul>
+      <li>Go to your Dashboard Settings.</li>
+      <li>Click the "Link Discord" button.</li>
+      <li>You will be redirected to the official Discord OAuth prompt.</li>
+      <li>Authorize the connection to sync your roles.</li>
+    </ul>
+    <p>We only request basic profile data (Discord ID and username) to verify your identity. We do not have access to your Discord password or private messages.</p>
   </div>
 
   <div class="text-block">
@@ -846,14 +812,14 @@ grid-template-columns:1fr;
     <ul>
       <li>Incorrect login credentials.</li>
       <li>Forgotten password.</li>
-      <li>Browser-related issues.</li>
-      <li>Temporary technical problems.</li>
-      <li>Account security reviews.</li>
+      <li>Browser-related issues (e.g., corrupted Local Storage).</li>
+      <li>Temporary technical problems on the server.</li>
+      <li>Account security reviews (e.g., suspected VPN or bot usage).</li>
     </ul>
     <p>Before contacting support, try:</p>
     <ul>
       <li>Refreshing the page.</li>
-      <li>Clearing your browser cache.</li>
+      <li>Clearing your browser cache and Local Storage.</li>
       <li>Trying another browser.</li>
       <li>Trying another device.</li>
       <li>Checking your internet connection.</li>
@@ -862,79 +828,59 @@ grid-template-columns:1fr;
   </div>
 
   <div class="text-block">
-    <h2>Account Reviews</h2>
-    <p>To help maintain a fair and secure platform, some accounts may occasionally be reviewed.</p>
-    <p>Reviews may occur for reasons such as:</p>
-    <ul>
-      <li>Verifying account information.</li>
-      <li>Investigating unusual activity.</li>
-      <li>Protecting platform security.</li>
-      <li>Ensuring compliance with platform policies.</li>
-    </ul>
-    <p>Whenever appropriate, our goal is to handle account reviews fairly and responsibly.</p>
+    <h2>Account Reviews & Suspensions</h2>
+    <p>To help maintain a fair and secure platform for our B2B clients, some accounts may occasionally be reviewed or suspended.</p>
+    <div class="alert-box">
+      <h3>Why Accounts Get Suspended</h3>
+      <p>Harmonia has a zero-tolerance policy for fraud. Accounts may be immediately suspended for:</p>
+      <ul>
+        <li><strong>Using a VPN or Proxy:</strong> To bypass geographic task restrictions. Our system detects IP mismatches.</li>
+        <li><strong>Using Bots or AI:</strong> Automated scripts, auto-typers, or AI models used to complete Micro-Tasks or Annotations.</li>
+        <li><strong>Multiple Accounts:</strong> Creating more than one account per individual to manipulate task quotas.</li>
+        <li><strong>Low Quality / Spam:</strong> Repeatedly submitting garbage data or failing quality checks on AI projects.</li>
+      </ul>
+      <p>Suspended accounts will have their pending earnings forfeited.</p>
+    </div>
+    <p>If you believe a restriction was applied incorrectly, you may contact our support team to request a manual review.</p>
   </div>
 
   <div class="text-block">
-    <h2>Account Responsibilities</h2>
-    <p>Every member helps create a trustworthy community.</p>
-    <p>When using Harmonia, we encourage members to:</p>
-    <ul>
-      <li>Provide accurate information.</li>
-      <li>Protect their login credentials.</li>
-      <li>Respect platform policies.</li>
-      <li>Participate honestly.</li>
-      <li>Report suspicious activity.</li>
-      <li>Communicate respectfully.</li>
-    </ul>
-    <p>Responsible participation benefits the entire community.</p>
-  </div>
-
-  <div class="text-block" id="account-issues">
     <h2>Frequently Encountered Account Issues</h2>
 
     <div class="faq-item">
       <button class="faq-question"><span>I didn't receive my verification email.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Check your Spam folder and ensure your email address was entered correctly.</p>
+        <p>Check your Spam folder and ensure your email address was entered correctly. If you still can't find it, wait 5 minutes and try requesting a new code from the login page. If the issue persists, contact support.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question"><span>I forgot my password.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Use the password recovery feature available on the login page.</p>
+        <p>Use the password recovery feature available on the login page. Enter your email, receive a 6-digit OTP, and enter your new password.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question"><span>I can't log in.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Double-check your email address and password, then try again using a supported browser.</p>
+        <p>Double-check your email address and password, then try again using a supported browser. Ensure Caps Lock is off. If it still fails, clear your browser cache and try again.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question"><span>My account appears restricted.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Some accounts may undergo review to help maintain platform security and fairness.</p>
-        <p>If you believe a restriction was applied incorrectly, please contact support.</p>
+        <p>Some accounts may undergo review to help maintain platform security and fairness. This is usually triggered by VPN usage or low-quality task submissions. If you believe a restriction was applied incorrectly, please contact support.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question"><span>Can I create another account?</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Unless specifically permitted by Harmonia, each individual should maintain only one personal account.</p>
-        <p>Maintaining a single account helps support fairness and platform integrity.</p>
+        <p>No. Unless specifically permitted by Harmonia, each individual should maintain only one personal account. Maintaining a single account helps support fairness and platform integrity.</p>
       </div></div>
     </div>
-  </div>
-
-  <div class="text-block">
-    <h2>Need More Help?</h2>
-    <p>If you're still experiencing account-related issues after following the steps above, our support team is available to help.</p>
-    <p>When contacting support, providing clear information about the issue—including any error messages or screenshots—can help us investigate more efficiently.</p>
-    <p>Our goal is to resolve account issues as quickly and fairly as possible.</p>
   </div>
 
   <div class="closing-block">
@@ -945,12 +891,19 @@ grid-template-columns:1fr;
   </div>
 
   <!-- ===================== CHAPTER 3 ===================== -->
-  <p class="chapter-title" id="chapter-3">Chapter 3 — Projects, Payments &amp; Troubleshooting</p>
+  <p class="chapter-title" id="chapter-3">Chapter 3 — AI Tasks, Annotation & Micro-Tasks</p>
 
-  <div class="text-block" id="projects">
-    <h2>Understanding Opportunities</h2>
-    <p>Harmonia connects contributors with a variety of digital opportunities provided by businesses, researchers, and organizations.</p>
-    <p>Depending on platform availability, projects may include activities such as AI data services, research participation, surveys, data annotation, testing, reviews, and other forms of digital collaboration.</p>
+  <div class="text-block" id="tasks">
+    <h2>Understanding AI Opportunities</h2>
+    <p>Harmonia connects contributors with a variety of digital opportunities provided by businesses, researchers, and organizations. As a B2B AI workforce platform, our primary focus is generating high-quality human-in-the-loop (HITL) data for machine learning.</p>
+    <p>Depending on platform availability, projects may include activities such as:</p>
+    <ul>
+      <li><strong>Image Annotation:</strong> Drawing bounding boxes around objects.</li>
+      <li><strong>Text Classification:</strong> Categorizing text or filtering content.</li>
+      <li><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> Evaluating and ranking AI-generated responses.</li>
+      <li><strong>Micro-Tasks:</strong> Short data entry or verification tasks.</li>
+      <li><strong>Surveys & Market Research:</strong> Providing demographic feedback.</li>
+    </ul>
     <p>Available opportunities may change over time based on client demand, project requirements, and platform growth.</p>
   </div>
 
@@ -961,11 +914,11 @@ grid-template-columns:1fr;
     <ul class="checklist">
       <li>Read the project description carefully.</li>
       <li>Review all instructions before beginning.</li>
-      <li>Make sure you understand the requirements.</li>
-      <li>Confirm that you have enough time to complete the task.</li>
+      <li>Make sure you understand the formatting requirements.</li>
+      <li>Confirm that you have enough time to complete the task before the timer expires.</li>
       <li>Ensure your internet connection is stable.</li>
     </ul>
-    <p>Taking a few extra minutes at the beginning can help prevent mistakes later.</p>
+    <p>Taking a few extra minutes at the beginning can help prevent mistakes and task rejections later.</p>
   </div>
 
   <div class="text-block">
@@ -974,11 +927,11 @@ grid-template-columns:1fr;
     <p>Successful contributors generally:</p>
     <ul>
       <li>Follow instructions carefully.</li>
-      <li>Submit accurate work.</li>
+      <li>Submit accurate, high-quality work.</li>
       <li>Avoid rushing through tasks.</li>
       <li>Pay attention to detail.</li>
-      <li>Complete work honestly.</li>
-      <li>Respect project requirements.</li>
+      <li>Complete work honestly without the use of AI or bots.</li>
+      <li>Respect project requirements and deadlines.</li>
     </ul>
     <p>Quality work benefits everyone by helping businesses receive dependable results while strengthening opportunities for contributors.</p>
   </div>
@@ -992,47 +945,252 @@ grid-template-columns:1fr;
       <li>Project schedules.</li>
       <li>Required qualifications.</li>
       <li>Language requirements.</li>
-      <li>Geographic availability.</li>
+      <li>Geographic availability (do not use a VPN to bypass this).</li>
       <li>Overall platform activity.</li>
     </ul>
     <p>If opportunities are limited today, new projects may become available in the future as the platform continues to grow.</p>
   </div>
 
-  <div class="text-block" id="payments">
-    <h2>Understanding Payments</h2>
-    <p>Payments are processed according to Harmonia's Payment Policy.</p>
-    <p>The exact payment process may vary depending on the type of opportunity, verification requirements, payment provider, and your country or region.</p>
-    <p>Whenever applicable, payment information—including eligibility, supported methods, and processing timelines—will be communicated through the platform or our official documentation.</p>
-    <p>For complete payment details, please refer to our dedicated Payment Policy page.</p>
+  <div class="text-block" id="micro-tasks">
+    <h2>What are Micro-Tasks?</h2>
+    <p>Micro-Tasks are short, simple digital tasks that pay a small amount upon successful completion. They are a great way to earn money quickly when larger annotation projects are unavailable.</p>
+    <p>Examples of Micro-Tasks include:</p>
+    <ul>
+      <li>Verifying data points.</li>
+      <li>Typing displayed codes.</li>
+      <li>Categorizing simple text snippets.</li>
+    </ul>
   </div>
 
   <div class="text-block">
-    <h2>Payment Status</h2>
+    <h2>Understanding Challenge Codes</h2>
+    <div class="deep-dive">
+      <h3>Deep Dive: How Challenge Codes Work</h3>
+      <p>To ensure that Micro-Tasks are being completed by genuine humans and not automated bots, Harmonia utilizes a system called "Challenge Codes."</p>
+      <p>When you accept a Micro-Task, the platform will generate a short, randomized alphanumeric code (e.g., <code>A4B9X</code>). To complete the task and earn the payout, you must simply type or paste this exact code into the submission box before the timer expires.</p>
+      <p><strong>Why is this necessary?</strong> Bots and AI scripts cannot read and manually type dynamic visual codes efficiently. This system protects our clients' data quality and ensures that only legitimate human contributors are paid.</p>
+    </div>
+    <p>If you fail to enter the code correctly before the timer runs out, the task will expire and you will need to request a new one.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Why Projects Get Put "On Hold"</h2>
+    <p>Sometimes, you may notice a project is marked as "On Hold" or "Paused" in your dashboard. This is a normal part of the B2B workflow.</p>
+    <p>Admins may put a project on hold for various reasons, such as:</p>
+    <ul>
+      <li>The Client is updating instructions or guidelines.</li>
+      <li>Quality review is taking place to ensure data integrity.</li>
+      <li>The project has reached its required data volume.</li>
+      <li>Technical maintenance on the annotation tool.</li>
+    </ul>
+    <p>Check back later to see if the project resumes. You do not need to contact support for project holds.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Task Rejections & Quality Scores</h2>
+    <p>Sometimes, your work may be rejected by an admin or the client. This usually happens because the instructions were not followed precisely or the data quality was too low.</p>
+    <p>If your work is rejected:</p>
+    <ul>
+      <li>You will not be paid for that specific task.</li>
+      <li>Your internal quality score may decrease.</li>
+      <li>If your quality score drops too low, you may lose access to high-paying projects.</li>
+    </ul>
+    <p>To avoid rejections, always read the instructions twice before starting.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>Task & Project Troubleshooting</h2>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I completed a task but it says "Expired".</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Tasks have strict timers. If you do not submit your answer (or Challenge Code) before the timer runs out, the task expires and you cannot be paid for it. You will need to accept a new task.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I can't find any available opportunities.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Opportunity availability changes regularly based on client demand. If nothing is currently available, it means there are no projects matching your specific profile or geographic location. Check back later.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>My Challenge Code isn't working.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Ensure you are typing the code exactly as displayed (it is case-sensitive). Do not use auto-fill or copy-paste extensions, as they sometimes add invisible spaces that break the code. Type it manually.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>Can I use ChatGPT or AI to help me?</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Absolutely not. The entire purpose of our platform is to provide genuine human-in-the-loop data. Using AI, scripts, or bots is strictly prohibited and will result in permanent account termination and forfeiture of earnings.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="closing-block">
+    <h2>Moving Forward with Confidence</h2>
+    <p>Whether you're completing your first project or returning as an experienced member, our goal is to provide the guidance and resources you need to succeed.</p>
+    <p>Every project completed, every issue resolved, and every improvement released brings Harmonia one step closer to becoming a stronger platform for contributors and businesses around the world.</p>
+    <p class="signoff">Thank you for growing with us.</p>
+  </div>
+
+  <!-- ===================== CHAPTER 4 ===================== -->
+  <p class="chapter-title" id="chapter-4">Chapter 4 — Offerwalls (Bonus Tasks)</p>
+
+  <div class="text-block" id="offerwalls">
+    <h2>What are Offerwalls?</h2>
+    <p>To provide workers with uninterrupted earning opportunities even when standard AI annotation projects are unavailable, Harmonia integrates with third-party Offerwall providers like CPX Research and Offerwall.me.</p>
+    <p>These "Bonus Tasks" allow you to earn money by:</p>
+    <ul>
+      <li>Downloading and playing mobile games.</li>
+      <li>Completing external market research surveys.</li>
+      <li>Signing up for free trials or services.</li>
+      <li>Watching videos or viewing ads.</li>
+    </ul>
+    <p>Offerwall earnings are tracked by the third-party provider and automatically credited to your Harmonia balance once the external task is verified as complete.</p>
+  </div>
+
+  <div class="text-block">
+    <h2>How to Complete Offerwall Tasks</h2>
+    <p>Offerwalls operate slightly differently from standard Harmonia Micro-Tasks. Follow these steps to ensure you get paid:</p>
+    <ol>
+      <li>Go to the Bonus Tasks / Offerwall tab in your dashboard.</li>
+      <li>Choose an offer that fits your profile (e.g., a survey or a game download).</li>
+      <li>Click the offer. You will be taken to the third-party provider's site.</li>
+      <li>Complete all the requirements listed (e.g., reach level 5 in the game, or finish the entire survey).</li>
+      <li>Wait for the provider to verify your completion. This can take minutes or days, depending on the offer.</li>
+    </ol>
+  </div>
+
+  <div class="text-block">
+    <h2>Offerwall Troubleshooting</h2>
+    <div class="alert-box">
+      <h3>Important: Offerwall Rules</h3>
+      <p>Offerwall providers have strict anti-fraud rules. You will not be credited if:</p>
+      <ul>
+        <li>You use a VPN or proxy to access the offer.</li>
+        <li>You provide fake demographic information to qualify for a survey.</li>
+        <li>You use an ad-blocker or privacy browser that blocks tracking scripts.</li>
+        <li>You fail to complete all the required steps (e.g., stopping a game at level 4 when level 5 was required).</li>
+      </ul>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I completed an Offerwall task but didn't get paid.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Offerwall tasks are tracked entirely by the third-party provider (e.g., CPX Research). If you did not receive credit, it is because the provider's tracking failed to register your completion. You must submit a support ticket directly to the provider using their "Missing Credit" or "Support" form, usually found at the bottom of the Offerwall iframe. Harmonia cannot manually verify or credit missing Offerwall tasks.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I was disqualified from a survey halfway through.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Survey providers often require participants with very specific backgrounds. If your answers indicate you don't fit the target demographic, or if you answer too quickly (indicating you aren't reading), you may be disqualified. This is normal. Not qualifying for one survey does not affect your Harmonia account.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>Can I use a VPN for Offerwalls to get more surveys?</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>No. Using a VPN or proxy to access Offerwall tasks is strictly prohibited by both Harmonia and the third-party providers. It will result in denied credit, an Offerwall ban, and the permanent suspension of your Harmonia account.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ===================== CHAPTER 5 ===================== -->
+  <p class="chapter-title" id="chapter-5">Chapter 5 — Payments & Payouts</p>
+
+  <div class="text-block" id="payments">
+    <h2>Understanding Payments</h2>
+    <p>Payments are processed according to Harmonia's Payment Policy. Because we operate a B2B platform, payouts are facilitated via trusted third-party payment processors.</p>
+    <p>We currently support two primary payout methods:</p>
+    <ul>
+      <li><strong>PayPal:</strong> Fast, secure transfers to your verified PayPal email.</li>
+      <li><strong>Cryptocurrency (USDT):</strong> Payouts in Tether (USDT) on the ERC-20 network. Perfect for international workers in regions where PayPal is restricted.</li>
+    </ul>
+  </div>
+
+  <div class="text-block">
+    <h2>How to Verify Your Payout Method</h2>
+    <div class="deep-dive">
+      <h3>Deep Dive: OTP Payout Verification</h3>
+      <p>To ensure funds are sent to the correct account and prevent fraud, Harmonia requires OTP verification for all payout methods.</p>
+      <p>When you enter your PayPal email or Crypto wallet address in your dashboard settings, we send a 6-digit code to your Harmonia account email. You must enter this code on the platform to verify and save your payout method.</p>
+      <p><strong>Important:</strong> You cannot request a withdrawal until your payout method is verified.</p>
+    </div>
+  </div>
+
+  <div class="text-block">
+    <h2>How Crypto (USDT) Payouts Work</h2>
+    <p>Cryptocurrency payouts are an excellent option for international contributors. However, it is crucial to understand how they work to avoid losing your earnings.</p>
+    <ul>
+      <li><strong>Network:</strong> Harmonia only sends USDT on the <strong>ERC-20</strong> network. You must ensure your wallet supports ERC-20 USDT (e.g., Trust Wallet, MetaMask, Binance).</li>
+      <li><strong>Gas Fees:</strong> When selecting crypto payouts, the worker is responsible for any blockchain network transaction fees. Harmonia sends the exact payout amount, and the fee is deducted by the blockchain before it arrives in your wallet.</li>
+      <li><strong>Wallet Address:</strong> Always double-check your wallet address. Blockchain transactions are irreversible. If you enter the wrong address, Harmonia cannot recover your funds.</li>
+    </ul>
+  </div>
+
+  <div class="text-block">
+    <h2>Payment Status & Processing Times</h2>
     <p>During the payment process, you may notice different stages as your earnings move through review and processing.</p>
     <p>Depending on the project, payment status may include steps such as:</p>
     <ul>
-      <li>Pending Review</li>
-      <li>Approved</li>
-      <li>Processing</li>
-      <li>Completed</li>
+      <li><strong>Pending:</strong> Your task was approved, but the admin hasn't processed the payout batch yet.</li>
+      <li><strong>Processing:</strong> The payout has been initiated and is being sent to the payment provider.</li>
+      <li><strong>Completed:</strong> The funds have been sent successfully.</li>
     </ul>
-    <p>The exact workflow may differ between projects.</p>
+    <p>Processing times typically take between 24 to 72 hours, though occasional delays may occur due to banking procedures or blockchain congestion.</p>
   </div>
 
   <div class="text-block">
-    <h2>If You Experience a Payment Issue</h2>
-    <p>If you believe there is a problem with a payment, first review:</p>
-    <ul>
-      <li>Your project status.</li>
-      <li>Payment eligibility requirements.</li>
-      <li>Account verification status.</li>
-      <li>Any recent platform announcements.</li>
-    </ul>
-    <p>If the issue remains unresolved, contact Harmonia Support with the relevant project details so we can investigate further.</p>
+    <h2>Independent Contractor Status</h2>
+    <div class="alert-box">
+      <h3>Tax Responsibilities</h3>
+      <p>Workers on Harmonia participate strictly as <strong>Independent Contractors</strong>, not employees.</p>
+      <p>This means you are solely responsible for reporting your earnings and paying any applicable taxes in your jurisdiction. Harmonia does not withhold income tax, social security, or provide employee benefits like health insurance or paid leave.</p>
+    </div>
   </div>
 
+  <div class="text-block">
+    <h2>Payment Troubleshooting</h2>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>Why can't I withdraw my funds?</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>You must reach the minimum withdrawal threshold before requesting a payout. Additionally, your payout method (PayPal or USDT) must be verified via the OTP code sent to your email. Check your settings to ensure everything is verified.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>My crypto payout says "Completed" but I don't see it in my wallet.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Crypto transactions require confirmations on the blockchain. Depending on network congestion, it can take anywhere from 5 minutes to a few hours for the funds to appear in your wallet. Ensure you are checking the correct network (ERC-20).</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>My PayPal payout was delayed.</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Occasionally, PayPal holds funds for security review, especially for new accounts or large amounts. Ensure your PayPal account is verified and in good standing. If the delay exceeds 72 hours, contact Harmonia support.</p>
+      </div></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question"><span>I entered the wrong wallet address. Can I get my money back?</span><span class="icon">+</span></button>
+      <div class="faq-answer"><div class="faq-answer-inner">
+        <p>Unfortunately, no. Blockchain transactions are irreversible. It is crucial to double-check your wallet address before requesting a payout. Always verify your method with the OTP code to prevent mistakes.</p>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ===================== CHAPTER 6 ===================== -->
+  <p class="chapter-title" id="chapter-6">Chapter 6 — Technical Troubleshooting</p>
+
   <div class="text-block" id="troubleshooting">
-    <h2>Troubleshooting Common Issues</h2>
+    <h2>Resolving Common Technical Issues</h2>
     <p>Occasionally, technical issues may occur. Many can be resolved with a few simple steps.</p>
 
     <div class="faq-item">
@@ -1042,7 +1200,7 @@ grid-template-columns:1fr;
         <ul>
           <li>Refreshing the page.</li>
           <li>Checking your internet connection.</li>
-          <li>Trying another browser.</li>
+          <li>Trying another browser (we recommend Chrome or Edge).</li>
           <li>Clearing your browser cache.</li>
           <li>Returning a few minutes later if maintenance is in progress.</li>
         </ul>
@@ -1050,34 +1208,23 @@ grid-template-columns:1fr;
     </div>
 
     <div class="faq-item">
-      <button class="faq-question"><span>A page isn't working correctly.</span><span class="icon">+</span></button>
+      <button class="faq-question"><span>I keep getting logged out.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Ensure that you're using a supported browser and that JavaScript is enabled if required.</p>
-        <p>If the problem continues, report the issue to our support team.</p>
+        <p>Harmonia uses Local Storage to keep you logged in. If your browser is set to delete cookies and site data upon closing, it is also deleting your Harmonia session. Change your browser settings to allow site data, or simply log back in each time.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
-      <button class="faq-question"><span>I can't find any available opportunities.</span><span class="icon">+</span></button>
+      <button class="faq-question"><span>The annotation tool is lagging or freezing.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Opportunity availability changes regularly.</p>
-        <p>If nothing is currently available, check back later or review any qualification requirements that may apply to certain projects.</p>
-      </div></div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-question"><span>Something looks different after an update.</span><span class="icon">+</span></button>
-      <div class="faq-answer"><div class="faq-answer-inner">
-        <p>Harmonia is continuously improving.</p>
-        <p>Platform updates may introduce new features, improvements, or interface changes intended to enhance the user experience.</p>
+        <p>Complex annotation tools require system resources. Close unnecessary background tabs, ensure your browser is updated, and restart your computer if the issue persists. Avoid using incognito mode, as it can sometimes block necessary scripts.</p>
       </div></div>
     </div>
 
     <div class="faq-item">
       <button class="faq-question"><span>I found a bug.</span><span class="icon">+</span></button>
       <div class="faq-answer"><div class="faq-answer-inner">
-        <p>We appreciate community feedback.</p>
-        <p>If you discover a technical issue, please provide as much information as possible, including:</p>
+        <p>We appreciate community feedback. If you discover a technical issue, please provide as much information as possible, including:</p>
         <ul>
           <li>What happened.</li>
           <li>What you expected to happen.</li>
@@ -1092,63 +1239,12 @@ grid-template-columns:1fr;
 
   <div class="text-block">
     <h2>Platform Maintenance</h2>
-    <p>To keep Harmonia secure and reliable, occasional maintenance or updates may be performed.</p>
-    <p>During these periods, certain features may be temporarily unavailable.</p>
-    <p>Whenever possible, important maintenance will be communicated through official platform announcements.</p>
+    <p>To keep Harmonia secure and reliable, occasional maintenance or updates may be performed. During these periods, certain features may be temporarily unavailable.</p>
+    <p>Whenever possible, important maintenance will be communicated through official platform announcements and our Discord server.</p>
   </div>
 
-  <div class="text-block">
-    <h2>Keeping Your Experience Smooth</h2>
-    <p>To enjoy the best possible experience, we recommend:</p>
-    <ul class="checklist">
-      <li>Keeping your browser updated.</li>
-      <li>Using a reliable internet connection.</li>
-      <li>Reading project instructions carefully.</li>
-      <li>Reviewing platform announcements.</li>
-      <li>Following community guidelines.</li>
-      <li>Keeping your account information current.</li>
-    </ul>
-    <p>These simple practices can help reduce technical issues and improve your overall experience.</p>
-  </div>
-
-  <div class="text-block">
-    <h2>We're Always Improving</h2>
-    <p>Technology never stands still—and neither do we.</p>
-    <p>Every update to Harmonia is guided by the goal of creating a faster, more reliable, and more user-friendly platform.</p>
-    <p>Community feedback, new technologies, and evolving industry standards all help shape the future of Harmonia.</p>
-    <p>While not every improvement is immediately visible, each update is part of our ongoing commitment to building a better platform for everyone.</p>
-  </div>
-
-  <div class="closing-block">
-    <h2>Moving Forward with Confidence</h2>
-    <p>Whether you're completing your first project or returning as an experienced member, our goal is to provide the guidance and resources you need to succeed.</p>
-    <p>Every project completed, every issue resolved, and every improvement released brings Harmonia one step closer to becoming a stronger platform for contributors and businesses around the world.</p>
-    <p class="signoff">Thank you for growing with us.</p>
-  </div>
-
-  <!-- ===================== CHAPTER 4 ===================== -->
-  <p class="chapter-title" id="chapter-4">Chapter 4 — Support, Community &amp; Staying Connected</p>
-
-  <div class="text-block">
-    <h2>Need More Help?</h2>
-    <p>Our goal is to make Harmonia as simple and straightforward as possible.</p>
-    <p>While this Help Center answers many common questions, we understand that every situation is unique.</p>
-    <p>If you can't find the information you're looking for, our team is here to help.</p>
-    <p>Whether you're experiencing a technical issue, have questions about your account, need clarification about a project, or simply want guidance, we'll do our best to provide clear and helpful assistance.</p>
-  </div>
-
-  <div class="text-block">
-    <h2>Before Contacting Support</h2>
-    <p>To help resolve issues as quickly as possible, we recommend checking the following first:</p>
-    <ul class="checklist">
-      <li>Review the relevant Help Center article.</li>
-      <li>Read the project instructions carefully.</li>
-      <li>Check your account notifications.</li>
-      <li>Verify that your browser and internet connection are working correctly.</li>
-      <li>Review our platform policies if your question relates to account rules or platform procedures.</li>
-    </ul>
-    <p>Many common questions can be answered immediately through our documentation.</p>
-  </div>
+  <!-- ===================== CHAPTER 7 ===================== -->
+  <p class="chapter-title" id="chapter-7">Chapter 7 — Support, Community & Glossary</p>
 
   <div class="text-block" id="support">
     <h2>Contacting Harmonia Support</h2>
@@ -1161,6 +1257,7 @@ grid-template-columns:1fr;
       <li>Any error messages displayed.</li>
       <li>Screenshots, when available.</li>
       <li>The device and browser you were using.</li>
+      <li>Your Harmonia User ID.</li>
     </ul>
     <p>The more information you provide, the faster we can understand and investigate the situation.</p>
   </div>
@@ -1181,77 +1278,37 @@ grid-template-columns:1fr;
     <p>Whether you're new to Harmonia or an experienced member, you're always welcome to join the conversation.</p>
   </div>
 
-  <div class="text-block">
-    <h2>Staying Informed</h2>
-    <p>Harmonia is continuously evolving.</p>
-    <p>New features, platform improvements, opportunities, and important announcements may be shared through our official communication channels.</p>
-    <p>We encourage members to stay connected by:</p>
-    <ul class="checklist">
-      <li>Checking platform announcements.</li>
-      <li>Joining our Discord community.</li>
-      <li>Visiting the Help Center regularly.</li>
-      <li>Reviewing policy updates when announced.</li>
+  <div class="text-block" id="glossary">
+    <h2>Glossary of Harmonia Terms</h2>
+    <p>Understanding the terminology used on our platform will help you succeed as a contributor.</p>
+    
+    <h3>AI & Data Annotation</h3>
+    <ul>
+      <li><strong>Annotation:</strong> The process of labeling data (like images or text) so AI models can learn from it.</li>
+      <li><strong>RLHF (Reinforcement Learning from Human Feedback):</strong> A method where humans evaluate and rank AI-generated responses to teach the AI what a good answer looks like.</li>
+      <li><strong>HITL (Human-in-the-Loop):</strong> AI systems that require human interaction and data to function accurately.</li>
+      <li><strong>Bounding Box:</strong> A rectangular box drawn around an object in an image to identify it for AI training.</li>
+      <li><strong>Dataset:</strong> A collection of data used to train machine learning models.</li>
     </ul>
-    <p>Staying informed helps you make the most of everything Harmonia has to offer.</p>
-  </div>
 
-  <div class="text-block" id="resource-directory">
-    <h2>Quick Resource Directory</h2>
-    <p>Looking for something specific? Here are some of the most helpful pages on our website:</p>
-    <div class="directory-grid">
-      <div class="directory-card">
-        <span class="emoji">📖</span>
-        <h3>How Harmonia Works</h3>
-        <p>Understand how the platform operates from start to finish.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">❓</span>
-        <h3>Frequently Asked Questions</h3>
-        <p>Find answers to our most commonly asked questions.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">🛡</span>
-        <h3>Trust &amp; Safety</h3>
-        <p>Learn how Harmonia promotes fairness, security, and responsible platform use.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">🔒</span>
-        <h3>Privacy Policy</h3>
-        <p>Understand how your information is handled and protected.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">⚖</span>
-        <h3>Terms of Service</h3>
-        <p>Review the rules and responsibilities that help keep Harmonia fair and transparent.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">📄</span>
-        <h3>Disclaimer</h3>
-        <p>Read important information regarding platform availability, third-party services, and general use.</p>
-      </div>
-      <div class="directory-card">
-        <span class="emoji">📞</span>
-        <h3>Contact Us</h3>
-        <p>Reach our support team if you need additional assistance.</p>
-      </div>
-    </div>
-  </div>
+    <h3>Platform & Work</h3>
+    <ul>
+      <li><strong>Micro-Task:</strong> A short, simple digital task that pays a small amount upon completion.</li>
+      <li><strong>Challenge Code:</strong> A randomized code shown to the user that must be typed exactly to prove they are human and earn the payout.</li>
+      <li><strong>Offerwall:</strong> A third-party network embedded in Harmonia providing supplementary tasks like surveys or app downloads.</li>
+      <li><strong>Quality Score:</strong> An internal metric used to track a contributor's accuracy and reliability. High scores unlock better projects.</li>
+      <li><strong>Independent Contractor:</strong> A worker who is self-employed, responsible for their own taxes, and not an employee of Harmonia.</li>
+    </ul>
 
-  <div class="text-block">
-    <h2>Our Support Philosophy</h2>
-    <p>Support is about more than answering questions.</p>
-    <p>It's about helping people move forward.</p>
-    <p>We believe every member deserves to be treated with respect, professionalism, and patience.</p>
-    <p>Our goal is not only to resolve issues but also to provide guidance that helps contributors, businesses, and partners use Harmonia with confidence.</p>
-    <p>As our community continues to grow, we remain committed to improving our support resources and listening carefully to the people who use our platform every day.</p>
-  </div>
-
-  <div class="text-block">
-    <h2>Thank You for Being Part of Harmonia</h2>
-    <p>Every successful community is built by people who believe in helping one another.</p>
-    <p>Whether you're here to contribute your skills, launch a project, explore new opportunities, or simply learn more about Harmonia, we're grateful you've chosen to be part of our journey.</p>
-    <p>Thank you for your trust, your ideas, your feedback, and your continued support.</p>
-    <p>Together, we're creating a platform where collaboration, fairness, and opportunity can thrive.</p>
+    <h3>Payments & Security</h3>
+    <ul>
+      <li><strong>USDT (Tether):</strong> A cryptocurrency stablecoin pegged to the US Dollar, used for crypto payouts.</li>
+      <li><strong>ERC-20:</strong> The technical standard used for tokens on the Ethereum blockchain. Harmonia only supports ERC-20 for USDT payouts.</li>
+      <li><strong>Gas Fee:</strong> The transaction fee required to process a cryptocurrency transfer on the blockchain, paid by the worker.</li>
+      <li><strong>OTP (One-Time Password):</strong> A 6-digit code sent to your email to verify your identity during login, password reset, or payout setup.</li>
+      <li><strong>Local Storage:</strong> A secure web technology used by Harmonia to store your login session in your browser without using tracking cookies.</li>
+      <li><strong>VPN (Virtual Private Network):</strong> A tool used to mask your IP address. Using a VPN on Harmonia is strictly prohibited and results in account suspension.</li>
+    </ul>
   </div>
 
   <div class="text-block" id="commitment">
@@ -1362,6 +1419,21 @@ window.addEventListener("scroll", () => {
     window.scrollY > 20
       ? "rgba(6,10,18,.85)"
       : "rgba(6,10,18,.72)";
+});
+
+document.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+        const item = button.parentElement;
+        const answer = item.querySelector('.faq-answer');
+        
+        item.classList.toggle('open');
+        
+        if (item.classList.contains('open')) {
+            answer.style.maxHeight = answer.scrollHeight + 'px';
+        } else {
+            answer.style.maxHeight = 0;
+        }
+    });
 });
 </script>
 
