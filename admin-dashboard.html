@@ -2631,7 +2631,13 @@ async function fetchEarnings() {
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleString();
+    // SQLite CURRENT_TIMESTAMP stores UTC as "YYYY-MM-DD HH:MM:SS" with no
+    // timezone marker. Without a "Z" suffix, JS parses it as local time,
+    // causing the mismatched times you were seeing. Append "Z" so JS treats
+    // it as UTC, then toLocaleString() converts it to the admin's own
+    // timezone automatically.
+    const normalized = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T") + "Z";
+    return new Date(normalized).toLocaleString();
 }
 
 function capitalize(s) {
