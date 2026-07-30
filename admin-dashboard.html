@@ -1154,7 +1154,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
             <input type="text" id="offerwallEarningsSearch" placeholder="🔍 Search by worker name or email..." style="width:100%;max-width:400px;box-sizing:border-box;margin-bottom:14px;" oninput="handleOfferwallEarningsSearch(this.value)">
 
-            <table>
+               <table>
                 <thead>
                     <tr>
                         <th>Worker</th>
@@ -1171,6 +1171,10 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <tr><td colspan="8" class="empty-state">Loading earnings...</td></tr>
                 </tbody>
             </table>
+
+            <div style="text-align:center;margin-top:14px;">
+                <button id="offerwallEarningsShowMoreBtn" onclick="showMoreOfferwallEarnings()" style="display:none;">See More</button>
+            </div>
 
         </section>
 
@@ -2623,19 +2627,19 @@ async function fetchProviders() {
 }
 
 async function fetchEarnings() {
-    const response = await authFetch(WORKER_URL + "/api/admin/offerwall-earnings");
+    const limit = getOfferwallEarningsLimit();
+    let url = `${WORKER_URL}/api/admin/offerwall-earnings?limit=${limit}&offset=${offerwallEarningsOffset}`;
+    if (offerwallEarningsSearchTerm) {
+        url += `&search=${encodeURIComponent(offerwallEarningsSearchTerm)}`;
+    }
+    const response = await authFetch(url);
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || "Failed to load earnings");
-    return data.earnings || [];
+    return data;
 }
 
 function formatDate(dateStr) {
     if (!dateStr) return "-";
-    // SQLite CURRENT_TIMESTAMP stores UTC as "YYYY-MM-DD HH:MM:SS" with no
-    // timezone marker. Without a "Z" suffix, JS parses it as local time,
-    // causing the mismatched times you were seeing. Append "Z" so JS treats
-    // it as UTC, then toLocaleString() converts it to the admin's own
-    // timezone automatically.
     const normalized = dateStr.includes("T") ? dateStr : dateStr.replace(" ", "T") + "Z";
     return new Date(normalized).toLocaleString();
 }
@@ -2651,73 +2655,79 @@ function capitalize(s) {
 
 let allOfferwallEarnings = [];
 let offerwallEarningsSearchTerm = "";
+let offerwallEarningsOffset = 0;
+
+function getOfferwallEarningsLimit() {
+    // Initial load gets 10, subsequent loads get 50
+    return offerwallEarningsOffset === 0 ? 10 : 50;
+}
 
 function handleOfferwallEarningsSearch(value) {
     offerwallEarningsSearchTerm = value.trim().toLowerCase();
-    renderOfferwallEarningsTable();
+    offerwallEarningsOffset = 0;
+    renderAll();
 }
 
-function renderOfferwallEarningsTable() {
+async function showMoreOfferwallEarnings() {
+    offerwallEarningsOffset += getOfferwallEarningsLimit();
+    const data = await fetchEarnings();
+    allOfferwallEarnings = allOfferwallEarnings.concat(data.earnings || []);
+    renderOfferwallEarningsTable(data.total || 0);
+}
+
+function renderOfferwallEarningsTable(totalCount) {
     const earningsTable = document.getElementById("earningsTable");
-    let earnings = allOfferwallEarnings;
-
-    if (offerwallEarningsSearchTerm) {
-        earnings = earnings.filter(e =>
-            (e.workerEmail || "").toLowerCase().includes(offerwallEarningsSearchTerm) ||
-            (e.fullName || "").toLowerCase().includes(offerwallEarningsSearchTerm)
-        );
-    }
-
     earningsTable.innerHTML = "";
 
-    if (earnings.length === 0) {
+    if (allOfferwallEarnings.length === 0) {
         earningsTable.innerHTML = `<tr><td colspan="8" class="empty-state">${offerwallEarningsSearchTerm ? "No earnings match your search" : "No bonus task earnings yet"}</td></tr>`;
-        return;
+    } else {
+        allOfferwallEarnings.forEach(e => {
+            earningsTable.innerHTML += `
+                <tr>
+                    <td>${escapeHTML(e.fullName || "")}${e.workerEmail ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(e.workerEmail)}</span>` : (e.userId ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(String(e.userId))}</span>` : "")}</td>
+                    <td>${escapeHTML(e.providerKey)}</td>
+                    <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
+                    <td>${escapeHTML(e.offerName || "-")}</td>
+                    <td>${formatMoney(e.amountUsd)}</td>
+                    <td>${formatMoney(e.workerAmount)}</td>
+                    <td>${statusBadge(capitalize(e.status))}</td>
+                    <td>${formatDate(e.createdAt)}</td>
+                </tr>
+            `;
+        });
     }
 
-    earnings.forEach(e => {
-        earningsTable.innerHTML += `
-            <tr>
-                <td>${escapeHTML(e.fullName || "")}${e.workerEmail ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(e.workerEmail)}</span>` : (e.userId ? `<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(String(e.userId))}</span>` : "")}</td>
-                <td>${escapeHTML(e.providerKey)}</td>
-                <td><code style="font-size:.75rem;">${escapeHTML(e.txId)}</code></td>
-                <td>${escapeHTML(e.offerName || "-")}</td>
-                <td>${formatMoney(e.amountUsd)}</td>
-                <td>${formatMoney(e.workerAmount)}</td>
-                <td>${statusBadge(capitalize(e.status))}</td>
-                <td>${formatDate(e.createdAt)}</td>
-            </tr>
-        `;
-    });
+    const showMoreBtn = document.getElementById("offerwallEarningsShowMoreBtn");
+    if (showMoreBtn) {
+        showMoreBtn.style.display = totalCount > allOfferwallEarnings.length ? "inline-block" : "none";
+    }
 }
 
 async function renderAll() {
     const providersTable = document.getElementById("providersTable");
     const earningsTable = document.getElementById("earningsTable");
 
-    let providers, earnings;
+    let providers, earningsData;
 
     try {
-        [providers, earnings] = await Promise.all([fetchProviders(), fetchEarnings()]);
+        [providers, earningsData] = await Promise.all([fetchProviders(), fetchEarnings()]);
     } catch (err) {
         providersTable.innerHTML = `<tr><td colspan="5" style="color:#ff8080;">Could not load data: ${escapeHTML(err.message)}</td></tr>`;
         earningsTable.innerHTML = "";
         return;
     }
 
-    allOfferwallEarnings = earnings;
+    allOfferwallEarnings = earningsData.earnings || [];
 
     /* ---- Cards ---- */
     document.getElementById("totalActiveProviders").textContent =
         providers.filter(p => p.status === "active").length;
 
-    const totalPending = earnings.filter(e => e.status === "pending").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
-    const totalPaid = earnings.filter(e => e.status === "paid").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
-    const totalReversed = earnings.filter(e => e.status === "reversed").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
-
-    document.getElementById("totalPendingEarnings").textContent = formatMoney(totalPending);
-    document.getElementById("totalPaidEarnings").textContent = formatMoney(totalPaid);
-    document.getElementById("totalReversedEarnings").textContent = formatMoney(totalReversed);
+    // Use server-calculated totals instead of summing the paginated array
+    document.getElementById("totalPendingEarnings").textContent = formatMoney(earningsData.totalPending || 0);
+    document.getElementById("totalPaidEarnings").textContent = formatMoney(earningsData.totalPaid || 0);
+    document.getElementById("totalReversedEarnings").textContent = formatMoney(earningsData.totalReversed || 0);
 
     /* ---- Providers table ---- */
     providersTable.innerHTML = "";
@@ -2748,7 +2758,7 @@ async function renderAll() {
     });
 
     /* ---- Earnings table ---- */
-    renderOfferwallEarningsTable();
+    renderOfferwallEarningsTable(earningsData.total || 0);
 }
 
 function copyPostbackUrl(url) {
@@ -2892,6 +2902,7 @@ async function handleToggleStatus(providerKey, newStatus) {
     window.handleOfferwallEarningsSearch = handleOfferwallEarningsSearch;
     window.handleToggleStatus = handleToggleStatus;
     window.renderAll = renderAll;
+    window.showMoreOfferwallEarnings = showMoreOfferwallEarnings;
 
     // ---- lazy init, called the first time this tab is opened ----
     window.__admin_init_offerwalls = function() { renderAll(); };
