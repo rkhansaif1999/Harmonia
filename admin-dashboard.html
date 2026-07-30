@@ -2671,8 +2671,16 @@ function handleOfferwallEarningsSearch(value) {
 async function showMoreOfferwallEarnings() {
     offerwallEarningsOffset += getOfferwallEarningsLimit();
     const data = await fetchEarnings();
-    allOfferwallEarnings = allOfferwallEarnings.concat(data.earnings || []);
-    renderOfferwallEarningsTable(data.total || 0);
+    
+    // If data.total is missing, the backend wasn't updated and already returned all rows.
+    // We prevent appending duplicates in that edge case.
+    if (data.total !== undefined) {
+        allOfferwallEarnings = allOfferwallEarnings.concat(data.earnings || []);
+        renderOfferwallEarningsTable(data.total);
+    } else {
+        allOfferwallEarnings = data.earnings || [];
+        renderOfferwallEarningsTable(allOfferwallEarnings.length);
+    }
 }
 
 function renderOfferwallEarningsTable(totalCount) {
@@ -2724,10 +2732,21 @@ async function renderAll() {
     document.getElementById("totalActiveProviders").textContent =
         providers.filter(p => p.status === "active").length;
 
-    // Use server-calculated totals instead of summing the paginated array
-    document.getElementById("totalPendingEarnings").textContent = formatMoney(earningsData.totalPending || 0);
-    document.getElementById("totalPaidEarnings").textContent = formatMoney(earningsData.totalPaid || 0);
-    document.getElementById("totalReversedEarnings").textContent = formatMoney(earningsData.totalReversed || 0);
+    // Use server-calculated totals if available, otherwise fall back to summing the array
+    // (the fallback ensures cards still work even if worker.js hasn't been updated yet)
+    const totalPending = earningsData.totalPending !== undefined
+        ? earningsData.totalPending
+        : allOfferwallEarnings.filter(e => e.status === "pending").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+    const totalPaid = earningsData.totalPaid !== undefined
+        ? earningsData.totalPaid
+        : allOfferwallEarnings.filter(e => e.status === "paid").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+    const totalReversed = earningsData.totalReversed !== undefined
+        ? earningsData.totalReversed
+        : allOfferwallEarnings.filter(e => e.status === "reversed").reduce((sum, e) => sum + Number(e.workerAmount || 0), 0);
+
+    document.getElementById("totalPendingEarnings").textContent = formatMoney(totalPending);
+    document.getElementById("totalPaidEarnings").textContent = formatMoney(totalPaid);
+    document.getElementById("totalReversedEarnings").textContent = formatMoney(totalReversed);
 
     /* ---- Providers table ---- */
     providersTable.innerHTML = "";
