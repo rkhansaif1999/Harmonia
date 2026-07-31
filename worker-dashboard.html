@@ -631,9 +631,21 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <div class="sub" id="weekRangeLabel"></div>
                 </div>
                 <div class="stat-card">
-                    <div class="lbl">Next Payout</div>
-                    <div class="val" id="nextPayoutDate">Coming Soon</div>
+                    <div class="lbl">Withdraw</div>
+                    <div style="margin-top:10px;">
+                        <button class="primary" id="withdrawBtn" onclick="openWithdrawModal()" style="width:100%;display:none;">💸 Request Withdrawal</button>
+                        <span class="status status-pending" id="withdrawPendingBadge" style="display:none;">Request Pending</span>
+                        <span class="muted" id="withdrawMinNote" style="font-size:.82rem;">Minimum $10 to withdraw</span>
+                    </div>
                 </div>
+            </div>
+
+            <div class="card section-gap" id="withdrawHistoryCard" style="display:none;">
+                <h2>Withdrawal Requests</h2>
+                <table class="data-table">
+                    <thead><tr><th>ID</th><th>Amount</th><th>Status</th><th>Requested On</th></tr></thead>
+                    <tbody id="withdrawHistoryBody"><tr><td colspan="4" class="empty-state">No requests yet.</td></tr></tbody>
+                </table>
             </div>
 
             <div class="card section-gap">
@@ -2199,8 +2211,78 @@ async function loadEarnings() {
         document.getElementById("weeklyPending").textContent = formatMoney(data.totalPending);
         const { start, end } = getCurrentWeekRange();
         document.getElementById("weekRangeLabel").textContent = formatDateShort(start) + " – " + formatDateShort(end);
-        document.getElementById("nextPayoutDate").textContent = "Coming Soon";
+
+        // Withdraw button logic
+        const withdrawBtn = document.getElementById("withdrawBtn");
+        const withdrawPendingBadge = document.getElementById("withdrawPendingBadge");
+        const withdrawMinNote = document.getElementById("withdrawMinNote");
+
+        const wRes = await authFetch(WORKER_URL + "/api/worker/withdraw/status");
+        const wData = await wRes.json();
+        const requests = wData.requests || [];
+        const hasPending = requests.some(r => r.status === "pending");
+
+        loadWithdrawHistory(requests);
+
+        if (hasPending) {
+            withdrawBtn.style.display = "none";
+            withdrawPendingBadge.style.display = "inline-block";
+            withdrawMinNote.style.display = "none";
+        } else if (data.totalPending >= 10) {
+            withdrawBtn.style.display = "block";
+            withdrawPendingBadge.style.display = "none";
+            withdrawMinNote.style.display = "none";
+        } else {
+            withdrawBtn.style.display = "none";
+            withdrawPendingBadge.style.display = "none";
+            withdrawMinNote.style.display = "block";
+        }
     } catch (err) { console.error(err); }
+}
+
+function loadWithdrawHistory(requests) {
+    const card = document.getElementById("withdrawHistoryCard");
+    const tbody = document.getElementById("withdrawHistoryBody");
+    if (!requests || !requests.length) { card.style.display = "none"; return; }
+    card.style.display = "block";
+    tbody.innerHTML = requests.map(r => {
+        const date = r.created_at ? new Date(r.created_at.replace(" ", "T") + "Z").toLocaleString(undefined, { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" }) : "—";
+        let badge = `<span class="status status-pending">Pending</span>`;
+        if (r.status === "approved") badge = `<span class="status status-approved">Approved</span>`;
+        if (r.status === "rejected") badge = `<span class="status status-rejected">Rejected</span>`;
+        return `<tr>
+            <td>#WR-${String(r.id).padStart(4,"0")}</td>
+            <td><strong>$${Number(r.amount).toFixed(2)}</strong></td>
+            <td>${badge}</td>
+            <td>${date}</td>
+        </tr>`;
+    }).join("");
+}
+
+function openWithdrawModal() {
+    const pending = parseFloat(document.getElementById("weeklyPending").textContent.replace("$","")) || 0;
+    const amount = prompt(`Enter amount to withdraw (max $${pending.toFixed(2)}, min $10):`);
+    if (!amount) return;
+    const num = parseFloat(amount);
+    if (isNaN(num) || num < 10) { alert("Minimum withdrawal is $10."); return; }
+    if (num > pending) { alert(`You only have $${pending.toFixed(6)} pending.`); return; }
+    submitWithdrawRequest(num);
+}
+
+async function submitWithdrawRequest(amount) {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/worker/withdraw/request", {
+            method: "POST",
+            body: JSON.stringify({ amount })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "Failed to submit request."); return; }
+        alert("Withdrawal request submitted! Admin will review it shortly.");
+        loadEarnings();
+    } catch (err) {
+        alert("Connection error. Please try again.");
+        console.error(err);
+    }
 }
 
 // Earnings History table function removed to merge Payments & Earnings tabs into one clean view.
