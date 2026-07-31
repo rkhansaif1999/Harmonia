@@ -1,0 +1,30 @@
+# Harmonia
+
+> Harmonia connects businesses with a global workforce for AI data annotation, model evaluation, human feedback (RLHF), moderation, and transcription tasks, while helping contributors earn online and work from home.
+
+## Main pages
+
+- [Home](https://harmoniaportal.online/): Overview of Harmonia's mission and services.
+- [About](https://harmoniaportal.online/about.html): Company story, mission, and impact.
+- [How It Works](https://harmoniaportal.online/how-it-works.html): How the annotation/evaluation workflow operates for workers and clients.
+- [Contact](https://harmoniaportal.online/contact.html): Ways to reach the Harmonia team.
+- [FAQ](https://harmoniaportal.online/faq.html): Frequently asked questions.
+- [Help Center](https://harmoniaportal.online/help-center.html): Support resources for workers and clients.
+- [Trust & Safety](https://harmoniaportal.online/trust-safety.html): Platform safety and integrity practices.
+
+## Account
+
+- [Login](https://harmoniaportal.online/login.html)
+- [Sign Up](https://harmoniaportal.online/signup.html)
+
+## Legal
+
+- [Privacy Policy](https://harmoniaportal.online/privacy-policy.html)
+- [Terms of Service](https://harmoniaportal.online/terms.html)
+- [Cookie Policy](https://harmoniaportal.online/cookie-policy.html)
+- [Payments & Billing](https://harmoniaportal.online/payments-billing.html)
+- [Disclaimer](https://harmoniaportal.online/disclaimer.html)
+
+## Notes
+
+Logged-in dashboard pages (admin, worker, client, reviewer) are intentionally excluded from crawling and indexing — see /robots.txt.
