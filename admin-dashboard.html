@@ -801,7 +801,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <li data-permission="messages"><button class="side-item" data-tab="messages"><span class="ic">✉️</span> Messages</button></li>
             <li data-permission="analytics"><button class="side-item" data-tab="analytics"><span class="ic">📈</span> Analytics</button></li>
             <li data-permission="settings"><button class="side-item" data-tab="settings"><span class="ic">⚙</span> Settings</button></li>
-            <li data-permission="workers"><button class="side-item" data-tab="withdrawals"><span class="ic">💸</span> Withdraw Requests</button></li>
+            <li data-permission="withdrawals"><button class="side-item" data-tab="withdrawals"><span class="ic">💸</span> Withdraw Requests</button></li>
         </ul>
 
         <div class="side-label" data-core-team-only style="display:none;">Worker Access</div>
@@ -1475,7 +1475,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         </section>
 
         <!-- ================= WITHDRAW REQUESTS ================= -->
-        <section class="page-panel" id="panel-withdrawals" data-permission="workers">
+        <section class="page-panel" id="panel-withdrawals" data-permission="withdrawals">
             <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
                 <div class="stat-card"><div class="lbl">Total Requests</div><div class="val" id="wrStatTotal">0</div></div>
                 <div class="stat-card"><div class="lbl">Pending</div><div class="val" id="wrStatPending" style="color:var(--warning);">0</div></div>
@@ -1769,6 +1769,7 @@ const CORE_TEAM_PERMISSION_LABELS = {
     messages: "✉️ Messages",
     analytics: "📈 Analytics",
     settings: "⚙ Settings",
+    withdrawals: "💸 Withdraw Requests",
 };
 
 function maskEmail(email) {
@@ -4389,6 +4390,7 @@ async function handleSaveSettings() {
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" value="messages"> ✉️ Messages</label>
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" value="analytics"> 📈 Analytics</label>
             <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" value="settings"> ⚙️ Settings</label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" value="withdrawals"> 💸 Withdraw Requests</label>
         </div>
         <div style="display:flex;gap:10px;justify-content:flex-end;">
             <button class="btn secondary" onclick="closeCoreTeamModal()">Cancel</button>
