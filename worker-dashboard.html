@@ -1747,6 +1747,9 @@ function renderOfferwallGateQuestion() {
     owGateAnswered = false;
     const q = OFFERWALL_QUIZ_QUESTIONS[owGateQIndex];
     document.getElementById("offerwallGateBody").innerHTML = `
+        <div style="text-align:right;margin-bottom:14px;">
+            <button class="secondary" style="padding:6px 12px;font-size:.78rem;" onclick="finishOfferwallGate()">✓ Skip quiz →</button>
+        </div>
         <div class="quiz-progress">
             <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:${Math.round((owGateQIndex / OFFERWALL_QUIZ_QUESTIONS.length) * 100)}%;"></div></div>
             <span class="quiz-progress-count">${owGateQIndex + 1} / ${OFFERWALL_QUIZ_QUESTIONS.length}</span>
@@ -1923,6 +1926,9 @@ function renderGateQuestion() {
     gateAnswered = false;
     const q = QUIZ_QUESTIONS[gateQIndex];
     document.getElementById("bonusGateBody").innerHTML = `
+        <div style="text-align:right;margin-bottom:14px;">
+            <button class="secondary" style="padding:6px 12px;font-size:.78rem;" onclick="finishBonusGate()">✓ Skip quiz →</button>
+        </div>
         <div class="quiz-progress">
             <div class="quiz-progress-track"><div class="quiz-progress-fill" style="width:${Math.round((gateQIndex / QUIZ_QUESTIONS.length) * 100)}%;"></div></div>
             <span class="quiz-progress-count">${gateQIndex + 1} / ${QUIZ_QUESTIONS.length}</span>
