@@ -801,6 +801,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <li data-permission="messages"><button class="side-item" data-tab="messages"><span class="ic">✉️</span> Messages</button></li>
             <li data-permission="analytics"><button class="side-item" data-tab="analytics"><span class="ic">📈</span> Analytics</button></li>
             <li data-permission="settings"><button class="side-item" data-tab="settings"><span class="ic">⚙</span> Settings</button></li>
+            <li data-permission="workers"><button class="side-item" data-tab="withdrawals"><span class="ic">💸</span> Withdraw Requests</button></li>
         </ul>
 
         <div class="side-label" data-core-team-only style="display:none;">Worker Access</div>
@@ -1473,6 +1474,35 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     
         </section>
 
+        <!-- ================= WITHDRAW REQUESTS ================= -->
+        <section class="page-panel" id="panel-withdrawals" data-permission="workers">
+            <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+                <div class="stat-card"><div class="lbl">Total Requests</div><div class="val" id="wrStatTotal">0</div></div>
+                <div class="stat-card"><div class="lbl">Pending</div><div class="val" id="wrStatPending" style="color:var(--warning);">0</div></div>
+                <div class="stat-card"><div class="lbl">Approved</div><div class="val" id="wrStatApproved" style="color:var(--success);">0</div></div>
+                <div class="stat-card"><div class="lbl">Rejected</div><div class="val" id="wrStatRejected" style="color:var(--danger);">0</div></div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;">
+                    <h2 style="margin:0;">Withdraw Requests</h2>
+                    <select id="wrStatusFilter" onchange="filterWithdrawRequests()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.9rem;">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" style="min-width:820px;">
+                        <thead><tr>
+                            <th>ID</th><th>Worker</th><th>Amount</th><th>Payment Method</th><th>Requested On</th><th>Status</th><th>Actions</th>
+                        </tr></thead>
+                        <tbody id="wrTableBody"><tr><td colspan="7" class="empty-state">Loading…</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <section class="page-panel" id="panel-settings" data-permission="settings">
 
         <section class="recent">
@@ -1572,7 +1602,8 @@ function toggleSidebar() {
 
 const ADMIN_TAB_TITLES = {
     dashboard: "Dashboard", workers: "Workers",
-    tasks: "Tasks", offerwalls: "Offerwalls", messages: "Messages", analytics: "Analytics", settings: "Settings"
+    tasks: "Tasks", offerwalls: "Offerwalls", messages: "Messages", analytics: "Analytics", settings: "Settings",
+    withdrawals: "Withdraw Requests"
 };
 const ADMIN_VALID_TABS = Object.keys(ADMIN_TAB_TITLES);
 const loadedAdminTabs = new Set();
@@ -1886,6 +1917,23 @@ async function updateStatus(id, status) {
 
     if (!response.ok) {
         alert(data.error || "Failed to update status.");
+        return false;
+    }
+
+    return true;
+}
+
+async function updateEmailPermission(id, allow) {
+    const response = await authFetch(WORKER_URL + "/api/admin/users/email-permission", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, allow })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.error || "Failed to update email permission.");
         return false;
     }
 
@@ -2366,10 +2414,112 @@ function showConfirm(message) {
     window.toggleDetails = toggleDetails;
     window.updateRole = updateRole;
     window.toggleEmailPermission = toggleEmailPermission;
+    window.updateEmailPermission = updateEmailPermission;
     window.updateStatus = updateStatus;
 
     // ---- lazy init, called the first time this tab is opened ----
     window.__admin_init_workers = function() { loadAndRenderAll(); };
+})();
+</script>
+
+<script>
+(function() {
+let allWithdrawRequests = [];
+
+async function loadWithdrawRequests() {
+    document.getElementById("wrTableBody").innerHTML = `<tr><td colspan="7" class="empty-state">Loading…</td></tr>`;
+    try {
+        const res = await authFetch(WORKER_URL + "/api/admin/withdraw-requests");
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to load");
+        allWithdrawRequests = data.requests || [];
+        const s = data.stats || {};
+        document.getElementById("wrStatTotal").textContent = s.total || 0;
+        document.getElementById("wrStatPending").textContent = s.pending || 0;
+        document.getElementById("wrStatApproved").textContent = s.approved || 0;
+        document.getElementById("wrStatRejected").textContent = s.rejected || 0;
+        renderWithdrawTable();
+    } catch (err) {
+        document.getElementById("wrTableBody").innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load requests.</td></tr>`;
+        console.error(err);
+    }
+}
+
+function filterWithdrawRequests() {
+    renderWithdrawTable();
+}
+
+function renderWithdrawTable() {
+    const filter = document.getElementById("wrStatusFilter").value;
+    const rows = filter === "all" ? allWithdrawRequests : allWithdrawRequests.filter(r => r.status === filter);
+    const tbody = document.getElementById("wrTableBody");
+    if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No requests found.</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = rows.map(r => {
+        const initials = (r.fullName || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+        const colors = ["#3b82f6","#8b5cf6","#10b981","#f59e0b","#ef4444","#06b6d4"];
+        const color = colors[(r.fullName || "").charCodeAt(0) % colors.length];
+
+        let methodHtml = `<span class="muted">Not set</span>`;
+        if (r.methodType === "paypal" && r.methodDetails?.email) {
+            methodHtml = `<span>💳 PayPal</span><br><span class="muted" style="font-size:.8rem;">${escapeHTML(r.methodDetails.email)}</span>`;
+        } else if (r.methodType === "crypto" && r.methodDetails?.wallet) {
+            const w = r.methodDetails.wallet;
+            methodHtml = `<span>🔗 Crypto (USDT)</span><br><span class="muted" style="font-size:.8rem;">${escapeHTML(w.slice(0,6))}...${escapeHTML(w.slice(-4))}</span>`;
+        }
+
+        const date = r.createdAt ? new Date(r.createdAt.replace(" ", "T") + "Z").toLocaleString(undefined, { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" }) : "—";
+
+        let statusBadge = `<span class="status status-pending">Pending</span>`;
+        if (r.status === "approved") statusBadge = `<span class="status status-approved">Approved</span>`;
+        if (r.status === "rejected") statusBadge = `<span class="status status-rejected">Rejected</span>`;
+
+        let actions = `<span class="muted" style="font-size:.85rem;">${r.status === "approved" ? "Approved" : "Rejected"}</span>`;
+        if (r.status === "pending") {
+            actions = `
+                <button class="primary" style="padding:5px 12px;font-size:.82rem;" onclick="decideWithdraw(${r.id},'approved')">Approve</button>
+                <button class="secondary" style="padding:5px 12px;font-size:.82rem;margin-left:6px;color:var(--danger);border-color:var(--danger);" onclick="decideWithdraw(${r.id},'rejected')">Reject</button>`;
+        }
+
+        return `<tr>
+            <td><span class="muted">#WR-${String(r.id).padStart(4,"0")}</span></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:34px;height:34px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex:0 0 auto;">${escapeHTML(initials)}</div>
+                    <div><div class="nm">${escapeHTML(r.fullName)}</div><div class="muted" style="font-size:.8rem;">${escapeHTML(r.email)}</div></div>
+                </div>
+            </td>
+            <td><strong>$${Number(r.amount).toFixed(2)}</strong></td>
+            <td>${methodHtml}</td>
+            <td>${date}</td>
+            <td>${statusBadge}</td>
+            <td style="white-space:nowrap;">${actions}</td>
+        </tr>`;
+    }).join("");
+}
+
+async function decideWithdraw(id, decision) {
+    const label = decision === "approved" ? "approve" : "reject";
+    if (!confirm(`Are you sure you want to ${label} this withdrawal request?`)) return;
+    try {
+        const res = await authFetch(WORKER_URL + "/api/admin/withdraw-requests/decide", {
+            method: "POST",
+            body: JSON.stringify({ id, decision })
+        });
+        const data = await res.json();
+        if (!res.ok) { alert(data.error || "Failed."); return; }
+        loadWithdrawRequests();
+    } catch (err) {
+        alert("Connection error. Please try again.");
+        console.error(err);
+    }
+}
+
+window.filterWithdrawRequests = filterWithdrawRequests;
+window.decideWithdraw = decideWithdraw;
+window.__admin_init_withdrawals = function() { loadWithdrawRequests(); };
 })();
 </script>
 
