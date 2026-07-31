@@ -78,7 +78,7 @@ body{font-family:'Plus Jakarta Sans',Arial,sans-serif;}
 a{text-decoration:none;color:inherit;}
 
 /* ---- Neutralise global button defaults that clash with dark theme ---- */
-button{font-family:inherit;padding:0;border:none;background:transparent;backdrop-filter:none;transition:all .15s ease;}
+button{font-family:inherit;padding:0;border:none;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;transition:all .15s ease;}
 button:hover{transform:none;}
 
 /* ---- Disable scroll-reveal animation inside SPA to prevent hidden tabs ---- */
@@ -88,7 +88,7 @@ button:hover{transform:none;}
 .topbar-search { display: none !important; }
 
 /* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
-.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
+.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
 .card::before{display:none !important;}
 .card:hover{transform:none !important;border-color:var(--border) !important;box-shadow:var(--shadow) !important;}
 .card h2,.card h3{margin-top:0;color:var(--text);}
@@ -268,7 +268,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .subpanel.active{display:block !important;}
 
 /* ---------- Overlays / modals ---------- */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .overlay.open{display:flex;}
 .modal{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.5);color:var(--text);}
 .modal.wide{max-width:720px;height:78vh;display:flex;flex-direction:column;}

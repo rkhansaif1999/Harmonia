@@ -88,7 +88,7 @@ body{font-family:'Plus Jakarta Sans',Arial,sans-serif;}
 a{text-decoration:none;color:inherit;}
 
 /* ---- Neutralise global button defaults that clash with dark theme ---- */
-button{font-family:inherit;padding:0;border:none;background:transparent;backdrop-filter:none;transition:all .15s ease;}
+button{font-family:inherit;padding:0;border:none;background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;transition:all .15s ease;}
 button:hover{transform:none;}
 
 /* ---- Disable scroll-reveal animation inside SPA to prevent hidden tabs ---- */
@@ -98,7 +98,7 @@ button:hover{transform:none;}
 .topbar-search { display: none !important; }
 
 /* ---- Card overrides (kill the glow blob + hover lift from style.css) ---- */
-.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
+.card{background:var(--panel) !important;border:1px solid var(--border) !important;border-radius:var(--radius) !important;padding:22px !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;box-shadow:var(--shadow);transition:box-shadow .2s ease !important;overflow:visible !important;}
 .card::before{display:none !important;}
 .card:hover{transform:none !important;border-color:var(--border) !important;box-shadow:var(--shadow) !important;}
 .card h2,.card h3{margin-top:0;color:var(--text);}
@@ -278,7 +278,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .subpanel.active{display:block !important;}
 
 /* ---------- Overlays / modals ---------- */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .overlay.open{display:flex;}
 .modal{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:520px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.5);color:var(--text);}
 .modal.wide{max-width:720px;height:78vh;display:flex;flex-direction:column;}
@@ -1315,7 +1315,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </section>
 
-        <div id="workerConvOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9998;align-items:center;justify-content:center;">
+        <div id="workerConvOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:9998;align-items:center;justify-content:center;">
             <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:640px;width:92%;max-height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                     <div>
@@ -1340,7 +1340,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </div>
 
-        <div id="supportChatOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+        <div id="supportChatOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:9999;align-items:center;justify-content:center;">
             <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                     <div>
@@ -1357,7 +1357,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             </div>
         </div>
 
-        <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+        <div id="threadOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:9999;align-items:center;justify-content:center;">
             <div style="background:#0d1424;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;max-width:720px;width:92%;height:80vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.5);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
                     <div>
@@ -4365,7 +4365,7 @@ async function handleSaveSettings() {
 <!-- ====== MISSING MODALS/OVERLAYS RESTORED ====== -->
 
 <!-- 1. Confirm Dialog Overlay -->
-<div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;">
+<div id="confirmOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:10000;align-items:center;justify-content:center;">
     <div style="background:#1e293b;border:1px solid #334155;border-radius:20px;padding:28px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
         <p id="confirmMessage" style="color:#f8fafc;font-size:1rem;margin:0 0 22px 0;"></p>
         <div style="display:flex;gap:10px;justify-content:flex-end;">
@@ -4376,7 +4376,7 @@ async function handleSaveSettings() {
 </div>
 
 <!-- 2. Core Team Modal Overlay -->
-<div id="coreTeamOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;">
+<div id="coreTeamOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:10000;align-items:center;justify-content:center;">
     <div id="coreTeamModal" style="background:#1e293b;border:1px solid #334155;border-radius:20px;padding:28px;max-width:520px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
         <h3 style="margin:0 0 6px 0;color:#f8fafc;">Core Team Access</h3>
         <p style="color:#94a3b8;font-size:.85rem;margin:0 0 18px 0;">
@@ -4400,7 +4400,7 @@ async function handleSaveSettings() {
 </div>
 
 <!-- 3. Edit Rate Modal -->
-<div id="editRateModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;">
+<div id="editRateModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:10000;align-items:center;justify-content:center;">
     <div style="background:#1e293b;border:1px solid #334155;border-radius:20px;padding:28px;max-width:420px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
         <h3 style="margin:0 0 6px 0;color:#f8fafc;">Edit Payout Rate</h3>
         <p id="editRateInfo" style="color:#94a3b8;font-size:.85rem;margin:0 0 16px 0;"></p>
@@ -4414,7 +4414,7 @@ async function handleSaveSettings() {
 </div>
 
 <!-- 4. Edit Provider Modal -->
-<div id="editProviderModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;">
+<div id="editProviderModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:backdrop-filter;z-index:10000;align-items:center;justify-content:center;">
     <div style="background:#1e293b;border:1px solid #334155;border-radius:20px;padding:28px;max-width:520px;width:90%;box-shadow:0 30px 80px rgba(0,0,0,.5);">
         <h3 style="margin:0 0 6px 0;color:#f8fafc;">Edit Provider</h3>
         <p id="editProviderInfo" style="color:#94a3b8;font-size:.85rem;margin:0 0 16px 0;"></p>
