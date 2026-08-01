@@ -6,6 +6,13 @@
 # Must come BEFORE the catch-all below (first matching rule wins).
 /ads.txt  https://srv.adstxtmanager.com/19390/harmoniaportal.online  301
 
+# --- Old page cleanup ---
+# refund-policy.html was superseded by payments-billing.html. It's no
+# longer linked from anywhere on the site, but old bookmarks/search
+# results/backlinks may still point at it, so redirect instead of
+# just deleting outright (avoids a dead 404 for anyone who had it saved).
+/refund-policy.html  /payments-billing.html  301
+
 # --- Page routing ---
 # Every real page on this site already exists as its own .html file
 # (about.html, privacy-policy.html, etc.) and is linked with that

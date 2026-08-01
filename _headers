@@ -13,3 +13,39 @@
 
 /script.js
   Cache-Control: no-cache, must-revalidate
+
+# ------------------------------------------------------------
+# Security headers (added - safe to apply site-wide, does not
+# change caching behavior above, just adds extra response headers)
+# ------------------------------------------------------------
+
+# Applies to every request on the site
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Belt-and-suspenders alongside the <meta name="robots"> tag already
+# on these pages - tells crawlers/bots at the HTTP-header level too,
+# in case the page is ever linked from outside the site.
+/admin-dashboard.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/worker-dashboard.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/worker-bonus-tasks.html
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
+
+/admin-login.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/discord-callback.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+# Offerwall provider domain-verification file - must stay PUBLICLY
+# reachable with no login (the provider's own servers fetch it), this
+# only keeps it out of search results, it does not restrict access.
+/offerwall-verification-70f5681e2a2c1a12.txt
+  X-Robots-Tag: noindex, nofollow, noarchive
