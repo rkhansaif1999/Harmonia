@@ -2898,8 +2898,10 @@ min-height:400px;
     margin-top:0;
     justify-content:center;
     text-align:center;
-    flex:1;
-    min-width:220px;
+    flex:0 1 auto; /* Allows buttons to size to their content */
+    white-space:nowrap; /* Stops the text from breaking into two lines */
+    padding-left:24px;
+    padding-right:24px;
 }
 .leader-readmore-btn{
     display:inline-flex;
