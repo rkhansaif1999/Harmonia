@@ -1,0 +1,25 @@
+# Netlify / Cloudflare Pages redirects file
+#
+# --- Ads.txt Manager redirect ---
+# Required for AdSense/programmatic ads verification. ads.txt itself
+# says this rule must live here — restored per that file's own comment.
+# Must come BEFORE the catch-all below (first matching rule wins).
+/ads.txt  https://srv.adstxtmanager.com/19390/harmoniaportal.online  301
+
+# --- Page routing ---
+# Every real page on this site already exists as its own .html file
+# (about.html, privacy-policy.html, etc.) and is linked with that
+# extension throughout the site, so no rewriting is needed for them.
+#
+# This rule exists purely to make sure any URL that does NOT match a
+# real file (a typo, an old/guessed link, a bad crawler request, etc.)
+# gets a genuine HTTP 404 response using our branded 404.html page,
+# instead of silently falling back to the homepage with a 200 status.
+#
+# NOTE: if this site is on Cloudflare Pages, also check
+# Workers & Pages > your project > Settings > Builds & deployments >
+# "404 page" and make sure it's set to use 404.html and NOT
+# "Single Page Application (SPA) mode" — SPA mode overrides this file
+# and serves index.html for every missing route regardless.
+
+/*  /404.html  404
