@@ -2865,6 +2865,163 @@ min-height:400px;
     border-color: rgba(10, 102, 194, 0.5);
     box-shadow: 0 15px 40px rgba(10, 102, 194, 0.25);
 }
+.leader-facebook-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 35px;
+    padding: 14px 28px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+    transition: .35s ease;
+}
+.leader-facebook-btn:hover{
+    transform: translateY(-4px);
+    background: rgba(24, 119, 242, 0.2);
+    border-color: rgba(24, 119, 242, 0.5);
+    box-shadow: 0 15px 40px rgba(24, 119, 242, 0.25);
+}
+.leader-social-row{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+.leader-social-row .leader-linkedin-btn{
+    margin-top:0;
+}
+.leader-readmore-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:none;
+    border:none;
+    color:#78cbff;
+    font-weight:700;
+    font-size:.95rem;
+    font-family:inherit;
+    cursor:pointer;
+    padding:0;
+    margin-bottom:28px;
+}
+.leader-readmore-btn:hover{ color:#a4e2ff; }
+.leader-block{ margin-bottom:28px; }
+.leader-block-label{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#7c8ba0;
+    margin-bottom:14px;
+}
+.journey-track{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    max-width:520px;
+}
+.journey-track::before{
+    content:"";
+    position:absolute;
+    top:8px; left:0; right:0;
+    height:2px;
+    background:linear-gradient(90deg, rgba(123,125,255,.5), rgba(70,216,255,.5));
+    z-index:0;
+}
+.jpoint{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.jdot{
+    display:block;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:#58d4ff;
+    box-shadow:0 0 16px rgba(88,212,255,.7);
+    border:3px solid #0a0f1c;
+}
+.jyear{ font-size:.78rem; color:#cfd9e5; font-weight:600; }
+.pill-row{ display:flex; flex-wrap:wrap; gap:9px; }
+.pill{
+    padding:8px 16px;
+    border-radius:999px;
+    background:rgba(120,203,255,.08);
+    border:1px solid rgba(120,203,255,.2);
+    color:#8fd6ff;
+    font-size:.8rem;
+    font-weight:600;
+}
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(3,5,10,.75);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    z-index:999;
+}
+.modal-overlay.open{ display:flex; }
+.modal-box{
+    width:100%;
+    max-width:760px;
+    max-height:85vh;
+    overflow-y:auto;
+    background:#0b1220;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:30px;
+    padding:46px;
+    position:relative;
+}
+.modal-close{
+    position:absolute;
+    top:24px; right:24px;
+    width:38px; height:38px;
+    border-radius:50%;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.1);
+    color:#fff;
+    font-size:1.1rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.modal-close:hover{ background:rgba(255,255,255,.12); }
+.modal-box h2{ font-size:1.9rem; letter-spacing:-1px; margin-bottom:6px; }
+.modal-box > p.sub{ color:#8b98ab; margin-bottom:34px; font-size:.95rem; }
+.story-section{ margin-bottom:30px; }
+.story-section h5{
+    font-size:.95rem;
+    color:#73cbff;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.story-section ul{ list-style:none; }
+.story-section li{
+    color:#a4b1c3;
+    font-size:.92rem;
+    line-height:1.8;
+    padding-left:18px;
+    position:relative;
+    margin-bottom:6px;
+}
+.story-section li::before{
+    content:"";
+    position:absolute;
+    left:0; top:11px;
+    width:5px; height:5px;
+    border-radius:50%;
+    background:#4fd3ff;
+}
+.story-section .exp-item{ margin-bottom:16px; }
+.story-section .exp-item strong{ display:block; color:#e4eaf1; font-size:.95rem; margin-bottom:4px; }
 /* TEAM LINKEDIN ICON */
 .team-linkedin-icon{
     display: inline-flex;
@@ -3842,8 +3999,35 @@ FOUNDER &amp; CEO
 <h4>Founder of Harmonia</h4>
 
 <p>
-Saif founded Harmonia on a simple belief: that talented people deserve fair opportunities, no matter where they're located. He leads the company's vision, product direction, and community growth, working to build a platform where trust and quality come first.
+Saif founded Harmonia on a simple belief: that talented people deserve fair opportunities, no matter where they're located. His background spans AI data annotation, full-stack development, and building online communities from the ground up.
 </p>
+
+<button class="leader-readmore-btn" onclick="document.getElementById('founderStoryModal').classList.add('open')" type="button">
+Read my full story →
+</button>
+
+<div class="leader-block">
+<div class="leader-block-label">My Journey</div>
+<div class="journey-track">
+<div class="jpoint"><span class="jdot"></span><span class="jyear">2014</span></div>
+<div class="jpoint"><span class="jdot"></span><span class="jyear">2017</span></div>
+<div class="jpoint"><span class="jdot"></span><span class="jyear">2020</span></div>
+<div class="jpoint"><span class="jdot"></span><span class="jyear">2025</span></div>
+<div class="jpoint"><span class="jdot"></span><span class="jyear">2026</span></div>
+</div>
+</div>
+
+<div class="leader-block">
+<div class="leader-block-label">Core Expertise</div>
+<div class="pill-row">
+<span class="pill">AI Data Annotation</span>
+<span class="pill">Full Stack Development</span>
+<span class="pill">Community Building</span>
+<span class="pill">Operations</span>
+<span class="pill">Cloudflare Workers</span>
+<span class="pill">Leadership</span>
+</div>
+</div>
 
 <div class="leader-stats">
 
@@ -3863,12 +4047,23 @@ Saif founded Harmonia on a simple belief: that talented people deserve fair oppo
 
 </div>
 
+<div class="leader-social-row">
+
 <a href="https://www.linkedin.com/in/saif-khan-2b87b9283/" target="_blank" rel="noopener noreferrer" class="leader-linkedin-btn" title="View Saif's profile on LinkedIn">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
     </svg>
     Connect with Saif on LinkedIn
 </a>
+
+<a href="https://www.facebook.com/shadi.mubarak.520" target="_blank" rel="noopener noreferrer" class="leader-facebook-btn" title="View Saif's profile on Facebook">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94Z"/>
+    </svg>
+    Follow on Facebook
+</a>
+
+</div>
 
 </div>
 
@@ -4316,6 +4511,128 @@ enableDragScroll(document.getElementById("coreTeamScroll"));
     console.log("Discord member count fetch failed:", err);
   }
 })();
+</script>
+
+<div class="modal-overlay" id="founderStoryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('founderStoryModal').classList.remove('open')" aria-label="Close" type="button">✕</button>
+    <h2>Saif's story</h2>
+    <p class="sub">Founder &amp; CEO — Harmonia</p>
+
+    <div class="story-section">
+      <h5>🎓 Education</h5>
+      <ul>
+        <li>Bachelor of Computer Science (2017)</li>
+        <li>Diploma in Hardware Engineering</li>
+        <li>Diploma in Software Engineering</li>
+        <li>CCNA Certification</li>
+        <li>Web Development from Infra Institute</li>
+        <li>HIPAA Law &amp; Medical Records Certification (87%)</li>
+      </ul>
+    </div>
+
+    <div class="story-section">
+      <h5>💼 Professional Experience</h5>
+      <div class="exp-item">
+        <strong>Founder &amp; CEO — Harmonia</strong>
+        <ul>
+          <li>Founded and lead Harmonia, an AI workforce and data annotation platform</li>
+          <li>Designed the platform architecture and business model</li>
+          <li>Built and manage a growing international contributor community</li>
+          <li>Oversee operations, product development, partnerships, and client relations</li>
+        </ul>
+      </div>
+      <div class="exp-item">
+        <strong>AI Data Annotation &amp; Human Feedback</strong>
+        <ul>
+          <li>Image, video, text, and prompt evaluation</li>
+          <li>Human feedback workflows for AI systems</li>
+          <li>Quality assurance and contributor management</li>
+        </ul>
+      </div>
+      <div class="exp-item">
+        <strong>Customer Support &amp; Operations</strong>
+        <ul>
+          <li>Over 8 years of experience in customer service and operations</li>
+          <li>Worked with international customers and remote teams</li>
+          <li>Process optimization and workflow management</li>
+        </ul>
+      </div>
+      <div class="exp-item">
+        <strong>Full Stack Web Development</strong>
+        <ul>
+          <li>Designed and developed Harmonia from the ground up</li>
+          <li>HTML5, CSS3, JavaScript, Cloudflare Workers, Cloudflare D1, authentication systems, email integrations, API development, responsive UI/UX</li>
+        </ul>
+      </div>
+      <div class="exp-item">
+        <strong>Community Leadership</strong>
+        <ul>
+          <li>Built and manage a growing AI contributor community of 430+ members</li>
+          <li>Team leadership, recruitment, training, moderation, partnership outreach</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="story-section">
+      <h5>🛠 Technical Skills</h5>
+      <div class="pill-row">
+        <span class="pill">HTML5</span><span class="pill">CSS3</span><span class="pill">JavaScript</span>
+        <span class="pill">SQL / SQLite</span><span class="pill">Cloudflare Workers</span><span class="pill">Cloudflare D1</span>
+        <span class="pill">REST APIs</span><span class="pill">Responsive Web Design</span><span class="pill">Authentication Systems</span>
+        <span class="pill">Email Automation</span><span class="pill">WordPress</span><span class="pill">WooCommerce</span>
+        <span class="pill">SEO</span><span class="pill">Website Optimization</span><span class="pill">GitHub</span><span class="pill">UI/UX Design</span>
+      </div>
+    </div>
+
+    <div class="story-section">
+      <h5>🤖 AI Skills</h5>
+      <div class="pill-row">
+        <span class="pill">AI Data Annotation</span><span class="pill">Data Labeling</span><span class="pill">Human Feedback</span>
+        <span class="pill">Prompt Evaluation</span><span class="pill">Image Annotation</span><span class="pill">Video Annotation</span>
+        <span class="pill">Quality Assurance</span><span class="pill">Contributor Training</span><span class="pill">Workforce Management</span>
+      </div>
+    </div>
+
+    <div class="story-section">
+      <h5>💼 Business Skills</h5>
+      <div class="pill-row">
+        <span class="pill">Startup Founder</span><span class="pill">Product Strategy</span><span class="pill">Community Building</span>
+        <span class="pill">Operations Management</span><span class="pill">Business Development</span><span class="pill">Partnership Outreach</span>
+        <span class="pill">Client Communication</span><span class="pill">Project Management</span><span class="pill">Team Leadership</span>
+        <span class="pill">Sales</span><span class="pill">Marketing</span>
+      </div>
+    </div>
+
+    <div class="story-section">
+      <h5>🌍 Languages</h5>
+      <div class="pill-row">
+        <span class="pill">English</span><span class="pill">Urdu</span><span class="pill">Hindi</span>
+      </div>
+    </div>
+
+    <div class="story-section" style="margin-bottom:0;">
+      <h5>⭐ Key Achievements</h5>
+      <ul>
+        <li>Founded Harmonia from scratch</li>
+        <li>Built a complete AI workforce platform</li>
+        <li>Developed the website, backend, and authentication system</li>
+        <li>Established a growing international contributor community of 430+ members</li>
+        <li>Created an AI-focused business with services for data annotation, human feedback, and workforce solutions</li>
+        <li>Led outreach to AI startups and technology companies for potential collaborations</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.getElementById('founderStoryModal').addEventListener('click', function(e){
+  if(e.target === this){ this.classList.remove('open'); }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ document.getElementById('founderStoryModal').classList.remove('open'); }
+});
 </script>
 
 </body>
