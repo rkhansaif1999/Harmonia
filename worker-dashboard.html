@@ -307,17 +307,40 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .session-stats{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:.85rem;}
 .gate-btn{width:100%;padding:15px;font-size:1rem;}
 
-.method-tile{border:2px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .15s ease,background .15s ease,transform .15s ease;background:var(--panel);display:flex;align-items:center;gap:12px;}
-.method-tile:hover{border-color:var(--muted);transform:translateY(-2px);}
-.method-tile.active{border-color:var(--primary);background:var(--primary-soft);}
+/* Retained base icon styles for the edit card */
 .method-tile-icon{width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25);}
 .method-tile-icon img{width:100%;height:100%;object-fit:contain;padding:4px;box-sizing:border-box;}
-.method-tile-body{min-width:0;flex:1;}
-.method-tile-body strong{display:block;font-size:.92rem;line-height:1.3;}
-.badge-linked{background:var(--success-soft);color:var(--success);font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
+
+/* Premium Square Tiles */
 .method-region-label{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 12px;}
 .method-region-label:first-child{margin-top:0;}
-.method-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.method-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:18px;}
+.method-tile{
+    position:relative;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    cursor:pointer;padding-top:6px;
+}
+.method-tile-square{
+    width:100%;aspect-ratio:1/1;border-radius:18px;
+    background:var(--bg);border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.2);
+    transition:all .2s ease;
+}
+.method-tile:hover .method-tile-square{transform:translateY(-4px);border-color:var(--primary);box-shadow:0 8px 20px rgba(59,130,246,.2);}
+.method-tile.active .method-tile-square{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft);}
+.method-tile-square img{width:60%;height:60%;object-fit:contain;}
+.method-tile-label{font-size:.8rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.2;transition:color .2s ease;}
+.method-tile:hover .method-tile-label{color:var(--text);}
+.method-tile.active .method-tile-label{color:var(--text);}
+.method-tile-linked-dot{
+    position:absolute;top:0;right:0;
+    width:12px;height:12px;border-radius:50%;
+    background:var(--success);border:2px solid var(--bg);
+    box-shadow:0 0 8px var(--success);
+    display:none;
+}
+.method-tile.is-linked .method-tile-linked-dot{display:block;}
 .payout-edit-card{border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:24px;background:var(--panel);}
 .payout-edit-card .method-tile-icon{width:28px;height:28px;}
 .payout-edit-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
@@ -2315,12 +2338,12 @@ function renderMethodTiles() {
             const cfg = PAYOUT_METHOD_CONFIG[key];
             const isLinked = linkedMethod === key;
             html += `
-                <div class="method-tile" id="tile-${key}" onclick="selectMethodTile('${key}')">
-                    <span class="method-tile-icon"><img src="${cfg.icon}" alt="${escapeHTML(cfg.label)}"></span>
-                    <div class="method-tile-body">
-                        <strong>${escapeHTML(cfg.label)}</strong>
-                        ${isLinked ? `<span class="badge-linked">Linked</span>` : ""}
+                <div class="method-tile ${isLinked ? 'is-linked' : ''}" id="tile-${key}" onclick="selectMethodTile('${key}')">
+                    <div class="method-tile-square">
+                        <img src="${cfg.icon}" alt="${escapeHTML(cfg.label)}">
                     </div>
+                    <div class="method-tile-label">${escapeHTML(cfg.label)}</div>
+                    ${isLinked ? `<span class="method-tile-linked-dot" title="Linked"></span>` : ""}
                 </div>`;
         });
         html += `</div>`;
