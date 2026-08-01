@@ -341,7 +341,55 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     display:none;
 }
 .method-tile.is-linked .method-tile-linked-dot{display:block;}
-.payout-edit-card{border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:24px;background:var(--panel);}
+
+/* Master-Detail Split Layout */
+.payout-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-top: 18px;
+}
+.payout-left {
+    flex: 1 1 60%;
+    min-width: 0;
+}
+.payout-right {
+    flex: 1 1 40%;
+    min-width: 300px;
+    max-width: 420px;
+    position: sticky;
+    top: 20px;
+}
+.payout-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 240px;
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    color: var(--muted);
+}
+.payout-placeholder .placeholder-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+@media (max-width: 900px) {
+    .payout-layout {
+        flex-direction: column;
+    }
+    .payout-right {
+        max-width: 100%;
+        width: 100%;
+        position: static;
+    }
+}
+
+.payout-edit-card{border:1px solid var(--border);border-radius:16px;padding:22px;background:var(--panel);}
 .payout-edit-card .method-tile-icon{width:28px;height:28px;}
 .payout-edit-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .payout-edit-header strong{font-size:1.05rem;}
@@ -686,29 +734,44 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <h2>Payout Method</h2>
                 <p class="muted" style="margin-top:-6px;">Choose how you'd like to receive payouts. Changing your method requires a verification code sent to your account email.</p>
 
-                <div id="methodTileContainer" style="margin:18px 0;"></div>
-
-                <div class="payout-edit-card" id="payoutEditCard" style="display:none;">
-                    <div class="payout-edit-header">
-                        <span class="method-tile-icon" id="payoutEditIcon"></span>
-                        <strong id="payoutEditTitle"></strong>
-                        <span class="badge-linked" id="payoutEditLinkedBadge" style="display:none;margin-left:auto;">Linked</span>
+                <div class="payout-layout">
+                    <!-- LEFT SIDE: TILES -->
+                    <div class="payout-left">
+                        <div id="methodTileContainer"></div>
                     </div>
-                    <div class="muted" style="font-size:.8rem;margin-bottom:14px;" id="payoutEditUpdatedAt"></div>
 
-                    <button class="secondary" id="payoutUpdateBtn" onclick="startUpdate()">Link this method</button>
-
-                    <div id="payoutEditPanel" style="display:none;margin-top:14px;">
-                        <div id="payoutFieldsContainer"></div>
-                        <div style="display:flex;gap:10px;margin-top:10px;">
-                            <button class="primary" onclick="sendVerificationCode()">Send Code</button>
-                            <button class="secondary" onclick="cancelUpdate()">Cancel</button>
+                    <!-- RIGHT SIDE: STICKY DETAIL PANEL -->
+                    <div class="payout-right">
+                        <!-- Placeholder shown when nothing is clicked -->
+                        <div class="payout-placeholder" id="payoutPlaceholder">
+                            <div class="placeholder-icon">👈</div>
+                            <p>Select a payout method to link or update your details.</p>
                         </div>
-                        <div id="payoutCodePanel" style="display:none;margin-top:14px;">
-                            <p class="muted" id="payoutCodeSentNote"></p>
-                            <label>6-digit code</label>
-                            <input type="text" id="payoutCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
-                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode()">Confirm</button>
+
+                        <!-- The actual edit form -->
+                        <div class="payout-edit-card" id="payoutEditCard" style="display:none;">
+                            <div class="payout-edit-header">
+                                <span class="method-tile-icon" id="payoutEditIcon"></span>
+                                <strong id="payoutEditTitle"></strong>
+                                <span class="badge-linked" id="payoutEditLinkedBadge" style="display:none;margin-left:auto;">Linked</span>
+                            </div>
+                            <div class="muted" style="font-size:.8rem;margin-bottom:14px;" id="payoutEditUpdatedAt"></div>
+
+                            <button class="secondary" id="payoutUpdateBtn" onclick="startUpdate()">Link this method</button>
+
+                            <div id="payoutEditPanel" style="display:none;margin-top:14px;">
+                                <div id="payoutFieldsContainer"></div>
+                                <div style="display:flex;gap:10px;margin-top:10px;">
+                                    <button class="primary" onclick="sendVerificationCode()">Send Code</button>
+                                    <button class="secondary" onclick="cancelUpdate()">Cancel</button>
+                                </div>
+                                <div id="payoutCodePanel" style="display:none;margin-top:14px;">
+                                    <p class="muted" id="payoutCodeSentNote"></p>
+                                    <label>6-digit code</label>
+                                    <input type="text" id="payoutCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
+                                    <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode()">Confirm</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2358,7 +2421,19 @@ function renderPayoutMethods() {
 }
 
 function selectMethodTile(method, skipTileUpdate) {
-    if (!method) { document.getElementById("payoutEditCard").style.display = "none"; return; }
+    const placeholder = document.getElementById("payoutPlaceholder");
+    const editCard = document.getElementById("payoutEditCard");
+
+    if (!method) { 
+        editCard.style.display = "none"; 
+        if(placeholder) placeholder.style.display = "flex";
+        return; 
+    }
+    
+    // Hide placeholder, show edit card
+    if(placeholder) placeholder.style.display = "none";
+    editCard.style.display = "block";
+
     selectedTile = method;
     const cfg = PAYOUT_METHOD_CONFIG[method];
     if (!cfg) return;
@@ -2368,7 +2443,6 @@ function selectMethodTile(method, skipTileUpdate) {
     const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
     const isLinked = linkedMethod === method;
 
-    document.getElementById("payoutEditCard").style.display = "block";
     document.getElementById("payoutEditIcon").innerHTML = `<img src="${cfg.icon}" alt="${escapeHTML(cfg.label)}">`;
     document.getElementById("payoutEditTitle").textContent = cfg.label;
     document.getElementById("payoutEditLinkedBadge").style.display = isLinked ? "inline-block" : "none";
@@ -2382,7 +2456,7 @@ function selectMethodTile(method, skipTileUpdate) {
          <input type="${f.type}" id="payoutField-${f.name}" placeholder="${escapeHTML(f.placeholder || "")}" style="width:100%;box-sizing:border-box;">`
     ).join("");
 
-    cancelUpdate(/*resetOnly*/ true);
+    cancelUpdate(true);
 }
 
 function startUpdate() {
