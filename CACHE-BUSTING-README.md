@@ -22,7 +22,7 @@ string:
 
 ```html
 <link rel="stylesheet" href="style.css?v=20260720">
-<script src="script.js?v=20260720"></script>
+<script src="script.js?v=20260801"></script>
 ```
 
 Browsers cache `style.css` and `script.js` aggressively by default. Because

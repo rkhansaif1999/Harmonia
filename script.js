@@ -1297,3 +1297,88 @@ function togglePasswordVisibility(inputId, btn) {
 
     btn.setAttribute("aria-label", isCurrentlyHidden ? "Hide password" : "Show password");
 }
+
+// =========================
+// PAYOUT METHODS — shared config used by worker-dashboard.html
+// (linking a method) and admin-dashboard.html (displaying/paying out).
+// Single source of truth so both pages always agree on which methods
+// exist, what fields each one needs, and which icon to show.
+// =========================
+const MOBILE_MONEY_FIELDS = [
+    { name: "accountName", label: "Account holder name", type: "text", placeholder: "Full name on the account" },
+    { name: "phone", label: "Mobile number", type: "text", placeholder: "e.g. +92 3xx xxxxxxx" }
+];
+
+const PAYOUT_METHOD_CONFIG = {
+    paypal:      { label: "PayPal",                    region: "Global",      icon: "images/payment-icons/paypal.jpg",     fields: [{ name: "email", label: "PayPal email", type: "email", placeholder: "you@paypal.com" }] },
+    crypto:      { label: "Crypto (USDT · ERC-20)",     region: "Global",      icon: "images/payment-icons/crypto.png",     fields: [{ name: "wallet", label: "USDT (ERC-20) wallet address", type: "text", placeholder: "0x..." }] },
+    easypaisa:   { label: "EasyPaisa",                  region: "Pakistan",    icon: "images/payment-icons/easypaisa.png",  fields: MOBILE_MONEY_FIELDS },
+    jazzcash:    { label: "JazzCash",                   region: "Pakistan",    icon: "images/payment-icons/jazzcash.png",   fields: MOBILE_MONEY_FIELDS },
+    nayapay:     { label: "NayaPay",                    region: "Pakistan",    icon: "images/payment-icons/nayapay.png",    fields: MOBILE_MONEY_FIELDS },
+    palmpay:     { label: "PalmPay",                    region: "Nigeria",     icon: "images/payment-icons/palmpay.jpg",    fields: MOBILE_MONEY_FIELDS },
+    opay:        { label: "OPay",                       region: "Nigeria",     icon: "images/payment-icons/opay.webp",      fields: MOBILE_MONEY_FIELDS },
+    moniepoint:  { label: "Moniepoint",                 region: "Nigeria",     icon: "images/payment-icons/moniepoint.png", fields: MOBILE_MONEY_FIELDS },
+    mpesa:       { label: "M-Pesa",                     region: "Kenya",       icon: "images/payment-icons/mpesa.webp",     fields: MOBILE_MONEY_FIELDS },
+    airtelmoney: { label: "Airtel Money",                region: "Kenya",       icon: "images/payment-icons/airtelmoney.png",fields: MOBILE_MONEY_FIELDS },
+    equitel:     { label: "Equitel",                    region: "Kenya",       icon: "images/payment-icons/equitel.webp",   fields: MOBILE_MONEY_FIELDS },
+    gcash:       { label: "GCash",                      region: "Philippines", icon: "images/payment-icons/gcash.png",      fields: MOBILE_MONEY_FIELDS },
+    coinsph:     { label: "Coins.ph",                   region: "Philippines", icon: "images/payment-icons/coinsph.png",    fields: MOBILE_MONEY_FIELDS },
+    maya:        { label: "Maya",                       region: "Philippines", icon: "images/payment-icons/maya.webp",      fields: MOBILE_MONEY_FIELDS }
+};
+
+const PAYOUT_METHOD_REGION_ORDER = ["Global", "Pakistan", "Nigeria", "Kenya", "Philippines"];
+
+function payoutMethodLabel(methodType) {
+    return (PAYOUT_METHOD_CONFIG[methodType] && PAYOUT_METHOD_CONFIG[methodType].label) || methodType || "Unknown";
+}
+function payoutMethodIcon(methodType) {
+    return (PAYOUT_METHOD_CONFIG[methodType] && PAYOUT_METHOD_CONFIG[methodType].icon) || "";
+}
+// The one field per method that identifies the destination account
+// (email / wallet / phone) — used for masking + display everywhere.
+function payoutMethodPrimaryField(methodType) {
+    const cfg = PAYOUT_METHOD_CONFIG[methodType];
+    if (!cfg) return null;
+    if (methodType === "paypal") return "email";
+    if (methodType === "crypto") return "wallet";
+    return "phone";
+}
+function maskPayoutEmail(email) {
+    if (!email) return "";
+    const [local, domain] = email.split("@");
+    if (!domain) return email;
+    const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***";
+    return visible + "@" + domain;
+}
+function maskPayoutWallet(address) {
+    if (!address) return "";
+    if (address.length <= 12) return address;
+    return address.slice(0, 6) + "..." + address.slice(-6);
+}
+function maskPayoutPhone(phone) {
+    if (!phone) return "";
+    const digits = String(phone).replace(/\s+/g, "");
+    if (digits.length <= 6) return digits;
+    return digits.slice(0, 4) + "****" + digits.slice(-2);
+}
+// Short masked summary of a linked method, e.g. "j***n@gmail.com" or
+// "0x1a2b...9f3c" or "+923****45". Used in compact table/card views.
+function maskPayoutDetails(methodType, details) {
+    if (!details) return "";
+    const field = payoutMethodPrimaryField(methodType);
+    if (!field) return "";
+    const value = details[field];
+    if (methodType === "paypal") return maskPayoutEmail(value);
+    if (methodType === "crypto") return maskPayoutWallet(value);
+    return details.accountName ? `${details.accountName} · ${maskPayoutPhone(value)}` : maskPayoutPhone(value);
+}
+// Full, unmasked summary — used only where the viewer genuinely needs
+// the real value (admin's expanded payout detail panel).
+function fullPayoutDetails(methodType, details) {
+    if (!details) return "";
+    const field = payoutMethodPrimaryField(methodType);
+    if (!field) return "";
+    const value = details[field] || "";
+    if (methodType === "paypal" || methodType === "crypto") return value;
+    return details.accountName ? `${details.accountName} — ${value}` : value;
+}

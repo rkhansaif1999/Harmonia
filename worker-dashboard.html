@@ -307,10 +307,21 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .session-stats{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:.85rem;}
 .gate-btn{width:100%;padding:15px;font-size:1rem;}
 
-.method-tile{border:2px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;flex:1;transition:border-color .15s ease,background .15s ease;background:var(--bg);}
-.method-tile:hover{border-color:var(--muted);}
+.method-tile{border:2px solid var(--border);border-radius:16px;padding:14px 16px;cursor:pointer;transition:border-color .15s ease,background .15s ease,transform .15s ease;background:var(--panel);display:flex;align-items:center;gap:12px;}
+.method-tile:hover{border-color:var(--muted);transform:translateY(-2px);}
 .method-tile.active{border-color:var(--primary);background:var(--primary-soft);}
-.badge-linked{background:var(--success-soft);color:var(--success);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:8px;}
+.method-tile-icon{width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.method-tile-icon img{width:100%;height:100%;object-fit:contain;padding:4px;box-sizing:border-box;}
+.method-tile-body{min-width:0;flex:1;}
+.method-tile-body strong{display:block;font-size:.92rem;line-height:1.3;}
+.badge-linked{background:var(--success-soft);color:var(--success);font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-block;margin-top:4px;}
+.method-region-label{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 12px;}
+.method-region-label:first-child{margin-top:0;}
+.method-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.payout-edit-card{border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:24px;background:var(--panel);}
+.payout-edit-card .method-tile-icon{width:28px;height:28px;}
+.payout-edit-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.payout-edit-header strong{font-size:1.05rem;}
 
 .iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
 
@@ -383,7 +394,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <body>
 
-<script src="script.js?v=20260721"></script>
+<script src="script.js?v=20260801"></script>
 <script>
     protectPage("worker");
 </script>
@@ -652,51 +663,29 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <h2>Payout Method</h2>
                 <p class="muted" style="margin-top:-6px;">Choose how you'd like to receive payouts. Changing your method requires a verification code sent to your account email.</p>
 
-                <div style="display:flex;gap:14px;flex-wrap:wrap;margin:18px 0;">
-                    <div class="method-tile" id="paypalTile" onclick="selectMethodTile('paypal')">
-                        <strong>PayPal</strong> <span class="badge-linked" id="paypalLinkedBadge" style="display:none;">Linked</span>
-                        <div class="muted" style="margin-top:6px;" id="paypalDisplay">Not linked</div>
-                        <div class="muted" style="font-size:.75rem;" id="paypalUpdatedAt"></div>
-                    </div>
-                    <div class="method-tile" id="cryptoTile" onclick="selectMethodTile('crypto')">
-                        <strong>Crypto (USDT · ERC-20)</strong> <span class="badge-linked" id="cryptoLinkedBadge" style="display:none;">Linked</span>
-                        <div class="muted" style="margin-top:6px;" id="cryptoDisplay">Not linked</div>
-                        <div class="muted" style="font-size:.75rem;" id="cryptoUpdatedAt"></div>
-                    </div>
-                </div>
+                <div id="methodTileContainer" style="margin:18px 0;"></div>
 
-                <div id="paypalCard">
-                    <button class="secondary" id="paypalUpdateBtn" onclick="startUpdate('paypal')">Link PayPal</button>
-                    <div id="paypalEditPanel" style="display:none;margin-top:14px;">
-                        <label>PayPal email</label>
-                        <input type="email" id="paypalInput" placeholder="you@paypal.com" style="width:100%;box-sizing:border-box;">
-                        <div style="display:flex;gap:10px;margin-top:10px;">
-                            <button class="primary" onclick="sendVerificationCode('paypal')">Send Code</button>
-                            <button class="secondary" onclick="cancelUpdate('paypal')">Cancel</button>
-                        </div>
-                        <div id="paypalCodePanel" style="display:none;margin-top:14px;">
-                            <p class="muted" id="paypalCodeSentNote"></p>
-                            <label>6-digit code</label>
-                            <input type="text" id="paypalCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
-                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode('paypal')">Confirm</button>
-                        </div>
+                <div class="payout-edit-card" id="payoutEditCard" style="display:none;">
+                    <div class="payout-edit-header">
+                        <span class="method-tile-icon" id="payoutEditIcon"></span>
+                        <strong id="payoutEditTitle"></strong>
+                        <span class="badge-linked" id="payoutEditLinkedBadge" style="display:none;margin-left:auto;">Linked</span>
                     </div>
-                </div>
+                    <div class="muted" style="font-size:.8rem;margin-bottom:14px;" id="payoutEditUpdatedAt"></div>
 
-                <div id="cryptoCard" style="display:none;margin-top:18px;">
-                    <button class="secondary" id="cryptoUpdateBtn" onclick="startUpdate('crypto')">Link Wallet</button>
-                    <div id="cryptoEditPanel" style="display:none;margin-top:14px;">
-                        <label>USDT (ERC-20) wallet address</label>
-                        <input type="text" id="cryptoInput" placeholder="0x..." style="width:100%;box-sizing:border-box;">
+                    <button class="secondary" id="payoutUpdateBtn" onclick="startUpdate()">Link this method</button>
+
+                    <div id="payoutEditPanel" style="display:none;margin-top:14px;">
+                        <div id="payoutFieldsContainer"></div>
                         <div style="display:flex;gap:10px;margin-top:10px;">
-                            <button class="primary" onclick="sendVerificationCode('crypto')">Send Code</button>
-                            <button class="secondary" onclick="cancelUpdate('crypto')">Cancel</button>
+                            <button class="primary" onclick="sendVerificationCode()">Send Code</button>
+                            <button class="secondary" onclick="cancelUpdate()">Cancel</button>
                         </div>
-                        <div id="cryptoCodePanel" style="display:none;margin-top:14px;">
-                            <p class="muted" id="cryptoCodeSentNote"></p>
+                        <div id="payoutCodePanel" style="display:none;margin-top:14px;">
+                            <p class="muted" id="payoutCodeSentNote"></p>
                             <label>6-digit code</label>
-                            <input type="text" id="cryptoCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
-                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode('crypto')">Confirm</button>
+                            <input type="text" id="payoutCodeInput" maxlength="6" style="width:100%;box-sizing:border-box;">
+                            <button class="primary" style="margin-top:10px;" onclick="confirmVerificationCode()">Confirm</button>
                         </div>
                     </div>
                 </div>
@@ -1205,7 +1194,7 @@ async function renderOverview() {
         const d = await r.json();
         const el = document.getElementById("ovPayoutStatus");
         if (r.ok && d.method && d.method.verified) {
-            el.innerHTML = `<span class="status status-approved">Linked</span> &nbsp; ${d.method.methodType === "paypal" ? "PayPal" : "Crypto (USDT)"}`;
+            el.innerHTML = `<span class="status status-approved">Linked</span> &nbsp; ${escapeHTML(payoutMethodLabel(d.method.methodType))}`;
         } else {
             el.innerHTML = `<span class="status status-pending">Not set up</span> &nbsp; Add a payout method to get paid.`;
         }
@@ -2297,8 +2286,8 @@ async function submitWithdrawRequest(amount) {
    PAYMENTS
    ========================================================== */
 let currentMethod = null, selectedTile = null;
-function maskEmail(email) { if (!email) return ""; const [local, domain] = email.split("@"); if (!domain) return email; const visible = local.length > 2 ? local[0] + "***" + local[local.length - 1] : local[0] + "***"; return visible + "@" + domain; }
-function maskWallet(address) { if (!address) return ""; if (address.length <= 12) return address; return address.slice(0, 6) + "..." + address.slice(-6); }
+function maskEmail(email) { return maskPayoutEmail(email); }
+function maskWallet(address) { return maskPayoutWallet(address); }
 function formatTimestamp(iso) { if (!iso) return ""; const d = new Date(iso); if (isNaN(d.getTime())) return ""; return "Last updated " + d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); }
 
 async function loadPayoutMethod() {
@@ -2307,56 +2296,128 @@ async function loadPayoutMethod() {
         const data = await res.json();
         currentMethod = res.ok ? data.method : null;
     } catch (err) { currentMethod = null; }
+    renderMethodTiles();
     renderPayoutMethods();
 }
+
+// Builds the icon grid of every available payout method, grouped by
+// region, once (called after loadPayoutMethod resolves so we know
+// which one - if any - is currently linked).
+function renderMethodTiles() {
+    const container = document.getElementById("methodTileContainer");
+    const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
+    let html = "";
+    PAYOUT_METHOD_REGION_ORDER.forEach(region => {
+        const keys = Object.keys(PAYOUT_METHOD_CONFIG).filter(k => PAYOUT_METHOD_CONFIG[k].region === region);
+        if (!keys.length) return;
+        html += `<div class="method-region-label">${escapeHTML(region)}</div><div class="method-tile-grid">`;
+        keys.forEach(key => {
+            const cfg = PAYOUT_METHOD_CONFIG[key];
+            const isLinked = linkedMethod === key;
+            html += `
+                <div class="method-tile" id="tile-${key}" onclick="selectMethodTile('${key}')">
+                    <span class="method-tile-icon"><img src="${cfg.icon}" alt="${escapeHTML(cfg.label)}"></span>
+                    <div class="method-tile-body">
+                        <strong>${escapeHTML(cfg.label)}</strong>
+                        ${isLinked ? `<span class="badge-linked">Linked</span>` : ""}
+                    </div>
+                </div>`;
+        });
+        html += `</div>`;
+    });
+    container.innerHTML = html;
+}
+
 function renderPayoutMethods() {
     const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
-    const paypalDisplay = document.getElementById("paypalDisplay"), paypalUpdateBtn = document.getElementById("paypalUpdateBtn");
-    if (linkedMethod === "paypal") { paypalDisplay.textContent = maskEmail(currentMethod.details.email); paypalUpdateBtn.textContent = "Update"; document.getElementById("paypalUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt); }
-    else { paypalDisplay.textContent = "Not linked"; paypalUpdateBtn.textContent = "Link PayPal"; document.getElementById("paypalUpdatedAt").textContent = ""; }
-    document.getElementById("paypalLinkedBadge").style.display = linkedMethod === "paypal" ? "inline-block" : "none";
-
-    const cryptoDisplay = document.getElementById("cryptoDisplay"), cryptoUpdateBtn = document.getElementById("cryptoUpdateBtn");
-    if (linkedMethod === "crypto") { cryptoDisplay.textContent = maskWallet(currentMethod.details.wallet); cryptoUpdateBtn.textContent = "Update"; document.getElementById("cryptoUpdatedAt").textContent = formatTimestamp(currentMethod.updatedAt); }
-    else { cryptoDisplay.textContent = "Not linked"; cryptoUpdateBtn.textContent = "Link Wallet"; document.getElementById("cryptoUpdatedAt").textContent = ""; }
-    document.getElementById("cryptoLinkedBadge").style.display = linkedMethod === "crypto" ? "inline-block" : "none";
-
-    selectMethodTile(linkedMethod || selectedTile || "paypal");
+    document.querySelectorAll(".method-tile").forEach(t => t.classList.remove("active"));
+    selectMethodTile(linkedMethod || selectedTile, /*skipScroll*/ true);
 }
-function selectMethodTile(method) {
+
+function selectMethodTile(method, skipTileUpdate) {
+    if (!method) { document.getElementById("payoutEditCard").style.display = "none"; return; }
     selectedTile = method;
-    document.getElementById("paypalCard").style.display = method === "paypal" ? "block" : "none";
-    document.getElementById("cryptoCard").style.display = method === "crypto" ? "block" : "none";
-    document.getElementById("paypalTile").classList.toggle("active", method === "paypal");
-    document.getElementById("cryptoTile").classList.toggle("active", method === "crypto");
-}
-function startUpdate(method) { document.getElementById(method + "EditPanel").style.display = "block"; document.getElementById(method + "CodePanel").style.display = "none"; document.getElementById(method + "UpdateBtn").style.display = "none"; }
-function cancelUpdate(method) { document.getElementById(method + "EditPanel").style.display = "none"; document.getElementById(method + "CodePanel").style.display = "none"; document.getElementById(method + "UpdateBtn").style.display = "inline-block"; document.getElementById(method + "Input").value = ""; document.getElementById(method + "CodeInput").value = ""; }
-function isValidValue(method, value) { if (!value) return false; if (method === "paypal") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); return /^0x[a-fA-F0-9]{40}$/.test(value); }
-function buildDetails(method, value) { return method === "paypal" ? { email: value } : { wallet: value }; }
+    const cfg = PAYOUT_METHOD_CONFIG[method];
+    if (!cfg) return;
 
-async function sendVerificationCode(method) {
-    const value = document.getElementById(method + "Input").value.trim();
-    if (!isValidValue(method, value)) { alert(method === "paypal" ? "Please enter a valid PayPal email address." : "Please enter a valid USDT (ERC-20) wallet address."); return; }
+    document.querySelectorAll(".method-tile").forEach(t => t.classList.toggle("active", t.id === "tile-" + method));
+
+    const linkedMethod = currentMethod && currentMethod.verified ? currentMethod.methodType : null;
+    const isLinked = linkedMethod === method;
+
+    document.getElementById("payoutEditCard").style.display = "block";
+    document.getElementById("payoutEditIcon").innerHTML = `<img src="${cfg.icon}" alt="${escapeHTML(cfg.label)}">`;
+    document.getElementById("payoutEditTitle").textContent = cfg.label;
+    document.getElementById("payoutEditLinkedBadge").style.display = isLinked ? "inline-block" : "none";
+    document.getElementById("payoutEditUpdatedAt").textContent = isLinked ? formatTimestamp(currentMethod.updatedAt) + " — " + maskPayoutDetails(method, currentMethod.details) : "Not linked yet.";
+    document.getElementById("payoutUpdateBtn").textContent = isLinked ? "Update details" : "Link this method";
+
+    // Build the field inputs for this method
+    const fieldsContainer = document.getElementById("payoutFieldsContainer");
+    fieldsContainer.innerHTML = cfg.fields.map(f =>
+        `<label style="display:block;margin-top:10px;">${escapeHTML(f.label)}</label>
+         <input type="${f.type}" id="payoutField-${f.name}" placeholder="${escapeHTML(f.placeholder || "")}" style="width:100%;box-sizing:border-box;">`
+    ).join("");
+
+    cancelUpdate(/*resetOnly*/ true);
+}
+
+function startUpdate() {
+    document.getElementById("payoutEditPanel").style.display = "block";
+    document.getElementById("payoutCodePanel").style.display = "none";
+    document.getElementById("payoutUpdateBtn").style.display = "none";
+}
+function cancelUpdate(resetOnly) {
+    document.getElementById("payoutEditPanel").style.display = "none";
+    document.getElementById("payoutCodePanel").style.display = "none";
+    if (!resetOnly) document.getElementById("payoutUpdateBtn").style.display = "inline-block";
+    document.querySelectorAll("#payoutFieldsContainer input").forEach(i => i.value = "");
+    const codeInput = document.getElementById("payoutCodeInput");
+    if (codeInput) codeInput.value = "";
+}
+
+function isValidField(fieldName, value) {
+    if (!value) return false;
+    if (fieldName === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    if (fieldName === "wallet") return /^0x[a-fA-F0-9]{40}$/.test(value);
+    if (fieldName === "phone") return /^[+0-9][0-9\s-]{6,17}$/.test(value);
+    if (fieldName === "accountName") return value.trim().length >= 2;
+    return true;
+}
+
+function collectDetails() {
+    const cfg = PAYOUT_METHOD_CONFIG[selectedTile];
+    const details = {};
+    for (const f of cfg.fields) {
+        const value = document.getElementById("payoutField-" + f.name).value.trim();
+        if (!isValidField(f.name, value)) return null;
+        details[f.name] = value;
+    }
+    return details;
+}
+
+async function sendVerificationCode() {
+    const details = collectDetails();
+    if (!details) { alert("Please fill in all fields with valid values."); return; }
     try {
-        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/send-code", { method: "POST", body: JSON.stringify({ methodType: method, details: buildDetails(method, value) }) });
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/send-code", { method: "POST", body: JSON.stringify({ methodType: selectedTile, details }) });
         const data = await res.json();
         if (!res.ok) { alert(data.error || "Failed to send verification code."); return; }
-        document.getElementById(method + "CodePanel").style.display = "block";
-        document.getElementById(method + "CodeSentNote").textContent = "A 6-digit code was sent to " + maskEmail(data.email) + ". It expires in 10 minutes.";
+        document.getElementById("payoutCodePanel").style.display = "block";
+        document.getElementById("payoutCodeSentNote").textContent = "A 6-digit code was sent to " + maskPayoutEmail(data.email) + ". It expires in 10 minutes.";
     } catch (err) { alert("Failed to send verification code. Please try again."); }
 }
-async function confirmVerificationCode(method) {
-    const enteredCode = document.getElementById(method + "CodeInput").value.trim();
+async function confirmVerificationCode() {
+    const enteredCode = document.getElementById("payoutCodeInput").value.trim();
     if (!enteredCode) { alert("Please enter the 6-digit code."); return; }
     try {
-        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/verify-code", { method: "POST", body: JSON.stringify({ methodType: method, code: enteredCode }) });
+        const res = await authFetch(WORKER_URL + "/api/worker/payout-method/verify-code", { method: "POST", body: JSON.stringify({ methodType: selectedTile, code: enteredCode }) });
         const data = await res.json();
         if (!res.ok) { alert(data.error || "Verification failed."); return; }
-        alert((method === "paypal" ? "PayPal email" : "Crypto wallet") + " updated successfully!");
-        cancelUpdate(method);
+        alert(payoutMethodLabel(selectedTile) + " updated successfully!");
+        const justLinked = selectedTile;
         await loadPayoutMethod();
-        selectMethodTile(method);
+        selectMethodTile(justLinked);
         loadedTabs.delete("overview");
     } catch (err) { alert("Verification failed. Please try again."); }
 }

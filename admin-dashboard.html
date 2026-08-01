@@ -782,7 +782,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <div class="noise"></div>
 
-<script src="script.js?v=20260721"></script>
+<script src="script.js?v=20260801"></script>
 
 <script>
     protectPage("admin");
@@ -1989,11 +1989,11 @@ function payoutMethodCell(payout) {
     if (!payout || !payout.methodType || !payout.methodVerified) {
         return `<span style="opacity:.6;">Not linked</span>`;
     }
-    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto";
-    const detail = payout.methodType === "paypal"
-        ? maskEmail(payout.methodDetails && payout.methodDetails.email)
-        : maskWallet(payout.methodDetails && payout.methodDetails.wallet);
-    return `${label}<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(detail)}</span>`;
+    const icon = payoutMethodIcon(payout.methodType);
+    const label = payoutMethodLabel(payout.methodType);
+    const detail = maskPayoutDetails(payout.methodType, payout.methodDetails);
+    const iconHtml = icon ? `<img src="${icon}" alt="" style="width:16px;height:16px;object-fit:contain;border-radius:4px;background:#fff;vertical-align:-3px;margin-right:5px;">` : "";
+    return `${iconHtml}${escapeHTML(label)}<br><span style="opacity:.7;font-size:.85rem;">${escapeHTML(detail)}</span>`;
 }
 
 function copyToClipboard(text, btn) {
@@ -2011,13 +2011,13 @@ function fullPayoutMethodCell(payout) {
     if (!payout || !payout.methodType || !payout.methodVerified) {
         return `<span style="opacity:.6;">Not linked</span>`;
     }
-    const label = payout.methodType === "paypal" ? "💙 PayPal" : "🪙 Crypto (USDT · ERC-20)";
-    const fullValue = payout.methodType === "paypal"
-        ? (payout.methodDetails && payout.methodDetails.email) || ""
-        : (payout.methodDetails && payout.methodDetails.wallet) || "";
+    const icon = payoutMethodIcon(payout.methodType);
+    const label = payoutMethodLabel(payout.methodType);
+    const fullValue = fullPayoutDetails(payout.methodType, payout.methodDetails);
     const safeValue = escapeHTML(fullValue).replace(/'/g, "\\'");
+    const iconHtml = icon ? `<img src="${icon}" alt="" style="width:18px;height:18px;object-fit:contain;border-radius:5px;background:#fff;vertical-align:-4px;margin-right:6px;">` : "";
     return `
-        ${label}<br>
+        ${iconHtml}${escapeHTML(label)}<br>
         <span style="opacity:.85;font-size:.85rem;word-break:break-all;">${escapeHTML(fullValue)}</span>
         <button style="margin-left:8px;" onclick="copyToClipboard('${safeValue}', this)">Copy</button>
     `;
@@ -2464,11 +2464,10 @@ function renderWithdrawTable() {
         const color = colors[(r.fullName || "").charCodeAt(0) % colors.length];
 
         let methodHtml = `<span class="muted">Not set</span>`;
-        if (r.methodType === "paypal" && r.methodDetails?.email) {
-            methodHtml = `<span>💳 PayPal</span><br><span class="muted" style="font-size:.8rem;">${escapeHTML(r.methodDetails.email)}</span>`;
-        } else if (r.methodType === "crypto" && r.methodDetails?.wallet) {
-            const w = r.methodDetails.wallet;
-            methodHtml = `<span>🔗 Crypto (USDT)</span><br><span class="muted" style="font-size:.8rem;">${escapeHTML(w.slice(0,6))}...${escapeHTML(w.slice(-4))}</span>`;
+        if (r.methodType && r.methodDetails) {
+            const icon = payoutMethodIcon(r.methodType);
+            const iconHtml = icon ? `<img src="${icon}" alt="" style="width:15px;height:15px;object-fit:contain;border-radius:4px;background:#fff;vertical-align:-2px;margin-right:4px;">` : "";
+            methodHtml = `<span>${iconHtml}${escapeHTML(payoutMethodLabel(r.methodType))}</span><br><span class="muted" style="font-size:.8rem;">${escapeHTML(maskPayoutDetails(r.methodType, r.methodDetails))}</span>`;
         }
 
         const date = r.createdAt ? new Date(r.createdAt.replace(" ", "T") + "Z").toLocaleString(undefined, { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" }) : "—";
