@@ -44,6 +44,9 @@
 /discord-callback.html
   X-Robots-Tag: noindex, nofollow, noarchive
 
+/offerwall-launch.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
 # Offerwall provider domain-verification file - must stay PUBLICLY
 # reachable with no login (the provider's own servers fetch it), this
 # only keeps it out of search results, it does not restrict access.

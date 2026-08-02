@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Opening your task… - Harmonia</title>
+<link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',Arial,sans-serif;}
+  html,body{height:100%;}
+  body{
+      background:#0f172a;color:#f8fafc;
+      display:flex;align-items:center;justify-content:center;
+      min-height:100vh;padding:24px;text-align:center;
+  }
+  .wrap{max-width:380px;width:100%;}
+  .logo{width:56px;height:56px;margin:0 auto 22px;display:block;border-radius:14px;}
+  .spinner{
+      width:34px;height:34px;border-radius:50%;
+      border:3px solid #334155;border-top-color:#3b82f6;
+      margin:0 auto 22px;animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  h1{font-size:1.15rem;margin-bottom:10px;font-weight:800;}
+  p{color:#94a3b8;font-size:.9rem;line-height:1.6;margin-bottom:6px;}
+  .note{font-size:.78rem;color:#64748b;margin-top:18px;}
+  #fallback{display:none;margin-top:22px;}
+  #fallback a{
+      display:inline-block;background:#3b82f6;color:#fff;font-weight:700;
+      padding:11px 22px;border-radius:10px;font-size:.88rem;text-decoration:none;
+      transition:background .15s ease;
+  }
+  #fallback a:hover{background:#2563eb;}
+  #errorBox{display:none;}
+  #errorBox a{color:#3b82f6;font-weight:700;text-decoration:none;}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img src="images/logo.png" alt="Harmonia" class="logo">
+    <div id="loadingState">
+      <div class="spinner"></div>
+      <h1 id="titleText">Opening your task…</h1>
+      <p>Taking you to your Harmonia task partner.</p>
+      <p class="note">Your Harmonia dashboard stays open in the other tab — come back anytime, no need to log in again.</p>
+      <div id="fallback"><a id="fallbackLink" href="#">Continue to task →</a></div>
+    </div>
+    <div id="errorBox">
+      <h1>We couldn't open this task</h1>
+      <p>This link looks invalid or has expired. Please go back to Harmonia and try again from the Offerwall tab.</p>
+      <p class="note"><a href="worker-dashboard.html#tasks/offerwallme">← Back to Harmonia</a></p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const target = params.get("u");
+      const label = params.get("label");
+
+      function isSafeHttpsUrl(value) {
+        try {
+          const parsed = new URL(value);
+          return parsed.protocol === "https:";
+        } catch (e) {
+          return false;
+        }
+      }
+
+      if (!target || !isSafeHttpsUrl(target)) {
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("errorBox").style.display = "block";
+        return;
+      }
+
+      if (label) {
+        document.getElementById("titleText").textContent = "Opening " + label + "…";
+      }
+
+      const fallbackLink = document.getElementById("fallbackLink");
+      fallbackLink.href = target;
+
+      // In case the automatic redirect below is ever blocked by a
+      // browser/extension, reveal a manual button after a moment so
+      // the user is never stuck on a spinner with no way forward.
+      setTimeout(function () {
+        document.getElementById("fallback").style.display = "block";
+      }, 1400);
+
+      // Top-level navigation — this tab IS window.top once this
+      // happens, so the task provider sees a genuine top-level page
+      // load rather than an embedded iframe. That's what makes its
+      // real mobile flow work instead of falling back to a QR code,
+      // and it never has an opener reference back to Harmonia
+      // (this tab was opened with rel="noopener"), so nothing here
+      // can ever redirect or hijack the original dashboard tab.
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>

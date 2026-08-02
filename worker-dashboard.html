@@ -396,6 +396,37 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 .iframe-holder iframe{width:100%;min-height:520px;border:none;display:block;border-radius:12px;background:#fff;}
 
+/* ---------- Offerwall (offerwall.me): branded launch card ----------
+   offerwall.me refuses to run its real mobile flow inside an iframe
+   (falls back to "scan this QR" even on an actual phone) and its
+   sandboxed popups could hijack the dashboard tab. So this tab opens
+   the offer in a real new tab instead of an iframe — same fix
+   pattern as before, just with a Harmonia-branded card here and a
+   branded hand-off screen in between (see offerwall-launch.html).
+   Bonus Tasks (CPX Research) is unaffected — it supports iframe
+   embedding on purpose and stays exactly as-is. */
+.offerwall-launch-holder{display:flex;flex-direction:column;gap:14px;}
+.offerwall-launch-card{
+    display:flex;flex-wrap:wrap;align-items:center;gap:18px;
+    background:var(--bg);border:1px solid var(--border);border-radius:16px;
+    padding:22px;
+}
+.offerwall-launch-icon{
+    width:52px;height:52px;border-radius:14px;flex-shrink:0;
+    background:var(--primary-soft);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+}
+.offerwall-launch-body{flex:1;min-width:220px;}
+.offerwall-launch-body h3{margin:0 0 6px;color:var(--text);font-size:1.02rem;}
+.offerwall-launch-body p{margin:0 0 6px;color:var(--muted);font-size:.85rem;line-height:1.55;}
+.offerwall-launch-note{font-size:.78rem !important;color:var(--muted-light) !important;}
+.offerwall-launch-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0;width:100%;max-width:190px;}
+.offerwall-launch-actions button{width:100%;}
+@media (max-width:640px){
+    .offerwall-launch-card{flex-direction:column;align-items:flex-start;}
+    .offerwall-launch-actions{max-width:100%;flex-direction:row;}
+}
+
 /* ---------- Bonus Tasks: tips + scenario quiz gate ---------- */
 .tip-cat{margin-bottom:16px;}
 .tip-cat h4{margin:0 0 8px;font-size:.82rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--primary);}
@@ -654,7 +685,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         for this site — they often block offerwall providers.
                     </p>
                     <p class="muted empty-state" id="offerwallmeEmptyState" style="display:none;"></p>
-                    <div class="iframe-holder" id="offerwallmeIframeHolder"></div>
+                    <div class="offerwall-launch-holder" id="offerwallmeIframeHolder"></div>
                 </div>
             </div>
         </section>
@@ -1593,24 +1624,56 @@ async function loadBonusTasks() {
 }
 
 /* ==========================================================
-   OFFERWALL
-   Same ad-blocker detection pattern as CPX Research.
+   OFFERWALL (offerwall.me)
+   Unlike CPX Research above, offerwall.me does not support being
+   embedded in an iframe: it detects window.top !== window.self and
+   falls back to a "scan this QR with your phone" screen even when
+   the visitor genuinely is on a phone. A sandboxed iframe with
+   allow-popups-to-escape-sandbox also let its popups run
+   un-sandboxed with a live window.opener handle back to this
+   dashboard tab (reverse-tabnabbing risk), and the one-time iframe
+   build meant returning to this tab showed stale/stuck content.
+   Fix: render a Harmonia-branded launch card here instead of an
+   iframe. The "Start Earning" button opens offerwall-launch.html
+   (same origin, Harmonia-styled) in a brand-new tab with
+   rel="noopener" — that page shows a branded hand-off screen for a
+   moment, then does a TOP-LEVEL navigation to the real offerwall.me
+   URL. Because that tab is never embedded, offerwall.me sees a
+   genuine top-level page and its real mobile flow works. Because
+   noopener severs window.opener, nothing on offerwall.me can ever
+   redirect or touch this Harmonia dashboard tab. Because there's no
+   persistent iframe, there's no stale state to get stuck on — this
+   dashboard tab is untouched no matter what the worker does on the
+   other tab, and every visit to this subtab re-checks availability.
    ========================================================== */
-let offerwallMeLoaded = false;
+
+function buildOfferwallLaunchUrl(targetUrl) {
+    return "offerwall-launch.html?u=" + encodeURIComponent(targetUrl) + "&label=" + encodeURIComponent("Offerwall");
+}
+
+function launchOfferwall(targetUrl) {
+    // Built and clicked synchronously inside the user's click handler
+    // (not via window.open after an await) so popup blockers treat
+    // this as a direct user action and don't block the new tab.
+    const a = document.createElement("a");
+    a.href = buildOfferwallLaunchUrl(targetUrl);
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
 
 async function loadOfferwallMe() {
     const statusLabel = document.getElementById("offerwallmeStatusLabel");
     const emptyState = document.getElementById("offerwallmeEmptyState");
-    const frameHolder = document.getElementById("offerwallmeIframeHolder");
-    if (!statusLabel || !frameHolder) return;
-
-    // Only build the iframe once per session — switching tabs won't reload it.
-    if (offerwallMeLoaded) return;
+    const launchHolder = document.getElementById("offerwallmeIframeHolder");
+    if (!statusLabel || !launchHolder) return;
 
     try {
         statusLabel.textContent = "Loading…";
         emptyState.style.display = "none";
-        frameHolder.innerHTML = "";
+        launchHolder.innerHTML = "";
 
         const response = await authFetch(WORKER_URL + "/api/worker/offerwalls");
         const data = await response.json();
@@ -1633,15 +1696,25 @@ async function loadOfferwallMe() {
         emptyState.style.display = "none";
 
         offerwalls.forEach(ow => {
-            const iframe = document.createElement("iframe");
-            iframe.src = ow.iframeUrl;
-            iframe.title = "Offerwall Tasks";
-            iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
-            frameHolder.appendChild(iframe);
-            attachIframeLoadGuard(iframe, emptyState, statusLabel, "Offerwall");
+            const card = document.createElement("div");
+            card.className = "offerwall-launch-card";
+            card.innerHTML = `
+                <div class="offerwall-launch-icon">🏷️</div>
+                <div class="offerwall-launch-body">
+                    <h3>Harmonia Offerwall</h3>
+                    <p>Complete surveys, app trials, and offers from our task partner to earn extra rewards on top of your regular tasks.</p>
+                    <p class="offerwall-launch-note">Opens in a new tab so this works properly on phones and tablets too. Your Harmonia dashboard stays open and signed in here the whole time.</p>
+                </div>
+                <div class="offerwall-launch-actions">
+                    <button class="primary" type="button">Start Earning ↗</button>
+                    <button class="secondary" type="button" title="Check for new offers">🔄 Refresh</button>
+                </div>
+            `;
+            const [startBtn, refreshBtn] = card.querySelectorAll("button");
+            startBtn.addEventListener("click", () => launchOfferwall(ow.iframeUrl));
+            refreshBtn.addEventListener("click", () => loadOfferwallMe());
+            launchHolder.appendChild(card);
         });
-
-        offerwallMeLoaded = true;
     } catch (err) {
         console.error("loadOfferwallMe error:", err);
         statusLabel.textContent = "Unavailable";
