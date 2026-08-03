@@ -1,6 +1,12 @@
-# 1. Catch-all rules (MUST be at the top for Cloudflare Pages)
+# 1. Site-wide security headers.
+# NOTE: Cache-Control is deliberately NOT set here. Cloudflare Pages
+# _headers rules don't do "last match wins" - if a request matches
+# multiple rules that both set the same header, the values are
+# joined together with a comma instead of one replacing the other.
+# Every HTML page and every static asset below also matches this /*
+# rule, so putting Cache-Control here would get appended to (and
+# corrupt) the more specific Cache-Control rules in sections 2 and 3.
 /*
-  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
