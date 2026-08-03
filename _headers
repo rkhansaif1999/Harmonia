@@ -1,34 +1,24 @@
-# Cache-Busting headers for Netlify / Cloudflare Pages
-# HTML pages: never cache, always fetch the latest version from the server
-/*.html
-  Cache-Control: no-cache, no-store, must-revalidate
-
-/
-  Cache-Control: no-cache, no-store, must-revalidate
-
-# Versioned static assets (style.css?v=..., script.js?v=...) can be cached
-# long-term because the ?v= query string changes whenever you update them
-/style.css
-  Cache-Control: no-cache, must-revalidate
-
-/script.js
-  Cache-Control: no-cache, must-revalidate
-
-# ------------------------------------------------------------
-# Security headers (added - safe to apply site-wide, does not
-# change caching behavior above, just adds extra response headers)
-# ------------------------------------------------------------
-
-# Applies to every request on the site
+# 1. Catch-all rules (MUST be at the top for Cloudflare Pages)
 /*
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
 
-# Belt-and-suspenders alongside the <meta name="robots"> tag already
-# on these pages - tells crawlers/bots at the HTTP-header level too,
-# in case the page is ever linked from outside the site.
+# 2. HTML pages: never cache, always fetch the latest version from the server
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# 3. Versioned static assets (style.css?v=..., script.js?v=...)
+# Cached for 1 year. When you bump the ?v= number, browsers instantly fetch the new file.
+/style.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/script.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# 4. Robots tags for specific pages
 /admin-dashboard.html
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
 
@@ -47,8 +37,5 @@
 /offerwall-launch.html
   X-Robots-Tag: noindex, nofollow, noarchive
 
-# Offerwall provider domain-verification file - must stay PUBLICLY
-# reachable with no login (the provider's own servers fetch it), this
-# only keeps it out of search results, it does not restrict access.
 /offerwall-verification-70f5681e2a2c1a12.txt
   X-Robots-Tag: noindex, nofollow, noarchive
