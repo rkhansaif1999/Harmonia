@@ -1403,7 +1403,7 @@ const articleContents = {
     <h3>1. Negation</h3>
     <p>If a prompt says "Do not mention the price," the AI often mentions the price anyway. Models struggle with negative constraints.</p>
     <h3>2. Formatting</h3>
-    <p>If asked to "Output only JSON, no markdown," the AI might still wrap the JSON in markdown code blocks (```json ... ```), breaking the developer's code parser.</p>
+    <p>If asked to "Output only JSON, no markdown," the AI might still wrap the JSON in markdown code blocks (\`\`\`json ... \`\`\`), breaking the developer's code parser.</p>
     <h3>3. Multi-Step Logic</h3>
     <p>If a prompt says "Write a recipe, then at the end list the ingredients in alphabetical order," the AI often lists ingredients in the order they were used, failing the second constraint.</p>
     <div class="info-box"><div class="info-box-title">Evaluating Instruction Following</div><p>Annotators grade instruction following strictly. If a response is brilliant but misses one minor formatting constraint, it must be marked as a failure or "Rejected" in favor of a slightly worse response that obeyed all rules. This strictness forces the model to prioritize constraints over fluency.</p></div>
