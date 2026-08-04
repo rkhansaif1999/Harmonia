@@ -10,6 +10,7 @@
 - [Contact](https://harmoniaportal.online/contact.html): Ways to reach the Harmonia team.
 - [FAQ](https://harmoniaportal.online/faq.html): Frequently asked questions.
 - [Help Center](https://harmoniaportal.online/help-center.html): Support resources for workers and clients.
+- [Learning Center](https://harmoniaportal.online/learning-center.html): Premium knowledge base with guides, tutorials, and educational content for workers and clients.
 - [Trust & Safety](https://harmoniaportal.online/trust-safety.html): Platform safety and integrity practices.
 
 ## Account
