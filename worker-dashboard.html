@@ -1047,6 +1047,16 @@ async function checkDiscordStatus() {
     }
 }
 
+/* Hoisted state used by openOfferwallGate/openBonusGate/loadPayoutMethod.
+   Must be declared here (before initialRoute() runs) — otherwise a page
+   refresh/navigation that lands directly on tasks/offerwallme, tasks/bonus,
+   or earnings via the URL hash triggers these functions before the script
+   reaches their original `let` declarations further down the file, throwing
+   a TDZ ReferenceError and permanently breaking that tab until re-login. */
+let owGateMandatory = false, owGateStep = "tips", owGateQIndex = 0, owGateScore = 0, owGateAnswered = false;
+let gateMandatory = false, gateStep = "tips", gateQIndex = 0, gateScore = 0, gateAnswered = false;
+let currentMethod = null, selectedTile = null;
+
 function goTab(tab, sub = null) {
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
@@ -1857,8 +1867,6 @@ const OFFERWALL_QUIZ_QUESTIONS = [
       correct: 2, explain: "Advertisers target specific regions. Different users and countries see different offers and reward amounts. This is normal and is set by advertisers, not Harmonia." }
 ];
 
-let owGateMandatory = false, owGateStep = "tips", owGateQIndex = 0, owGateScore = 0, owGateAnswered = false;
-
 function hasCompletedOfferwallGate() {
     try { return localStorage.getItem(OFFERWALL_GATE_KEY) === "1"; } catch (e) { return false; }
 }
@@ -2048,8 +2056,6 @@ const QUIZ_QUESTIONS = [
       options: ["Give up on bonus tasks for the day", "Click \"find another survey\" right away", "Retake the exact same survey immediately"],
       correct: 1, explain: "Screen-outs are normal, not a penalty. CPX will usually route you to a better-matched survey right away." }
 ];
-
-let gateMandatory = false, gateStep = "tips", gateQIndex = 0, gateScore = 0, gateAnswered = false;
 
 function hasCompletedBonusGate() {
     try { return localStorage.getItem(BONUS_GATE_KEY) === "1"; } catch (e) { return false; }
@@ -2456,7 +2462,6 @@ async function submitWithdrawRequest(amount) {
 /* ==========================================================
    PAYMENTS
    ========================================================== */
-let currentMethod = null, selectedTile = null;
 function maskEmail(email) { return maskPayoutEmail(email); }
 function maskWallet(address) { return maskPayoutWallet(address); }
 function formatTimestamp(iso) { if (!iso) return ""; const d = new Date(iso); if (isNaN(d.getTime())) return ""; return "Last updated " + d.toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); }
