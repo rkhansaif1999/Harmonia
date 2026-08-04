@@ -28,6 +28,7 @@ Allow: /payments-billing.html
 Allow: /how-it-works.html
 Allow: /faq.html
 Allow: /help-center.html
+Allow: /learning-center.html
 Allow: /trust-safety.html
 Allow: /disclaimer.html
 
