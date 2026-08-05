@@ -590,10 +590,306 @@ function renderCategories() {
     `).join('');
 }
 
+// Data: Articles
+const articles = [
+    { id: 'what-is-ai', categoryId: 'ai', title: 'What is Artificial Intelligence?', readTime: '8 min', tags: ['Beginner','Fundamentals'] },
+    { id: 'types-of-ai', categoryId: 'ai', title: 'Types of AI: Narrow, General, and Super', readTime: '6 min', tags: ['Beginner','Concepts'] },
+    { id: 'ml-basics', categoryId: 'ai', title: 'Machine Learning Basics Explained', readTime: '10 min', tags: ['Machine Learning','Guide'] },
+    { id: 'deep-learning-intro', categoryId: 'ai', title: 'Introduction to Deep Learning', readTime: '9 min', tags: ['Deep Learning','Neural Networks'] },
+    { id: 'computer-vision', categoryId: 'ai', title: 'Computer Vision: How Machines See', readTime: '7 min', tags: ['Computer Vision','Applications'] },
+    { id: 'nlp-intro', categoryId: 'ai', title: 'Natural Language Processing (NLP)', readTime: '8 min', tags: ['NLP','Language AI'] },
+    { id: 'ai-agents', categoryId: 'ai', title: 'AI Agents and Agentic AI', readTime: '7 min', tags: ['Agents','Autonomy'] },
+    { id: 'ai-safety', categoryId: 'ai', title: 'AI Safety and Ethics', readTime: '12 min', tags: ['Safety','Ethics'] },
+    { id: 'ai-governance', categoryId: 'ai', title: 'AI Governance and Regulation', readTime: '9 min', tags: ['Policy','Governance'] },
+    { id: 'llm-explained', categoryId: 'llm', title: 'How Large Language Models Work', readTime: '11 min', tags: ['LLM','Transformers'] },
+    { id: 'tokens-context', categoryId: 'llm', title: 'Tokens and Context Windows', readTime: '6 min', tags: ['Tokens','Architecture'] },
+    { id: 'embeddings-guide', categoryId: 'llm', title: 'Embeddings Explained', readTime: '7 min', tags: ['Embeddings','Vector Search'] },
+    { id: 'rag-guide', categoryId: 'llm', title: 'Retrieval-Augmented Generation (RAG)', readTime: '9 min', tags: ['RAG','Advanced'] },
+    { id: 'prompt-engineering', categoryId: 'llm', title: 'Prompt Engineering Guide', readTime: '10 min', tags: ['Prompting','Practical'] },
+    { id: 'chain-of-thought', categoryId: 'llm', title: 'Chain of Thought Prompting', readTime: '6 min', tags: ['Reasoning','Advanced'] },
+    { id: 'hallucinations', categoryId: 'llm', title: 'Understanding AI Hallucinations', readTime: '8 min', tags: ['Reliability','Safety'] },
+    { id: 'fine-tuning', categoryId: 'llm', title: 'Fine-Tuning LLMs', readTime: '10 min', tags: ['Training','Customization'] },
+    { id: 'rlhf-basics', categoryId: 'ai-training', title: 'RLHF: Reinforcement Learning from Human Feedback', readTime: '11 min', tags: ['RLHF','Training'] },
+    { id: 'human-feedback', categoryId: 'ai-training', title: 'Collecting and Using Human Feedback', readTime: '8 min', tags: ['Data','Preferences'] },
+    { id: 'reward-models', categoryId: 'ai-training', title: 'Reward Models in AI Training', readTime: '9 min', tags: ['Models','RL'] },
+    { id: 'ai-evaluation', categoryId: 'ai-training', title: 'AI Evaluation and Benchmarks', readTime: '7 min', tags: ['Evaluation','Metrics'] },
+    { id: 'safety-review', categoryId: 'ai-training', title: 'AI Safety Review Processes', readTime: '8 min', tags: ['Safety','Review'] },
+    { id: 'image-annotation', categoryId: 'data-annotation', title: 'Image Annotation Techniques', readTime: '9 min', tags: ['Images','Bounding Boxes'] },
+    { id: 'video-annotation', categoryId: 'data-annotation', title: 'Video Annotation Best Practices', readTime: '8 min', tags: ['Video','Tracking'] },
+    { id: 'text-annotation', categoryId: 'data-annotation', title: 'Text Annotation for NLP', readTime: '7 min', tags: ['Text','NLP'] },
+    { id: 'lidar-annotation', categoryId: 'data-annotation', title: 'LiDAR and 3D Annotation', readTime: '10 min', tags: ['LiDAR','3D'] },
+    { id: 'quality-control', categoryId: 'data-annotation', title: 'Annotation Quality Control', readTime: '6 min', tags: ['QA','Guidelines'] },
+    { id: 'freelancing-guide', categoryId: 'remote-work', title: 'Freelancing for Beginners', readTime: '8 min', tags: ['Freelancing','Career'] },
+    { id: 'time-management', categoryId: 'remote-work', title: 'Time Management for Remote Workers', readTime: '6 min', tags: ['Productivity','Time'] },
+    { id: 'home-office', categoryId: 'remote-work', title: 'Building the Perfect Home Office', readTime: '7 min', tags: ['Setup','Equipment'] },
+    { id: 'digital-nomad', categoryId: 'remote-work', title: 'Digital Nomad Lifestyle Guide', readTime: '9 min', tags: ['Travel','Lifestyle'] },
+    { id: 'microtasks-guide', categoryId: 'online-earning', title: 'Earning with Microtasks', readTime: '6 min', tags: ['Microtasks','Platforms'] },
+    { id: 'survey-earning', categoryId: 'online-earning', title: 'Paid Surveys: Worth It?', readTime: '5 min', tags: ['Surveys','Income'] },
+    { id: 'user-testing', categoryId: 'online-earning', title: 'Website and App Testing', readTime: '7 min', tags: ['Testing','UX'] },
+    { id: 'affiliate-marketing', categoryId: 'online-earning', title: 'Affiliate Marketing Basics', readTime: '8 min', tags: ['Marketing','Passive'] },
+    { id: 'cpu-vs-gpu', categoryId: 'technology', title: 'CPUs vs GPUs for AI', readTime: '7 min', tags: ['Hardware','AI'] },
+    { id: 'cloud-computing', categoryId: 'technology', title: 'Cloud Computing Fundamentals', readTime: '8 min', tags: ['Cloud','Infrastructure'] },
+    { id: 'api-basics', categoryId: 'technology', title: 'Understanding APIs', readTime: '6 min', tags: ['API','Integration'] },
+    { id: 'git-github', categoryId: 'technology', title: 'Git and GitHub for Beginners', readTime: '9 min', tags: ['Git','Development'] },
+    { id: 'phishing-scams', categoryId: 'internet-safety', title: 'How to Spot Phishing Scams', readTime: '6 min', tags: ['Security','Phishing'] },
+    { id: 'password-security', categoryId: 'internet-safety', title: 'Password Security and 2FA', readTime: '7 min', tags: ['Passwords','2FA'] },
+    { id: 'vpn-guide', categoryId: 'internet-safety', title: 'VPN Guide for Remote Workers', readTime: '5 min', tags: ['VPN','Privacy'] },
+    { id: 'paypal-guide', categoryId: 'payments', title: 'Getting Paid with PayPal', readTime: '6 min', tags: ['PayPal','Payments'] },
+    { id: 'crypto-payments', categoryId: 'payments', title: 'Receiving Crypto Payments', readTime: '8 min', tags: ['Crypto','USDT'] },
+    { id: 'freelancer-taxes', categoryId: 'payments', title: 'Taxes for Freelancers', readTime: '10 min', tags: ['Taxes','Finance'] },
+    { id: 'bitcoin-explained', categoryId: 'crypto', title: 'What is Bitcoin?', readTime: '8 min', tags: ['Bitcoin','Blockchain'] },
+    { id: 'ethereum-guide', categoryId: 'crypto', title: 'Ethereum and Smart Contracts', readTime: '9 min', tags: ['Ethereum','DeFi'] },
+    { id: 'crypto-wallets', categoryId: 'crypto', title: 'Crypto Wallets Explained', readTime: '7 min', tags: ['Wallets','Security'] },
+    { id: 'resume-writing', categoryId: 'career', title: 'Resume and CV Writing', readTime: '8 min', tags: ['Resume','Job'] },
+    { id: 'linkedin-optimization', categoryId: 'career', title: 'LinkedIn Profile Optimization', readTime: '7 min', tags: ['LinkedIn','Branding'] },
+    { id: 'interview-prep', categoryId: 'career', title: 'Interview Preparation Guide', readTime: '9 min', tags: ['Interviews','Career'] },
+    { id: 'ai-basics-course', categoryId: 'courses', title: 'AI Basics Free Course', readTime: '15 min', tags: ['Course','AI'] },
+    { id: 'python-basics', categoryId: 'courses', title: 'Python Basics Course', readTime: '12 min', tags: ['Python','Programming'] },
+    { id: 'sql-basics', categoryId: 'courses', title: 'SQL Basics Course', readTime: '10 min', tags: ['SQL','Database'] },
+    { id: 'api-glossary', categoryId: 'glossary', title: 'API — Application Programming Interface', readTime: '3 min', tags: ['Definition','Term'] },
+    { id: 'token-glossary', categoryId: 'glossary', title: 'Token — In AI and NLP', readTime: '3 min', tags: ['Definition','LLM'] },
+    { id: 'openai-guide', categoryId: 'companies', title: 'OpenAI: Company Guide', readTime: '8 min', tags: ['OpenAI','ChatGPT'] },
+    { id: 'anthropic-guide', categoryId: 'companies', title: 'Anthropic and Claude', readTime: '7 min', tags: ['Anthropic','Claude'] },
+    { id: 'worker-guide', categoryId: 'academy', title: 'Harmonia Worker Guide', readTime: '10 min', tags: ['Worker','Getting Started'] },
+    { id: 'client-guide', categoryId: 'academy', title: 'Harmonia Client Guide', readTime: '8 min', tags: ['Client','Hiring'] },
+    { id: 'pakistan-guide', categoryId: 'countries', title: 'Remote Work in Pakistan', readTime: '7 min', tags: ['Pakistan','Guide'] },
+    { id: 'philippines-guide', categoryId: 'countries', title: 'Remote Work in the Philippines', readTime: '7 min', tags: ['Philippines','Guide'] },
+    { id: 'video-tutorials', categoryId: 'multimedia', title: 'Video Tutorials Library', readTime: '5 min', tags: ['Video','Learning'] },
+    { id: 'podcasts', categoryId: 'multimedia', title: 'AI and Tech Podcasts', readTime: '4 min', tags: ['Audio','Podcasts'] }
+];
+
+// Content generator
+function generateArticleBody(article) {
+    const title = article.title;
+    const catName = categories.find(c => c.id === article.categoryId)?.name || 'General';
+    return `
+        <p>${title} is a comprehensive topic within ${catName}. This guide covers the fundamental concepts, practical applications, and best practices you need to understand to work effectively in this area.</p>
+        
+        <div class="info-box">
+            <div class="info-box-title">Key Takeaway</div>
+            <p>Mastering ${title.toLowerCase()} requires both theoretical understanding and hands-on practice. Start with the fundamentals and gradually move to advanced techniques.</p>
+        </div>
+
+        <h2 id="section-0">What is ${title}?</h2>
+        <p>${title} refers to the set of principles, methodologies, and tools used to achieve specific outcomes in ${catName.toLowerCase()}. Whether you are a beginner or an experienced professional, understanding the core ideas behind ${title.toLowerCase()} is essential for success.</p>
+        <p>The field has evolved rapidly over the past few years. New research, tools, and frameworks continue to reshape how practitioners approach ${title.toLowerCase()}.</p>
+
+        <h2 id="section-1">Why It Matters</h2>
+        <p>In today's digital economy, skills related to ${catName.toLowerCase()} are in high demand. Companies and platforms are actively seeking individuals who can demonstrate competence in ${title.toLowerCase()}.</p>
+        <p>By learning these concepts, you position yourself for better remote work opportunities, higher earnings, and long-term career growth.</p>
+
+        <h2 id="section-2">Core Concepts</h2>
+        <p>Before diving into advanced topics, it is important to build a solid foundation. The core concepts include terminology, standard workflows, and common pitfalls to avoid.</p>
+        <p>Many beginners rush past the basics, only to struggle later. Take time to understand definitions, context, and the "why" behind each technique.</p>
+
+        <h2 id="section-3">Best Practices</h2>
+        <p>Successful practitioners follow established best practices. These include maintaining quality standards, documenting work, staying updated with industry changes, and actively seeking feedback.</p>
+        <p>Consistency is more valuable than intensity. Regular practice and incremental improvement lead to better results than sporadic bursts of effort.</p>
+
+        <h2 id="section-4">Common Mistakes to Avoid</h2>
+        <p>Every field has its share of common errors. In ${title.toLowerCase()}, these often include skipping quality checks, ignoring guidelines, using outdated methods, and failing to verify sources.</p>
+        <p>Being aware of these mistakes early can save you significant time and help you build a reputation for reliability and accuracy.</p>
+
+        <h2 id="section-5">Getting Started</h2>
+        <p>If you are new to this topic, start by reviewing the introductory materials in the Harmonia Learning Center. Practice with small, manageable tasks before taking on larger projects.</p>
+        <p>Join community discussions, ask questions, and learn from experienced workers. The Harmonia platform offers many opportunities to apply these skills in real-world scenarios.</p>
+    `;
+}
+
+function generateTOC(article) {
+    const headings = ['What is ' + article.title + '?', 'Why It Matters', 'Core Concepts', 'Best Practices', 'Common Mistakes to Avoid', 'Getting Started'];
+    return headings.map((h, i) => `<div class="toc-item" onclick="document.getElementById('section-${i}').scrollIntoView({behavior:'smooth'})">${h}</div>`).join('');
+}
+
+// Render Sidebar
+function renderSidebar() {
+    const nav = document.getElementById('sidebarNav');
+    if (!nav) return;
+    nav.innerHTML = navItems.map(item => {
+        const hasChildren = item.children && item.children.length;
+        const activeClass = item.active ? 'active' : '';
+        const arrow = hasChildren ? '<span class="nav-arrow">▶</span>' : '';
+        const clickAction = item.id === 'home' ? 'showHome()' : (hasChildren ? `toggleNav(this)` : `showCategory('${item.id}')`);
+        let html = `<div class="nav-item ${activeClass}" onclick="${clickAction}">
+            <span class="nav-icon"><i class="ti ${item.icon}"></i></span>
+            <span>${item.label}</span>
+            ${arrow}
+        </div>`;
+        if (hasChildren) {
+            html += `<div class="nav-children show">
+                ${item.children.map(child => `<div class="nav-child" onclick="event.stopPropagation(); showCategory('${item.id}')">${child}</div>`).join('')}
+            </div>`;
+        }
+        return html;
+    }).join('');
+}
+
+function toggleNav(el) {
+    el.classList.toggle('expanded');
+    const children = el.nextElementSibling;
+    if (children && children.classList.contains('nav-children')) {
+        children.classList.toggle('show');
+    }
+}
+
+// Render Categories
+function renderCategories() {
+    const grid = document.getElementById('catGrid');
+    if (!grid) return;
+    grid.innerHTML = categories.map(cat => `
+        <div class="cat-card" onclick="showCategory('${cat.id}')" style="cursor:pointer;">
+            <div class="cat-card-header">
+                <span class="cat-card-icon">${cat.icon}</span>
+                <span class="cat-card-title">${cat.name}</span>
+            </div>
+            <div class="cat-card-desc">${cat.desc}</div>
+            <div class="cat-card-meta">
+                ${cat.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateBreadcrumbs(items) {
+    const bc = document.querySelector('.breadcrumbs');
+    if (!bc) return;
+    bc.innerHTML = items.map((item, i) => {
+        if (i === items.length - 1) return `<span>${item.label}</span>`;
+        return `<span onclick="${item.action}" style="cursor:pointer;">${item.label}</span><span class="sep">/</span>`;
+    }).join('');
+}
+
+function showHome() {
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+    main.innerHTML = `
+        <div class="hero">
+            <h1>Learning Center</h1>
+            <p>Free guides on AI, Machine Learning, Data Annotation, Remote Work &amp; Online Earning.</p>
+            <div class="hero-search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" placeholder="Search 3,000+ guides...">
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><div class="stat-value">3,000+</div><div class="stat-label">Guides</div></div>
+                <div class="stat"><div class="stat-value">20</div><div class="stat-label">Categories</div></div>
+                <div class="stat"><div class="stat-value">Free</div><div class="stat-label">Forever</div></div>
+            </div>
+        </div>
+        <div class="section-title">Browse Categories</div>
+        <div class="cat-grid" id="catGrid"></div>
+    `;
+    renderCategories();
+    updateBreadcrumbs([
+        { label: 'Home', action: 'showHome()' },
+        { label: 'Learning Center', action: '' }
+    ]);
+}
+
+function showCategory(catId) {
+    const cat = categories.find(c => c.id === catId);
+    if (!cat) return;
+    const catArticles = articles.filter(a => a.categoryId === catId);
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+    
+    main.innerHTML = `
+        <div class="cat-hero">
+            <div class="cat-hero-header">
+                <span class="cat-hero-icon">${cat.icon}</span>
+                <h2>${cat.name}</h2>
+            </div>
+            <p>${cat.desc}</p>
+            <div class="cat-hero-stats">
+                <div class="cat-hero-stat"><strong>${catArticles.length}</strong> Articles</div>
+                <div class="cat-hero-stat"><strong>${cat.tags.length}</strong> Topics</div>
+            </div>
+        </div>
+        <div class="section-title">Articles</div>
+        <div class="section-grid">
+            <div class="section-card" style="grid-column: 1 / -1;">
+                <h3>All Guides <span>${catArticles.length} articles</span></h3>
+                <div class="article-list">
+                    ${catArticles.map(art => `
+                        <div class="article-link" onclick="showArticle('${art.id}')">
+                            ${art.title}
+                            <span style="margin-left:auto;font-size:11px;color:var(--text-muted);">${art.readTime}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+    updateBreadcrumbs([
+        { label: 'Home', action: 'showHome()' },
+        { label: 'Learning Center', action: 'showHome()' },
+        { label: cat.name, action: '' }
+    ]);
+}
+
+function showArticle(articleId) {
+    const article = articles.find(a => a.id === articleId);
+    if (!article) return;
+    const cat = categories.find(c => c.id === article.categoryId);
+    const main = document.getElementById('mainContent');
+    if (!main) return;
+    
+    const related = articles.filter(a => a.categoryId === article.categoryId && a.id !== articleId).slice(0, 3);
+    
+    main.innerHTML = `
+        <div class="article-header">
+            <div class="article-badges">
+                ${article.tags.map(t => `<span class="article-badge">${t}</span>`).join('')}
+            </div>
+            <h1 class="article-title">${article.title}</h1>
+            <div class="article-meta">
+                <span>${cat ? cat.name : 'General'}</span>
+                <span class="dot"></span>
+                <span>${article.readTime} read</span>
+            </div>
+        </div>
+        <div class="article-layout">
+            <div class="article-body">
+                ${generateArticleBody(article)}
+                <div class="related-section">
+                    <div class="section-title" style="margin-top:0;">Related Articles</div>
+                    <div class="related-grid">
+                        ${related.length ? related.map(r => `
+                            <div class="related-card" onclick="showArticle('${r.id}')">
+                                <h4>${r.title}</h4>
+                                <span>${r.readTime} read</span>
+                            </div>
+                        `).join('') : '<div style="color:var(--text-muted);font-size:13px;">No related articles.</div>'}
+                    </div>
+                </div>
+                <div class="feedback-bar">
+                    <p>Was this article helpful?</p>
+                    <div class="feedback-actions">
+                        <button class="btn btn-sm">👍 Yes</button>
+                        <button class="btn btn-sm">👎 No</button>
+                    </div>
+                </div>
+            </div>
+            <aside class="toc">
+                <div class="toc-title">Table of Contents</div>
+                <div class="toc-list">
+                    ${generateTOC(article)}
+                </div>
+            </aside>
+        </div>
+    `;
+    updateBreadcrumbs([
+        { label: 'Home', action: 'showHome()' },
+        { label: 'Learning Center', action: 'showHome()' },
+        { label: cat ? cat.name : 'General', action: `showCategory('${article.categoryId}')` },
+        { label: article.title, action: '' }
+    ]);
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     renderSidebar();
-    renderCategories();
+    showHome();
 });
 </script>
 </body>
