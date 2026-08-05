@@ -492,6 +492,110 @@
     </main>
 </div>
 
+<script>
+// Data: Sidebar Navigation
+const navItems = [
+    { id: 'home', label: 'Home', icon: 'ti-home', active: true },
+    { id: 'ai', label: 'Artificial Intelligence', icon: 'ti-brain', children: ['Machine Learning', 'Deep Learning', 'Neural Networks', 'Computer Vision', 'NLP', 'AI Agents', 'AI Safety'] },
+    { id: 'llm', label: 'Large Language Models', icon: 'ti-message-chatbot', children: ['How LLMs Work', 'Prompt Engineering', 'RAG', 'Fine-tuning', 'Open Source LLMs'] },
+    { id: 'ai-training', label: 'AI Training', icon: 'ti-target', children: ['RLHF', 'Human Feedback', 'Reward Models', 'Evaluation', 'Safety Review'] },
+    { id: 'data-annotation', label: 'Data Annotation', icon: 'ti-tags', children: ['Image Annotation', 'Video Annotation', 'Text Annotation', 'Quality Control', 'LiDAR'] },
+    { id: 'remote-work', label: 'Remote Work', icon: 'ti-home-2', children: ['Freelancing', 'Time Management', 'Home Office', 'Digital Nomad'] },
+    { id: 'online-earning', label: 'Online Earning', icon: 'ti-coin', children: ['Microtasks', 'Surveys', 'Testing', 'Affiliate Marketing'] },
+    { id: 'technology', label: 'Technology', icon: 'ti-cpu', children: ['Hardware', 'Cloud Computing', 'Networking', 'Git & GitHub'] },
+    { id: 'internet-safety', label: 'Internet Safety', icon: 'ti-shield-lock', children: ['Scams', 'Phishing', 'Passwords', 'VPN'] },
+    { id: 'payments', label: 'Payments & Finance', icon: 'ti-credit-card', children: ['PayPal', 'Payoneer', 'Wise', 'Crypto Payments', 'Taxes'] },
+    { id: 'crypto', label: 'Cryptocurrencies', icon: 'ti-currency-bitcoin', children: ['Bitcoin', 'Ethereum', 'Wallets', 'DeFi', 'Staking'] },
+    { id: 'career', label: 'Career Development', icon: 'ti-rocket', children: ['Resume', 'LinkedIn', 'Interviews', 'Soft Skills'] },
+    { id: 'courses', label: 'Free Courses', icon: 'ti-book', children: ['AI Basics', 'Prompt Engineering', 'Python', 'SQL', 'Excel'] },
+    { id: 'glossary', label: 'Glossary', icon: 'ti-file-text' },
+    { id: 'news', label: 'Industry News', icon: 'ti-news' },
+    { id: 'companies', label: 'Company Guides', icon: 'ti-building' },
+    { id: 'academy', label: 'Harmonia Academy', icon: 'ti-school', children: ['Worker Guide', 'Client Guide', 'Wallet', 'FAQ'] },
+    { id: 'countries', label: 'Country Guides', icon: 'ti-world', children: ['Pakistan', 'Philippines', 'India', 'Nigeria'] },
+    { id: 'downloads', label: 'Downloads', icon: 'ti-download' },
+    { id: 'research', label: 'Research Hub', icon: 'ti-microscope' },
+    { id: 'multimedia', label: 'Multimedia', icon: 'ti-video' }
+];
+
+// Data: Category Cards
+const categories = [
+    { id: 'ai', name: 'Artificial Intelligence', icon: '🤖', desc: 'History, types, machine learning, deep learning, neural networks, computer vision, NLP, robotics, agents, safety & ethics.', tags: ['Machine Learning', 'Deep Learning', 'NLP'] },
+    { id: 'llm', name: 'Large Language Models', icon: '💬', desc: 'How LLMs work, tokens, context windows, embeddings, RAG, prompt engineering, fine-tuning, LoRA, quantization.', tags: ['Prompt Engineering', 'RAG', 'Fine-tuning'] },
+    { id: 'ai-training', name: 'AI Training', icon: '🎯', desc: 'RLHF, reinforcement learning, human feedback, reward models, evaluation, safety review, quality assurance.', tags: ['RLHF', 'Evaluation', 'QA'] },
+    { id: 'data-annotation', name: 'Data Annotation', icon: '🏷️', desc: 'Image, video, audio, text annotation. Bounding boxes, segmentation, LiDAR, medical, quality control.', tags: ['Bounding Boxes', 'Segmentation', 'LiDAR'] },
+    { id: 'remote-work', name: 'Remote Work', icon: '🏠', desc: 'Work from home tips, freelancing, time management, productivity, digital nomad guides, home office setup.', tags: ['Freelancing', 'Productivity', 'Nomad'] },
+    { id: 'online-earning', name: 'Online Earning', icon: '💰', desc: 'Data annotation jobs, search evaluation, surveys, testing, transcription, affiliate marketing, microtasks.', tags: ['Microtasks', 'Surveys', 'Testing'] },
+    { id: 'technology', name: 'Technology', icon: '💻', desc: 'CPUs, GPUs, cloud computing, APIs, databases, SQL, Linux, networking, DNS, CDN, Git, GitHub.', tags: ['Hardware', 'Cloud', 'Networking'] },
+    { id: 'internet-safety', name: 'Internet Safety', icon: '🔒', desc: 'Scams, phishing, malware, fake jobs, password security, 2FA, VPNs, identity theft protection.', tags: ['Scams', 'Phishing', 'VPN'] },
+    { id: 'payments', name: 'Payments & Finance', icon: '💳', desc: 'PayPal, Payoneer, Wise, GCash, Binance Pay, USDT, bank transfers, taxes, exchange rates.', tags: ['PayPal', 'Crypto', 'Taxes'] },
+    { id: 'crypto', name: 'Cryptocurrencies', icon: '₿', desc: 'Bitcoin, Ethereum, blockchain, wallets, staking, mining, DeFi, NFTs, Layer 2 networks.', tags: ['Bitcoin', 'DeFi', 'Wallets'] },
+    { id: 'career', name: 'Career Development', icon: '🚀', desc: 'Resume writing, LinkedIn optimization, interview prep, soft skills, leadership, negotiation.', tags: ['Resume', 'LinkedIn', 'Interviews'] },
+    { id: 'courses', name: 'Free Courses', icon: '📚', desc: 'AI basics, prompt engineering, Excel, Google Sheets, Python, SQL, remote work fundamentals.', tags: ['Python', 'Excel', 'SQL'] },
+    { id: 'glossary', name: 'Glossary', icon: '📖', desc: 'Full AI & tech glossary. API, JSON, REST, RLHF, OCR, token, embedding, GPU, CPU, dataset.', tags: ['Terms', 'Definitions'] },
+    { id: 'news', name: 'Industry News', icon: '📰', desc: 'Daily updates on OpenAI, Anthropic, Google, Microsoft, Meta, NVIDIA, Amazon, Apple.', tags: ['OpenAI', 'Google', 'NVIDIA'] },
+    { id: 'companies', name: 'Company Guides', icon: '🏢', desc: 'Detailed guides for major AI companies and platforms in the industry.', tags: ['Guides', 'Reviews'] },
+    { id: 'academy', name: 'Harmonia Academy', icon: '🎓', desc: 'Worker guides, client guides, wallet, payments, referrals, dashboard, levels, badges, FAQs.', tags: ['Worker', 'Client', 'FAQ'] },
+    { id: 'downloads', name: 'Downloads', icon: '⬇️', desc: 'Templates, checklists, cheat sheets, and resources for remote workers and AI practitioners.', tags: ['Templates', 'Checklists'] },
+    { id: 'research', name: 'Research Hub', icon: '🔬', desc: 'AI research papers explained, transformer models, diffusion models, constitutional AI.', tags: ['Papers', 'Models'] },
+    { id: 'countries', name: 'Country Guides', icon: '🌍', desc: 'Remote work and earning guides tailored for Pakistan, Philippines, India, Nigeria, and more.', tags: ['Pakistan', 'India', 'Philippines'] },
+    { id: 'multimedia', name: 'Multimedia', icon: '🎬', desc: 'Video tutorials, podcasts, webinars, and interactive learning content.', tags: ['Video', 'Audio', 'Webinars'] }
+];
+
+// Render Sidebar
+function renderSidebar() {
+    const nav = document.getElementById('sidebarNav');
+    if (!nav) return;
+    nav.innerHTML = navItems.map(item => {
+        const hasChildren = item.children && item.children.length;
+        const activeClass = item.active ? 'active' : '';
+        const arrow = hasChildren ? '<span class="nav-arrow">▶</span>' : '';
+        let html = `<div class="nav-item ${activeClass}" onclick="${hasChildren ? 'toggleNav(this)' : ''}">
+            <span class="nav-icon"><i class="ti ${item.icon}"></i></span>
+            <span>${item.label}</span>
+            ${arrow}
+        </div>`;
+        if (hasChildren) {
+            html += `<div class="nav-children show">
+                ${item.children.map(child => `<div class="nav-child">${child}</div>`).join('')}
+            </div>`;
+        }
+        return html;
+    }).join('');
+}
+
+function toggleNav(el) {
+    el.classList.toggle('expanded');
+    const children = el.nextElementSibling;
+    if (children && children.classList.contains('nav-children')) {
+        children.classList.toggle('show');
+    }
+}
+
+// Render Categories
+function renderCategories() {
+    const grid = document.getElementById('catGrid');
+    if (!grid) return;
+    grid.innerHTML = categories.map(cat => `
+        <div class="cat-card" onclick="location.href='#${cat.id}'">
+            <div class="cat-card-header">
+                <span class="cat-card-icon">${cat.icon}</span>
+                <span class="cat-card-title">${cat.name}</span>
+            </div>
+            <div class="cat-card-desc">${cat.desc}</div>
+            <div class="cat-card-meta">
+                ${cat.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    renderSidebar();
+    renderCategories();
+});
+</script>
 </body>
 </html>
 
