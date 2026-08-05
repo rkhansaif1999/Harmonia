@@ -457,6 +457,45 @@
     </aside>
 
     <main class="main">
+        <div class="topbar">
+            <div class="breadcrumbs">
+                <span onclick="window.location.href='/'">Home</span>
+                <span class="sep">/</span>
+                <span>Learning Center</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-ghost">Share</button>
+                <button class="btn btn-primary">Get Started</button>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent">
+            <div class="hero">
+                <h1>Learning Center</h1>
+                <p>Free guides on AI, Machine Learning, Data Annotation, Remote Work &amp; Online Earning.</p>
+                <div class="hero-search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" placeholder="Search 3,000+ guides...">
+                </div>
+                <div class="hero-stats">
+                    <div class="stat"><div class="stat-value">3,000+</div><div class="stat-label">Guides</div></div>
+                    <div class="stat"><div class="stat-value">20</div><div class="stat-label">Categories</div></div>
+                    <div class="stat"><div class="stat-value">Free</div><div class="stat-label">Forever</div></div>
+                </div>
+            </div>
+
+            <div class="section-title">Browse Categories</div>
+            <div class="cat-grid" id="catGrid">
+                <!-- Categories populated by JS -->
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>
+
+    <main class="main">
         <header class="topbar">
         <div class="breadcrumbs" id="breadcrumbs">
             <span onclick="goHome()">Home</span>
