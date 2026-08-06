@@ -315,7 +315,8 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .method-tile{
     position:relative;
     display:flex;flex-direction:column;align-items:center;gap:8px;
-    cursor:pointer;padding-top:6px;transition:all .2s ease;
+    cursor:pointer;padding-top:6px;
+    transition: background-color .25s ease, border-color .25s ease;
 }
 .method-tile.expanded{
     grid-column: 1 / -1;
@@ -336,6 +337,11 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 }
 .method-tile.expanded .payout-edit-card{
     flex:1;min-width:0;border:none;padding:0;background:transparent;box-shadow:none;
+    animation: premiumDrop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes premiumDrop {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 .method-tile-square{
     width:100%;aspect-ratio:1/1;border-radius:18px;
