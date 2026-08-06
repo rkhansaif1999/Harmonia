@@ -91,11 +91,11 @@
     <priority>0.3</priority>
   </url>
 
-  <!-- TEMP: a-ads verification page. Remove this entry once a-ads has
-       verified units 2450888/2450890 and ad-partners.html is deleted. -->
+  <!-- Permanent utility page for a-ads.com ad-unit verification. See
+       the comment at the top of ad-partners.html for how it's used. -->
   <url>
     <loc>https://harmoniaportal.online/ad-partners.html</loc>
-    <changefreq>never</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.1</priority>
   </url>
 

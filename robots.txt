@@ -32,12 +32,12 @@ Allow: /learning-center.html
 Allow: /trust-safety.html
 Allow: /disclaimer.html
 
-# TEMP — a-ads.com verification staging page. worker-dashboard.html is
-# already Allow-listed below, but a-ads' own bot can't get past our
-# client-side login gate to actually see the ad code there, so support
-# asked us to also run the exact same ad units on a public page for
-# verification. Remove this line once a-ads verifies units
-# 2450888/2450890 and ad-partners.html is deleted.
+# Permanent utility page — a-ads.com ad-unit verification. Any ad unit
+# living inside a login-gated page (like worker-dashboard.html) can't
+# be crawled by a-ads' verification bot there, since the bot can't log
+# in. This public page mirrors gated ad units so they can be verified,
+# and is kept around for reuse whenever a future unit needs the same
+# treatment. See the comment at the top of ad-partners.html.
 Allow: /ad-partners.html
 
 # Logged-in-only dashboards — kept out of search results via each page's

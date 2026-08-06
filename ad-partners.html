@@ -25,26 +25,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!--
-    TEMPORARY PAGE — a-ads.com verification staging.
+    PERMANENT UTILITY PAGE — a-ads.com ad-unit verification.
 
-    Why this page exists: a-ads.com support said their verification bot
-    can't crawl worker-dashboard.html because that page sits behind our
-    login gate (see script.js -> protectPage()). They asked us to place
-    the exact same ad unit code on any public page, let their bot verify
-    it there, then move the code back into worker-dashboard.html only.
+    Why this page exists: any ad unit that lives inside a login-gated
+    page (like worker-dashboard.html, behind script.js -> protectPage())
+    can't be verified by a-ads.com's bot, because the bot can't log in
+    and just hits the redirect to login.html instead. a-ads support's
+    fix is to have the exact same ad unit's <iframe> code sitting on
+    some public, unauthenticated page they CAN crawl.
 
-    The <iframe data-aa='...'> blocks below are copy-pasted verbatim
-    from worker-dashboard.html — don't edit the ad unit IDs.
+    So this page is kept around on purpose as that public page, for
+    reuse any time a new gated ad unit needs verifying:
 
-    Once a-ads.com marks units 2450890 and 2450888 as verified:
-      1. Delete this file (or blank it out).
-      2. Remove its <url> entry from sitemap.xml.
-      3. Remove its "Allow:" line from robots.txt.
-      4. Remove the temporary footer link added to every page (search
-         for "TEMP: a-ads verification link" across the site).
-    The ad code in worker-dashboard.html itself was never touched, so
-    there's nothing to "move back" — it's been running there the whole
-    time.
+      1. Copy the new unit's <iframe data-aa='...'> block (verbatim,
+         same ID) from wherever it actually lives into the
+         .ad-showcase section below, alongside whatever's already here.
+      2. In the a-ads dashboard, point that unit's verification URL at
+         https://harmoniaportal.online/ad-partners.html
+      3. Once a-ads marks it verified, you can leave the block here
+         (harmless) or remove it — either way, the "real" copy of the
+         ad code in its actual gated page was never touched by any of
+         this, so there's nothing to move back.
+
+    Units currently listed here for reference: 2450888, 2450890
+    (both live in worker-dashboard.html).
   -->
   <meta name="robots" content="noindex, follow">
 
@@ -122,6 +126,19 @@
       </div>
       <!-- END AADS AD UNIT 2450890 -->
     </div>
+
+    <!--
+      Add future ad units here for verification, e.g.:
+
+      <div class="ad-container">
+        <!- BEGIN AADS AD UNIT xxxxxxx ->
+        <div id="frame-xxxxxxx" style="width: WIDTHpx;margin: auto;z-index: 99998;height: auto">
+          <iframe data-aa='xxxxxxx' src='//ad.a-ads.com/xxxxxxx/?size=WIDTHxHEIGHT'
+                  style='border:0; padding:0; width:WIDTHpx; height:HEIGHTpx; overflow:hidden;display: block;margin: auto'></iframe>
+        </div>
+        <!- END AADS AD UNIT xxxxxxx ->
+      </div>
+    -->
   </section>
 
 </main>
