@@ -265,8 +265,18 @@
 
         .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); font-weight: 600; margin: 40px 0 16px; }
         .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        /* .nav-item, .nav-child, .cat-card, .article-link, .platform-card,
+           .std-card and .article-row are now rendered as real <a> tags
+           (for crawlable, SEO-friendly links) instead of <div>/<span> —
+           this resets the browser's default link underline/color so they
+           still look exactly like the original cards. Each class's own
+           `display` rule (flex/block, set right where the class itself is
+           defined) is left untouched. */
+        .nav-item, .nav-child, .cat-card, .article-link, .platform-card,
+        .std-card, .article-row { text-decoration: none; }
+
         .cat-card {
-        background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
+        display: block; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;
         cursor: pointer; transition: all 0.2s; box-shadow: var(--shadow-sm);
         }
         .cat-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--border-strong); }
@@ -319,7 +329,7 @@
         .article-link:hover::before { background: var(--accent); }
 
         .platform-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .platform-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .platform-card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
         .platform-card:hover { box-shadow: var(--shadow); border-color: var(--border-strong); transform: translateY(-1px); }
         .platform-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
         .platform-card span { font-size: 11px; color: var(--text-muted); }
@@ -371,7 +381,7 @@
         /* COURSE / GLOSSARY / COMPANY CARDS */
         .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .card-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .std-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all 0.2s; }
+        .std-card { display: block; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; cursor: pointer; transition: all 0.2s; }
         .std-card:hover { box-shadow: var(--shadow); border-color: var(--border-strong); }
         .std-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
         .std-card p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
@@ -459,7 +469,7 @@
     <main class="main">
         <header class="topbar">
         <div class="breadcrumbs" id="breadcrumbs">
-            <span onclick="goHome()">Home</span>
+            <a href="learning-center.html" onclick="return typeof goHome==='function' ? (function(e){e.preventDefault();goHome();return false;})(event) : true">Home</a>
         </div>
         <div class="topbar-actions">
             <button class="btn btn-sm btn-ghost">Submit Feedback</button>
@@ -650,6 +660,32 @@
     }
 
     // ==========================================
+    // REAL, CRAWLABLE LINKS
+    // Every category/article "card" used to be a plain <div onclick=...>,
+    // which is invisible to search engines — crawlers discover new URLs by
+    // following <a href> links, not by executing click handlers. These
+    // helpers build the real deep-link URL for a category/article and a
+    // click handler that still gives logged-out visitors an instant SPA
+    // transition (via preventDefault) instead of a full page reload.
+    // ==========================================
+    function categoryHref(key) {
+    return `${SITE_BASE}?c=${encodeURIComponent(key)}`;
+    }
+    function articleHref(key, title) {
+    return `${SITE_BASE}?c=${encodeURIComponent(key)}&a=${encodeURIComponent(slugify(title))}`;
+    }
+    function navCategory(e, key) {
+    if (e) e.preventDefault();
+    showCategory(key);
+    return false;
+    }
+    function navArticle(e, key, title) {
+    if (e) e.preventDefault();
+    showArticle(key, title);
+    return false;
+    }
+
+    // ==========================================
     // AD SLOTS (Google AdSense — manual ad units)
     // adSlotHTML() renders a fresh <ins class="adsbygoogle"> element every time a
     // view is rendered (because we always set #mainContent.innerHTML wholesale).
@@ -686,10 +722,11 @@
     const nav = document.getElementById('sidebarNav');
     nav.innerHTML = '';
     Object.entries(data).forEach(([key, cat]) => {
-        const item = document.createElement('div');
+        const item = document.createElement('a');
+        item.href = categoryHref(key);
         item.className = 'nav-item' + (currentCategory === key ? ' active' : '');
         item.innerHTML = `<span class="nav-icon">${cat.icon}</span><span>${cat.title}</span><span class="nav-arrow">▸</span>`;
-        item.onclick = () => { toggleNav(key); showCategory(key); };
+        item.addEventListener('click', (e) => { e.preventDefault(); toggleNav(key); showCategory(key); });
         nav.appendChild(item);
 
         const children = document.createElement('div');
@@ -697,27 +734,31 @@
         children.id = 'nav-' + key;
         if (cat.sections) {
         cat.sections.forEach(sec => {
-            const child = document.createElement('span');
+            const child = document.createElement('a');
+            child.href = categoryHref(key);
             child.className = 'nav-child';
             child.textContent = sec.title;
-            child.onclick = (e) => { e.stopPropagation(); showCategory(key); };
+            child.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); showCategory(key); });
             children.appendChild(child);
         });
         }
         if (cat.items) {
         cat.items.slice(0, 5).forEach(it => {
-            const child = document.createElement('span');
+            const name = it.name || it.term;
+            const child = document.createElement('a');
+            child.href = articleHref(key, name);
             child.className = 'nav-child';
-            child.textContent = it.name || it.term;
-            child.onclick = (e) => { e.stopPropagation(); showArticle(key, it.name || it.term); };
+            child.textContent = name;
+            child.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); showArticle(key, name); });
             children.appendChild(child);
         });
         if (cat.items.length > 5) {
-            const more = document.createElement('span');
+            const more = document.createElement('a');
+            more.href = categoryHref(key);
             more.className = 'nav-child';
             more.style.fontStyle = 'italic';
             more.textContent = `+${cat.items.length - 5} more...`;
-            more.onclick = (e) => { e.stopPropagation(); showCategory(key); };
+            more.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); showCategory(key); });
             children.appendChild(more);
         }
         }
@@ -732,11 +773,11 @@
 
     function updateBreadcrumbs(path) {
     const bc = document.getElementById('breadcrumbs');
-    let html = `<span onclick="goHome()">Home</span>`;
+    let html = `<a href="${SITE_BASE}" onclick="return (function(e){e.preventDefault();goHome();return false;})(event)">Home</a>`;
     path.forEach((p, i) => {
         html += ` <span class="sep">/</span> `;
         if (i === path.length - 1) html += `<span style="color:var(--text-primary);font-weight:500">${p.label}</span>`;
-        else html += `<span onclick="${p.action}">${p.label}</span>`;
+        else html += `<a href="${p.href || SITE_BASE}" onclick="${p.action ? `return (function(e){e.preventDefault();${p.action};return false;})(event)` : ''}">${p.label}</a>`;
     });
     bc.innerHTML = html;
     }
@@ -753,7 +794,7 @@
     currentView = 'category'; currentCategory = key; currentArticle = null;
     renderSidebar();
     const cat = data[key];
-    updateBreadcrumbs([{ label: cat.title, action: `showCategory('${key}')` }]);
+    updateBreadcrumbs([{ label: cat.title, action: `showCategory('${key}')`, href: categoryHref(key) }]);
 
     let sectionsHtml = '';
     if (cat.sections) {
@@ -761,7 +802,7 @@
         <div class="section-card">
             <h3>${sec.title} <span>${sec.articles.length} articles</span></h3>
             <div class="article-list">
-            ${sec.articles.map(a => `<div class="article-link" onclick="showArticle('${key}', '${a.replace(/'/g, "\\'")}')">${a}</div>`).join('')}
+            ${sec.articles.map(a => `<a class="article-link" href="${articleHref(key, a)}" onclick="return navArticle(event,'${key}','${a.replace(/'/g, "\\'")}')">${a}</a>`).join('')}
             </div>
         </div>
         `).join('') + `</div>`;
@@ -774,49 +815,49 @@
         cat.sections.filter(sec => sec.items).forEach(sec => {
         specialHtml += `<div class="section-title">${sec.title}</div><div class="platform-grid">` +
             sec.items.map(p => `
-            <div class="platform-card" onclick="showArticle('${key}', '${(p.name || p.term).replace(/'/g, "\\'")}')">
+            <a class="platform-card" href="${articleHref(key, p.name || p.term)}" onclick="return navArticle(event,'${key}','${(p.name || p.term).replace(/'/g, "\\'")}')">
                 <h4>${p.name || p.term}</h4>
                 <span>${p.desc || p.def || ''}</span>
-            </div>
+            </a>
             `).join('') + `</div>`;
         });
     }
     if (cat.type === 'platforms') {
         specialHtml = `<div class="section-title">Platform Guides</div><div class="platform-grid">` +
         cat.items.map(p => `
-            <div class="platform-card" onclick="showArticle('${key}', '${p.name.replace(/'/g, "\\'")}')">
+            <a class="platform-card" href="${articleHref(key, p.name)}" onclick="return navArticle(event,'${key}','${p.name.replace(/'/g, "\\'")}')">
             <h4>${p.name}</h4>
             <span>${p.desc}</span>
-            </div>
+            </a>
         `).join('') + `</div>`;
     }
     if (cat.type === 'courses') {
         specialHtml = `<div class="section-title">Available Courses</div><div class="card-grid-3">` +
         cat.items.map(c => `
-            <div class="std-card" onclick="showArticle('${key}', '${c.name.replace(/'/g, "\\'")}')">
+            <a class="std-card" href="${articleHref(key, c.name)}" onclick="return navArticle(event,'${key}','${c.name.replace(/'/g, "\\'")}')">
             <h4>${c.name}</h4>
             <p>${c.desc}</p>
             <div class="meta"><span>${c.lessons} lessons</span><span>Beginner</span></div>
             <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
-            </div>
+            </a>
         `).join('') + `</div>`;
     }
     if (cat.type === 'glossary') {
         specialHtml = `<div class="section-title">Popular Terms</div><div class="card-grid-4">` +
         cat.items.map(g => `
-            <div class="std-card" onclick="showArticle('${key}', '${g.term.replace(/'/g, "\\'")}')">
+            <a class="std-card" href="${articleHref(key, g.term)}" onclick="return navArticle(event,'${key}','${g.term.replace(/'/g, "\\'")}')">
             <h4>${g.term}</h4>
             <p>${g.def}</p>
-            </div>
+            </a>
         `).join('') + `</div>`;
     }
     if (cat.type === 'companies') {
         specialHtml = `<div class="section-title">Company Profiles</div><div class="card-grid-3">` +
         cat.items.map(c => `
-            <div class="std-card" onclick="showArticle('${key}', '${c.name.replace(/'/g, "\\'")}')">
+            <a class="std-card" href="${articleHref(key, c.name)}" onclick="return navArticle(event,'${key}','${c.name.replace(/'/g, "\\'")}')">
             <h4>${c.name}</h4>
             <div class="meta">${c.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            </div>
+            </a>
         `).join('') + `</div>`;
     }
     if (cat.type === 'downloads') {
@@ -831,10 +872,10 @@
     if (cat.type === 'countries') {
         specialHtml = `<div class="section-title">Country Guides</div><div class="card-grid-3">` +
         cat.items.map(c => `
-            <div class="std-card" onclick="showArticle('${key}', '${c.name.replace(/'/g, "\\'")}')">
+            <a class="std-card" href="${articleHref(key, c.name)}" onclick="return navArticle(event,'${key}','${c.name.replace(/'/g, "\\'")}')">
             <h4>${c.name}</h4>
             <div class="meta">${c.topics.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-            </div>
+            </a>
         `).join('') + `</div>`;
     }
     if (cat.type === 'stories') {
@@ -882,101 +923,12 @@
     activateAds();
     }
 
-    function showArticle(key, title, push = true) {
-    currentView = 'article'; currentCategory = key; currentArticle = title;
-    renderSidebar();
-    const cat = data[key];
-    updateBreadcrumbs([
-        { label: cat.title, action: `showCategory('${key}')` },
-        { label: title, action: `showArticle('${key}', '${title.replace(/'/g, "\\'")}')` }
-    ]);
-
-    const content = articleContents[title];
-
-    // FALLBACK: If no specific content exists, generate a meaningful placeholder
-    const bodyHtml = content ? content : `
-        <div class="info-box">
-        <div class="info-box-title">Coming Soon</div>
-        <p>This article is part of our <strong>${cat.title}</strong> collection and is currently being prepared by our editorial team. Check back soon for the full guide.</p>
-        </div>
-        <h2>About "${title}"</h2>
-        <p>${cat.desc}</p>
-        <p>This guide will cover everything you need to know about <strong>${title}</strong> — including practical tips, real-world examples, and actionable strategies you can apply immediately.</p>
-
-        <div class="placeholder-block">
-        <div class="placeholder-block-title"></div>
-        <div class="placeholder-block-line" style="width:90%"></div>
-        <div class="placeholder-block-line" style="width:100%"></div>
-        <div class="placeholder-block-line" style="width:85%"></div>
-        <div class="placeholder-block-line" style="width:95%"></div>
-        <div class="placeholder-block-line" style="width:70%"></div>
-        </div>
-
-        <div class="placeholder-block">
-        <div class="placeholder-block-title"></div>
-        <div class="placeholder-block-line" style="width:100%"></div>
-        <div class="placeholder-block-line" style="width:92%"></div>
-        <div class="placeholder-block-line" style="width:98%"></div>
-        <div class="placeholder-block-line" style="width:80%"></div>
-        </div>
-
-        <div class="info-box">
-        <div class="info-box-title">Explore More</div>
-        <p>Browse the full <strong>${cat.title}</strong> category for ${cat.count} of related articles and resources.</p>
-        </div>
-    `;
-
-    document.getElementById('mainContent').innerHTML = `
-        <div class="article-header">
-        <div class="article-badges">
-            <span class="article-badge">${cat.icon} ${cat.title}</span>
-            <span class="article-badge">Updated August 2026</span>
-            <span class="article-badge">5 min read</span>
-        </div>
-        <h1 class="article-title">${title}</h1>
-        <div class="article-meta">
-            <span>By Harmonia Editorial Team</span>
-            <span class="dot"></span>
-            <span>Reviewed by Experts</span>
-            <span class="dot"></span>
-            <span>Harmonia Learning Center</span>
-        </div>
-        </div>
-        ${adSlotHTML('article-top')}
-        <div class="article-layout">
-        <div class="article-body">
-            ${bodyHtml}
-            <div class="feedback-bar">
-            <p>Was this article helpful?</p>
-            <div class="feedback-actions">
-                <button class="btn btn-sm">👍 Yes</button>
-                <button class="btn btn-sm">👎 No</button>
-            </div>
-            </div>
-        </div>
-        <aside class="toc">
-            <div class="toc-title">Table of Contents</div>
-            <div class="toc-list">
-            <div class="toc-item active">Overview</div>
-            <div class="toc-item">Key Concepts</div>
-            <div class="toc-item">Applications</div>
-            <div class="toc-item">Summary</div>
-            </div>
-            ${adSlotHTML('article-sidebar', true)}
-        </aside>
-        </div>
-    `;
-
-    const slug = slugify(title);
-    const url = push ? pushUrl({ c: key, a: slug }) : `${SITE_BASE}?c=${encodeURIComponent(key)}&a=${encodeURIComponent(slug)}`;
-    setMeta(
-        `${title} — ${cat.title} | Harmonia Learning Center`,
-        `Learn about ${title} in Harmonia's free Learning Center. ${cat.desc}`,
-        url
-    );
-    window.scrollTo(0, 0);
-    activateAds();
-    }
+    // NOTE: showArticle() used to be defined here a second time. In JS, a
+    // later `function showArticle(...)` declaration in the same scope
+    // silently replaces an earlier one — so this copy never actually ran;
+    // every real click was already being handled by the other showArticle()
+    // definition further down (next to articleContents). Removed to avoid
+    // confusion; see that definition below for the live implementation.
 
     const articleContents = {
     // ==========================================
@@ -4945,17 +4897,18 @@
     };
     function showArticle(catKey, articleTitle, push = true) {
     currentView = 'article'; currentArticle = articleTitle; currentCategory = catKey;
+    renderSidebar();
     const cat = data[catKey];
     updateBreadcrumbs([
-        { label: cat.title, action: `showCategory('${catKey}')` },
+        { label: cat.title, action: `showCategory('${catKey}')`, href: categoryHref(catKey) },
         { label: articleTitle, action: '' }
     ]);
 
     // Check if we have rich content for this article, otherwise use placeholder
     const articleContent = articleContents[articleTitle] || `
         <div class="info-box">
-        <div class="info-box-title">Content Placeholder</div>
-        <p>This article is a template. Replace this section with your actual content. The structure below demonstrates the recommended layout for all Harmonia Learning Center articles.</p>
+        <div class="info-box-title">Coming Soon</div>
+        <p>This article is part of our <strong>${cat.title}</strong> collection and is currently being prepared by our editorial team. Check back soon for the full guide.</p>
         </div>
         
         <h2>Overview</h2>
@@ -5113,7 +5066,7 @@
         <div class="section-title">Explore by Category</div>
         <div class="cat-grid">
         ${cats.map(([key, cat]) => `
-            <div class="cat-card" onclick="showCategory('${key}')">
+            <a class="cat-card" href="${categoryHref(key)}" onclick="return navCategory(event,'${key}')">
             <div class="cat-card-header">
                 <span class="cat-card-icon">${cat.icon}</span>
                 <span class="cat-card-title">${cat.title}</span>
@@ -5123,48 +5076,48 @@
                 <span class="tag accent">${cat.count}</span>
                 ${cat.sections ? cat.sections.slice(0,2).map(s => `<span class="tag">${s.title}</span>`).join('') : ''}
             </div>
-            </div>
+            </a>
         `).join('')}
         </div>
         
         <div class="featured">
         <div class="panel">
             <div class="panel-title">Trending & New</div>
-            <div class="article-row" onclick="showArticle('training','RLHF')">
+            <a class="article-row" href="${articleHref('training','RLHF')}" onclick="return navArticle(event,'training','RLHF')">
             <span class="art-num">01</span>
             <div>
                 <div class="art-title">What is RLHF? A complete beginner's guide</div>
                 <div class="art-meta">AI Training · 8 min read <span class="badge badge-hot">🔥 Hot</span></div>
             </div>
-            </div>
-            <div class="article-row" onclick="showArticle('earning','Outlier')">
+            </a>
+            <a class="article-row" href="${articleHref('earning','Outlier')}" onclick="return navArticle(event,'earning','Outlier')">
             <span class="art-num">02</span>
             <div>
                 <div class="art-title">Outlier vs. Remotasks: which pays more in 2026?</div>
                 <div class="art-meta">Platform Guides · 6 min read <span class="badge badge-new">New</span></div>
             </div>
-            </div>
-            <div class="article-row" onclick="showArticle('payments','GCash')">
+            </a>
+            <a class="article-row" href="${articleHref('payments','GCash')}" onclick="return navArticle(event,'payments','GCash')">
             <span class="art-num">03</span>
             <div>
                 <div class="art-title">How to receive payments via GCash as a freelancer</div>
                 <div class="art-meta">Country Guides · Philippines · 5 min read</div>
             </div>
-            </div>
-            <div class="article-row" onclick="showArticle('llm','Context Window')">
+            </a>
+            <a class="article-row" href="${articleHref('llm','Context Window')}" onclick="return navArticle(event,'llm','Context Window')">
             <span class="art-num">04</span>
             <div>
                 <div class="art-title">Understanding context windows in large language models</div>
                 <div class="art-meta">LLMs · 10 min read <span class="badge badge-new">New</span></div>
             </div>
-            </div>
-            <div class="article-row" onclick="showArticle('annotation','Bounding Boxes')">
+            </a>
+            <a class="article-row" href="${articleHref('annotation','Bounding Boxes')}" onclick="return navArticle(event,'annotation','Bounding Boxes')">
             <span class="art-num">05</span>
             <div>
                 <div class="art-title">Image annotation best practices for computer vision tasks</div>
                 <div class="art-meta">Data Annotation · 7 min read <span class="badge badge-updated">Updated</span></div>
             </div>
-            </div>
+            </a>
         </div>
         
         <div class="panel">
@@ -5178,7 +5131,7 @@
                 <span>AI Trainer · Quezon City, Philippines</span>
             </div>
             </div>
-            <button class="btn" style="width:100%;margin-top:14px" onclick="showCategory('stories')">Read all stories ↗</button>
+            <a class="btn" style="width:100%;margin-top:14px;display:block;text-align:center;text-decoration:none;box-sizing:border-box" href="${categoryHref('stories')}" onclick="return navCategory(event,'stories')">Read all stories ↗</a>
         </div>
         </div>
     `;

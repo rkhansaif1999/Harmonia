@@ -65,3 +65,4 @@ Allow: /reviewer-dashboard.html
 Allow: /payment-confirm.html
 
 Sitemap: https://harmoniaportal.online/sitemap.xml
+Sitemap: https://harmoniaportal.online/learning-center-sitemap.xml
