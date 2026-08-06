@@ -128,10 +128,7 @@ button:hover{transform:none;}
 .side-item .ic{font-size:1.05rem;width:20px;text-align:center;}
 .side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
 .sidebar-bottom{margin-top:auto;padding-top:16px;}
-.sidebar-user-card{background:var(--sidebar-card) !important;border:1px solid var(--sidebar-border) !important;border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;}
-.sidebar-user-card .av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--purple));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex:0 0 auto;}
-.sidebar-user-card .nm{font-weight:700;font-size:.85rem;color:var(--sidebar-text-bright) !important;}
-.sidebar-user-card .rl{font-size:.75rem;color:var(--sidebar-text) !important;text-transform:capitalize;}
+
 
 /* ---------- Main / topbar ---------- */
 .main{
@@ -520,13 +517,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         </ul>
 
         <div class="sidebar-bottom">
-            <div class="sidebar-user-card">
-                <div class="av" id="sideAvatar">W</div>
-                <div>
-                    <div class="nm" id="sideName">Worker</div>
-                    <div class="rl" id="sideRole">worker</div>
-                </div>
-            </div>
+
             <ul style="margin-top:10px;">
                 <li><button class="side-item" data-tab="settings"><span class="ic">⚙️</span> Settings</button></li>
                 <li><a href="login.html" onclick="logout()" class="side-item"><span class="ic">🚪</span> Logout</a></li>
@@ -1147,15 +1138,7 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
 })();
 
 /* ---------------- Sidebar user card ---------------- */
-(function paintSidebarUser() {
-    const user = getUser();
-    if (!user) return;
-    const initials = (user.fullName || user.role || "W").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
-    document.getElementById("sideAvatar").textContent = initials;
-    document.getElementById("sideName").textContent = user.fullName || "Worker";
-    document.getElementById("sideRole").textContent = user.role;
-    document.getElementById("welcomeHeading").textContent = "Welcome back, " + (user.fullName ? user.fullName.split(" ")[0] : "Worker") + " 👋";
-})();
+
 
 /* ==========================================================
    EARNINGS CHART
