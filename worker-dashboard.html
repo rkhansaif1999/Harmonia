@@ -311,11 +311,31 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 /* Premium Square Tiles */
 .method-region-label{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:22px 0 12px;}
 .method-region-label:first-child{margin-top:0;}
-.method-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:18px;}
+.method-tile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:18px;align-items:start;}
 .method-tile{
     position:relative;
     display:flex;flex-direction:column;align-items:center;gap:8px;
-    cursor:pointer;padding-top:6px;
+    cursor:pointer;padding-top:6px;transition:all .2s ease;
+}
+.method-tile.expanded{
+    grid-column: 1 / -1;
+    flex-direction:row;
+    align-items:flex-start;
+    gap:24px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+.method-tile.expanded .method-tile-square{
+    width:60px;height:60px;flex-shrink:0;
+}
+.method-tile.expanded .method-tile-label{
+    display:none;
+}
+.method-tile.expanded .payout-edit-card{
+    flex:1;min-width:0;border:none;padding:0;background:transparent;box-shadow:none;
 }
 .method-tile-square{
     width:100%;aspect-ratio:1/1;border-radius:18px;
@@ -326,6 +346,14 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 }
 .method-tile:hover .method-tile-square{transform:translateY(-4px);border-color:var(--primary);box-shadow:0 8px 20px rgba(59,130,246,.2);}
 .method-tile.active .method-tile-square{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft);}
+
+@media (max-width: 900px) {
+    .method-tile.expanded {
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px;
+    }
+}
 .method-tile-square img{width:60%;height:60%;object-fit:contain;}
 .method-tile-label{font-size:.8rem;font-weight:600;color:var(--muted);text-align:center;line-height:1.2;transition:color .2s ease;}
 .method-tile:hover .method-tile-label{color:var(--text);}
@@ -339,52 +367,8 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 }
 .method-tile.is-linked .method-tile-linked-dot{display:block;}
 
-/* Master-Detail Split Layout */
-.payout-layout {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-    margin-top: 18px;
-}
-.payout-left {
-    flex: 1 1 60%;
-    min-width: 0;
-}
-.payout-right {
-    flex: 1 1 40%;
-    min-width: 300px;
-    max-width: 420px;
-    position: sticky;
-    top: 20px;
-}
-.payout-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-height: 240px;
-    background: var(--bg);
-    border: 1px dashed var(--border);
-    border-radius: 16px;
-    padding: 30px;
-    color: var(--muted);
-}
-.payout-placeholder .placeholder-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
-    opacity: 0.5;
-}
-@media (max-width: 900px) {
-    .payout-layout {
-        flex-direction: column;
-    }
-    .payout-right {
-        max-width: 100%;
-        width: 100%;
-        position: static;
-    }
-}
+/* Accordion Grid Layout */
+.payout-layout { margin-top: 18px; }
 
 .payout-edit-card{border:1px solid var(--border);border-radius:16px;padding:22px;background:var(--panel);}
 .payout-edit-card .method-tile-icon{width:28px;height:28px;}
@@ -780,25 +764,16 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <p class="muted" style="margin-top:-6px;">Choose how you'd like to receive payouts. Changing your method requires a verification code sent to your account email.</p>
 
                 <div class="payout-layout">
-                    <!-- LEFT SIDE: TILES -->
-                    <div class="payout-left">
-                        <div id="methodTileContainer"></div>
-                    </div>
-
-                    <!-- RIGHT SIDE: STICKY DETAIL PANEL -->
-                    <div class="payout-right">
-                        <!-- Placeholder shown when nothing is clicked -->
-                        <div class="payout-placeholder" id="payoutPlaceholder">
-                            <div class="placeholder-icon">👈</div>
-                            <p>Select a payout method to link or update your details.</p>
-                        </div>
-
-                        <!-- The actual edit form -->
-                        <div class="payout-edit-card" id="payoutEditCard" style="display:none;">
+                    <div id="methodTileContainer"></div>
+                    
+                    <!-- Hidden container that holds the edit form before it gets dropped into a tile -->
+                    <div id="hiddenPayoutHolder" style="display:none;">
+                        <div class="payout-edit-card" id="payoutEditCard">
                             <div class="payout-edit-header">
                                 <span class="method-tile-icon" id="payoutEditIcon"></span>
                                 <strong id="payoutEditTitle"></strong>
                                 <span class="badge-linked" id="payoutEditLinkedBadge" style="display:none;margin-left:auto;">Linked</span>
+                                <button class="modal-close" style="margin-left:auto;font-size:1.2rem;cursor:pointer;" onclick="closePayoutEditCard()">×</button>
                             </div>
                             <div class="muted" style="font-size:.8rem;margin-bottom:14px;" id="payoutEditUpdatedAt"></div>
 
@@ -2539,23 +2514,41 @@ function renderPayoutMethods() {
     selectMethodTile(linkedMethod || selectedTile, /*skipScroll*/ true);
 }
 
-function selectMethodTile(method, skipTileUpdate) {
-    const placeholder = document.getElementById("payoutPlaceholder");
-    const editCard = document.getElementById("payoutEditCard");
-
-    if (!method) { 
-        editCard.style.display = "none"; 
-        if(placeholder) placeholder.style.display = "flex";
-        return; 
+function closePayoutEditCard() {
+    document.querySelectorAll('.method-tile').forEach(t => t.classList.remove('expanded', 'active'));
+    const editCard = document.getElementById('payoutEditCard');
+    if (editCard) {
+        const holder = document.getElementById('hiddenPayoutHolder');
+        if (holder) holder.appendChild(editCard);
     }
-    
-    // Hide placeholder, show edit card
-    if(placeholder) placeholder.style.display = "none";
-    editCard.style.display = "block";
+}
+
+function selectMethodTile(method, skipTileUpdate) {
+    const editCard = document.getElementById("payoutEditCard");
+    const currentTile = document.getElementById("tile-" + method);
+
+    // If the clicked tile is already expanded, close it
+    if (currentTile && currentTile.classList.contains("expanded") && !skipTileUpdate) {
+        closePayoutEditCard();
+        return;
+    }
+
+    if (!method) {
+        closePayoutEditCard();
+        return;
+    }
 
     selectedTile = method;
     const cfg = PAYOUT_METHOD_CONFIG[method];
     if (!cfg) return;
+
+    // Collapse all tiles, expand the selected one
+    document.querySelectorAll(".method-tile").forEach(t => t.classList.remove("expanded"));
+    if (currentTile) {
+        currentTile.classList.add("expanded");
+        currentTile.appendChild(editCard);
+        editCard.style.display = "block";
+    }
 
     document.querySelectorAll(".method-tile").forEach(t => t.classList.toggle("active", t.id === "tile-" + method));
 
