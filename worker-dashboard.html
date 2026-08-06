@@ -514,14 +514,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         <ul data-core-team-only style="display:none;">
             <li><a href="admin-dashboard.html" class="side-item"><span class="ic">🛡️</span> Admin Panel</a></li>
         </ul>
-
-        
-
-            <ul style="margin-top:10px;">
-                
-                
-            </ul>
-        </div>
     </aside>
 
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -537,7 +529,27 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <h1 id="pageTitle">Dashboard</h1>
                 </div>
             </div>
-            <div class="profile">Worker</div>
+            <div class="topbar-right">
+                <div class="notif-wrap">
+                    <button class="notif-bell" id="notifBell">🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span></button>
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-dropdown-title">Notifications</div>
+                        <div class="notif-empty">No new notifications</div>
+                    </div>
+                </div>
+                <div class="profile-wrap">
+                    <button class="profile-btn" id="profileBtn">
+                        <div class="profile-avatar">W</div>
+                        <div class="profile-name">Worker<small>Worker</small></div>
+                    </button>
+                    <div class="profile-menu" id="profileMenu">
+                        <button class="menu-item" onclick="goTab('messages');closeTopbarDropdowns();">✉️ Messages <span class="side-badge" id="msgBadge" style="display:none;">0</span></button>
+                        <button class="menu-item" onclick="goTab('settings');closeTopbarDropdowns();">⚙️ Settings</button>
+                        <hr>
+                        <a href="#" class="menu-item" id="logoutLink">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- ================= OVERVIEW ================= -->
@@ -997,6 +1009,39 @@ function toggleSidebar() {
         document.body.classList.toggle('sidebar-closed');
     }
 }
+/* ---------------- Topbar Dropdown Toggle ---------------- */
+function closeTopbarDropdowns() {
+    var nd = document.getElementById("notifDropdown");
+    var pm = document.getElementById("profileMenu");
+    if (nd) nd.classList.remove("open");
+    if (pm) pm.classList.remove("open");
+}
+(function setupTopbarDropdowns() {
+    var nb = document.getElementById("notifBell");
+    var pb = document.getElementById("profileBtn");
+    var nd = document.getElementById("notifDropdown");
+    var pm = document.getElementById("profileMenu");
+    if (nb) nb.addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (nd) nd.classList.toggle("open");
+        if (pm) pm.classList.remove("open");
+    });
+    if (pb) pb.addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (pm) pm.classList.toggle("open");
+        if (nd) nd.classList.remove("open");
+    });
+    document.addEventListener("click", function() {
+        if (nd) nd.classList.remove("open");
+        if (pm) pm.classList.remove("open");
+    });
+    var ll = document.getElementById("logoutLink");
+    if (ll) ll.addEventListener("click", function(e) {
+        e.preventDefault();
+        if (typeof logout === "function") logout();
+        else window.location.href = "index.html";
+    });
+})();
 
 /* ---------------- Tab routing ---------------- */
 const TAB_TITLES = { overview: "Dashboard", tasks: "My Tasks", messages: "Messages", earnings: "Earnings", payments: "Payments", settings: "Settings" };
@@ -2237,7 +2282,9 @@ async function loadThreadList() {
         renderThreadList(); updateBulkUI();
         const unread = allThreads.filter(t => getThreadFlag(t.id).unread).length;
         const badge = document.getElementById("msgBadge");
-        if (unread > 0) { badge.style.display = "inline-block"; badge.textContent = unread; } else badge.style.display = "none";
+        if (badge) {
+            if (unread > 0) { badge.style.display = "inline-block"; badge.textContent = unread; } else badge.style.display = "none";
+        }
     } catch (err) { console.error(err); list.innerHTML = `<p class="empty-state">Failed to load.</p>`; }
 }
 function renderThreadList() {
