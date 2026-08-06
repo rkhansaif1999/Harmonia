@@ -32,30 +32,36 @@ Allow: /learning-center.html
 Allow: /trust-safety.html
 Allow: /disclaimer.html
 
-# Logged-in-only dashboards — nothing here should be crawled or indexed.
-# (Also carry a <meta name="robots" content="noindex"> tag individually,
-# in case any of these URLs ever get linked from outside the site.)
-Disallow: /admin-login.html
-Disallow: /admin-dashboard.html
-Disallow: /admin-settings.html
-Disallow: /admin-clients.html
-Disallow: /admin-analytics.html
-Disallow: /admin-projects.html
-Disallow: /admin-workers.html
-Disallow: /admin-tasks.html
-Disallow: /admin-messages.html
-Disallow: /client-dashboard.html
-Disallow: /client-new-project.html
-Disallow: /client-orders.html
-Disallow: /client-projects.html
-Disallow: /client-billing.html
-Disallow: /client-checkout.html
-Disallow: /worker-dashboard.html
-Disallow: /worker-tasks.html
-Disallow: /worker-micro-task.html
-Disallow: /worker-payments.html
-Disallow: /worker-earnings.html
-Disallow: /reviewer-dashboard.html
-Disallow: /payment-confirm.html
+# Logged-in-only dashboards — kept out of search results via each page's
+# own <meta name="robots" content="noindex"> tag rather than a robots.txt
+# Disallow. Disallowing here would stop crawlers from ever fetching the
+# page at all, which also blocks legitimate third-party verification bots
+# (e.g. ad-network crawlers that confirm an ad tag is really present on
+# the page) from reaching it. Nothing sensitive lives in the static HTML
+# of these pages anyway — real data only loads afterward via authenticated
+# calls to the Worker API, and the JS session gate still keeps a human
+# without a valid login from ever seeing real content rendered.
+Allow: /admin-login.html
+Allow: /admin-dashboard.html
+Allow: /admin-settings.html
+Allow: /admin-clients.html
+Allow: /admin-analytics.html
+Allow: /admin-projects.html
+Allow: /admin-workers.html
+Allow: /admin-tasks.html
+Allow: /admin-messages.html
+Allow: /client-dashboard.html
+Allow: /client-new-project.html
+Allow: /client-orders.html
+Allow: /client-projects.html
+Allow: /client-billing.html
+Allow: /client-checkout.html
+Allow: /worker-dashboard.html
+Allow: /worker-tasks.html
+Allow: /worker-micro-task.html
+Allow: /worker-payments.html
+Allow: /worker-earnings.html
+Allow: /reviewer-dashboard.html
+Allow: /payment-confirm.html
 
 Sitemap: https://harmoniaportal.online/sitemap.xml
