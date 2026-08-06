@@ -1082,7 +1082,41 @@ let owGateMandatory = false, owGateStep = "tips", owGateQIndex = 0, owGateScore 
 let gateMandatory = false, gateStep = "tips", gateQIndex = 0, gateScore = 0, gateAnswered = false;
 let currentMethod = null, selectedTile = null;
 
+/* ---------------- Ad refresh on tab navigation ----------------
+   This is an SPA: switching tabs just toggles which .page-panel is
+   visible, it never reloads the page, so the a-ads <iframe>s only
+   ever loaded once (on the very first page load) and then sat there
+   showing the same ad forever. Since a-ads serves a new ad on every
+   fresh request to the ad URL, we force that "fresh request" ourselves
+   by re-pointing each iframe's src (with a cache-busting param, since
+   just reassigning the identical src string is a no-op in most
+   browsers) whenever the user actually navigates to a different tab. */
+let currentDashboardTab = null;
+let lastAdRefreshAt = 0;
+const AD_REFRESH_MIN_INTERVAL_MS = 4000; // don't hammer a-ads on rapid tab-clicking
+
+function refreshDashboardAds() {
+    const now = Date.now();
+    if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
+    lastAdRefreshAt = now;
+
+    document.querySelectorAll("#frame-topbar iframe[data-aa], #frame-sidebar iframe[data-aa]").forEach(iframe => {
+        // Cache the ad's real URL (without our own cache-buster) once,
+        // so repeated refreshes strip the old "_r" param instead of
+        // stacking a new one onto the end every time.
+        if (!iframe.dataset.baseSrc) iframe.dataset.baseSrc = iframe.getAttribute("src");
+        const base = iframe.dataset.baseSrc;
+        const sep = base.includes("?") ? "&" : "?";
+        iframe.setAttribute("src", base + sep + "_r=" + now);
+    });
+}
+
 function goTab(tab, sub = null) {
+    if (currentDashboardTab !== null && currentDashboardTab !== tab) {
+        refreshDashboardAds();
+    }
+    currentDashboardTab = tab;
+
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
     document.getElementById("pageTitle").textContent = TAB_TITLES[tab] || "Dashboard";
