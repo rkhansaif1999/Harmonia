@@ -337,11 +337,6 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 }
 .method-tile.expanded .payout-edit-card{
     flex:1;min-width:0;border:none;padding:0;background:transparent;box-shadow:none;
-    animation: premiumDrop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@keyframes premiumDrop {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: translateY(0); }
 }
 .method-tile-square{
     width:100%;aspect-ratio:1/1;border-radius:18px;
@@ -2578,14 +2573,28 @@ function selectMethodTile(method, skipTileUpdate) {
 }
 
 function startUpdate() {
-    document.getElementById("payoutEditPanel").style.display = "block";
-    document.getElementById("payoutCodePanel").style.display = "none";
-    document.getElementById("payoutUpdateBtn").style.display = "none";
+    const panel = document.getElementById("payoutEditPanel");
+    if (panel) panel.style.display = "block";
+    
+    const codePanel = document.getElementById("payoutCodePanel");
+    if (codePanel) codePanel.style.display = "none";
+    
+    const updateBtn = document.getElementById("payoutUpdateBtn");
+    if (updateBtn) updateBtn.style.display = "none";
 }
+
 function cancelUpdate(resetOnly) {
-    document.getElementById("payoutEditPanel").style.display = "none";
-    document.getElementById("payoutCodePanel").style.display = "none";
-    if (!resetOnly) document.getElementById("payoutUpdateBtn").style.display = "inline-block";
+    const panel = document.getElementById("payoutEditPanel");
+    if (panel) panel.style.display = "none";
+    
+    const codePanel = document.getElementById("payoutCodePanel");
+    if (codePanel) codePanel.style.display = "none";
+    
+    if (!resetOnly) {
+        const updateBtn = document.getElementById("payoutUpdateBtn");
+        if (updateBtn) updateBtn.style.display = "inline-block";
+    }
+    
     document.querySelectorAll("#payoutFieldsContainer input").forEach(i => i.value = "");
     const codeInput = document.getElementById("payoutCodeInput");
     if (codeInput) codeInput.value = "";
