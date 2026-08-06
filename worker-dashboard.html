@@ -769,7 +769,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     
                     <!-- Hidden container that holds the edit form before it gets dropped into a tile -->
                     <div id="hiddenPayoutHolder" style="display:none;">
-                        <div class="payout-edit-card" id="payoutEditCard">
+                        <div class="payout-edit-card" id="payoutEditCard" onclick="event.stopPropagation()">
                             <div class="payout-edit-header">
                                 <span class="method-tile-icon" id="payoutEditIcon"></span>
                                 <strong id="payoutEditTitle"></strong>
