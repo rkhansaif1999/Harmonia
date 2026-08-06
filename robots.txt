@@ -32,6 +32,14 @@ Allow: /learning-center.html
 Allow: /trust-safety.html
 Allow: /disclaimer.html
 
+# TEMP — a-ads.com verification staging page. worker-dashboard.html is
+# already Allow-listed below, but a-ads' own bot can't get past our
+# client-side login gate to actually see the ad code there, so support
+# asked us to also run the exact same ad units on a public page for
+# verification. Remove this line once a-ads verifies units
+# 2450888/2450890 and ad-partners.html is deleted.
+Allow: /ad-partners.html
+
 # Logged-in-only dashboards — kept out of search results via each page's
 # own <meta name="robots" content="noindex"> tag rather than a robots.txt
 # Disallow. Disallowing here would stop crawlers from ever fetching the

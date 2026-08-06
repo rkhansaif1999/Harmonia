@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TRQRKZFPY6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TRQRKZFPY6');
+  </script>
+
+  <meta charset="UTF-8">
+  <!-- Cache Busting -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--
+    TEMPORARY PAGE — a-ads.com verification staging.
+
+    Why this page exists: a-ads.com support said their verification bot
+    can't crawl worker-dashboard.html because that page sits behind our
+    login gate (see script.js -> protectPage()). They asked us to place
+    the exact same ad unit code on any public page, let their bot verify
+    it there, then move the code back into worker-dashboard.html only.
+
+    The <iframe data-aa='...'> blocks below are copy-pasted verbatim
+    from worker-dashboard.html — don't edit the ad unit IDs.
+
+    Once a-ads.com marks units 2450890 and 2450888 as verified:
+      1. Delete this file (or blank it out).
+      2. Remove its <url> entry from sitemap.xml.
+      3. Remove its "Allow:" line from robots.txt.
+      4. Remove the temporary footer link added to every page (search
+         for "TEMP: a-ads verification link" across the site).
+    The ad code in worker-dashboard.html itself was never touched, so
+    there's nothing to "move back" — it's been running there the whole
+    time.
+  -->
+  <meta name="robots" content="noindex, follow">
+
+  <title>Advertising Partners | Harmonia</title>
+  <meta name="description" content="Harmonia's advertising partners.">
+
+  <link rel="canonical" href="https://harmoniaportal.online/ad-partners.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+
+  <link rel="stylesheet" href="style.css?v=20260801">
+
+  <style>
+    /* Local, page-specific — keeps the ad iframes centered regardless
+       of their native fixed widths (160px / 728px). */
+    .ad-showcase{ display:flex; flex-direction:column; align-items:center; gap:40px; margin:40px 0; }
+    .ad-showcase .ad-container{ display:flex; justify-content:center; width:100%; overflow-x:auto; }
+  </style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">
+      <img src="images/logo.png" alt="Harmonia" class="logo-img">
+      Harmonia
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="how-it-works.html">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Login</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">☰</button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="how-it-works.html">How It Works</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="login.html">Login</a>
+</div>
+
+<main class="container">
+
+  <section class="page-hero">
+    <div class="section-tag">Advertising</div>
+    <h1>Our Advertising Partners</h1>
+    <p>Harmonia keeps sign-up free for workers and partners with a small amount of on-platform advertising. Below are the ad units currently running across the site.</p>
+  </section>
+
+  <section class="ad-showcase">
+    <div class="ad-container">
+      <!-- BEGIN AADS AD UNIT 2450888 -->
+      <div id="frame-topbar" style="width: 728px;margin: auto;z-index: 99998;height: auto">
+        <iframe data-aa='2450888' src='//ad.a-ads.com/2450888/?size=728x90'
+                style='border:0; padding:0; width:728px; height:90px; overflow:hidden;display: block;margin: auto'></iframe>
+      </div>
+      <!-- END AADS AD UNIT 2450888 -->
+    </div>
+
+    <div class="ad-container">
+      <!-- BEGIN AADS AD UNIT 2450890 -->
+      <div id="frame-sidebar" style="width: 160px;margin: auto;z-index: 99998;height: auto">
+        <iframe data-aa='2450890' src='//ad.a-ads.com/2450890/?size=160x600'
+                style='border:0; padding:0; width:160px; height:600px; overflow:hidden;display: block;margin: auto'></iframe>
+      </div>
+      <!-- END AADS AD UNIT 2450890 -->
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js?v=20260802"></script>
+
+<script>
+  /* Navbar blur on scroll */
+  const navbar = document.getElementById("navbar");
+  window.addEventListener("scroll", () => {
+    navbar.style.background = window.scrollY > 20 ? "rgba(6,10,18,.85)" : "rgba(6,10,18,.72)";
+  });
+
+  /* Mobile Nav Toggle */
+  const toggle = document.getElementById("navToggle");
+  const menu = document.getElementById("mobileMenu");
+  if (toggle && menu) {
+    toggle.addEventListener("click", () => {
+      menu.classList.toggle("open");
+      toggle.textContent = menu.classList.contains("open") ? "✕" : "☰";
+    });
+    menu.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        menu.classList.remove("open");
+        toggle.textContent = "☰";
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
