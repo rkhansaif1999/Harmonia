@@ -514,27 +514,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                     <h1 id="pageTitle">Dashboard</h1>
                 </div>
             </div>
-            <div class="topbar-right">
-                <div class="notif-wrap">
-                    <button class="notif-bell" id="notifBell">🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span></button>
-                    <div class="notif-dropdown" id="notifDropdown">
-                        <div class="notif-dropdown-title">Notifications</div>
-                        <div class="notif-empty">No new notifications</div>
-                    </div>
-                </div>
-                <div class="profile-wrap">
-                    <button class="profile-btn" id="profileBtn">
-                        <div class="profile-avatar">W</div>
-                        <div class="profile-name">Worker<small>Worker</small></div>
-                    </button>
-                    <div class="profile-menu" id="profileMenu">
-                        <button class="menu-item" onclick="goTab('messages');closeTopbarDropdowns();">✉️ Messages <span class="side-badge" id="msgBadge" style="display:none;">0</span></button>
-                        <button class="menu-item" onclick="goTab('settings');closeTopbarDropdowns();">⚙️ Settings</button>
-                        <hr>
-                        <a href="#" class="menu-item" id="logoutLink">🚪 Logout</a>
-                    </div>
-                </div>
-            </div>
+            <div class="profile">Worker</div>
         </header>
 
         <!-- ================= OVERVIEW ================= -->
