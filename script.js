@@ -1012,6 +1012,13 @@ function enhanceTopbar() {
     const h1 = topbar.querySelector("h1");
     const oldProfile = topbar.querySelector(".profile");
 
+    // Some dashboard pages (e.g. worker-dashboard.html) already hand-code
+    // their own notif bell + profile pill in the markup. If we don't remove
+    // it, the cluster built below gets appended alongside it, producing two
+    // bells/profile pills in the topbar and dead click targets.
+    const existingRight = topbar.querySelector(".topbar-right");
+    if (existingRight) existingRight.remove();
+
     // ---- breadcrumb + title ----
     if (h1 && !h1.closest(".topbar-left")) {
         const left = document.createElement("div");
