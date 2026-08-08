@@ -138,6 +138,17 @@ button:hover{transform:none;}
 .side-item .ic{font-size:1.05rem;width:20px;text-align:center;}
 .side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
 .sidebar-bottom{margin-top:auto;padding-top:16px;}
+.sidebar-ad-slot .ad-container{
+    width:100%;min-height:600px;max-height:60vh;border-radius:12px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+}
+.topbar-ad-slot{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;padding:0 16px;}
+.topbar-ad-slot .ad-container{
+    width:728px;max-width:100%;height:90px;border-radius:10px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+}
 
 
 /* ---------- Main / topbar ---------- */
@@ -806,7 +817,13 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
             <li><a href="worker-dashboard.html#earnings" class="side-item"><span class="ic">💵</span> My Earnings</a></li>
         </ul>
 
-        
+        <div class="sidebar-bottom sidebar-ad-slot" id="sidebarAdSlot">
+            <div class="ad-container">
+                <!-- BEGIN ADSTERRA AD UNIT e8323cbffe014357ce0b882c97a95811 -->
+                <div id="frame-sidebar-adsterra"></div>
+                <!-- END ADSTERRA AD UNIT e8323cbffe014357ce0b882c97a95811 -->
+            </div>
+        </div>
     </aside>
 
     <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
@@ -819,6 +836,16 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 <div class="topbar-title-wrap">
                     <div class="breadcrumb">Admin Portal <span id="breadcrumbTab">/ Dashboard</span></div>
                     <h1 id="pageTitle">Dashboard</h1>
+                </div>
+            </div>
+            <div class="topbar-ad-slot" id="topbarAdSlot">
+                <div class="ad-container">
+                    <!-- BEGIN AADS AD UNIT 2450888 -->
+                    <div id="frame-topbar" style="width: 728px;margin: auto;z-index: 99998;height: auto">
+                        <iframe data-aa='2450888' src='//ad.a-ads.com/2450888/?size=728x90'
+                                style='border:0; padding:0; width:728px; height:90px; overflow:hidden;display: block;margin: auto'></iframe>
+                    </div>
+                    <!-- END AADS AD UNIT 2450888 -->
                 </div>
             </div>
             <div class="profile">Administrator</div>
@@ -1608,6 +1635,42 @@ function isAdminTabAllowed(tab) {
     return navBtn.style.display !== "none";
 }
 
+/* ---------------- Ad refresh on tab navigation ---------------- */
+let currentAdminTab = null;
+let lastAdRefreshAt = 0;
+const AD_REFRESH_MIN_INTERVAL_MS = 4000; // don't hammer ad networks on rapid tab-clicking
+
+function loadAdsterraSidebarAd() {
+    const container = document.getElementById("frame-sidebar-adsterra");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const optionsScript = document.createElement("script");
+    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
+    container.appendChild(optionsScript);
+
+    const invokeScript = document.createElement("script");
+    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
+    container.appendChild(invokeScript);
+}
+
+function refreshDashboardAds() {
+    const now = Date.now();
+    if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
+    lastAdRefreshAt = now;
+
+    document.querySelectorAll("#frame-topbar iframe[data-aa]").forEach(iframe => {
+        if (!iframe.dataset.baseSrc) iframe.dataset.baseSrc = iframe.getAttribute("src");
+        const base = iframe.dataset.baseSrc;
+        const sep = base.includes("?") ? "&" : "?";
+        iframe.setAttribute("src", base + sep + "_r=" + now);
+    });
+
+    loadAdsterraSidebarAd();
+}
+
+loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
+
 function goAdminTab(tab) {
     if (!ADMIN_VALID_TABS.includes(tab)) tab = "dashboard";
 
@@ -1615,6 +1678,11 @@ function goAdminTab(tab) {
         alert("You don't have permission to access this page.");
         tab = "dashboard";
     }
+
+    if (currentAdminTab !== null && currentAdminTab !== tab) {
+        refreshDashboardAds();
+    }
+    currentAdminTab = tab;
 
     document.querySelectorAll(".side-item[data-tab]").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
     document.querySelectorAll(".page-panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab));
