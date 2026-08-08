@@ -1092,12 +1092,30 @@ let currentDashboardTab = null;
 let lastAdRefreshAt = 0;
 const AD_REFRESH_MIN_INTERVAL_MS = 4000; // don't hammer a-ads on rapid tab-clicking
 
+function loadAdsterraSidebarAd() {
+    // Adsterra's invoke.js uses document.write, which only works on the
+    // very first execution of a <script> tag — so on every refresh we
+    // clear the container and inject brand-new <script> elements via
+    // createElement (innerHTML would NOT re-execute them).
+    const container = document.getElementById("frame-sidebar-adsterra");
+    if (!container) return;
+    container.innerHTML = "";
+
+    const optionsScript = document.createElement("script");
+    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
+    container.appendChild(optionsScript);
+
+    const invokeScript = document.createElement("script");
+    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
+    container.appendChild(invokeScript);
+}
+
 function refreshDashboardAds() {
     const now = Date.now();
     if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
     lastAdRefreshAt = now;
 
-    document.querySelectorAll("#frame-topbar iframe[data-aa], #frame-sidebar iframe[data-aa]").forEach(iframe => {
+    document.querySelectorAll("#frame-topbar iframe[data-aa]").forEach(iframe => {
         // Cache the ad's real URL (without our own cache-buster) once,
         // so repeated refreshes strip the old "_r" param instead of
         // stacking a new one onto the end every time.
@@ -1106,7 +1124,11 @@ function refreshDashboardAds() {
         const sep = base.includes("?") ? "&" : "?";
         iframe.setAttribute("src", base + sep + "_r=" + now);
     });
+
+    loadAdsterraSidebarAd();
 }
+
+loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
 
 function goTab(tab, sub = null) {
     if (currentDashboardTab !== null && currentDashboardTab !== tab) {
