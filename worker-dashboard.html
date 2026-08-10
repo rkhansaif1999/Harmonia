@@ -287,6 +287,52 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 .modal-close:hover{color:var(--text);transform:none;}
 .reply-status{font-size:.82rem;color:var(--muted);}
 
+/* ---------- Task Focus View (full-page micro-task workspace, replaces old popup) ---------- */
+.task-focus-view{display:none;position:fixed;inset:0;z-index:600;background:var(--bg);overflow-y:auto;}
+body.task-focus-mode .task-focus-view{display:block;}
+body.task-focus-mode .sidebar,
+body.task-focus-mode .sidebar-toggle,
+body.task-focus-mode .sidebar-backdrop,
+body.task-focus-mode .sidebar-desktop-toggle{display:none !important;}
+body.task-focus-mode .main{display:none !important;}
+
+.task-focus-back{
+    position:fixed;top:16px;left:16px;z-index:610;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:12px;
+    background:var(--panel);border:1px solid var(--border);
+    color:var(--text);font-weight:600;font-size:.9rem;cursor:pointer;
+    box-shadow:var(--shadow);
+}
+.task-focus-back:hover{background:var(--bg);}
+
+.task-focus-inner{max-width:1400px;margin:0 auto;padding:74px 20px 50px;}
+
+.task-focus-top-ad,.task-focus-bottom-ad{display:flex;justify-content:center;margin-bottom:24px;}
+.task-focus-bottom-ad{margin-bottom:0;margin-top:28px;}
+.task-focus-top-ad .ad-container,.task-focus-bottom-ad .ad-container{
+    width:728px;max-width:100%;min-height:90px;border-radius:12px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+}
+
+.task-focus-layout{display:flex;gap:24px;align-items:flex-start;justify-content:center;}
+.task-focus-side-ad{flex:0 0 160px;position:sticky;top:90px;}
+.task-focus-side-ad .ad-container{
+    width:160px;min-height:600px;border-radius:12px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+}
+.task-focus-content{flex:1 1 auto;max-width:640px;width:100%;}
+
+@media (max-width:1100px){
+    .task-focus-side-ad{display:none;}
+}
+@media (max-width:640px){
+    .task-focus-inner{padding:64px 12px 40px;}
+    .task-focus-back{top:10px;left:10px;padding:8px 12px;font-size:.85rem;}
+}
+
 .chat-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;max-height:380px;min-height:140px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;}
 .bubble{max-width:80%;padding:10px 14px;border-radius:14px;box-sizing:border-box;}
 .bubble.me{align-self:flex-end;background:var(--primary-soft);border:1px solid var(--primary);}
@@ -855,36 +901,65 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
     </main>
 </div>
 
-<!-- ============= Micro-task workspace modal ============= -->
-<div class="overlay" id="microWorkspaceOverlay">
-    <div class="modal wide">
-        <div class="modal-head">
-            <h3 id="mwTitle" style="margin:0;">Micro Task</h3>
-            <button class="modal-close" onclick="closeMicroWorkspace()">×</button>
-        </div>
-        <div style="overflow-y:auto;flex:1;">
+<!-- ============= Micro-task workspace (full-page focus view, not a popup) ============= -->
+<div class="task-focus-view" id="taskFocusView">
+    <button class="task-focus-back" onclick="closeMicroWorkspace()">← Back to Tasks</button>
 
-            <div id="mwGateState">
-                <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
-                <button class="primary gate-btn" id="mwGateBtn" onclick="handleGateClick()">Visit Link</button>
-                <p class="muted" style="text-align:center;font-size:.85rem;margin-top:12px;" id="mwGateNote">Step 1 of 2: Click the button above to open the link.</p>
+    <div class="task-focus-inner">
+
+        <div class="task-focus-top-ad">
+            <div class="ad-container">
+                <div id="frame-focus-topbar"></div>
             </div>
-            <div id="mwLoadingState" style="display:none;text-align:center;padding:30px 0;">Loading...</div>
-            <div id="mwTaskContent" style="display:none;">
-                <div class="code-display" id="mwCodeDisplay">------</div>
-                <input type="text" id="mwCodeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
-                <div style="text-align:center;margin-top:16px;">
-                    <button class="primary" id="mwSubmitBtn" onclick="submitCode()">Submit</button>
-                </div>
-                <div class="feedback-box" id="mwFeedbackBox"></div>
-                <div class="session-stats">
-                    <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
-                    <span>Correct: <strong id="mwStatCorrect">0</strong></span>
-                    <span>Earned this session: <strong id="mwStatEarned">$0.000000</strong></span>
-                </div>
-            </div>
-            <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
         </div>
+
+        <div class="task-focus-layout">
+
+            <div class="task-focus-side-ad">
+                <div class="ad-container">
+                    <div id="frame-focus-adsterra-left"></div>
+                </div>
+            </div>
+
+            <div class="task-focus-content">
+                <h3 id="mwTitle" style="margin:0 0 14px;">Micro Task</h3>
+
+                <div id="mwGateState">
+                    <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
+                    <button class="primary gate-btn" id="mwGateBtn" onclick="handleGateClick()">Visit Link</button>
+                    <p class="muted" style="text-align:center;font-size:.85rem;margin-top:12px;" id="mwGateNote">Step 1 of 2: Click the button above to open the link.</p>
+                </div>
+                <div id="mwLoadingState" style="display:none;text-align:center;padding:30px 0;">Loading...</div>
+                <div id="mwTaskContent" style="display:none;">
+                    <div class="code-display" id="mwCodeDisplay">------</div>
+                    <input type="text" id="mwCodeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
+                    <div style="text-align:center;margin-top:16px;">
+                        <button class="primary" id="mwSubmitBtn" onclick="submitCode()">Submit</button>
+                    </div>
+                    <div class="feedback-box" id="mwFeedbackBox"></div>
+                    <div class="session-stats">
+                        <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
+                        <span>Correct: <strong id="mwStatCorrect">0</strong></span>
+                        <span>Earned this session: <strong id="mwStatEarned">$0.000000</strong></span>
+                    </div>
+                </div>
+                <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
+            </div>
+
+            <div class="task-focus-side-ad">
+                <div class="ad-container">
+                    <div id="frame-focus-adsterra-right"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="task-focus-bottom-ad">
+            <div class="ad-container">
+                <div id="frame-focus-bottombar"></div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -1156,6 +1231,57 @@ function refreshDashboardAds() {
 
 loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
 
+/* ---------------- Task focus view ads ----------------
+   Same ad units already running elsewhere on the dashboard
+   (Adsterra 160x600 sidebar unit + A-Ads 728x90 topbar unit),
+   just placed around the full-page micro-task workspace so
+   impressions keep counting while a worker is on this screen.
+   Refreshed on a timer (not on every code submission) to stay
+   within a sane, policy-safe refresh cadence. */
+function loadAdsterraFocusAd(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = "";
+
+    const optionsScript = document.createElement("script");
+    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
+    container.appendChild(optionsScript);
+
+    const invokeScript = document.createElement("script");
+    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
+    container.appendChild(invokeScript);
+}
+
+function loadAAdsFocusBanner(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const cacheBust = Date.now();
+    container.innerHTML = `<iframe data-aa="2450888" src="//ad.a-ads.com/2450888/?size=728x90&_r=${cacheBust}" style="border:0;padding:0;width:728px;max-width:100%;height:90px;overflow:hidden;display:block;margin:auto"></iframe>`;
+}
+
+const FOCUS_AD_REFRESH_MS = 50000; // ~50s - safe, non-abusive refresh cadence
+let focusAdRefreshTimer = null;
+
+function refreshFocusAds() {
+    loadAdsterraFocusAd("frame-focus-adsterra-left");
+    loadAdsterraFocusAd("frame-focus-adsterra-right");
+    loadAAdsFocusBanner("frame-focus-topbar");
+    loadAAdsFocusBanner("frame-focus-bottombar");
+}
+
+function startFocusAdRefresh() {
+    refreshFocusAds();
+    stopFocusAdRefresh();
+    focusAdRefreshTimer = setInterval(refreshFocusAds, FOCUS_AD_REFRESH_MS);
+}
+
+function stopFocusAdRefresh() {
+    if (focusAdRefreshTimer) {
+        clearInterval(focusAdRefreshTimer);
+        focusAdRefreshTimer = null;
+    }
+}
+
 function goTab(tab, sub = null) {
     if (currentDashboardTab !== null && currentDashboardTab !== tab) {
         refreshDashboardAds();
@@ -1225,6 +1351,19 @@ window.addEventListener("hashchange", () => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
+
+    // "tasks/work-<id>" is the micro-task focus view, not a normal subtab -
+    // route it to openMicroWorkspace instead of the regular tab switcher.
+    if (tab === "tasks" && sub && sub.startsWith("work-")) {
+        document.body.classList.remove("task-focus-mode"); // in case leaving another task
+        goTab("tasks");
+        openMicroWorkspace(sub.slice(5), true);
+        return;
+    }
+    if (document.body.classList.contains("task-focus-mode")) {
+        closeMicroWorkspace(true);
+    }
+
     const valid = ["overview", "tasks", "messages", "earnings", "settings"];
     if (valid.includes(tab)) {
         goTab(tab, sub);
@@ -1246,6 +1385,13 @@ document.querySelectorAll(".side-item[data-tab]").forEach(btn => {
     const parts = rawHash.split("/");
     const tab = parts[0];
     const sub = parts[1] || null;
+
+    if (tab === "tasks" && sub && sub.startsWith("work-")) {
+        goTab("tasks");
+        openMicroWorkspace(sub.slice(5), true);
+        return;
+    }
+
     const valid = ["overview", "tasks", "messages", "earnings", "settings"];
     goTab(valid.includes(tab) ? tab : "overview", sub);
 })();
@@ -1515,7 +1661,7 @@ const MW_GATE_LINK = "https://omg10.com/4/7554726";
 const MW_GATE_WAIT_SECONDS = 10;
 let mwGateStep = 1;
 
-function openMicroWorkspace(taskId) {
+function openMicroWorkspace(taskId, fromHash) {
     mwTaskId = taskId;
     mwGateStep = 1;
     mwChallengeId = null;
@@ -1528,11 +1674,27 @@ function openMicroWorkspace(taskId) {
     gateBtn.disabled = false;
     gateBtn.textContent = "Visit Link";
     document.getElementById("mwGateNote").textContent = "Step 1 of 2: Click the button above to open the link.";
-    document.getElementById("microWorkspaceOverlay").classList.add("open");
+
+    document.body.classList.add("task-focus-mode");
+    window.scrollTo(0, 0);
+    startFocusAdRefresh();
+
+    if (!fromHash) {
+        isHashRouting = true;
+        window.location.hash = `tasks/work-${taskId}`;
+        setTimeout(() => { isHashRouting = false; }, 50);
+    }
 }
-function closeMicroWorkspace() {
-    document.getElementById("microWorkspaceOverlay").classList.remove("open");
+function closeMicroWorkspace(fromHash) {
+    document.body.classList.remove("task-focus-mode");
+    stopFocusAdRefresh();
     loadApprovedMicroTasks();
+
+    if (!fromHash) {
+        isHashRouting = true;
+        window.location.hash = "tasks";
+        setTimeout(() => { isHashRouting = false; }, 50);
+    }
 }
 function handleGateClick() {
     const gateBtn = document.getElementById("mwGateBtn");
