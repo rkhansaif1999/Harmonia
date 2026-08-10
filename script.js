@@ -195,6 +195,7 @@ function getUser() {
 
 function logout() {
     localStorage.removeItem(KEYS.USER);
+    localStorage.removeItem("harmonia_bonus_smartlink_enabled_v1");
     window.location.href = "login.html";
 }
 
