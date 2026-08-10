@@ -663,9 +663,22 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         Tip: if tasks don't appear, disable any ad blocker or privacy shield
                         for this site — they often block offerwall providers.
                     </p>
-                    <div class="completion-banner" id="bonusCompletionBanner"></div>
-                    <p class="muted empty-state" id="bonusEmptyState" style="display:none;"></p>
-                    <div class="iframe-holder" id="bonusIframeHolder"></div>
+
+                    <div id="bonusEnableCard" style="background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:22px; margin-bottom:18px; text-align:center;">
+                        <h3 style="margin:0 0 12px; color:var(--text);">🟢 Enable Your Session</h3>
+                        <button onclick="enableBonusSession()" style="display:inline-block; background:#22c55e; color:#fff; font-weight:800; font-size:1rem; padding:14px 28px; border-radius:12px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(34,197,94,.3); margin-bottom:14px; transition:transform .15s ease, box-shadow .15s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(34,197,94,.4)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 12px rgba(34,197,94,.3)';">
+                            Click Here to Enable Your Session
+                        </button>
+                        <p style="margin:0 auto; color:var(--muted); font-size:.85rem; line-height:1.6; max-width:600px;">
+                            This confirms your browser is ready to receive Bonus Tasks. A new tab will open briefly — you can close it and come back here once it loads.
+                        </p>
+                    </div>
+
+                    <div id="bonusContentWrap" style="display:none;">
+                        <div class="completion-banner" id="bonusCompletionBanner"></div>
+                        <p class="muted empty-state" id="bonusEmptyState" style="display:none;"></p>
+                        <div class="iframe-holder" id="bonusIframeHolder"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1173,8 +1186,8 @@ function ensureTabLoaded(tab) {
 
 function loadSubtabContent(group, sub) {
     if (group === "tasks" && sub === "bonus") {
-        if (!hasCompletedBonusGate()) openBonusGate(true);
-        else loadBonusTasks();
+        if (!hasEnabledBonusSmartlink()) return;
+        showBonusContent();
     }
     if (group === "tasks" && sub === "offerwallme") {
         if (!hasCompletedOfferwallGate()) openOfferwallGate(true);
@@ -1713,6 +1726,34 @@ async function loadBonusTasks() {
         emptyState.style.display = "block";
         emptyState.textContent = "Unable to connect to the server.";
     }
+}
+
+/* ==========================================================
+   BONUS TASKS — "Enable Your Session" smart-link gate
+   Nothing in the Bonus Tasks panel (status, guidelines gate,
+   iframe) loads until the worker clicks this button at least
+   once per browser. Persisted the same way as BONUS_GATE_KEY.
+   ========================================================== */
+const BONUS_SMARTLINK_KEY = "harmonia_bonus_smartlink_enabled_v1";
+const BONUS_SMARTLINK_URL = "https://www.effectivecpmnetwork.com/v06i1n9b?key=2de67ad2a970321c0b4912a23aec230d";
+
+function hasEnabledBonusSmartlink() {
+    try { return localStorage.getItem(BONUS_SMARTLINK_KEY) === "1"; } catch (e) { return false; }
+}
+
+function enableBonusSession() {
+    window.open(BONUS_SMARTLINK_URL, "_blank", "noopener,noreferrer");
+    try { localStorage.setItem(BONUS_SMARTLINK_KEY, "1"); } catch (e) {}
+    showBonusContent();
+}
+
+function showBonusContent() {
+    const enableCard = document.getElementById("bonusEnableCard");
+    const contentWrap = document.getElementById("bonusContentWrap");
+    if (enableCard) enableCard.style.display = "none";
+    if (contentWrap) contentWrap.style.display = "block";
+    if (!hasCompletedBonusGate()) openBonusGate(true);
+    else loadBonusTasks();
 }
 
 /* ==========================================================
