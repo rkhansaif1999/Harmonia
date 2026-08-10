@@ -491,9 +491,22 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
 
 <body>
 
-<script src="script.js?v=20260802"></script>
+<script src="script.js?v=20260810"></script>
 <script>
     protectPage("worker");
+
+    // Belt-and-suspenders: clear the Bonus Tasks "session enabled" flag
+    // on logout right here, instead of relying only on script.js's
+    // logout() having the fix — script.js is a separately cached file
+    // and a normal Logout->Login navigation doesn't always force a
+    // fresh fetch of it, so this guarantees it works regardless.
+    (function () {
+        const originalLogout = window.logout;
+        window.logout = function () {
+            try { localStorage.removeItem("harmonia_bonus_smartlink_enabled_v1"); } catch (e) {}
+            if (typeof originalLogout === "function") originalLogout();
+        };
+    })();
 </script>
 
 <div class="dashboard">
