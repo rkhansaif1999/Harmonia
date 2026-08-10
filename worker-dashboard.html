@@ -653,7 +653,7 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                         <tbody id="approvedMicroTaskTable"><tr><td colspan="4" class="empty-state">Loading…</td></tr></tbody>
                     </table>
                 </div>
-                <div class="card section-gap">
+                <div class="card section-gap" id="openMicroTaskCard">
                     <h2>Open Micro-Task Projects</h2>
                     <p class="muted" style="margin-top:-8px;">Apply below — once approved by an admin you can start earning.</p>
                     <table>
@@ -1489,19 +1489,22 @@ async function loadApprovedMicroTasks() {
 
 async function loadMicroTasksToApply() {
     const table = document.getElementById("microTaskTable");
+    const card = document.getElementById("openMicroTaskCard");
     try {
         const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks");
         const data = await response.json();
-        if (!response.ok) { table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`; return; }
+        if (!response.ok) { if (card) card.style.display = "block"; table.innerHTML = `<tr><td colspan="4" class="empty-state">${escapeHTML(data?.error || "Could not load micro-tasks.")}</td></tr>`; return; }
         const open = (data.tasks || []).filter(t => t.applicationStatus !== "approved");
         table.innerHTML = "";
-        if (open.length === 0) { table.innerHTML = `<tr><td colspan="4" class="empty-state">No micro-tasks available to apply for right now</td></tr>`; return; }
+        if (open.length === 0) { if (card) card.style.display = "none"; return; }
+        if (card) card.style.display = "block";
         open.forEach(task => {
             const action = task.applicationStatus === "not_applied" ? `<button class="secondary" onclick="applyMicroTask(${task.id})">Apply</button>` : "-";
             table.innerHTML += `<tr><td>#${task.id}</td><td>${formatPayRate(task.payoutAmount)}</td><td>${microTaskStatusLabel(task.applicationStatus)}</td><td>${action}</td></tr>`;
         });
     } catch (err) {
         console.error(err);
+        if (card) card.style.display = "block";
         table.innerHTML = `<tr><td colspan="4" class="empty-state">Unable to connect to the server.</td></tr>`;
     }
 }
