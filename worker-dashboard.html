@@ -1347,6 +1347,34 @@ function loadAdcashAutotagOnce() {
     document.head.appendChild(libScript);
 }
 
+/* ---------------- Monetag Autotag (in-page push, captcha/focus page only) ----------------
+   Same category as Adcash Autotag above: NOT a banner that lives inside a
+   fixed ad-container div — Monetag's tag.min.js self-appends to <body>/<html>
+   and its own script decides when/where to surface a push-style unit. It
+   will not visually "fill" the right-hand ad-container box the way the
+   Adsterra/A-Ads placements do; it renders as its own floating unit.
+   Loaded once per session, the first time the captcha/focus workspace
+   opens, and intentionally NOT re-invoked by the FOCUS_AD_REFRESH_STAGES_MS
+   staircase — Monetag manages its own display/frequency capping the same
+   way Adcash's runAutoTag does, so calling it again would just duplicate
+   listeners rather than "refresh" anything. */
+let monetagPushLoaded = false;
+
+function loadMonetagPushOnce() {
+    if (monetagPushLoaded) return;
+    monetagPushLoaded = true;
+
+    try {
+        const s = document.createElement("script");
+        s.dataset.zone = "11553661";
+        s.src = "https://nap5k.com/tag.min.js";
+        (document.body || document.documentElement).appendChild(s);
+    } catch (e) {
+        console.log("Monetag tag failed to load", e);
+        monetagPushLoaded = false; // allow a retry on the next workspace open
+    }
+}
+
 function goTab(tab, sub = null) {
     if (currentDashboardTab !== null && currentDashboardTab !== tab) {
         refreshDashboardAds();
@@ -1744,6 +1772,7 @@ function openMicroWorkspace(taskId, fromHash) {
     window.scrollTo(0, 0);
     startFocusAdRefresh();
     loadAdcashAutotagOnce();
+    loadMonetagPushOnce();
 
     if (!fromHash) {
         isHashRouting = true;
