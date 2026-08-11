@@ -238,6 +238,47 @@ text-align:center;
 margin-top:44px;
 }
 .vision-cta a{color:#62d4ff;font-weight:600;}
+
+/* --- TRUSTPILOT CUSTOM SLIDER --- */
+.tp-slider-section {
+    padding: 60px 0;
+    background: #060a12;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+.tp-slider-track {
+    display: inline-flex;
+    gap: 30px;
+    animation: tp-slide-left 50s linear infinite;
+}
+.tp-slider-section:hover .tp-slider-track {
+    animation-play-state: paused;
+}
+.tp-review-card {
+    background: rgba(255,255,255,.035);
+    border: 1px solid rgba(255,255,255,.08);
+    -webkit-backdrop-filter: blur(28px);
+    backdrop-filter: blur(28px);
+    border-radius: 18px;
+    padding: 24px;
+    width: 380px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+    text-align: left;
+}
+.tp-stars { height: 24px; margin-bottom: 4px; }
+.tp-review-text { font-size: .95rem; color: #f8fafc; line-height: 1.6; white-space: normal; }
+.tp-review-author { font-size: .85rem; color: #62d4ff; font-weight: 700; margin-top: auto; }
+
+@keyframes tp-slide-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
 </style>
 </head>
 
@@ -393,6 +434,120 @@ margin-top:44px;
         <a href="signup.html" class="btn btn-primary">Start Earning</a>
       </div>
 
+    </div>
+  </section>
+
+  <!-- TRUSTPILOT SLIDER REVIEWS -->
+  <section class="tp-slider-section">
+    <div class="container" style="margin-bottom: 40px;">
+      <div class="section-header">
+        <div class="section-tag">TRUSTED WORLDWIDE</div>
+        <h2>What Our <span>Contributors Say</span></h2>
+      </div>
+    </div>
+    
+    <div class="tp-slider-track">
+        <!-- Review 1 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"One of the best start-up companies i have ever seen. Kudos to the Team"</div>
+            <div class="tp-review-author">Joseph Tweneboah (GH)</div>
+        </div>
+        <!-- Review 2 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Harmonia is a good platform with great potential."</div>
+            <div class="tp-review-author">Modupe Olagundoye (NG)</div>
+        </div>
+        <!-- Review 3 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"What I love about the platform is that it has great earning opportunities for everyone without exceptions, been on the platform for months now and I'm convinced harmonia is here to change the game."</div>
+            <div class="tp-review-author">Iyke Joseph (NG)</div>
+        </div>
+        <!-- Review 4 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"Even though it's an upcoming platform,it has proven to be a platform that has potential to surpass a lot of other platforms. Customer supports are readily available for users"</div>
+            <div class="tp-review-author">Victor Chinedu (NG)</div>
+        </div>
+        <!-- Review 5 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"What makes Harmonia a go-to annotation platform for me is how they priorities their labelers earnings. Superb website UI to work with."</div>
+            <div class="tp-review-author">Steve of Golauncher (NG)</div>
+        </div>
+        <!-- Review 6 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Good platform. Growing in community"</div>
+            <div class="tp-review-author">Agboola Taiwo (NG)</div>
+        </div>
+        <!-- Review 7 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"The platform is new and honestly I see light in there.. they have variety of tasks"</div>
+            <div class="tp-review-author">Osinachi Obeta (NG)</div>
+        </div>
+        <!-- Review 8 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Great place to work, been working here since couple of months and it's a good experience so far. They have multiple projects that you can work on based on you skills. umm they include AI, general tasks and also other various projects."</div>
+            <div class="tp-review-author">Humzah Alvi (PK)</div>
+        </div>
+        <!-- Review 9 -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"Still growing but there are worth your time and the harmoniaportal support team are quite considerate… try them out"</div>
+            <div class="tp-review-author">Osbert Isabella (NG)</div>
+        </div>
+
+        <!-- Duplicate Reviews for Seamless Loop -->
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"One of the best start-up companies i have ever seen. Kudos to the Team"</div>
+            <div class="tp-review-author">Joseph Tweneboah (GH)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Harmonia is a good platform with great potential."</div>
+            <div class="tp-review-author">Modupe Olagundoye (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"What I love about the platform is that it has great earning opportunities for everyone without exceptions, been on the platform for months now and I'm convinced harmonia is here to change the game."</div>
+            <div class="tp-review-author">Iyke Joseph (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"Even though it's an upcoming platform,it has proven to be a platform that has potential to surpass a lot of other platforms. Customer supports are readily available for users"</div>
+            <div class="tp-review-author">Victor Chinedu (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"What makes Harmonia a go-to annotation platform for me is how they priorities their labelers earnings. Superb website UI to work with."</div>
+            <div class="tp-review-author">Steve of Golauncher (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Good platform. Growing in community"</div>
+            <div class="tp-review-author">Agboola Taiwo (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"The platform is new and honestly I see light in there.. they have variety of tasks"</div>
+            <div class="tp-review-author">Osinachi Obeta (NG)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-5.svg" alt="5 stars" class="tp-stars">
+            <div class="tp-review-text">"Great place to work, been working here since couple of months and it's a good experience so far. They have multiple projects that you can work on based on you skills. umm they include AI, general tasks and also other various projects."</div>
+            <div class="tp-review-author">Humzah Alvi (PK)</div>
+        </div>
+        <div class="tp-review-card">
+            <img src="https://cdn.trustpilot.net/brand-assets/4.1.0/stars/stars-4.svg" alt="4 stars" class="tp-stars">
+            <div class="tp-review-text">"Still growing but there are worth your time and the harmoniaportal support team are quite considerate… try them out"</div>
+            <div class="tp-review-author">Osbert Isabella (NG)</div>
+        </div>
     </div>
   </section>
 
