@@ -1259,8 +1259,21 @@ function loadAAdsFocusBanner(containerId) {
     container.innerHTML = `<iframe data-aa="2450888" src="//ad.a-ads.com/2450888/?size=728x90&_r=${cacheBust}" style="border:0;padding:0;width:728px;max-width:100%;height:90px;overflow:hidden;display:block;margin:auto"></iframe>`;
 }
 
-const FOCUS_AD_REFRESH_MS = 50000; // ~50s - safe, non-abusive refresh cadence
+// PROGRESSIVE refresh cadence instead of a flat interval. A flat 50s
+// interval means a worker who stays on this screen for hours racks up
+// hundreds of impressions from a single pageview/session - exactly the
+// kind of pattern ad networks flag as invalid/spam traffic. Staircase
+// the delay up instead: 90s -> 3min -> 5min -> 7min, then hold at 7min
+// for as long as they remain on the page. Implemented with chained
+// setTimeout (not setInterval) so the delay itself can change each cycle.
+const FOCUS_AD_REFRESH_STAGES_MS = [
+    90 * 1000,   // 1st refresh at 90s
+    180 * 1000,  // 2nd refresh 3min later
+    300 * 1000,  // 3rd refresh 5min later
+    420 * 1000,  // 4th+ refresh 7min later, then repeats at 7min forever
+];
 let focusAdRefreshTimer = null;
+let focusAdRefreshStage = 0;
 
 function refreshFocusAds() {
     loadAdsterraFocusAd("frame-focus-adsterra-left");
@@ -1269,17 +1282,69 @@ function refreshFocusAds() {
     loadAAdsFocusBanner("frame-focus-bottombar");
 }
 
+function scheduleNextFocusAdRefresh() {
+    const stageIndex = Math.min(focusAdRefreshStage, FOCUS_AD_REFRESH_STAGES_MS.length - 1);
+    const delay = FOCUS_AD_REFRESH_STAGES_MS[stageIndex];
+
+    focusAdRefreshTimer = setTimeout(() => {
+        refreshFocusAds();
+        if (focusAdRefreshStage < FOCUS_AD_REFRESH_STAGES_MS.length - 1) {
+            focusAdRefreshStage++;
+        }
+        scheduleNextFocusAdRefresh();
+    }, delay);
+}
+
 function startFocusAdRefresh() {
-    refreshFocusAds();
+    refreshFocusAds(); // initial load, immediately, when the focus view opens
     stopFocusAdRefresh();
-    focusAdRefreshTimer = setInterval(refreshFocusAds, FOCUS_AD_REFRESH_MS);
+    focusAdRefreshStage = 0;
+    scheduleNextFocusAdRefresh();
 }
 
 function stopFocusAdRefresh() {
     if (focusAdRefreshTimer) {
-        clearInterval(focusAdRefreshTimer);
+        clearTimeout(focusAdRefreshTimer);
         focusAdRefreshTimer = null;
     }
+    focusAdRefreshStage = 0; // reset so re-entering the focus view starts the staircase over
+}
+
+/* ---------------- Adcash Autotag (3rd ad network, captcha/focus page only) ----------------
+   Unlike Adsterra/A-Ads above, Adcash's Autotag is NOT a banner placed into a
+   fixed <div> - it's a self-managing tag (in-page push / interstitial /
+   popunder) that decides its own display timing and frequency capping
+   internally once aclib.runAutoTag() is called. Because of that:
+     - It's loaded ONCE per session the first time a worker opens the
+       captcha/code-typing focus workspace (not sitewide in <head>, since
+       we only want it live on this specific long-dwell-time page).
+     - It's intentionally NOT hooked into the FOCUS_AD_REFRESH_STAGES_MS
+       staircase or re-invoked on every refreshFocusAds() tick - calling
+       runAutoTag() repeatedly would spin up duplicate listeners/popunders
+       and fight against its own built-in frequency capping, which is the
+       opposite of what we want after tightening the other two networks. */
+let adcashAutotagLoaded = false;
+
+function loadAdcashAutotagOnce() {
+    if (adcashAutotagLoaded) return;
+    adcashAutotagLoaded = true;
+
+    const libScript = document.createElement("script");
+    libScript.id = "aclib";
+    libScript.type = "text/javascript";
+    libScript.src = "//acscdn.com/script/aclib.js";
+    libScript.onload = () => {
+        if (window.aclib && typeof window.aclib.runAutoTag === "function") {
+            window.aclib.runAutoTag({ zoneId: "kpmpv4lzwi" });
+        } else {
+            console.log("Adcash aclib loaded but runAutoTag not available");
+        }
+    };
+    libScript.onerror = () => {
+        console.log("Adcash aclib script failed to load");
+        adcashAutotagLoaded = false; // allow a retry on the next workspace open
+    };
+    document.head.appendChild(libScript);
 }
 
 function goTab(tab, sub = null) {
@@ -1678,6 +1743,7 @@ function openMicroWorkspace(taskId, fromHash) {
     document.body.classList.add("task-focus-mode");
     window.scrollTo(0, 0);
     startFocusAdRefresh();
+    loadAdcashAutotagOnce();
 
     if (!fromHash) {
         isHashRouting = true;
