@@ -1310,54 +1310,16 @@ function stopFocusAdRefresh() {
     focusAdRefreshStage = 0; // reset so re-entering the focus view starts the staircase over
 }
 
-/* ---------------- Adcash Autotag (3rd ad network, captcha/focus page only) ----------------
-   Unlike Adsterra/A-Ads above, Adcash's Autotag is NOT a banner placed into a
-   fixed <div> - it's a self-managing tag (in-page push / interstitial /
-   popunder) that decides its own display timing and frequency capping
-   internally once aclib.runAutoTag() is called. Because of that:
-     - It's loaded ONCE per session the first time a worker opens the
-       captcha/code-typing focus workspace (not sitewide in <head>, since
-       we only want it live on this specific long-dwell-time page).
-     - It's intentionally NOT hooked into the FOCUS_AD_REFRESH_STAGES_MS
-       staircase or re-invoked on every refreshFocusAds() tick - calling
-       runAutoTag() repeatedly would spin up duplicate listeners/popunders
-       and fight against its own built-in frequency capping, which is the
-       opposite of what we want after tightening the other two networks. */
-let adcashAutotagLoaded = false;
-
-function loadAdcashAutotagOnce() {
-    if (adcashAutotagLoaded) return;
-    adcashAutotagLoaded = true;
-
-    const libScript = document.createElement("script");
-    libScript.id = "aclib";
-    libScript.type = "text/javascript";
-    libScript.src = "//acscdn.com/script/aclib.js";
-    libScript.onload = () => {
-        if (window.aclib && typeof window.aclib.runAutoTag === "function") {
-            window.aclib.runAutoTag({ zoneId: "kpmpv4lzwi" });
-        } else {
-            console.log("Adcash aclib loaded but runAutoTag not available");
-        }
-    };
-    libScript.onerror = () => {
-        console.log("Adcash aclib script failed to load");
-        adcashAutotagLoaded = false; // allow a retry on the next workspace open
-    };
-    document.head.appendChild(libScript);
-}
-
 /* ---------------- Monetag Autotag (in-page push, captcha/focus page only) ----------------
-   Same category as Adcash Autotag above: NOT a banner that lives inside a
-   fixed ad-container div — Monetag's tag.min.js self-appends to <body>/<html>
-   and its own script decides when/where to surface a push-style unit. It
-   will not visually "fill" the right-hand ad-container box the way the
-   Adsterra/A-Ads placements do; it renders as its own floating unit.
+   NOT a banner that lives inside a fixed ad-container div — Monetag's
+   tag.min.js self-appends to <body>/<html> and its own script decides
+   when/where to surface a push-style unit. It will not visually "fill"
+   the right-hand ad-container box the way the Adsterra/A-Ads placements do;
+   it renders as its own floating unit.
    Loaded once per session, the first time the captcha/focus workspace
    opens, and intentionally NOT re-invoked by the FOCUS_AD_REFRESH_STAGES_MS
-   staircase — Monetag manages its own display/frequency capping the same
-   way Adcash's runAutoTag does, so calling it again would just duplicate
-   listeners rather than "refresh" anything. */
+   staircase — Monetag manages its own display/frequency capping internally,
+   so calling it again would just duplicate listeners rather than "refresh". */
 let monetagPushLoaded = false;
 
 function loadMonetagPushOnce() {
@@ -1771,7 +1733,6 @@ function openMicroWorkspace(taskId, fromHash) {
     document.body.classList.add("task-focus-mode");
     window.scrollTo(0, 0);
     startFocusAdRefresh();
-    loadAdcashAutotagOnce();
     loadMonetagPushOnce();
 
     if (!fromHash) {
