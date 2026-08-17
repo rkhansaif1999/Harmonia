@@ -1228,9 +1228,9 @@ function refreshDashboardAds() {
     if (topbarContainer) {
         topbarContainer.innerHTML = "";
         const optScript = document.createElement("script");
-        optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
+        optScript.text = `atOptions = {'key' : '${ADSTERRA_TOPBAR_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
         const invokeScript = document.createElement("script");
-        invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+        invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
         topbarContainer.appendChild(optScript);
         topbarContainer.appendChild(invokeScript);
     }
@@ -1245,9 +1245,9 @@ const topbarContainer = document.getElementById("frame-topbar-adsterra");
 if (topbarContainer) {
     topbarContainer.innerHTML = "";
     const optScript = document.createElement("script");
-    optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
+    optScript.text = `atOptions = {'key' : '${ADSTERRA_TOPBAR_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
     const invokeScript = document.createElement("script");
-    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
     topbarContainer.appendChild(optScript);
     topbarContainer.appendChild(invokeScript);
 }
@@ -1260,20 +1260,21 @@ if (topbarContainer) {
    Refreshed on a timer (not on every code submission) to stay
    within a sane, policy-safe refresh cadence. */
 // --- ADSTERRA MULTI-SLOT AD STACK ENGINE ---
-const ADSTERRA_KEY = 'e8323cbffe014357ce0b882c97a95811';
+const ADSTERRA_KEY = 'e8323cbffe014357ce0b882c97a95811'; // 160x600 Sidebar
+const ADSTERRA_TOPBAR_KEY = '61ea3a77741ed9bda6542f9b1b995e1d'; // 728x90 Topbar
 let mwSubmitCount = 0;
 let mwClickTrapTimer = null;
 
 function loadAdsterraFocusAds() {
     const slots = [
-        { id: 'frame-focus-ad-top', w: 728, h: 90 },
-        { id: 'frame-focus-ad-bottom', w: 728, h: 90 },
-        { id: 'frame-focus-ad-left-1', w: 160, h: 195 },
-        { id: 'frame-focus-ad-left-2', w: 160, h: 195 },
-        { id: 'frame-focus-ad-left-3', w: 160, h: 195 },
-        { id: 'frame-focus-ad-right-1', w: 160, h: 195 },
-        { id: 'frame-focus-ad-right-2', w: 160, h: 195 },
-        { id: 'frame-focus-ad-right-3', w: 160, h: 195 }
+        { id: 'frame-focus-ad-top', w: 728, h: 90, key: ADSTERRA_TOPBAR_KEY },
+        { id: 'frame-focus-ad-bottom', w: 728, h: 90, key: ADSTERRA_TOPBAR_KEY },
+        { id: 'frame-focus-ad-left-1', w: 160, h: 195, key: ADSTERRA_KEY },
+        { id: 'frame-focus-ad-left-2', w: 160, h: 195, key: ADSTERRA_KEY },
+        { id: 'frame-focus-ad-left-3', w: 160, h: 195, key: ADSTERRA_KEY },
+        { id: 'frame-focus-ad-right-1', w: 160, h: 195, key: ADSTERRA_KEY },
+        { id: 'frame-focus-ad-right-2', w: 160, h: 195, key: ADSTERRA_KEY },
+        { id: 'frame-focus-ad-right-3', w: 160, h: 195, key: ADSTERRA_KEY }
     ];
 
     slots.forEach(slot => {
@@ -1281,9 +1282,9 @@ function loadAdsterraFocusAds() {
         if (container) {
             container.innerHTML = "";
             const optScript = document.createElement("script");
-            optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
+            optScript.text = `atOptions = {'key' : '${slot.key}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
             const invokeScript = document.createElement("script");
-            invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+            invokeScript.src = `https://www.highperformanceformat.com/${slot.key}/invoke.js`;
             container.appendChild(optScript);
             container.appendChild(invokeScript);
         }
