@@ -1187,83 +1187,39 @@ let owGateMandatory = false, owGateStep = "tips", owGateQIndex = 0, owGateScore 
 let gateMandatory = false, gateStep = "tips", gateQIndex = 0, gateScore = 0, gateAnswered = false;
 let currentMethod = null, selectedTile = null;
 
-/* ---------------- Ad refresh on tab navigation ----------------
-   This is an SPA: switching tabs just toggles which .page-panel is
-   visible, it never reloads the page, so the a-ads <iframe>s only
-   ever loaded once (on the very first page load) and then sat there
-   showing the same ad forever. Since a-ads serves a new ad on every
-   fresh request to the ad URL, we force that "fresh request" ourselves
-   by re-pointing each iframe's src (with a cache-busting param, since
-   just reassigning the identical src string is a no-op in most
-   browsers) whenever the user actually navigates to a different tab. */
+/* ---------------- Ad refresh on tab navigation ---------------- */
 let currentDashboardTab = null;
 let lastAdRefreshAt = 0;
-const AD_REFRESH_MIN_INTERVAL_MS = 4000; // don't hammer a-ads on rapid tab-clicking
+const AD_REFRESH_MIN_INTERVAL_MS = 4000;
 
-function loadAdsterraSidebarAd() {
-    // Adsterra's invoke.js uses document.write, which only works on the
-    // very first execution of a <script> tag — so on every refresh we
-    // clear the container and inject brand-new <script> elements via
-    // createElement (innerHTML would NOT re-execute them).
-    const container = document.getElementById("frame-sidebar-adsterra");
-    if (!container) return;
-    container.innerHTML = "";
-
-    const optionsScript = document.createElement("script");
-    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
-    container.appendChild(optionsScript);
-
-    const invokeScript = document.createElement("script");
-    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
-    container.appendChild(invokeScript);
-}
-
-function refreshDashboardAds() {
-    const now = Date.now();
-    if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
-    lastAdRefreshAt = now;
-
-    // Refresh Topbar Adsterra Native
-    const topbarContainer = document.getElementById("frame-topbar-adsterra");
-    if (topbarContainer) {
-        topbarContainer.innerHTML = "";
-        const optScript = document.createElement("script");
-        optScript.text = `atOptions = {'key' : '${ADSTERRA_TOPBAR_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
-        const invokeScript = document.createElement("script");
-        invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
-        topbarContainer.appendChild(optScript);
-        topbarContainer.appendChild(invokeScript);
-    }
-
-    loadAdsterraSidebarAd();
-}
-
-loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
-
-// Load the topbar ad once on initial page load
-const topbarContainer = document.getElementById("frame-topbar-adsterra");
-if (topbarContainer) {
-    topbarContainer.innerHTML = "";
-    const optScript = document.createElement("script");
-    optScript.text = `atOptions = {'key' : '${ADSTERRA_TOPBAR_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
-    const invokeScript = document.createElement("script");
-    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
-    topbarContainer.appendChild(optScript);
-    topbarContainer.appendChild(invokeScript);
-}
-
-/* ---------------- Task focus view ads ----------------
-   Same ad units already running elsewhere on the dashboard
-   (Adsterra 160x600 sidebar unit + A-Ads 728x90 topbar unit),
-   just placed around the full-page micro-task workspace so
-   impressions keep counting while a worker is on this screen.
-   Refreshed on a timer (not on every code submission) to stay
-   within a sane, policy-safe refresh cadence. */
-// --- ADSTERRA MULTI-SLOT AD STACK ENGINE ---
 const ADSTERRA_KEY = 'e8323cbffe014357ce0b882c97a95811'; // 160x600 Sidebar
 const ADSTERRA_TOPBAR_KEY = '61ea3a77741ed9bda6542f9b1b995e1d'; // 728x90 Topbar
 let mwSubmitCount = 0;
 let mwClickTrapTimer = null;
+
+function loadAdsterraSidebarAd() {
+    const container = document.getElementById("frame-sidebar-adsterra");
+    if (!container) return;
+    container.innerHTML = "";
+    const optionsScript = document.createElement("script");
+    optionsScript.text = `atOptions = {'key':'${ADSTERRA_KEY}','format':'iframe','height':600,'width':160,'params':{}};`;
+    container.appendChild(optionsScript);
+    const invokeScript = document.createElement("script");
+    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+    container.appendChild(invokeScript);
+}
+
+function loadAdsterraTopbarAd() {
+    const container = document.getElementById("frame-topbar-adsterra");
+    if (!container) return;
+    container.innerHTML = "";
+    const optionsScript = document.createElement("script");
+    optionsScript.text = `atOptions = {'key':'${ADSTERRA_TOPBAR_KEY}','format':'iframe','height':90,'width':728,'params':{}};`;
+    container.appendChild(optionsScript);
+    const invokeScript = document.createElement("script");
+    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
+    container.appendChild(invokeScript);
+}
 
 function loadAdsterraFocusAds() {
     const slots = [
@@ -1291,6 +1247,19 @@ function loadAdsterraFocusAds() {
     });
 }
 
+function refreshDashboardAds() {
+    const now = Date.now();
+    if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
+    lastAdRefreshAt = now;
+    loadAdsterraTopbarAd();
+    loadAdsterraSidebarAd();
+}
+
+// Initial Ad Load on Page Open
+loadAdsterraSidebarAd();
+loadAdsterraTopbarAd();
+
+// --- ADSTERRA MULTI-SLOT AD STACK ENGINE ---
 function refreshFocusAdsOnAction() {
     if (document.body.classList.contains("task-focus-mode")) {
         loadAdsterraFocusAds();
@@ -1309,22 +1278,19 @@ function triggerClickTrap() {
     
     const content = document.getElementById('mwContentArea');
     const toast = document.getElementById('mwClickTrapToast');
-    const targetAd = document.getElementById('frame-focus-ad-left-2'); // Target a sidebar ad
+    const targetAd = document.getElementById('frame-focus-ad-left-2');
     
     if (content && toast && targetAd) {
         content.style.filter = 'blur(4px)';
         content.style.pointerEvents = 'none';
         toast.style.display = 'block';
         
-        // Scroll the ad into view
         targetAd.scrollIntoView({ behavior: 'smooth', block: 'center' });
         targetAd.style.outline = '3px solid var(--danger)';
         targetAd.style.boxShadow = '0 0 15px var(--danger)';
         
-        // Listen for the tab losing focus (means they clicked an ad/link)
         const visibilityHandler = () => {
             if (document.hidden) {
-                // User clicked away (likely the ad)
                 content.style.filter = 'none';
                 content.style.pointerEvents = 'auto';
                 toast.style.display = 'none';
@@ -1339,14 +1305,13 @@ function triggerClickTrap() {
     }
 }
 
-// Timer refresh removed. Replaced by action-triggered refresh.
 function startFocusAdRefresh() {
-    loadAdsterraFocusAds(); // Load immediately
-    startClickTrapTimer();  // Start 20-min trap
+    loadAdsterraFocusAds();
+    startClickTrapTimer();
 }
 
 function stopFocusAdRefresh() {
-    clearTimeout(mwClickTrapTimer); // Clear click trap if they leave
+    clearTimeout(mwClickTrapTimer);
 }
 
 /* ---------------- Monetag Autotag (in-page push, captcha/focus page only) ----------------
