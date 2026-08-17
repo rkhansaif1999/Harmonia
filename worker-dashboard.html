@@ -596,8 +596,8 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
                 </div>
             </div>
             <div class="topbar-ad-slot" id="topbarAdSlot">
-                <div class="ad-container" style="width:728px;max-width:100%;height:90px;">
-                    <div id="frame-topbar-adsterra"></div>
+                <div class="ad-container" style="width:728px;max-width:100%;height:90px;display:block;">
+                    <div id="frame-topbar-adsterra" style="width:728px;max-width:100%;height:90px;display:block;"></div>
                 </div>
             </div>
             <div class="profile">Worker</div>
@@ -1213,9 +1213,15 @@ function loadAdsterraTopbarAd() {
     const container = document.getElementById("frame-topbar-adsterra");
     if (!container) return;
     container.innerHTML = "";
+    container.style.width = "728px";
+    container.style.maxWidth = "100%";
+    container.style.height = "90px";
+    container.style.display = "block";
+
     const optionsScript = document.createElement("script");
     optionsScript.text = `atOptions = {'key':'${ADSTERRA_TOPBAR_KEY}','format':'iframe','height':90,'width':728,'params':{}};`;
     container.appendChild(optionsScript);
+
     const invokeScript = document.createElement("script");
     invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_TOPBAR_KEY}/invoke.js`;
     container.appendChild(invokeScript);
