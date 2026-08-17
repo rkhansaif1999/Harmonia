@@ -1240,6 +1240,18 @@ function refreshDashboardAds() {
 
 loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
 
+// Load the topbar ad once on initial page load
+const topbarContainer = document.getElementById("frame-topbar-adsterra");
+if (topbarContainer) {
+    topbarContainer.innerHTML = "";
+    const optScript = document.createElement("script");
+    optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
+    const invokeScript = document.createElement("script");
+    invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+    topbarContainer.appendChild(optScript);
+    topbarContainer.appendChild(invokeScript);
+}
+
 /* ---------------- Task focus view ads ----------------
    Same ad units already running elsewhere on the dashboard
    (Adsterra 160x600 sidebar unit + A-Ads 728x90 topbar unit),
