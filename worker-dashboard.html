@@ -295,6 +295,7 @@ body.task-focus-mode .sidebar-toggle,
 body.task-focus-mode .sidebar-backdrop,
 body.task-focus-mode .sidebar-desktop-toggle{display:none !important;}
 body.task-focus-mode .main{display:none !important;}
+body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
 
 .task-focus-back{
     position:fixed;top:16px;left:16px;z-index:610;
@@ -595,13 +596,8 @@ body.task-focus-mode .main{display:none !important;}
                 </div>
             </div>
             <div class="topbar-ad-slot" id="topbarAdSlot">
-                <div class="ad-container">
-                    <!-- BEGIN AADS AD UNIT 2450888 -->
-                    <div id="frame-topbar" style="width: 728px;margin: auto;z-index: 99998;height: auto">
-                        <iframe data-aa='2450888' src='//ad.a-ads.com/2450888/?size=728x90'
-                                style='border:0; padding:0; width:728px; height:90px; overflow:hidden;display: block;margin: auto'></iframe>
-                    </div>
-                    <!-- END AADS AD UNIT 2450888 -->
+                <div class="ad-container" style="width:728px;max-width:100%;height:90px;">
+                    <div id="frame-topbar-adsterra"></div>
                 </div>
             </div>
             <div class="profile">Worker</div>
@@ -907,60 +903,71 @@ body.task-focus-mode .main{display:none !important;}
 
     <div class="task-focus-inner">
 
-        <div class="task-focus-top-ad">
-            <div class="ad-container">
-                <div id="frame-focus-topbar"></div>
+    <!-- TOP AD: Adsterra Native -->
+    <div class="task-focus-top-ad">
+        <div class="ad-container" style="width:728px;max-width:100%;height:90px;">
+            <div id="frame-focus-ad-top"></div>
+        </div>
+    </div>
+
+    <div class="task-focus-layout">
+
+        <!-- LEFT SIDEBAR: 3x Adsterra Native -->
+        <div class="task-focus-side-ad">
+            <div class="ad-container" style="width:160px;min-height:600px;display:flex;flex-direction:column;gap:5px;background:transparent;border:none;">
+                <div id="frame-focus-ad-left-1" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
+                <div id="frame-focus-ad-left-2" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
+                <div id="frame-focus-ad-left-3" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
             </div>
         </div>
 
-        <div class="task-focus-layout">
+        <div class="task-focus-content" id="mwContentArea" style="position:relative;transition:filter .3s ease;">
+            <h3 id="mwTitle" style="margin:0 0 14px;">Micro Task</h3>
 
-            <div class="task-focus-side-ad">
-                <div class="ad-container">
-                    <div id="frame-focus-adsterra-left"></div>
+            <div id="mwGateState">
+                <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
+                <button class="primary gate-btn" id="mwGateBtn" onclick="handleGateClick()">Visit Link</button>
+                <p class="muted" style="text-align:center;font-size:.85rem;margin-top:12px;" id="mwGateNote">Step 1 of 2: Click the button above to open the link.</p>
+            </div>
+            <div id="mwLoadingState" style="display:none;text-align:center;padding:30px 0;">Loading...</div>
+            <div id="mwTaskContent" style="display:none;">
+                <div class="code-display" id="mwCodeDisplay">------</div>
+                <input type="text" id="mwCodeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
+                <div style="text-align:center;margin-top:16px;">
+                    <button class="primary" id="mwSubmitBtn" onclick="submitCode()">Submit</button>
+                </div>
+                <div class="feedback-box" id="mwFeedbackBox"></div>
+                <div class="session-stats">
+                    <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
+                    <span>Correct: <strong id="mwStatCorrect">0</strong></span>
+                    <span>Earned this session: <strong id="mwStatEarned">$0.000000</strong></span>
                 </div>
             </div>
+            <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
 
-            <div class="task-focus-content">
-                <h3 id="mwTitle" style="margin:0 0 14px;">Micro Task</h3>
-
-                <div id="mwGateState">
-                    <p class="muted">Please visit the link below and stay on that page for a few seconds, then come back and click Continue to start your session.</p>
-                    <button class="primary gate-btn" id="mwGateBtn" onclick="handleGateClick()">Visit Link</button>
-                    <p class="muted" style="text-align:center;font-size:.85rem;margin-top:12px;" id="mwGateNote">Step 1 of 2: Click the button above to open the link.</p>
-                </div>
-                <div id="mwLoadingState" style="display:none;text-align:center;padding:30px 0;">Loading...</div>
-                <div id="mwTaskContent" style="display:none;">
-                    <div class="code-display" id="mwCodeDisplay">------</div>
-                    <input type="text" id="mwCodeInput" class="code-input" maxlength="6" placeholder="Type the code" autocomplete="off">
-                    <div style="text-align:center;margin-top:16px;">
-                        <button class="primary" id="mwSubmitBtn" onclick="submitCode()">Submit</button>
-                    </div>
-                    <div class="feedback-box" id="mwFeedbackBox"></div>
-                    <div class="session-stats">
-                        <span>Submissions: <strong id="mwStatSubmissions">0</strong></span>
-                        <span>Correct: <strong id="mwStatCorrect">0</strong></span>
-                        <span>Earned this session: <strong id="mwStatEarned">$0.000000</strong></span>
-                    </div>
-                </div>
-                <div id="mwNotApprovedState" style="display:none;text-align:center;padding:30px 0;" class="muted">You're not approved for this project.</div>
+            <!-- 20-Minute Click Trap Toast -->
+            <div id="mwClickTrapToast" style="display:none;position:absolute;top:20px;left:50%;transform:translateX(-50%);background:var(--danger);color:white;padding:10px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:10;font-size:14px;font-weight:bold;">
+                Session Paused. Click the highlighted link below to resume.
             </div>
-
-            <div class="task-focus-side-ad">
-                <div class="ad-container">
-                    <div id="frame-focus-adsterra-right"></div>
-                </div>
-            </div>
-
         </div>
 
-        <div class="task-focus-bottom-ad">
-            <div class="ad-container">
-                <div id="frame-focus-bottombar"></div>
+        <!-- RIGHT SIDEBAR: 3x Adsterra Native -->
+        <div class="task-focus-side-ad">
+            <div class="ad-container" style="width:160px;min-height:600px;display:flex;flex-direction:column;gap:5px;background:transparent;border:none;">
+                <div id="frame-focus-ad-right-1" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
+                <div id="frame-focus-ad-right-2" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
+                <div id="frame-focus-ad-right-3" style="width:160px;height:195px;overflow:hidden;border-radius:8px;background:var(--panel);"></div>
             </div>
         </div>
 
     </div>
+
+    <!-- STICKY BOTTOM AD: Adsterra Native -->
+    <div style="position:fixed;bottom:0;left:0;width:100%;height:90px;background:var(--panel);border-top:1px solid var(--border);z-index:600;display:flex;justify-content:center;align-items:center;">
+        <div id="frame-focus-ad-bottom" style="width:728px;max-width:100%;height:90px;"></div>
+    </div>
+
+</div>
 </div>
 
 <!-- ============= Compose new thread ============= -->
@@ -1216,15 +1223,17 @@ function refreshDashboardAds() {
     if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
     lastAdRefreshAt = now;
 
-    document.querySelectorAll("#frame-topbar iframe[data-aa]").forEach(iframe => {
-        // Cache the ad's real URL (without our own cache-buster) once,
-        // so repeated refreshes strip the old "_r" param instead of
-        // stacking a new one onto the end every time.
-        if (!iframe.dataset.baseSrc) iframe.dataset.baseSrc = iframe.getAttribute("src");
-        const base = iframe.dataset.baseSrc;
-        const sep = base.includes("?") ? "&" : "?";
-        iframe.setAttribute("src", base + sep + "_r=" + now);
-    });
+    // Refresh Topbar Adsterra Native
+    const topbarContainer = document.getElementById("frame-topbar-adsterra");
+    if (topbarContainer) {
+        topbarContainer.innerHTML = "";
+        const optScript = document.createElement("script");
+        optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {}};`;
+        const invokeScript = document.createElement("script");
+        invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+        topbarContainer.appendChild(optScript);
+        topbarContainer.appendChild(invokeScript);
+    }
 
     loadAdsterraSidebarAd();
 }
@@ -1238,76 +1247,93 @@ loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
    impressions keep counting while a worker is on this screen.
    Refreshed on a timer (not on every code submission) to stay
    within a sane, policy-safe refresh cadence. */
-function loadAdsterraFocusAd(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = "";
+// --- ADSTERRA MULTI-SLOT AD STACK ENGINE ---
+const ADSTERRA_KEY = 'e8323cbffe014357ce0b882c97a95811';
+let mwSubmitCount = 0;
+let mwClickTrapTimer = null;
 
-    const optionsScript = document.createElement("script");
-    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
-    container.appendChild(optionsScript);
+function loadAdsterraFocusAds() {
+    const slots = [
+        { id: 'frame-focus-ad-top', w: 728, h: 90 },
+        { id: 'frame-focus-ad-bottom', w: 728, h: 90 },
+        { id: 'frame-focus-ad-left-1', w: 160, h: 195 },
+        { id: 'frame-focus-ad-left-2', w: 160, h: 195 },
+        { id: 'frame-focus-ad-left-3', w: 160, h: 195 },
+        { id: 'frame-focus-ad-right-1', w: 160, h: 195 },
+        { id: 'frame-focus-ad-right-2', w: 160, h: 195 },
+        { id: 'frame-focus-ad-right-3', w: 160, h: 195 }
+    ];
 
-    const invokeScript = document.createElement("script");
-    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
-    container.appendChild(invokeScript);
-}
-
-function loadAAdsFocusBanner(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const cacheBust = Date.now();
-    container.innerHTML = `<iframe data-aa="2450888" src="//ad.a-ads.com/2450888/?size=728x90&_r=${cacheBust}" style="border:0;padding:0;width:728px;max-width:100%;height:90px;overflow:hidden;display:block;margin:auto"></iframe>`;
-}
-
-// PROGRESSIVE refresh cadence instead of a flat interval. A flat 50s
-// interval means a worker who stays on this screen for hours racks up
-// hundreds of impressions from a single pageview/session - exactly the
-// kind of pattern ad networks flag as invalid/spam traffic. Staircase
-// the delay up instead: 90s -> 3min -> 5min -> 7min, then hold at 7min
-// for as long as they remain on the page. Implemented with chained
-// setTimeout (not setInterval) so the delay itself can change each cycle.
-const FOCUS_AD_REFRESH_STAGES_MS = [
-    90 * 1000,   // 1st refresh at 90s
-    180 * 1000,  // 2nd refresh 3min later
-    300 * 1000,  // 3rd refresh 5min later
-    420 * 1000,  // 4th+ refresh 7min later, then repeats at 7min forever
-];
-let focusAdRefreshTimer = null;
-let focusAdRefreshStage = 0;
-
-function refreshFocusAds() {
-    loadAdsterraFocusAd("frame-focus-adsterra-left");
-    loadAdsterraFocusAd("frame-focus-adsterra-right");
-    loadAAdsFocusBanner("frame-focus-topbar");
-    loadAAdsFocusBanner("frame-focus-bottombar");
-}
-
-function scheduleNextFocusAdRefresh() {
-    const stageIndex = Math.min(focusAdRefreshStage, FOCUS_AD_REFRESH_STAGES_MS.length - 1);
-    const delay = FOCUS_AD_REFRESH_STAGES_MS[stageIndex];
-
-    focusAdRefreshTimer = setTimeout(() => {
-        refreshFocusAds();
-        if (focusAdRefreshStage < FOCUS_AD_REFRESH_STAGES_MS.length - 1) {
-            focusAdRefreshStage++;
+    slots.forEach(slot => {
+        const container = document.getElementById(slot.id);
+        if (container) {
+            container.innerHTML = "";
+            const optScript = document.createElement("script");
+            optScript.text = `atOptions = {'key' : '${ADSTERRA_KEY}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
+            const invokeScript = document.createElement("script");
+            invokeScript.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+            container.appendChild(optScript);
+            container.appendChild(invokeScript);
         }
-        scheduleNextFocusAdRefresh();
-    }, delay);
+    });
 }
 
+function refreshFocusAdsOnAction() {
+    if (document.body.classList.contains("task-focus-mode")) {
+        loadAdsterraFocusAds();
+    }
+}
+
+// --- 20-MINUTE CLICK TRAP ---
+function startClickTrapTimer() {
+    if (localStorage.getItem('mw_click_trap_24h')) return;
+    clearTimeout(mwClickTrapTimer);
+    mwClickTrapTimer = setTimeout(triggerClickTrap, 20 * 60 * 1000); // 20 minutes
+}
+
+function triggerClickTrap() {
+    if (!document.body.classList.contains("task-focus-mode")) return;
+    
+    const content = document.getElementById('mwContentArea');
+    const toast = document.getElementById('mwClickTrapToast');
+    const targetAd = document.getElementById('frame-focus-ad-left-2'); // Target a sidebar ad
+    
+    if (content && toast && targetAd) {
+        content.style.filter = 'blur(4px)';
+        content.style.pointerEvents = 'none';
+        toast.style.display = 'block';
+        
+        // Scroll the ad into view
+        targetAd.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetAd.style.outline = '3px solid var(--danger)';
+        targetAd.style.boxShadow = '0 0 15px var(--danger)';
+        
+        // Listen for the tab losing focus (means they clicked an ad/link)
+        const visibilityHandler = () => {
+            if (document.hidden) {
+                // User clicked away (likely the ad)
+                content.style.filter = 'none';
+                content.style.pointerEvents = 'auto';
+                toast.style.display = 'none';
+                targetAd.style.outline = 'none';
+                targetAd.style.boxShadow = 'none';
+                localStorage.setItem('mw_click_trap_24h', '1');
+                document.removeEventListener('visibilitychange', visibilityHandler);
+                clearTimeout(mwClickTrapTimer);
+            }
+        };
+        document.addEventListener('visibilitychange', visibilityHandler);
+    }
+}
+
+// Timer refresh removed. Replaced by action-triggered refresh.
 function startFocusAdRefresh() {
-    refreshFocusAds(); // initial load, immediately, when the focus view opens
-    stopFocusAdRefresh();
-    focusAdRefreshStage = 0;
-    scheduleNextFocusAdRefresh();
+    loadAdsterraFocusAds(); // Load immediately
+    startClickTrapTimer();  // Start 20-min trap
 }
 
 function stopFocusAdRefresh() {
-    if (focusAdRefreshTimer) {
-        clearTimeout(focusAdRefreshTimer);
-        focusAdRefreshTimer = null;
-    }
-    focusAdRefreshStage = 0; // reset so re-entering the focus view starts the staircase over
+    clearTimeout(mwClickTrapTimer); // Clear click trap if they leave
 }
 
 /* ---------------- Monetag Autotag (in-page push, captcha/focus page only) ----------------
@@ -1834,6 +1860,19 @@ async function submitCode() {
     if (!submittedValue) { feedbackBox.textContent = "Please type the code shown above."; feedbackBox.className = "feedback-box feedback-incorrect"; return; }
     if (!mwChallengeId) { feedbackBox.textContent = "No active code. Please wait for a new one to load."; feedbackBox.className = "feedback-box feedback-incorrect"; return; }
     input.disabled = true; submitBtn.disabled = true;
+    
+    mwSubmitCount++;
+
+    // 1. The Silent Smartlink Click-Under (Every 20th submit)
+    if (mwSubmitCount % 20 === 0) {
+        window.open(MW_GATE_LINK, "_blank", "noopener");
+    }
+
+    // 2. The Action-Triggered Ad Refresh (Every 10th submit)
+    if (mwSubmitCount % 10 === 0) {
+        refreshFocusAdsOnAction();
+    }
+
     try {
         const response = await authFetch(WORKER_URL + "/api/worker/micro-tasks/submit", { method: "POST", body: JSON.stringify({ challengeId: mwChallengeId, submittedValue }) });
         const data = await response.json();
@@ -2780,12 +2819,59 @@ function loadWithdrawHistory(requests) {
 
 function openWithdrawModal() {
     const pending = parseFloat(document.getElementById("weeklyPending").textContent.replace("$","")) || 0;
+    
+    // If they haven't passed the gate yet, show the CPA gate
+    if (localStorage.getItem('mw_withdraw_gate_24h') !== '1') {
+        showWithdrawGate(pending);
+        return;
+    }
+    
     const amount = prompt(`Enter amount to withdraw (max $${pending.toFixed(2)}, min $10):`);
     if (!amount) return;
     const num = parseFloat(amount);
     if (isNaN(num) || num < 10) { alert("Minimum withdrawal is $10."); return; }
     if (num > pending) { alert(`You only have $${pending.toFixed(6)} pending.`); return; }
     submitWithdrawRequest(num);
+}
+
+function showWithdrawGate(pending) {
+    const overlay = document.getElementById('alertOverlay');
+    const title = document.getElementById('alertTitle');
+    const msg = document.getElementById('alertMessage');
+    const icon = document.getElementById('alertIcon');
+    const okBtn = document.getElementById('alertOkBtn');
+    const cancelBtn = document.getElementById('alertCancelBtn');
+    
+    title.textContent = "Security Verification Required";
+    msg.innerHTML = "To prevent fraud and process your withdrawal, please complete this quick sponsor task.<br><br>1. Click 'Start Verification' below.<br>2. On the new page, submit your email or phone number.<br>3. Return here and click 'I Completed It'.";
+    icon.textContent = "🔒";
+    icon.style.background = "var(--warning-soft)";
+    icon.style.color = "var(--warning)";
+    
+    okBtn.textContent = "Start Verification";
+    okBtn.onclick = () => {
+        window.open('/api/premium-gate', '_blank');
+        okBtn.textContent = "I Completed It";
+        okBtn.onclick = () => {
+            localStorage.setItem('mw_withdraw_gate_24h', '1');
+            overlay.classList.remove('open');
+            // Continue to normal withdrawal prompt
+            const amount = prompt(`Enter amount to withdraw (max $${pending.toFixed(2)}, min $10):`);
+            if (!amount) return;
+            const num = parseFloat(amount);
+            if (isNaN(num) || num < 10) { alert("Minimum withdrawal is $10."); return; }
+            if (num > pending) { alert(`You only have $${pending.toFixed(6)} pending.`); return; }
+            submitWithdrawRequest(num);
+        };
+    };
+    
+    cancelBtn.style.display = "inline-block";
+    cancelBtn.textContent = "Cancel";
+    cancelBtn.onclick = () => {
+        overlay.classList.remove('open');
+    };
+    
+    overlay.classList.add('open');
 }
 
 async function submitWithdrawRequest(amount) {
