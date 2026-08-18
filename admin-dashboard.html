@@ -139,14 +139,12 @@ button:hover{transform:none;}
 .side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
 .sidebar-bottom{margin-top:auto;padding-top:16px;}
 .sidebar-ad-slot .ad-container{
-    width:100%;min-height:600px;max-height:60vh;border-radius:12px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
+    width:auto;max-width:100%;height:auto;background:transparent;border:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
 }
 .topbar-ad-slot{flex:1;display:flex;align-items:center;justify-content:center;min-width:0;padding:0 16px;}
 .topbar-ad-slot .ad-container{
-    width:728px;max-width:100%;height:90px;border-radius:10px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--border);
+    width:auto;max-width:100%;height:auto;background:transparent;border:none;
     display:flex;align-items:center;justify-content:center;
 }
 .ad-placeholder-text{color:var(--muted);font-size:.72rem;text-align:center;padding:8px;}
@@ -820,10 +818,10 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
         </ul>
 
         <div class="sidebar-bottom sidebar-ad-slot" id="sidebarAdSlot">
-            <div class="ad-container">
-                <!-- BEGIN ADSTERRA AD UNIT e8323cbffe014357ce0b882c97a95811 -->
-                <div id="frame-sidebar-adsterra"></div>
-                <!-- END ADSTERRA AD UNIT e8323cbffe014357ce0b882c97a95811 -->
+            <div class="ad-container" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:transparent;border:none;">
+                <div id="frame-sidebar-ad-1"></div>
+                <div id="frame-sidebar-ad-2"></div>
+                <div id="frame-sidebar-ad-3"></div>
             </div>
         </div>
     </aside>
@@ -841,13 +839,8 @@ label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin:10
                 </div>
             </div>
             <div class="topbar-ad-slot" id="topbarAdSlot">
-                <div class="ad-container">
-                    <!-- BEGIN AADS AD UNIT 2450888 -->
-                    <div id="frame-topbar" style="width: 728px;margin: auto;z-index: 99998;height: auto">
-                        <iframe data-aa='2450888' src='//ad.a-ads.com/2450888/?size=728x90'
-                                style='border:0; padding:0; width:728px; height:90px; overflow:hidden;display: block;margin: auto'></iframe>
-                    </div>
-                    <!-- END AADS AD UNIT 2450888 -->
+                <div class="ad-container" style="display:block;text-align:center;background:transparent;border:none;max-width:100%;">
+                    <div id="frame-topbar-adsterra" style="margin:0 auto;"></div>
                 </div>
             </div>
             <div class="profile">Administrator</div>
@@ -1640,38 +1633,98 @@ function isAdminTabAllowed(tab) {
 /* ---------------- Ad refresh on tab navigation ---------------- */
 let currentAdminTab = null;
 let lastAdRefreshAt = 0;
-const AD_REFRESH_MIN_INTERVAL_MS = 4000; // don't hammer ad networks on rapid tab-clicking
+const AD_REFRESH_MIN_INTERVAL_MS = 4000;
+
+const ADSTERRA_KEY_DESKTOP_BANNER = '61ea3a77741ed9bda6542f9b1b995e1d'; // 728x90
+const ADSTERRA_KEY_DESKTOP_SKYSCRAPER = 'e8323cbffe014357ce0b882c97a95811'; // 160x600
+const ADSTERRA_KEY_MOBILE_BANNER = '94fe4ca11df1573472e185fc273971d8'; // 320x50
+const ADSTERRA_KEY_MOBILE_RECTANGLE = 'c0a0d508b6aca0cb4bc0eca0e586f3e3'; // 300x250
+
+function isDesktop() {
+    return window.innerWidth >= 1100;
+}
 
 function loadAdsterraSidebarAd() {
-    const container = document.getElementById("frame-sidebar-adsterra");
+    const isDesk = isDesktop();
+    const w = isDesk ? 160 : 300;
+    const h = isDesk ? 600 : 250;
+    const key = isDesk ? ADSTERRA_KEY_DESKTOP_SKYSCRAPER : ADSTERRA_KEY_MOBILE_RECTANGLE;
+
+    const slots = [
+        { id: 'frame-sidebar-ad-1', w: w, h: h, key: key },
+        { id: 'frame-sidebar-ad-2', w: w, h: h, key: key },
+        { id: 'frame-sidebar-ad-3', w: w, h: h, key: key }
+    ];
+
+    slots.forEach(slot => {
+        const container = document.getElementById(slot.id);
+        if (!container) return;
+        container.innerHTML = "";
+        container.style.width = slot.w + "px";
+        container.style.height = slot.h + "px";
+        container.style.display = "block";
+        container.style.margin = "0 auto";
+
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.scrolling = 'no';
+        container.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+        <script type="text/javascript">atOptions = {'key':'${slot.key}','format':'iframe','height':${slot.h},'width':${slot.w},'params':{}};<\/script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/${slot.key}/invoke.js"><\/script>
+        </body></html>`);
+        doc.close();
+    });
+}
+
+function loadAdsterraTopbarAd() {
+    const container = document.getElementById("frame-topbar-adsterra");
     if (!container) return;
     container.innerHTML = "";
+    
+    const isDesk = isDesktop();
+    const w = isDesk ? 728 : 320;
+    const h = isDesk ? 90 : 50;
+    const key = isDesk ? ADSTERRA_KEY_DESKTOP_BANNER : ADSTERRA_KEY_MOBILE_BANNER;
+    
+    container.style.width = w + "px";
+    container.style.maxWidth = "100%";
+    container.style.height = h + "px";
+    container.style.display = "block";
+    container.style.margin = "0 auto";
 
-    const optionsScript = document.createElement("script");
-    optionsScript.text = "atOptions = {'key':'e8323cbffe014357ce0b882c97a95811','format':'iframe','height':600,'width':160,'params':{}};";
-    container.appendChild(optionsScript);
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.scrolling = 'no';
+    container.appendChild(iframe);
 
-    const invokeScript = document.createElement("script");
-    invokeScript.src = "https://www.highperformanceformat.com/e8323cbffe014357ce0b882c97a95811/invoke.js";
-    container.appendChild(invokeScript);
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+    <script type="text/javascript">atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};<\/script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+    </body></html>`);
+    doc.close();
 }
 
 function refreshDashboardAds() {
     const now = Date.now();
     if (now - lastAdRefreshAt < AD_REFRESH_MIN_INTERVAL_MS) return;
     lastAdRefreshAt = now;
-
-    document.querySelectorAll("#frame-topbar iframe[data-aa]").forEach(iframe => {
-        if (!iframe.dataset.baseSrc) iframe.dataset.baseSrc = iframe.getAttribute("src");
-        const base = iframe.dataset.baseSrc;
-        const sep = base.includes("?") ? "&" : "?";
-        iframe.setAttribute("src", base + sep + "_r=" + now);
-    });
-
+    loadAdsterraTopbarAd();
     loadAdsterraSidebarAd();
 }
 
-loadAdsterraSidebarAd(); // load the sidebar ad once on initial page load
+// Initial Ad Load on Page Open
+loadAdsterraTopbarAd();
+loadAdsterraSidebarAd();
 
 function goAdminTab(tab) {
     if (!ADMIN_VALID_TABS.includes(tab)) tab = "dashboard";
