@@ -523,12 +523,6 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
     .modal{max-width:100%;width:100%;height:100%;max-height:100%;border-radius:0;padding:16px;}
     .modal.wide{height:100vh;}
 }
-/* Mobile In-Content Ads (Hidden on Desktop) */
-#mobileInContentAds{display:none;}
-@media(max-width:980px){
-    #mobileInContentAds{display:flex !important;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;}
-}
-
 @media(max-width:700px){
     /* Horizontal swipeable tables */
     table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;}
@@ -582,8 +576,10 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
         </ul>
 
         <div class="sidebar-bottom sidebar-ad-slot" id="sidebarAdSlot">
-            <div class="ad-container" style="display:flex;justify-content:center;background:transparent;border:none;">
-                <div id="frame-sidebar-adsterra"></div>
+            <div class="ad-container" style="display:flex;flex-direction:column;align-items:center;gap:5px;background:transparent;border:none;">
+                <div id="frame-sidebar-ad-1"></div>
+                <div id="frame-sidebar-ad-2"></div>
+                <div id="frame-sidebar-ad-3"></div>
             </div>
         </div>
     </aside>
@@ -674,13 +670,6 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- MOBILE ONLY IN-CONTENT ADS -->
-            <div id="mobileInContentAds">
-                <div id="frame-mobile-ad-1" style="width:300px;height:250px;display:block;"></div>
-                <div id="frame-mobile-ad-2" style="width:300px;height:250px;display:block;"></div>
-                <div id="frame-mobile-ad-3" style="width:300px;height:250px;display:block;"></div>
             </div>
 
             <div class="card section-gap">
@@ -1217,34 +1206,41 @@ function isDesktop() {
 }
 
 function loadAdsterraSidebarAd() {
-    const container = document.getElementById("frame-sidebar-adsterra");
-    if (!container) return;
-    container.innerHTML = "";
-    
     const isDesk = isDesktop();
     const w = isDesk ? 160 : 300;
     const h = isDesk ? 600 : 250;
     const key = isDesk ? ADSTERRA_KEY_DESKTOP_SKYSCRAPER : ADSTERRA_KEY_MOBILE_RECTANGLE;
-    
-    container.style.width = w + "px";
-    container.style.height = h + "px";
-    container.style.display = "block";
-    container.style.margin = "0 auto";
 
-    const iframe = document.createElement('iframe');
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-    iframe.scrolling = 'no';
-    container.appendChild(iframe);
+    const slots = [
+        { id: 'frame-sidebar-ad-1', w: w, h: h, key: key },
+        { id: 'frame-sidebar-ad-2', w: w, h: h, key: key },
+        { id: 'frame-sidebar-ad-3', w: w, h: h, key: key }
+    ];
 
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
-    <script type="text/javascript">atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};<\/script>
-    <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
-    </body></html>`);
-    doc.close();
+    slots.forEach(slot => {
+        const container = document.getElementById(slot.id);
+        if (!container) return;
+        container.innerHTML = "";
+        container.style.width = slot.w + "px";
+        container.style.height = slot.h + "px";
+        container.style.display = "block";
+        container.style.margin = "0 auto";
+
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.scrolling = 'no';
+        container.appendChild(iframe);
+
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+        <script type="text/javascript">atOptions = {'key':'${slot.key}','format':'iframe','height':${slot.h},'width':${slot.w},'params':{}};<\/script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/${slot.key}/invoke.js"><\/script>
+        </body></html>`);
+        doc.close();
+    });
 }
 
 function loadAdsterraTopbarAd() {
@@ -1339,42 +1335,11 @@ function refreshDashboardAds() {
     lastAdRefreshAt = now;
     loadAdsterraTopbarAd();
     loadAdsterraSidebarAd();
-    loadMobileInContentAds();
 }
 
 // Initial Ad Load on Page Open
 loadAdsterraSidebarAd();
 loadAdsterraTopbarAd();
-loadMobileInContentAds();
-
-function loadMobileInContentAds() {
-    const slots = [
-        { id: 'frame-mobile-ad-1', key: ADSTERRA_KEY_MOBILE_RECTANGLE },
-        { id: 'frame-mobile-ad-2', key: ADSTERRA_KEY_MOBILE_RECTANGLE },
-        { id: 'frame-mobile-ad-3', key: ADSTERRA_KEY_MOBILE_RECTANGLE }
-    ];
-
-    slots.forEach(slot => {
-        const container = document.getElementById(slot.id);
-        if (!container) return;
-        container.innerHTML = "";
-        
-        const iframe = document.createElement('iframe');
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
-        iframe.scrolling = 'no';
-        container.appendChild(iframe);
-
-        const doc = iframe.contentWindow.document;
-        doc.open();
-        doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
-        <script type="text/javascript">atOptions = {'key':'${slot.key}','format':'iframe','height':250,'width':300,'params':{}};<\/script>
-        <script type="text/javascript" src="https://www.highperformanceformat.com/${slot.key}/invoke.js"><\/script>
-        </body></html>`);
-        doc.close();
-    });
-}
 
 // --- ADSTERRA MULTI-SLOT AD STACK ENGINE ---
 function refreshFocusAdsOnAction() {
