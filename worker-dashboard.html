@@ -1219,6 +1219,7 @@ function loadAdsterraSidebarAd() {
     optionsScript.text = `atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};`;
     container.appendChild(optionsScript);
     const invokeScript = document.createElement("script");
+    invokeScript.async = true;
     invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
     container.appendChild(invokeScript);
 }
@@ -1243,6 +1244,7 @@ function loadAdsterraTopbarAd() {
     container.appendChild(optionsScript);
 
     const invokeScript = document.createElement("script");
+    invokeScript.async = true;
     invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
     container.appendChild(invokeScript);
 }
@@ -1284,6 +1286,7 @@ function loadAdsterraFocusAds() {
             const optScript = document.createElement("script");
             optScript.text = `atOptions = {'key' : '${slot.key}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
             const invokeScript = document.createElement("script");
+            invokeScript.async = true;
             invokeScript.src = `https://www.highperformanceformat.com/${slot.key}/invoke.js`;
             container.appendChild(optScript);
             container.appendChild(invokeScript);
@@ -1365,32 +1368,16 @@ function stopFocusAdRefresh() {
     clearTimeout(mwClickTrapTimer);
 }
 
-/* ---------------- Monetag Autotag (in-page push, captcha/focus page only) ----------------
-   NOT a banner that lives inside a fixed ad-container div — Monetag's
-   tag.min.js self-appends to <body>/<html> and its own script decides
-   when/where to surface a push-style unit. It will not visually "fill"
-   the right-hand ad-container box the way the Adsterra/A-Ads placements do;
-   it renders as its own floating unit.
-   Loaded once per session, the first time the captcha/focus workspace
-   opens, and intentionally NOT re-invoked by the FOCUS_AD_REFRESH_STAGES_MS
-   staircase — Monetag manages its own display/frequency capping internally,
-   so calling it again would just duplicate listeners rather than "refresh". */
-let monetagPushLoaded = false;
-
-function loadMonetagPushOnce() {
-    if (monetagPushLoaded) return;
-    monetagPushLoaded = true;
-
-    try {
-        const s = document.createElement("script");
-        s.dataset.zone = "11553661";
-        s.src = "https://nap5k.com/tag.min.js";
-        (document.body || document.documentElement).appendChild(s);
-    } catch (e) {
-        console.log("Monetag tag failed to load", e);
-        monetagPushLoaded = false; // allow a retry on the next workspace open
+/* ---------------- Ad Refresh on Return Focus ----------------
+   When a user triggers a Smartlink click-under, they leave your tab.
+   When they return, this listens for the browser's visibilitychange
+   event and instantly refreshes the Adsterra focus ads, maximizing
+   viewability scores without using illegal auto-timers. */
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && document.body.classList.contains("task-focus-mode")) {
+        loadAdsterraFocusAds();
     }
-}
+});
 
 function goTab(tab, sub = null) {
     if (currentDashboardTab !== null && currentDashboardTab !== tab) {
@@ -1787,8 +1774,15 @@ function openMicroWorkspace(taskId, fromHash) {
 
     document.body.classList.add("task-focus-mode");
     window.scrollTo(0, 0);
+    
+    // Throttled Smartlink Trigger on Task Start (Once every 2 hours)
+    const lastStartLink = parseInt(localStorage.getItem('mw_start_link_2h') || '0');
+    if (Date.now() - lastStartLink > 2 * 60 * 60 * 1000) {
+        window.open(MW_GATE_LINK, "_blank", "noopener");
+        localStorage.setItem('mw_start_link_2h', Date.now());
+    }
+
     startFocusAdRefresh();
-    loadMonetagPushOnce();
 
     if (!fromHash) {
         isHashRouting = true;
@@ -1797,6 +1791,13 @@ function openMicroWorkspace(taskId, fromHash) {
     }
 }
 function closeMicroWorkspace(fromHash) {
+    // Throttled Smartlink Trigger on Task Exit (Once every 2 hours)
+    const lastExitLink = parseInt(localStorage.getItem('mw_exit_link_2h') || '0');
+    if (Date.now() - lastExitLink > 2 * 60 * 60 * 1000) {
+        window.open(MW_GATE_LINK, "_blank", "noopener");
+        localStorage.setItem('mw_exit_link_2h', Date.now());
+    }
+
     document.body.classList.remove("task-focus-mode");
     stopFocusAdRefresh();
     loadApprovedMicroTasks();
