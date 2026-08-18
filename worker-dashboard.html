@@ -1323,36 +1323,40 @@ function triggerClickTrap() {
     
     const content = document.getElementById('mwContentArea');
     const toast = document.getElementById('mwClickTrapToast');
+    const targetAd = document.getElementById('frame-focus-ad-left-2');
     
-    if (content && toast) {
+    if (content && toast && targetAd) {
         content.style.filter = 'blur(4px)';
         content.style.pointerEvents = 'none';
         toast.style.display = 'block';
-        toast.innerHTML = "Session Paused. Click the button below to resume.";
+        toast.innerHTML = "Session Paused. Click the highlighted ad below to resume.";
         
-        const resumeBtn = document.createElement('button');
-        resumeBtn.textContent = 'Resume Session';
-        resumeBtn.style.cssText = 'display:block;margin:10px auto 0;padding:8px 16px;background:#fff;color:#000;border:none;border-radius:6px;font-weight:bold;cursor:pointer;';
+        targetAd.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetAd.style.outline = '3px solid var(--danger)';
+        targetAd.style.boxShadow = '0 0 15px var(--danger)';
         
-        resumeBtn.onclick = () => {
-            window.open(MW_GATE_LINK, '_blank', 'noopener');
-            toast.innerHTML = "Resuming in 5 seconds...";
-            let count = 5;
-            const interval = setInterval(() => {
-                count--;
-                toast.innerHTML = `Resuming in ${count} seconds...`;
-                if (count <= 0) {
-                    clearInterval(interval);
-                    content.style.filter = 'none';
-                    content.style.pointerEvents = 'auto';
-                    toast.style.display = 'none';
-                    localStorage.setItem('mw_click_trap_24h', '1');
-                    clearTimeout(mwClickTrapTimer);
-                }
-            }, 1000);
+        let trapResolved = false;
+        const fallbackTimer = setTimeout(() => {
+            if (!trapResolved) {
+                window.open(MW_GATE_LINK, '_blank', 'noopener');
+            }
+        }, 10000); // 10 seconds fallback to Smartlink
+        
+        const visibilityHandler = () => {
+            if (document.hidden && !trapResolved) {
+                trapResolved = true;
+                clearTimeout(fallbackTimer);
+                content.style.filter = 'none';
+                content.style.pointerEvents = 'auto';
+                toast.style.display = 'none';
+                targetAd.style.outline = 'none';
+                targetAd.style.boxShadow = 'none';
+                localStorage.setItem('mw_click_trap_24h', '1');
+                document.removeEventListener('visibilitychange', visibilityHandler);
+                clearTimeout(mwClickTrapTimer);
+            }
         };
-        
-        toast.appendChild(resumeBtn);
+        document.addEventListener('visibilitychange', visibilityHandler);
     }
 }
 
