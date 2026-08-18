@@ -1214,14 +1214,22 @@ function loadAdsterraSidebarAd() {
     container.style.width = w + "px";
     container.style.height = h + "px";
     container.style.display = "block";
+    container.style.margin = "0 auto";
 
-    const optionsScript = document.createElement("script");
-    optionsScript.text = `atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};`;
-    container.appendChild(optionsScript);
-    const invokeScript = document.createElement("script");
-    invokeScript.async = true;
-    invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
-    container.appendChild(invokeScript);
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.scrolling = 'no';
+    container.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+    <script type="text/javascript">atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};<\/script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+    </body></html>`);
+    doc.close();
 }
 
 function loadAdsterraTopbarAd() {
@@ -1238,15 +1246,22 @@ function loadAdsterraTopbarAd() {
     container.style.maxWidth = "100%";
     container.style.height = h + "px";
     container.style.display = "block";
+    container.style.margin = "0 auto";
 
-    const optionsScript = document.createElement("script");
-    optionsScript.text = `atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};`;
-    container.appendChild(optionsScript);
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.scrolling = 'no';
+    container.appendChild(iframe);
 
-    const invokeScript = document.createElement("script");
-    invokeScript.async = true;
-    invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
-    container.appendChild(invokeScript);
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+    <script type="text/javascript">atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};<\/script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+    </body></html>`);
+    doc.close();
 }
 
 function loadAdsterraFocusAds() {
@@ -1282,14 +1297,23 @@ function loadAdsterraFocusAds() {
             container.style.borderRadius = "8px";
             container.style.overflow = "hidden";
             container.style.background = "var(--panel)";
-            
-            const optScript = document.createElement("script");
-            optScript.text = `atOptions = {'key' : '${slot.key}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
-            const invokeScript = document.createElement("script");
-            invokeScript.async = true;
-            invokeScript.src = `https://www.highperformanceformat.com/${slot.key}/invoke.js`;
-            container.appendChild(optScript);
-            container.appendChild(invokeScript);
+            container.style.marginLeft = "auto";
+            container.style.marginRight = "auto";
+
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.scrolling = 'no';
+            container.appendChild(iframe);
+
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+            <script type="text/javascript">atOptions = {'key':'${slot.key}','format':'iframe','height':${slot.h},'width':${slot.w},'params':{}};<\/script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/${slot.key}/invoke.js"><\/script>
+            </body></html>`);
+            doc.close();
         }
     });
 }
