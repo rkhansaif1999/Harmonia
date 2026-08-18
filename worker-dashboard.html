@@ -594,8 +594,8 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
                 </div>
             </div>
             <div class="topbar-ad-slot" id="topbarAdSlot">
-                <div class="ad-container" style="display:flex;justify-content:center;background:transparent;border:none;max-width:100%;">
-                    <div id="frame-topbar-adsterra"></div>
+                <div class="ad-container" style="display:block;text-align:center;background:transparent;border:none;max-width:100%;">
+                    <div id="frame-topbar-adsterra" style="margin:0 auto;"></div>
                 </div>
             </div>
             <div class="profile">Worker</div>
@@ -1219,6 +1219,7 @@ function loadAdsterraSidebarAd() {
     optionsScript.text = `atOptions = {'key':'${key}','format':'iframe','height':${h},'width':${w},'params':{}};`;
     container.appendChild(optionsScript);
     const invokeScript = document.createElement("script");
+    invokeScript.async = true;
     invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
     container.appendChild(invokeScript);
 }
@@ -1243,6 +1244,7 @@ function loadAdsterraTopbarAd() {
     container.appendChild(optionsScript);
 
     const invokeScript = document.createElement("script");
+    invokeScript.async = true;
     invokeScript.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
     container.appendChild(invokeScript);
 }
@@ -1284,6 +1286,7 @@ function loadAdsterraFocusAds() {
             const optScript = document.createElement("script");
             optScript.text = `atOptions = {'key' : '${slot.key}', 'format' : 'iframe', 'height' : ${slot.h}, 'width' : ${slot.w}, 'params' : {}};`;
             const invokeScript = document.createElement("script");
+            invokeScript.async = true;
             invokeScript.src = `https://www.highperformanceformat.com/${slot.key}/invoke.js`;
             container.appendChild(optScript);
             container.appendChild(invokeScript);
