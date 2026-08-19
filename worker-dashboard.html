@@ -2079,7 +2079,8 @@ async function submitCode() {
             feedbackBox.textContent = `✅ Correct! You earned ${formatMoney(data.earned)}`;
             feedbackBox.className = "feedback-box feedback-correct";
         } else {
-            feedbackBox.textContent = "❌ Incorrect. Try the next code.";
+            mwSessionEarned += Number(data.earned || 0); // Apply negative penalty to session stats
+            feedbackBox.textContent = `❌ Incorrect. $0.010 deducted from pending earnings.`;
             feedbackBox.className = "feedback-box feedback-incorrect";
         }
         document.getElementById("mwStatSubmissions").textContent = mwSessionSubmissions;
