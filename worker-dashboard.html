@@ -129,9 +129,8 @@ button:hover{transform:none;}
 .side-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:20px;padding:1px 7px;}
 .sidebar-bottom{margin-top:auto;padding-top:16px;}
 .sidebar-ad-slot .ad-container{
-    width:100%;min-height:600px;max-height:60vh;border-radius:12px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
+    width:auto;max-width:100%;height:auto;background:transparent;border:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
 }
 
 
@@ -312,22 +311,24 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
 .task-focus-top-ad,.task-focus-bottom-ad{display:flex;justify-content:center;margin-bottom:24px;}
 .task-focus-bottom-ad{margin-bottom:0;margin-top:28px;}
 .task-focus-top-ad .ad-container,.task-focus-bottom-ad .ad-container{
-    width:728px;max-width:100%;min-height:90px;border-radius:12px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--border);
+    width:auto;max-width:100%;height:auto;background:transparent;border:none;
     display:flex;align-items:center;justify-content:center;
 }
 
 .task-focus-layout{display:flex;gap:24px;align-items:flex-start;justify-content:center;}
 .task-focus-side-ad{flex:0 0 160px;position:sticky;top:90px;}
 .task-focus-side-ad .ad-container{
-    width:160px;min-height:600px;border-radius:12px;overflow:hidden;
-    background:var(--panel);border:1px solid var(--border);
-    display:flex;align-items:center;justify-content:center;
+    width:160px;height:auto;background:transparent;border:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
 }
 .task-focus-content{flex:1 1 auto;max-width:640px;width:100%;}
 
 @media (max-width:1100px){
     .task-focus-side-ad{display:none;}
+    /* Ensure top ad container doesn't clip 300x250 mobile banner */
+    .task-focus-top-ad .ad-container, .task-focus-bottom-ad .ad-container {
+        min-height: 250px;
+    }
 }
 @media (max-width:640px){
     .task-focus-inner{padding:64px 12px 40px;}
