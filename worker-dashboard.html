@@ -1109,8 +1109,19 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
 /* ---------------- Sidebar Toggle Logic ---------------- */
 function toggleSidebar() {
     if (window.innerWidth <= 980) {
-        document.querySelector('.sidebar').classList.toggle('open');
+        const sidebar = document.querySelector('.sidebar');
+        sidebar.classList.toggle('open');
         document.querySelector('.sidebar-backdrop').classList.toggle('open');
+        
+        // VIEWABILITY FIX: Load ads ONLY when drawer is opened, clear them when closed
+        if (sidebar.classList.contains('open')) {
+            loadAdsterraSidebarAd();
+        } else {
+            // Clear ads so they don't count as hidden background impressions
+            document.getElementById('frame-sidebar-ad-1').innerHTML = "";
+            document.getElementById('frame-sidebar-ad-2').innerHTML = "";
+            document.getElementById('frame-sidebar-ad-3').innerHTML = "";
+        }
     } else {
         document.body.classList.toggle('sidebar-closed');
     }
@@ -1216,7 +1227,13 @@ function isDesktop() {
 
 function loadAdsterraSidebarAd() {
     const isDesk = isDesktop();
+    const sidebar = document.querySelector('.sidebar');
     
+    // CRITICAL VIEWABILITY FIX: Do not load ads if mobile sidebar drawer is closed.
+    if (!isDesk && !sidebar.classList.contains('open')) {
+        return; 
+    }
+
     // Hide slots 2 and 3 on Desktop to prevent CPM dilution (Premium 1-ad setup)
     const slot2 = document.getElementById('frame-sidebar-ad-2');
     const slot3 = document.getElementById('frame-sidebar-ad-3');
