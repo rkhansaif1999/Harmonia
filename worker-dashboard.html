@@ -507,7 +507,7 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
     .topbar{position:relative;padding:0 0 10px 0;margin-bottom:20px;flex-wrap:wrap;}
     .topbar-left{flex:1 1 auto;}
     .topbar-right{flex:0 0 auto;}
-    .topbar-ad-slot{display:flex;flex:1 1 100%;order:3;margin-top:10px;padding:0;}
+    .topbar-ad-slot{display:flex;flex:1 1 100%;order:3;margin-top:10px;padding:0;min-height:250px;}
     
     /* Compact Topbar Right */
     .profile-name{display:none;}
@@ -965,7 +965,7 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
     </div>
 
     <!-- STICKY BOTTOM AD: Adsterra Native -->
-    <div style="position:fixed;bottom:0;left:0;width:100%;min-height:50px;background:var(--panel);border-top:1px solid var(--border);z-index:600;display:flex;justify-content:center;align-items:center;padding:5px 0;">
+    <div style="position:fixed;bottom:0;left:0;width:100%;min-height:250px;background:var(--panel);border-top:1px solid var(--border);z-index:600;display:flex;justify-content:center;align-items:center;padding:5px 0;">
         <div id="frame-focus-ad-bottom"></div>
     </div>
 
@@ -1077,6 +1077,14 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
             </div>
         </div>
     </div>
+</div>
+
+<!-- ============= $1 Earnings Pause Gate ============= -->
+<div id="pauseGateOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center;">
+    <h3 style="color:var(--warning);margin-bottom:10px;">⏸️ Session Paused</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:20px;max-width:400px;">You've reached a daily earning milestone. Please click the banner below and browse for 60 seconds to resume your session.</p>
+    <div id="frame-pause-ad-160x600" style="width:160px;height:600px;display:block;margin:0 auto 20px auto;border-radius:8px;overflow:hidden;background:var(--panel);"></div>
+    <div id="pauseCountdown" style="display:none;color:var(--success);font-weight:bold;font-size:1.1rem;"></div>
 </div>
 
 <!-- ============= Themed alert / confirm ============= -->
@@ -1207,15 +1215,30 @@ function isDesktop() {
 
 function loadAdsterraSidebarAd() {
     const isDesk = isDesktop();
-    const w = isDesk ? 160 : 300;
-    const h = isDesk ? 600 : 250;
-    const key = isDesk ? ADSTERRA_KEY_DESKTOP_SKYSCRAPER : ADSTERRA_KEY_MOBILE_RECTANGLE;
+    
+    // Hide slots 2 and 3 on Desktop to prevent CPM dilution (Premium 1-ad setup)
+    const slot2 = document.getElementById('frame-sidebar-ad-2');
+    const slot3 = document.getElementById('frame-sidebar-ad-3');
+    if (isDesk) {
+        if (slot2) slot2.style.display = 'none';
+        if (slot3) slot3.style.display = 'none';
+    } else {
+        if (slot2) slot2.style.display = 'block';
+        if (slot3) slot3.style.display = 'block';
+    }
 
-    const slots = [
-        { id: 'frame-sidebar-ad-1', w: w, h: h, key: key },
-        { id: 'frame-sidebar-ad-2', w: w, h: h, key: key },
-        { id: 'frame-sidebar-ad-3', w: w, h: h, key: key }
-    ];
+    // BOTH Desktop & Mobile use the 160x600 Skyscraper for maximum CPM
+    const w = 160;
+    const h = 600;
+    const key = ADSTERRA_KEY_DESKTOP_SKYSCRAPER;
+
+    const slots = isDesk 
+        ? [{ id: 'frame-sidebar-ad-1', w: w, h: h, key: key }]
+        : [
+            { id: 'frame-sidebar-ad-1', w: w, h: h, key: key },
+            { id: 'frame-sidebar-ad-2', w: w, h: h, key: key },
+            { id: 'frame-sidebar-ad-3', w: w, h: h, key: key }
+        ];
 
     slots.forEach(slot => {
         const container = document.getElementById(slot.id);
@@ -1249,9 +1272,10 @@ function loadAdsterraTopbarAd() {
     container.innerHTML = "";
     
     const isDesk = isDesktop();
-    const w = isDesk ? 728 : 320;
-    const h = isDesk ? 90 : 50;
-    const key = isDesk ? ADSTERRA_KEY_DESKTOP_BANNER : ADSTERRA_KEY_MOBILE_BANNER;
+    // Mobile swaps to 300x250 for higher CPM (320x50 pays $0.00)
+    const w = isDesk ? 728 : 300;
+    const h = isDesk ? 90 : 250;
+    const key = isDesk ? ADSTERRA_KEY_DESKTOP_BANNER : ADSTERRA_KEY_MOBILE_RECTANGLE;
     
     container.style.width = w + "px";
     container.style.maxWidth = "100%";
@@ -1277,24 +1301,33 @@ function loadAdsterraTopbarAd() {
 
 function loadAdsterraFocusAds() {
     const isDesk = isDesktop();
-    const w_banner = isDesk ? 728 : 320;
-    const h_banner = isDesk ? 90 : 50;
-    const key_banner = isDesk ? ADSTERRA_KEY_DESKTOP_BANNER : ADSTERRA_KEY_MOBILE_BANNER;
+    // Mobile Top/Bottom swaps to 300x250 (320x50 and 300x250 are the only ones that fit properly)
+    const w_banner = isDesk ? 728 : 300;
+    const h_banner = isDesk ? 90 : 250;
+    const key_banner = isDesk ? ADSTERRA_KEY_DESKTOP_BANNER : ADSTERRA_KEY_MOBILE_RECTANGLE;
     
-    const w_side = isDesk ? 160 : 300;
-    const h_side = isDesk ? 600 : 250;
-    const key_side = isDesk ? ADSTERRA_KEY_DESKTOP_SKYSCRAPER : ADSTERRA_KEY_MOBILE_RECTANGLE;
+    // Desktop Sidebars use the highly profitable 160x600 Skyscraper
+    const w_side = 160;
+    const h_side = 600;
+    const key_side = ADSTERRA_KEY_DESKTOP_SKYSCRAPER;
 
-    const slots = [
+    // Mobile: Only load Top & Bottom. Sidebars are hidden by CSS on mobile, 
+    // loading them anyway destroys viewability scores and drops CPM.
+    let slots = [
         { id: 'frame-focus-ad-top', w: w_banner, h: h_banner, key: key_banner },
-        { id: 'frame-focus-ad-bottom', w: w_banner, h: h_banner, key: key_banner },
-        { id: 'frame-focus-ad-left-1', w: w_side, h: h_side, key: key_side },
-        { id: 'frame-focus-ad-left-2', w: w_side, h: h_side, key: key_side },
-        { id: 'frame-focus-ad-left-3', w: w_side, h: h_side, key: key_side },
-        { id: 'frame-focus-ad-right-1', w: w_side, h: h_side, key: key_side },
-        { id: 'frame-focus-ad-right-2', w: w_side, h: h_side, key: key_side },
-        { id: 'frame-focus-ad-right-3', w: w_side, h: h_side, key: key_side }
+        { id: 'frame-focus-ad-bottom', w: w_banner, h: h_banner, key: key_banner }
     ];
+
+    if (isDesk) {
+        slots.push(
+            { id: 'frame-focus-ad-left-1', w: w_side, h: h_side, key: key_side },
+            { id: 'frame-focus-ad-left-2', w: w_side, h: h_side, key: key_side },
+            { id: 'frame-focus-ad-left-3', w: w_side, h: h_side, key: key_side },
+            { id: 'frame-focus-ad-right-1', w: w_side, h: h_side, key: key_side },
+            { id: 'frame-focus-ad-right-2', w: w_side, h: h_side, key: key_side },
+            { id: 'frame-focus-ad-right-3', w: w_side, h: h_side, key: key_side }
+        );
+    }
 
     slots.forEach(slot => {
         const container = document.getElementById(slot.id);
@@ -1346,6 +1379,75 @@ function refreshFocusAdsOnAction() {
     if (document.body.classList.contains("task-focus-mode")) {
         loadAdsterraFocusAds();
     }
+}
+
+// --- $1 EARNINGS PAUSE GATE ---
+function trackEarningsForPause(amount) {
+    try {
+        if (localStorage.getItem('mw_pause_gate_12h')) return; // Already triggered today
+        let earnings = JSON.parse(localStorage.getItem('mw_earnings_12h') || '[]');
+        const now = Date.now();
+        // Keep only earnings from the last 12 hours
+        earnings = earnings.filter(e => (now - e.t) < (12 * 60 * 60 * 1000));
+        earnings.push({ t: now, a: amount });
+        localStorage.setItem('mw_earnings_12h', JSON.stringify(earnings));
+        
+        const total = earnings.reduce((sum, e) => sum + e.a, 0);
+        if (total >= 1.00) {
+            triggerPauseGate();
+        }
+    } catch (e) {}
+}
+
+function triggerPauseGate() {
+    if (localStorage.getItem('mw_pause_gate_12h')) return;
+    localStorage.setItem('mw_pause_gate_12h', '1'); // Mark as triggered
+    localStorage.removeItem('mw_earnings_12h'); // Reset tracker
+    
+    const overlay = document.getElementById('pauseGateOverlay');
+    const countdown = document.getElementById('pauseCountdown');
+    const adContainer = document.getElementById('frame-pause-ad-160x600');
+    
+    overlay.style.display = 'flex';
+    countdown.style.display = 'none';
+    
+    // Load the 160x600 Ad into the pause screen
+    const key = ADSTERRA_KEY_DESKTOP_SKYSCRAPER; // 160x600
+    adContainer.innerHTML = "";
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.scrolling = 'no';
+    adContainer.appendChild(iframe);
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<html><head><style>body{margin:0;padding:0;overflow:hidden;}</style></head><body>
+    <script type="text/javascript">atOptions = {'key':'${key}','format':'iframe','height':600,'width':160,'params':{}};<\/script>
+    <script type="text/javascript" src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+    </body></html>`);
+    doc.close();
+
+    // Listen for click (tab blur)
+    function handlePauseBlur() {
+        window.removeEventListener('blur', handlePauseBlur);
+        countdown.style.display = 'block';
+        let count = 60;
+        countdown.textContent = `Banner clicked. Resuming in ${count} seconds...`;
+        const interval = setInterval(() => {
+            count--;
+            countdown.textContent = `Banner clicked. Resuming in ${count} seconds...`;
+            if (count <= 0) {
+                clearInterval(interval);
+                overlay.style.display = 'none';
+            }
+        }, 1000);
+    }
+    
+    // Add a slight delay to ensure the ad is loaded before listening for the blur
+    setTimeout(() => {
+        window.addEventListener('blur', handlePauseBlur);
+    }, 1500);
 }
 
 // --- 20-MINUTE CLICK TRAP ---
@@ -1955,6 +2057,7 @@ async function submitCode() {
         if (data.correct) {
             mwSessionCorrect++;
             mwSessionEarned += Number(data.earned || 0);
+            trackEarningsForPause(Number(data.earned || 0)); // Check for $1 threshold
             feedbackBox.textContent = `✅ Correct! You earned ${formatMoney(data.earned)}`;
             feedbackBox.className = "feedback-box feedback-correct";
         } else {
