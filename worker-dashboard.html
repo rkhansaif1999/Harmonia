@@ -1610,7 +1610,7 @@ function ensureTabLoaded(tab) {
     if (tab === "overview") renderOverview();
     if (tab === "tasks") { loadApprovedMicroTasks(); loadMicroTasksToApply(); }
     if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
-    if (tab === "earnings") { loadEarnings(); loadPayoutMethod(); }
+    if (tab === "earnings") { loadEarnings(); loadPayoutMethod(); loadReferralData(); }
     if (tab === "settings") { checkDiscordStatus(); loadReferralData(); }
 }
 
@@ -3312,13 +3312,18 @@ async function loadReferralData() {
         const refData = await refRes.json();
         const earningsData = await earningsRes.json();
 
-        // Populate code + link
+        // Populate code + link safely
+        const codeEl = document.getElementById("referralCodeDisplay");
+        const linkEl = document.getElementById("referralLinkDisplay");
         if (refData.referralCode) {
-            document.getElementById("referralCodeDisplay").textContent = refData.referralCode;
-            document.getElementById("referralLinkDisplay").value = refData.referralLink || "";
+            if (codeEl) codeEl.textContent = refData.referralCode;
+            if (linkEl) linkEl.value = refData.referralLink || "https://harmoniaportal.online/signup.html";
+        } else {
+            if (linkEl && linkEl.value === "Loading...") linkEl.value = "Not available";
+            if (codeEl && codeEl.textContent === "—") codeEl.textContent = "N/A";
         }
 
-        // Populate referral earnings stat box
+        // Populate referral earnings stat box safely
         const pending = earningsData.pending || 0;
         const paid = earningsData.paid || 0;
         const pendingEl = document.getElementById("referralEarningsPending");
@@ -3326,10 +3331,20 @@ async function loadReferralData() {
         if (pendingEl) pendingEl.textContent = formatMoney(pending);
         if (subEl) subEl.textContent = `$${paid.toFixed(6)} paid all time`;
 
-        // Render breakdown table
-        renderReferralBreakdown(refData.breakdown || []);
+        // Render breakdown table safely
+        const breakdownEl = document.getElementById("referralBreakdownContainer");
+        if (breakdownEl) {
+            renderReferralBreakdown(refData.breakdown || []);
+        }
     } catch (err) {
         console.error("Failed to load referral data:", err);
+        // Stop infinite loading state if API fails
+        const linkEl = document.getElementById("referralLinkDisplay");
+        if (linkEl && linkEl.value === "Loading...") linkEl.value = "Error loading link";
+        const codeEl = document.getElementById("referralCodeDisplay");
+        if (codeEl && codeEl.textContent === "—") codeEl.textContent = "N/A";
+        const pendingEl = document.getElementById("referralEarningsPending");
+        if (pendingEl && pendingEl.textContent === "$0.000000") pendingEl.textContent = "$0.00";
     }
 }
 
