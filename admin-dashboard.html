@@ -1885,6 +1885,18 @@ function maskWallet(address) {
 }
 
 
+async function fetchAndRenderReferralCount(workerId) {
+    try {
+        const res = await authFetch(WORKER_URL + "/api/admin/users/referral-count?userId=" + workerId);
+        const data = await res.json();
+        const el = document.getElementById("referralCount-" + workerId);
+        if (el) el.textContent = (data.count || 0) + " worker" + (data.count === 1 ? "" : "s") + " referred";
+    } catch (err) {
+        const el = document.getElementById("referralCount-" + workerId);
+        if (el) el.textContent = "—";
+    }
+}
+
 function toggleDetails(id) {
     if (expandedRows.has(id)) expandedRows.delete(id);
     else expandedRows.add(id);
@@ -2202,6 +2214,8 @@ function renderWorkers(){
         `;
 
         if (isOpen) {
+            // Fetch referral count asynchronously after render
+            setTimeout(() => fetchAndRenderReferralCount(worker.id), 0);
             const breakdown = earningsBreakdownFor(worker, payout);
             const breakdownRows = breakdown.length === 0
                 ? `<tr><td colspan="3" class="empty-state">No earnings yet</td></tr>`
@@ -2232,6 +2246,10 @@ function renderWorkers(){
                             <div>
                                 <div class="label">Payout Action</div>
                                 <div>${payoutAction}</div>
+                            </div>
+                            <div>
+                                <div class="label">🤝 Referrals</div>
+                                <div id="referralCount-${worker.id}"><span class="muted" style="font-size:.82rem;">Loading...</span></div>
                             </div>
                         </div>
                         <div style="margin-top:6px;margin-bottom:14px;">
