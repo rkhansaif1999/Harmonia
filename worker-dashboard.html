@@ -814,7 +814,7 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
 
         <!-- ================= EARNINGS & PAYMENTS ================= -->
         <section class="page-panel" id="panel-earnings">
-            <div class="stat-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);">
                 <div class="stat-card">
                     <div class="lbl">Total Earned (all time)</div>
                     <div class="val" id="totalEarnedAllTime">$0.000000</div>
@@ -831,6 +831,11 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
                         <span class="status status-pending" id="withdrawPendingBadge" style="display:none;">Request Pending</span>
                         <span class="muted" id="withdrawMinNote" style="font-size:.82rem;">Minimum $10 to withdraw</span>
                     </div>
+                </div>
+                <div class="stat-card">
+                    <div class="lbl">🤝 Referral Earnings</div>
+                    <div class="val" id="referralEarningsPending">$0.000000</div>
+                    <div class="sub" id="referralEarningsSub">Pending bonus</div>
                 </div>
             </div>
 
@@ -883,6 +888,36 @@ body.task-focus-mode .task-focus-inner{padding-bottom:120px !important;}
 
         <!-- ================= SETTINGS ================= -->
         <section class="page-panel" id="panel-settings">
+
+            <div class="card" style="margin-bottom:20px;">
+                <h2>🤝 Referral Program</h2>
+                <p class="muted" style="margin-top:-6px;">Share your referral link and earn 10% of every referred worker's earnings for 6 months — paid on top by the platform.</p>
+
+                <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;">
+                    <div style="flex:1;min-width:200px;">
+                        <div class="label" style="margin-bottom:6px;">Your Referral Code</div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <code id="referralCodeDisplay" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:1.1rem;font-weight:700;letter-spacing:2px;color:var(--primary);">—</code>
+                            <button class="secondary" style="padding:8px 14px;" onclick="copyReferralCode()">📋 Copy</button>
+                        </div>
+                    </div>
+                    <div style="flex:2;min-width:260px;">
+                        <div class="label" style="margin-bottom:6px;">Shareable Link</div>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <input type="text" id="referralLinkDisplay" readonly style="flex:1;font-size:.82rem;background:var(--bg);cursor:pointer;" onclick="this.select();" value="Loading...">
+                            <button class="secondary" style="padding:8px 14px;white-space:nowrap;" onclick="copyReferralLink()">📋 Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px;">
+                    <div class="label" style="margin-bottom:10px;">Your Referred Workers</div>
+                    <div id="referralBreakdownContainer">
+                        <p class="muted" style="font-size:.85rem;">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <h2>Discord</h2>
                 <p class="muted" style="margin-top:-6px;">Link your Discord account to join the community server. Your role here updates automatically to match your role in Discord.</p>
@@ -1576,7 +1611,7 @@ function ensureTabLoaded(tab) {
     if (tab === "tasks") { loadApprovedMicroTasks(); loadMicroTasksToApply(); }
     if (tab === "messages") { initMessagesPage(); loadSupportChat(); }
     if (tab === "earnings") { loadEarnings(); loadPayoutMethod(); }
-    if (tab === "settings") { checkDiscordStatus(); }
+    if (tab === "settings") { checkDiscordStatus(); loadReferralData(); }
 }
 
 function loadSubtabContent(group, sub) {
@@ -3263,6 +3298,88 @@ async function confirmVerificationCode() {
         selectMethodTile(justLinked);
         loadedTabs.delete("overview");
     } catch (err) { alert("Verification failed. Please try again."); }
+}
+
+/* ==========================================================
+   REFERRAL PROGRAM
+   ========================================================== */
+async function loadReferralData() {
+    try {
+        const [refRes, earningsRes] = await Promise.all([
+            authFetch(WORKER_URL + "/api/worker/referral"),
+            authFetch(WORKER_URL + "/api/worker/referral/earnings"),
+        ]);
+        const refData = await refRes.json();
+        const earningsData = await earningsRes.json();
+
+        // Populate code + link
+        if (refData.referralCode) {
+            document.getElementById("referralCodeDisplay").textContent = refData.referralCode;
+            document.getElementById("referralLinkDisplay").value = refData.referralLink || "";
+        }
+
+        // Populate referral earnings stat box
+        const pending = earningsData.pending || 0;
+        const paid = earningsData.paid || 0;
+        const pendingEl = document.getElementById("referralEarningsPending");
+        const subEl = document.getElementById("referralEarningsSub");
+        if (pendingEl) pendingEl.textContent = formatMoney(pending);
+        if (subEl) subEl.textContent = `$${paid.toFixed(6)} paid all time`;
+
+        // Render breakdown table
+        renderReferralBreakdown(refData.breakdown || []);
+    } catch (err) {
+        console.error("Failed to load referral data:", err);
+    }
+}
+
+function renderReferralBreakdown(breakdown) {
+    const container = document.getElementById("referralBreakdownContainer");
+    if (!container) return;
+
+    if (!breakdown.length) {
+        container.innerHTML = `<p class="muted" style="font-size:.85rem;">No referrals yet. Share your link to start earning!</p>`;
+        return;
+    }
+
+    const rows = breakdown.map(r => `
+        <tr>
+            <td>${escapeHTML(r.maskedEmail)}</td>
+            <td style="color:var(--primary);font-weight:700;">$${Number(r.bonusEarned).toFixed(6)}</td>
+            <td>${r.daysRemaining} days</td>
+            <td><span class="status ${r.status === 'active' ? 'status-approved' : 'status-rejected'}">${r.status === 'active' ? 'Active' : 'Expired'}</span></td>
+        </tr>
+    `).join("");
+
+    container.innerHTML = `
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Worker</th>
+                    <th>Bonus Earned</th>
+                    <th>Days Remaining</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    `;
+}
+
+function copyReferralCode() {
+    const code = document.getElementById("referralCodeDisplay").textContent;
+    if (!code || code === "—") return;
+    navigator.clipboard.writeText(code).then(() => alert("Referral code copied!")).catch(() => {
+        prompt("Copy your referral code:", code);
+    });
+}
+
+function copyReferralLink() {
+    const link = document.getElementById("referralLinkDisplay").value;
+    if (!link) return;
+    navigator.clipboard.writeText(link).then(() => alert("Referral link copied!")).catch(() => {
+        prompt("Copy your referral link:", link);
+    });
 }
 </script>
 
