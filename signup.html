@@ -295,6 +295,11 @@
         <option value="">Select Country</option>
       </select>
 
+      <div style="margin-bottom:4px;">
+        <input type="text" id="referralCode" placeholder="Referral code (optional)" style="text-transform:uppercase;" autocomplete="off">
+        <p style="font-size:.78rem;color:#9dadc1;margin-top:4px;margin-bottom:0;">Leave blank if you don't have one.</p>
+      </div>
+
       <button class="primary" type="submit" id="signupBtn">Create Account</button>
 
       <p class="form-msg" id="signupMsg"></p>
@@ -367,6 +372,17 @@ const countries = ["Afghanistan","Albania","Algeria","Andorra","Angola","Antigua
 const countrySelect = document.getElementById("country");
 
 let pendingSignup = null;
+
+// Auto-fill referral code from URL ?ref= parameter
+(function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const refCode = urlParams.get("ref");
+  if (refCode) {
+    const refInput = document.getElementById("referralCode");
+    if (refInput) refInput.value = refCode.toUpperCase();
+  }
+})();
+
 countries.forEach(c=>{
   const opt=document.createElement("option");
   opt.value=c;
@@ -416,12 +432,14 @@ if(!response.ok){
     throw new Error(data.error || "Unable to send OTP.");
 }
 
+    const referralCode = document.getElementById("referralCode").value.trim().toUpperCase();
     pendingSignup={
     fullName,
     email,
     password,
     role,
-    country
+    country,
+    referralCode
 };
 
     document.getElementById("signupBox").style.display="none";
@@ -461,7 +479,8 @@ async function verifyCode(event){
           fullName: pendingSignup.fullName,
           password: pendingSignup.password,
           role: pendingSignup.role,
-          country: pendingSignup.country
+          country: pendingSignup.country,
+          referralCode: pendingSignup.referralCode || ""
         })
       }
     );
