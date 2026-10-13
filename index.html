@@ -279,6 +279,220 @@ margin-top:44px;
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
 }
+/* ==================================================
+   HARMONIA × FARMCOINS PROMO
+   Fully namespaced — does not modify shared UI styles
+   ================================================== */
+
+.hc-farmcoins-promo {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: min(1120px, calc(100% - 40px));
+  margin: 12px auto 36px;
+  padding: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(116, 220, 173, 0.22);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 85% 15%, rgba(92, 194, 134, 0.15), transparent 42%),
+    linear-gradient(125deg, #101d22 0%, #102b27 52%, #101b24 100%);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.17);
+}
+
+.hc-farmcoins-promo *,
+.hc-farmcoins-promo *::before,
+.hc-farmcoins-promo *::after {
+  box-sizing: border-box;
+}
+
+.hc-farmcoins-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.9fr);
+  align-items: center;
+  gap: 36px;
+  padding: clamp(24px, 5vw, 52px);
+}
+
+.hc-farmcoins-copy {
+  min-width: 0;
+}
+
+.hc-farmcoins-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+  color: #a6e8bd;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+}
+
+.hc-farmcoins-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #8be0a5;
+  box-shadow: 0 0 12px rgba(139, 224, 165, 0.6);
+}
+
+.hc-farmcoins-copy h2 {
+  margin: 0 0 18px;
+  color: #f4fff7;
+  font-size: clamp(1.8rem, 3.8vw, 3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+  overflow-wrap: anywhere;
+}
+
+.hc-farmcoins-copy h2 span {
+  color: #a5e8b6;
+}
+
+.hc-farmcoins-copy p {
+  max-width: 520px;
+  margin: 0;
+  color: #c1d4cc;
+  font-size: 0.98rem;
+  line-height: 1.85;
+}
+
+.hc-farmcoins-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 28px;
+}
+
+.hc-farmcoins-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 13px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #b6f0c2, #79d99c);
+  color: #10271a;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hc-farmcoins-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(121, 217, 156, 0.2);
+}
+
+.hc-farmcoins-note {
+  color: #a9c2b7;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+.hc-farmcoins-art {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 220px;
+  aspect-ratio: 1.25 / 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid rgba(193, 244, 204, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #274d3c, #172b28);
+  text-decoration: none;
+}
+
+.hc-farmcoins-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  max-height: 340px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hc-farmcoins-art-label {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(12, 29, 23, 0.88);
+  color: #f0fff3;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (max-width: 700px) {
+  .hc-farmcoins-promo {
+    width: calc(100% - 28px);
+    margin: 8px auto 28px;
+    border-radius: 19px;
+  }
+
+  .hc-farmcoins-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 25px 20px 20px;
+  }
+
+  .hc-farmcoins-copy h2 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+    letter-spacing: -0.8px;
+  }
+
+  .hc-farmcoins-copy p {
+    font-size: 0.92rem;
+  }
+
+  .hc-farmcoins-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hc-farmcoins-button {
+    width: 100%;
+  }
+
+  .hc-farmcoins-art {
+    min-height: 190px;
+    aspect-ratio: 1.35 / 1;
+  }
+
+  .hc-farmcoins-art img {
+    min-height: 190px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-farmcoins-button {
+    transition: none;
+  }
+}
+
 </style>
 </head>
 
@@ -338,6 +552,61 @@ margin-top:44px;
         <a href="login.html" class="btn btn-secondary">Login</a>
       </div>
 
+    </div>
+  </section>
+
+  <!-- FARMCOINS PROMOTION: ISOLATED COMPONENT -->
+  <section class="hc-farmcoins-promo" aria-labelledby="hc-farmcoins-title">
+    <div class="hc-farmcoins-inner">
+      <div class="hc-farmcoins-copy">
+        <span class="hc-farmcoins-eyebrow">
+          <span class="hc-farmcoins-dot"></span>
+          INTRODUCING FARMCOINS
+        </span>
+
+        <h2 id="hc-farmcoins-title">
+          Build Your Farm.<br>
+          <span>Grow Your Fortune.</span>
+        </h2>
+
+        <p>
+          Meet FarmCoins, a cozy farming experience where you can raise hens,
+          collect eggs, expand your farm, and build your own virtual farm economy.
+        </p>
+
+        <div class="hc-farmcoins-actions">
+          <a
+            class="hc-farmcoins-button"
+            href="https://farmcoins.online/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Explore FarmCoins <span aria-hidden="true">↗</span>
+          </a>
+
+          <span class="hc-farmcoins-note">
+            A new experience from Harmonia
+          </span>
+        </div>
+      </div>
+
+      <a
+        class="hc-farmcoins-art"
+        href="https://farmcoins.online/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Visit FarmCoins"
+      >
+        <img
+          src="https://farmcoins.online/images/og-image.png"
+          alt="Discover FarmCoins, the farming game"
+          loading="lazy"
+          onerror="this.style.display='none';"
+        >
+        <span class="hc-farmcoins-art-label">
+          <span>🌱</span> YOUR NEXT ADVENTURE
+        </span>
+      </a>
     </div>
   </section>
 
