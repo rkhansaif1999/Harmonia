@@ -608,6 +608,291 @@ margin-top:44px;
     </div>
   </section>
 
+  <!-- DIGITAL BABY PROMOTION -->
+  <style>
+    .hc-digitalbaby-promo {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto 36px;
+      padding: 32px;
+      border: 1px solid #5146a8;
+      border-radius: 24px;
+      background: radial-gradient(ellipse at 85% 15%, rgba(124,121,255,.2), transparent 45%), linear-gradient(125deg,#101426,#191638 55%,#102b46);
+      color: #f7f8ff;
+      box-sizing: border-box;
+    }
+    .hc-digitalbaby-promo * { box-sizing: border-box; }
+    .hc-digitalbaby-inner {
+      display: grid;
+      grid-template-columns: minmax(0,1.1fr) minmax(220px,.9fr);
+      gap: 30px;
+      align-items: center;
+    }
+    .hc-digitalbaby-eyebrow {
+      color: #a99bff;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+    .hc-digitalbaby-status {
+      display: inline-block;
+      padding: 7px 11px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(179,174,255,.3);
+      border-radius: 30px;
+      color: #d7d4ff;
+      font-size: .7rem;
+      font-weight: 800;
+    }
+    .hc-digitalbaby-copy h2 {
+      margin: 0 0 16px;
+      color: #fff;
+      font-size: clamp(1.8rem,4vw,3rem);
+      line-height: 1.12;
+      letter-spacing: -1px;
+    }
+    .hc-digitalbaby-copy h2 span { color: #a99bff; }
+    .hc-digitalbaby-copy p {
+      color: #c4c9e8;
+      font-size: .95rem;
+      line-height: 1.85;
+    }
+    .hc-digitalbaby-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .hc-digitalbaby-button {
+      padding: 13px 20px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg,#8c82ff,#46d8ff);
+      color: #101426;
+      font-size: .92rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .hc-digitalbaby-note { color: #a9b8d8; font-size: .78rem; }
+    .hc-digitalbaby-art {
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      border: 1px solid rgba(193,190,255,.2);
+      border-radius: 18px;
+      background: radial-gradient(circle,rgba(124,121,255,.2),transparent 65%),rgba(8,12,32,.45);
+    }
+    .hc-digitalbaby-core {
+      width: 105px;
+      height: 105px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #aaa3ff;
+      border-radius: 30px;
+      background: linear-gradient(145deg,#7c79ff,#353c91);
+      color: #fff;
+      font-size: 34px;
+      font-weight: 900;
+      box-shadow: 0 0 45px rgba(124,121,255,.4);
+      transform: rotate(-7deg);
+    }
+    .hc-digitalbaby-art-label {
+      color: #bdc5e8;
+      font-size: .7rem;
+      letter-spacing: 1.5px;
+    }
+    .hc-digitalbaby-details {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(175,178,255,.2);
+    }
+    .hc-digitalbaby-details[hidden] { display: none; }
+    .hc-digitalbaby-details h3 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: 1.5rem;
+    }
+    .hc-digitalbaby-details-intro {
+      color: #c4c9e8;
+      line-height: 1.8;
+      font-size: .92rem;
+    }
+    .hc-digitalbaby-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .hc-digitalbaby-feature {
+      padding: 18px;
+      border: 1px solid rgba(158,158,255,.18);
+      border-radius: 15px;
+      background: rgba(255,255,255,.035);
+    }
+    .hc-digitalbaby-feature-icon {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+    .hc-digitalbaby-feature h4 {
+      margin: 0 0 9px;
+      color: #e5e4ff;
+      font-size: .98rem;
+    }
+    .hc-digitalbaby-feature p {
+      margin: 0;
+      color: #bfc6e0;
+      font-size: .84rem;
+      line-height: 1.8;
+    }
+    .hc-digitalbaby-privacy {
+      margin-top: 18px;
+      padding: 15px;
+      border-left: 3px solid #9b94ff;
+      background: rgba(139,129,255,.08);
+      color: #cbd0e9;
+      font-size: .84rem;
+      line-height: 1.8;
+    }
+    @media(max-width:700px) {
+      .hc-digitalbaby-promo { width: calc(100% - 28px); padding: 22px; }
+      .hc-digitalbaby-inner { grid-template-columns: 1fr; }
+      .hc-digitalbaby-feature-grid { grid-template-columns: 1fr; }
+      .hc-digitalbaby-art { min-height: 190px; }
+    }
+  </style>
+
+  <section class="hc-digitalbaby-promo" aria-labelledby="hc-digitalbaby-title">
+    <div class="hc-digitalbaby-inner">
+      <div class="hc-digitalbaby-copy">
+        <div class="hc-digitalbaby-eyebrow">✦ A NEW AI PROJECT BY HARMONIA</div>
+        <div class="hc-digitalbaby-status">IN DEVELOPMENT</div>
+
+        <h2 id="hc-digitalbaby-title">
+          Beyond Chatbots.<br><span>Into Action.</span>
+        </h2>
+
+        <p>
+          Meet Digital Baby — an AI assistant designed to go beyond conversation.
+          Our vision is to help you work with your computer, learn your preferred
+          workflows with your permission, and handle supported digital tasks.
+        </p>
+
+        <p>
+          And with mobile remote control, the goal is to let you send instructions
+          to your desktop even when you're away from your computer.
+        </p>
+
+        <div class="hc-digitalbaby-actions">
+          <button type="button" class="hc-digitalbaby-button"
+            id="hc-digitalbaby-toggle" aria-expanded="false"
+            aria-controls="hc-digitalbaby-details">
+            Learn More ↗
+          </button>
+          <span class="hc-digitalbaby-note">Your AI. Your workflow. Your choice.</span>
+        </div>
+      </div>
+
+      <div class="hc-digitalbaby-art" aria-label="Digital Baby AI concept">
+        <div class="hc-digitalbaby-core">DB</div>
+        <div class="hc-digitalbaby-art-label">SEE · LEARN · ASSIST · ADAPT</div>
+      </div>
+    </div>
+
+    <div class="hc-digitalbaby-details" id="hc-digitalbaby-details" hidden>
+      <h3>Meet Your Future Digital Assistant</h3>
+      <p class="hc-digitalbaby-details-intro">
+        Digital Baby is being developed with the ambition to make AI useful
+        beyond answering questions. These are intended capabilities; actual
+        availability will depend on development progress, model support, and
+        your device.
+      </p>
+
+      <div class="hc-digitalbaby-feature-grid">
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">👁️</span>
+          <h4>See and Understand Your Screen</h4>
+          <p>Designed to interpret screen content and understand the context of supported apps and tasks.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">🖱️</span>
+          <h4>Interact With Your Desktop</h4>
+          <p>Help navigate interfaces and perform supported actions across applications, files, websites, and workflows.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">🧠</span>
+          <h4>Learn How You Work — Optional</h4>
+          <p>With your explicit opt-in, learn from demonstrations of your workflows and adapt to your preferences. This feature should remain under your control.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">🤖</span>
+          <h4>Your Digital Counterpart</h4>
+          <p>The long-term vision is a personalized AI that can help with routine work while you rest, spend time with family, or focus elsewhere.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">📱</span>
+          <h4>Mobile Remote Control</h4>
+          <p>Use a compatible mobile remote-control interface to send instructions to your desktop from another location. Your desktop must be powered on, online, and securely configured for remote access.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">💻</span>
+          <h4>Built-In Local AI</h4>
+          <p>Use locally run AI models for everyday chat, casual conversation, brainstorming, writing, and coding assistance, depending on the model and your hardware.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">⌨️</span>
+          <h4>Help With Digital Work</h4>
+          <p>Intended tasks include coding, spreadsheets, research, documents, data entry, file organization, and other supported creative or productivity work.</p>
+        </article>
+
+        <article class="hc-digitalbaby-feature">
+          <span class="hc-digitalbaby-feature-icon">🔄</span>
+          <h4>Adapt Through Feedback</h4>
+          <p>Correct mistakes, demonstrate preferred methods, and provide approved examples to help personalize how the assistant supports your work.</p>
+        </article>
+      </div>
+
+      <div class="hc-digitalbaby-privacy">
+        <strong>Privacy and control matter.</strong>
+        Workflow learning is intended to be opt-in. Users should be able to
+        understand what is observed, manage permissions, and pause or disable
+        learning. Remote actions should use secure access controls and require
+        confirmation for sensitive operations.
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      const button = document.getElementById("hc-digitalbaby-toggle");
+      const details = document.getElementById("hc-digitalbaby-details");
+
+      if (!button || !details) return;
+
+      button.addEventListener("click", function () {
+        const opening = details.hidden;
+        details.hidden = !opening;
+        button.setAttribute("aria-expanded", String(opening));
+        button.textContent = opening ? "Show Less ↑" : "Learn More ↗";
+
+        if (opening) {
+          details.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      });
+    })();
+  </script>
+
   <!-- FOR CLIENTS -->
   <section class="features-section">
     <div class="container">
